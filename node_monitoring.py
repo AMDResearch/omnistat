@@ -18,10 +18,9 @@ import json
 import logging
 import sys
 
-# Create Gauge metrics
-metric1 = Gauge("metric1_name", "Description of metric 1")
-metric2 = Gauge("metric2_name", "Description of metric 2")
-
+# # Create Gauge metrics
+# metric1 = Gauge("metric1_name", "Description of metric 1")
+# metric2 = Gauge("metric2_name", "Description of metric 2")
 
 def runShellCommand(command,capture_output=True,text=True,exit_on_error=False):
     """run a provided shell command
@@ -49,22 +48,12 @@ class Metrics:
             format="%(message)s", level=logging.DEBUG, stream=sys.stdout
         )
 
-        # # Create a Flask application
-        # self.app = Flask("omniwatch")
-
         # defined GPU prometheus metrics (stored on a per-gpu basis)
         self.__GPUmetrics = {}  
-        # flags for use with rocm-smi to obtained desired metrics 
+        # command-line lflags for use with rocm-smi to obtained desired metrics 
         self.__rocm_smi_flags = "-P -u -f -t --showmeminfo vram --json"
-        # list of desired metrics to query: (name,rocm-smi-key)
-        self.__rocm_smi_metrics = [
-            ('temp_die_edge','Temperature (Sensor edge) (C)'),
-            ('avg_pwr','Average Graphics Package Power (W)'),
-            ('utilization','GPU use (%)'),
-            ('vram_total','VRAM Total Memory (B)'),
-            ('vram_used','VRAM Total Used Memory (B)'),
-        ]
-        self.__rocm_smi_metrics2 = {
+        # list of desired metrics to query: (prometheus_metric_name -> rocm-smi-key)
+        self.__rocm_smi_metrics = {
             'temp_die_edge':'Temperature (Sensor edge) (C)',
             'avg_pwr':'Average Graphics Package Power (W)',
             'utilization':'GPU use (%)',
@@ -102,8 +91,8 @@ class Metrics:
             self.__GPUmetrics[gpu] = {}
             
             # look for matching metrics and register
-            for metric in self.__rocm_smi_metrics2:
-                rocmName = self.__rocm_smi_metrics2[metric]
+            for metric in self.__rocm_smi_metrics:
+                rocmName = self.__rocm_smi_metrics[metric]
                 #if metric[1] in data[gpu]:
                 if rocmName in data[gpu]:
                     self.registerGPUMetric(gpu,metric,'gauge',rocmName)
@@ -112,7 +101,7 @@ class Metrics:
                     logging.info("   --> desired metric [%s] not available" % rocmName)
             # also highlight metrics not being used
             for key in data[gpu]:
-                if key not in self.__rocm_smi_metrics2.values():
+                if key not in self.__rocm_smi_metrics.values():
                     logging.info("  --> [  skipping] %s" % key)
         return
 
@@ -127,46 +116,16 @@ class Metrics:
         for gpu in self.__GPUmetrics:
             for metric in self.__GPUmetrics[gpu]:
                 metricName = metric.removeprefix(gpu + '_')
-                rocmName = self.__rocm_smi_metrics2[metricName]
+                rocmName = self.__rocm_smi_metrics[metricName]
                 if rocmName in data[gpu]:
                     value = data[gpu][rocmName]
                     self.__GPUmetrics[gpu][metric].set(value)
                     logging.debug("updated: %s = %s" % (metric,value))
         return
-
-    #
-    # @self.app.route("/metric3")
     
     def get_metrics_incremental(self):
         self.collect_data_incremental()
-        #metric1.set(4567)
-        #return generate_latest(metric1)
-        #foo = [self.__GPUmetrics['card3']['card3_temp_die_edge'],self.__GPUmetrics['card2']['card2_temp_die_edge']]
-        #return generate_latest(foo)
         return generate_latest()
-
-
-
-# Function to collect data for metric 1
-def collect_data_metric1():
-    # Run your system command to collect data for metric 1
-    data = subprocess.run(
-        ["rocm-smi", "-P", "-u", "-f", "-t", "--showmemuse", "--json"],
-        capture_output=True,
-        text=True,
-    )
-    # data2 = json.loads(data)
-    # print(data)
-    print(data.stdout)
-    # print(type(data))
-    data2 = json.loads(data.stdout)
-    # print(data.stdout.decode())
-    ##     return data.stdout.strip()
-    #    print(data2)
-    for item in data2:
-        print(item)
-    return 123
-
 
 # Function to collect data for metric 2
 def collect_data_metric2():
@@ -198,12 +157,15 @@ def main():
     monitor = Metrics()
     monitor.initMetrics()
 
-    app = Flask("omniwatch")
     # Register metrics with Flask app
+    app = Flask("omniwatch")
     register_metrics(app, app_version="v0.1.0", app_config="production")
+
+    # Define incremental metrics
     monitor.collect_data_incremental()
 
-    app.route('/metric3')(monitor.get_metrics_incremental)
+    # Define http query endpoints
+    app.route('/metric_inc')(monitor.get_metrics_incremental)
 
     app.run(host='0.0.0.0', port=8000)
 
