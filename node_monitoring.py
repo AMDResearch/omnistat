@@ -97,7 +97,6 @@ class Metrics:
         command = ["rocm-smi"] + self.__rocm_smi_flags.split()
         data = runShellCommand(command, exit_on_error=True)
         data = json.loads(data.stdout)
-        # desiredMetrics = [x[1] for x in self.__rocm_smi_metrics]
         for gpu in data:
             logging.debug("%s: gpu detected" % gpu)
 
@@ -110,7 +109,6 @@ class Metrics:
                 # if metric[1] in data[gpu]:
                 if rocmName in data[gpu]:
                     self.registerGPUMetric(gpu, metric, "gauge", rocmName)
-                    # self.registerGPUMetric(gpu,metric[0],'gauge',metric[1])
                 else:
                     logging.info("   --> desired metric [%s] not available" % rocmName)
             # also highlight metrics not being used
@@ -151,31 +149,6 @@ class Metrics:
         self.collect_data_incremental()
         # incremental query returns all known metrics
         return generate_latest()
-
-
-# # Function to collect data for metric 2
-# def collect_data_metric2():
-#     # Run your system command to collect data for metric 2
-#     ##     data = subprocess.run(['command_metric2', 'arg1', 'arg2'], capture_output=True, text=True)
-#     ##     return data.stdout.strip()
-#     return 345
-
-
-# # Endpoint handler for metric 1
-# @app.route("/metric_global")
-# def get_metric1():
-#     data = collect_data_metric1()
-#     metric1.set(data)
-#     return generate_latest(metric1)
-
-
-# # Endpoint handler for metric 2
-# @app.route("/metric2")
-# def get_metric2():
-#     #data = collect_data_metric2()
-#     #metric2.set(data)
-#     monitor.colle
-#     return generate_latest(metric2)
 
 
 # Main function to run the application
