@@ -86,10 +86,14 @@ class Metrics:
 
     def global_metrics_register(self):
         # jobID
+        labels = ['userid']
         self.__globalMetrics["jobid"] = Gauge(
-            "jobid", "Job Identifier", registry=self.__registry_global
+            "jobid", "Job Identifier", labels, registry=self.__registry_global
         )
-        self.__globalMetrics["jobid"].set(-1)
+
+        labels = ['unknown']
+        #self.__globalMetrics["jobid"].set(-1)
+        self.__globalMetrics["jobid"].labels(labels).set(-1)
 
     def rocm_smi_register(self):
         """Run rocm-smi and register metrics of interest"""
