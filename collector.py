@@ -1,11 +1,12 @@
 # Prometheus data collector for HPC systems.
 #
-# Parent collector class - defines required methods for all metric collectors implemented as a child class. 
+# Base collector class - defines required methods for all metric collectors implemented as a child class.
 #--
 
 import logging
 import sys
 from prometheus_client import CollectorRegistry
+#from collectors_
 
 class Collector:
     def __init__(self):
@@ -20,6 +21,16 @@ class Collector:
         self.__registry_global = CollectorRegistry()
         # Resource manager type
         self.__rms = "slurm"
+
+        # define desired collectors
+        self.__collectors = []
+
+        rocmSMI = True
+        if rocmSMI:
+            self.__collectors.append()
+
+        logging.debug("Completed collector initialization (base class)")
+        return
 
     # Required method to implemented by child classes
     def registerMetrics(self):
