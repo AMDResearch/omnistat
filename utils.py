@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import sys
 
 def runShellCommand(command, capture_output=True, text=True, exit_on_error=False):
     """Runs a provided shell command
