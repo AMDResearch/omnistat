@@ -5,7 +5,7 @@
 
 import logging
 import sys
-from prometheus_client import CollectorRegistry
+from prometheus_client import generate_latest, CollectorRegistry
 
 class Monitor():
     def __init__(self):
@@ -13,7 +13,7 @@ class Monitor():
             format="%(message)s", level=logging.DEBUG, stream=sys.stdout
         )
         # defined GPU prometheus metrics (stored on a per-gpu basis)
-        self.__GPUmetrics = {}
+        # self.__GPUmetrics = {}
  
         # defined global prometheus metrics
         self.__globalMetrics = {}
@@ -24,10 +24,24 @@ class Monitor():
         # define desired collectors
         self.__collectors = []
 
-        rocmSMI = True
-        if rocmSMI:
-            from collectors import ROCM
-            self.__collectors.append(ROCM())
-
         logging.debug("Completed collector initialization (base class)")
         return
+
+    def initMetrics(self):
+        rocmSMI = True
+        if rocmSMI:
+            from collectors import ROCMSMI
+            self.__collectors.append(ROCMSMI())
+        
+        # Initialize all metrics
+        for collector in self.__collectors:
+            collector.registerMetrics()
+
+        # Gather metrics on startup
+        for collector in self.__collectors:
+            collector.updateMetrics()
+
+    def updateAllMetrics(self):
+        for collector in self.__collectors:
+            collector.updateMetrics()
+        return generate_latest()

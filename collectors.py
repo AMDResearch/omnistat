@@ -3,41 +3,63 @@
 # Parent collector class - defines required methods for all metric collectors implemented as a child class. 
 #--
 
-import logging
 import sys
+import utils
+import json
+import logging
 from collector_base import Collector
-from prometheus_client import CollectorRegistry
+from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
-class ROCM(Collector):
+class ROCMSMI(Collector):
     def __init__(self):
         logging.debug("Initializing ROCm data collector")
+        prefix = "rocm_"
         
         # command-line flags for use with rocm-smi to obtained desired metrics
         self.__rocm_smi_flags = "-P -u -f -t --showmeminfo vram --json"
 
         # list of desired metrics to query: (prometheus_metric_name -> rocm-smi-key)
         self.__rocm_smi_metrics = {
-            "temp_die_edge": "Temperature (Sensor edge) (C)",
-            "avg_pwr": "Average Graphics Package Power (W)",
-            "utilization": "GPU use (%)",
-            "vram_total": "VRAM Total Memory (B)",
-            "vram_used": "VRAM Total Used Memory (B)",
+            prefix+"temp_die_edge": "Temperature (Sensor edge) (C)",
+            prefix+"avg_pwr": "Average Graphics Package Power (W)",
+            prefix+"utilization": "GPU use (%)",
+            prefix+"vram_total": "VRAM Total Memory (B)",
+            prefix+"vram_used": "VRAM Total Used Memory (B)",
         }
         logging.debug("rocm_smi_flags = %s" % self.__rocm_smi_flags)
+
+        self.__GPUmetrics = {}
 
     #--------------------------------------------------------------------------------------
     # Required child methods
 
-    # Required method to implemented by child classes
     def registerMetrics(self):
-        logging.error("[ERROR]: data collectors must implement registerMetrics() method.")
-        sys.exit(1)
+        """Run rocm-smi and register metrics of interest"""
+
+        command = ["rocm-smi"] + self.__rocm_smi_flags.split()
+        data = utils.runShellCommand(command, exit_on_error=True)
+        data = json.loads(data.stdout)
+        for gpu in data:
+            logging.debug("%s: gpu detected" % gpu)
+            # init storage per gpu
+            self.__GPUmetrics[gpu] = {}
+
+            # look for matching metrics and register
+            for metric in self.__rocm_smi_metrics:
+                rocmName = self.__rocm_smi_metrics[metric]
+                # if metric[1] in data[gpu]:
+                if rocmName in data[gpu]:
+                    self.registerGPUMetric(gpu, metric, "gauge", rocmName)
+                else:
+                    logging.info("   --> desired metric [%s] not available" % rocmName)
+            # also highlight metrics not being used
+            for key in data[gpu]:
+                if key not in self.__rocm_smi_metrics.values():
+                    logging.info("  --> [  skipping] %s" % key)
         return
 
-    # Required method to implemented by child classes
     def updateMetrics(self):
-        logging.error("[ERROR]: data collectors must implement updateMetrics() method.")
-        sys.exit(1)
+        self.collect_data_incremental()
         return
 
     #--------------------------------------------------------------------------------------
@@ -58,4 +80,28 @@ class ROCM(Collector):
             )
         else:
             logging.error("Ignoring unknown metric type -> %s" % type)
+        return
+
+    def collect_data_incremental(self):
+        # ---
+        # Collect and parse latest GPU metrics from rocm-smi
+        # ---
+        command = ["rocm-smi"] + self.__rocm_smi_flags.split()
+        data = utils.runShellCommand(command)
+        try:
+            data = json.loads(data.stdout)
+        except:
+            logging.error("Unable to parse json data from rocm-smi querry")
+            logging.debug("stdout: %s" % data.stderr)
+            logging.debug("stderr: %s" % data.stderr)
+            return
+
+        for gpu in self.__GPUmetrics:
+            for metric in self.__GPUmetrics[gpu]:
+                metricName = metric.removeprefix(gpu + "_")
+                rocmName = self.__rocm_smi_metrics[metricName]
+                if rocmName in data[gpu]:
+                    value = data[gpu][rocmName]
+                    self.__GPUmetrics[gpu][metric].set(value)
+                    logging.debug("updated: %s = %s" % (metric, value))
         return

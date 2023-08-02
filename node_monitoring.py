@@ -19,25 +19,25 @@ from flask import Flask
 from flask_prometheus_metrics import register_metrics
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
-def runShellCommand(command, capture_output=True, text=True, exit_on_error=False):
-    """Runs a provided shell command
+# def runShellCommand(command, capture_output=True, text=True, exit_on_error=False):
+#     """Runs a provided shell command
 
-    Args:
-        command (list): shell command with options to execute
-        capture_output (bool, optional): _description_. Defaults to True.
-        text (bool, optional): _description_. Defaults to True.
-        exit_on_error (bool, optional): Whether to exit on error or not. Defaults to False.
-    """
+#     Args:
+#         command (list): shell command with options to execute
+#         capture_output (bool, optional): _description_. Defaults to True.
+#         text (bool, optional): _description_. Defaults to True.
+#         exit_on_error (bool, optional): Whether to exit on error or not. Defaults to False.
+#     """
 
-    logging.debug("Command to run = %s" % command)
-    results = subprocess.run(command, capture_output=capture_output, text=text)
-    if exit_on_error and results.returncode != 0:
-        logging.error("ERROR: Command failed")
-        logging.error("       %s" % command)
-        logging.error("stdout: %s" % results.stderr)
-        logging.error("stderr: %s" % results.stderr)
-        sys.exit(1)
-    return results
+#     logging.debug("Command to run = %s" % command)
+#     results = subprocess.run(command, capture_output=capture_output, text=text)
+#     if exit_on_error and results.returncode != 0:
+#         logging.error("ERROR: Command failed")
+#         logging.error("       %s" % command)
+#         logging.error("stdout: %s" % results.stderr)
+#         logging.error("stderr: %s" % results.stderr)
+#         sys.exit(1)
+#     return results
 
 
 # class Metrics:
@@ -160,22 +160,25 @@ def main():
 
     
     monitor = Monitor()
+    monitor.initMetrics()
 
     # monitor = Metrics()
     # monitor.initMetrics()
 
-    # # Register metrics with Flask app
-    # app = Flask("omniwatch")
-    # register_metrics(app, app_version="v0.1.0", app_config="production")
+    # Register metrics with Flask app
+    app = Flask("omniwatch")
+    register_metrics(app, app_version="v0.1.0", app_config="production")
+
+    app.route("/metrics")(monitor.updateAllMetrics)
 
     # # Define incremental metrics
     # monitor.collect_data_incremental()
 
     # # Define http query endpoints
     # app.route("/metrics_inc")(monitor.get_metrics_incremental)
-    # app.route("/metrics_global")(monitor.get_metrics_global)
+    #    app.route("/metrics_global")(monitor.get_metrics_global)
 
-    # app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=8000)
 
 
 # Run the main function
