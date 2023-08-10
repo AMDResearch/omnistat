@@ -21,3 +21,7 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
         logging.error("stderr: %s" % results.stderr)
         sys.exit(1)
     return results
+
+def error(message):
+    logging.error("Error: " + message)
+    sys.exit(1)
