@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Prometheus data collector for HPC systems.
 # --> intended for use with resource manager prolog/epilog hooks
 # --> two primary data collection points are defined
