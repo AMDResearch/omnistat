@@ -19,27 +19,6 @@ from flask import Flask
 from flask_prometheus_metrics import register_metrics
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
-# def runShellCommand(command, capture_output=True, text=True, exit_on_error=False):
-#     """Runs a provided shell command
-
-#     Args:
-#         command (list): shell command with options to execute
-#         capture_output (bool, optional): _description_. Defaults to True.
-#         text (bool, optional): _description_. Defaults to True.
-#         exit_on_error (bool, optional): Whether to exit on error or not. Defaults to False.
-#     """
-
-#     logging.debug("Command to run = %s" % command)
-#     results = subprocess.run(command, capture_output=capture_output, text=text)
-#     if exit_on_error and results.returncode != 0:
-#         logging.error("ERROR: Command failed")
-#         logging.error("       %s" % command)
-#         logging.error("stdout: %s" % results.stderr)
-#         logging.error("stderr: %s" % results.stderr)
-#         sys.exit(1)
-#     return results
-
-
 # class Metrics:
 #     def __init__(self):
 #         logging.basicConfig(
@@ -94,56 +73,6 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 #         labels = ['unknown']
 #         #self.__globalMetrics["jobid"].set(-1)
 #         self.__globalMetrics["jobid"].labels(labels).set(-1)
-
-#     def rocm_smi_register(self):
-#         """Run rocm-smi and register metrics of interest"""
-
-#         command = ["rocm-smi"] + self.__rocm_smi_flags.split()
-#         data = runShellCommand(command, exit_on_error=True)
-#         data = json.loads(data.stdout)
-#         for gpu in data:
-#             logging.debug("%s: gpu detected" % gpu)
-
-#             # init storage per gpu
-#             self.__GPUmetrics[gpu] = {}
-
-#             # look for matching metrics and register
-#             for metric in self.__rocm_smi_metrics:
-#                 rocmName = self.__rocm_smi_metrics[metric]
-#                 # if metric[1] in data[gpu]:
-#                 if rocmName in data[gpu]:
-#                     self.registerGPUMetric(gpu, metric, "gauge", rocmName)
-#                 else:
-#                     logging.info("   --> desired metric [%s] not available" % rocmName)
-#             # also highlight metrics not being used
-#             for key in data[gpu]:
-#                 if key not in self.__rocm_smi_metrics.values():
-#                     logging.info("  --> [  skipping] %s" % key)
-#         return
-
-#     def collect_data_incremental(self):
-#         # ---
-#         # Collect and parse latest GPU metrics from rocm-smi
-#         # ---
-#         command = ["rocm-smi"] + self.__rocm_smi_flags.split()
-#         data = runShellCommand(command)
-#         try:
-#             data = json.loads(data.stdout)
-#         except:
-#             logging.error("Unable to parse json data from rocm-smi querry")
-#             logging.debug("stdout: %s" % data.stderr)
-#             logging.debug("stderr: %s" % data.stderr)
-#             return
-
-#         for gpu in self.__GPUmetrics:
-#             for metric in self.__GPUmetrics[gpu]:
-#                 metricName = metric.removeprefix(gpu + "_")
-#                 rocmName = self.__rocm_smi_metrics[metricName]
-#                 if rocmName in data[gpu]:
-#                     value = data[gpu][rocmName]
-#                     self.__GPUmetrics[gpu][metric].set(value)
-#                     logging.debug("updated: %s = %s" % (metric, value))
-#         return
 
 #     def get_metrics_global(self):
 #         # self.collect_data_global()
