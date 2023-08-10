@@ -70,7 +70,6 @@ class ROCMSMI(Collector):
             # look for matching metrics and register
             for metric in self.__rocm_smi_metrics:
                 rocmName = self.__rocm_smi_metrics[metric]
-                # if metric[1] in data[gpu]:
                 if rocmName in data[gpu]:
                     self.registerGPUMetric(gpu, metric, "gauge", rocmName)
                 else:
