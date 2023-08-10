@@ -1,6 +1,7 @@
 # Prometheus data collector for HPC systems.
 #
-# Parent collector class - defines required methods for all metric collectors implemented as a child class. 
+# Custom collector(s) - defines required methods for all metric collectors 
+# implemented as a child class. 
 #--
 
 import sys
