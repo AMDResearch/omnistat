@@ -16,7 +16,7 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 class ROCMSMI(Collector):
     def __init__(self):
         logging.debug("Initializing ROCm SMI data collector")
-        prefix = "rocm_"
+        self.__prefix = "rocm_"
         
         # allow for env variable to prescribe path to rocm-smi
         rocm_smi_command = "rocm-smi"
@@ -43,11 +43,11 @@ class ROCMSMI(Collector):
  
         # list of desired metrics to query: (prometheus_metric_name -> rocm-smi-key)
         self.__rocm_smi_metrics = {
-            prefix+"temp_die_edge": "Temperature (Sensor edge) (C)",
-            prefix+"avg_pwr": "Average Graphics Package Power (W)",
-            prefix+"utilization": "GPU use (%)",
-            prefix+"vram_total": "VRAM Total Memory (B)",
-            prefix+"vram_used": "VRAM Total Used Memory (B)",
+            self.__prefix+"temp_die_edge": "Temperature (Sensor edge) (C)",
+            self.__prefix+"avg_pwr": "Average Graphics Package Power (W)",
+            self.__prefix+"utilization": "GPU use (%)",
+            self.__prefix+"vram_total": "VRAM Total Memory (B)",
+            self.__prefix+"vram_used": "VRAM Total Used Memory (B)",
         }
 
         logging.debug("rocm_smi_exec = %s" % self.__rocm_smi_query)
@@ -62,6 +62,11 @@ class ROCMSMI(Collector):
 
         data = utils.runShellCommand(self.__rocm_smi_query, exit_on_error=True)
         data = json.loads(data.stdout)
+
+        # register number of GPUs
+        numGPUs_metric = Gauge(self.__prefix + "num_gpus","# of GPUS available on host")
+        numGPUs_metric.set(len(data))
+
         for gpu in data:
             logging.debug("%s: gpu detected" % gpu)
             # init storage per gpu
