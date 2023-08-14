@@ -13,7 +13,7 @@ from prometheus_client import generate_latest, CollectorRegistry
 class Monitor():
     def __init__(self):
         logging.basicConfig(
-            format="%(message)s", level=logging.DEBUG, stream=sys.stdout
+            format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
         # defined GPU prometheus metrics (stored on a per-gpu basis)
         # self.__GPUmetrics = {}
