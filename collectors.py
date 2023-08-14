@@ -147,12 +147,13 @@ class SlurmJob(Collector):
     def updateMetrics(self):
         data = utils.runShellCommand(self.__squeue_query)
         
-        if data.returncode != 0:
-            # set job to -1 if not a valid slurm host (e.g. maybe a login node)
-            self.__SLURMmetrics["jobid"].set(-1)
-            self.__SLURMmetrics["jobid"].labels(["koomie","mi400","24","-1"])
-            return
-        else:
+        # if data.returncode != 0:
+        #     # set job to -1 if not a valid slurm host (e.g. maybe a login node)
+        #     self.__SLURMmetrics["jobid"].set(-1)
+        #     self.__SLURMmetrics["jobid"].labels(["koomie","mi400","24","-1"])
+        #     return
+        # else:
+        if data.stdout.strip():
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
             results = data.stdout.strip().split(',')
@@ -160,6 +161,11 @@ class SlurmJob(Collector):
                     partition=results[2],
                     nodes=results[3],
                     cores=results[4]).set(results[0])
-            
+        else:
+            # no detected job - mark with (jobid=-1)
+            self.__SLURMmetrics["jobid"].labels(user="",
+                    partition="",
+                    nodes="",
+                    cores="").set(-1)
 
         return
