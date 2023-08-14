@@ -6,12 +6,14 @@
 
 import logging
 import sys
+import re
+import platform
 from prometheus_client import generate_latest, CollectorRegistry
 
 class Monitor():
     def __init__(self):
         logging.basicConfig(
-            format="%(message)s", level=logging.INFO, stream=sys.stdout
+            format="%(message)s", level=logging.DEBUG, stream=sys.stdout
         )
         # defined GPU prometheus metrics (stored on a per-gpu basis)
         # self.__GPUmetrics = {}
@@ -25,14 +27,29 @@ class Monitor():
         # define desired collectors
         self.__collectors = []
 
+        self.enableROCmCollector = True
+        self.enableSLURMCollector = True
+
+        # allow for disablement of slurm collector via regex match
+        SLURM_host_skip="login.*"
+        hostname = platform.node().split('.', 1)[0]
+        p = re.compile(SLURM_host_skip)
+        if p.match(hostname):
+            self.enableSLURMCollector = False
+
         logging.debug("Completed collector initialization (base class)")
         return
 
     def initMetrics(self):
         rocmSMI = True
-        if rocmSMI:
+        enableSLURM = True
+
+        if self.enableROCmCollector:
             from collectors import ROCMSMI
             self.__collectors.append(ROCMSMI())
+        if self.enableSLURMCollector:
+            from collectors import SlurmJob
+            self.__collectors.append(SlurmJob())
         
         # Initialize all metrics
         for collector in self.__collectors:
