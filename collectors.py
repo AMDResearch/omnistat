@@ -9,7 +9,7 @@ import utils
 import json
 import logging
 import os
-import shutil
+import platform
 from collector_base import Collector
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
@@ -17,29 +17,13 @@ class ROCMSMI(Collector):
     def __init__(self):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
-        
-        # allow for env variable to prescribe path to rocm-smi
-        rocm_smi_command = "rocm-smi"
-        if "ROCM_SMI_PATH" in os.environ:
-            rocmPath = os.getenv("ROCM_SMI_PATH")
-            logging.debug("Overriding path with ROCM_SMI_PATH=%s" % rocmPath)
-            if os.path.isdir(rocmPath):
-                rocm_smi_command = rocmPath + "/rocm-smi"
-            else:
-                utils.error("provided ROCM_SMI_PATH does not exist -> %s" % rocmPath)
-                sys.exit(1)
-        
-        # verify we can resolve the rocm-smi binary
-        path = shutil.which(rocm_smi_command)
-        if not path:
-            utils.error("Unable to resolve path for rocm-smi -> %s" % rocm_smi_command)
-        else:
-            logging.debug("rocm-smi path = %s" % path)
 
+        # setup rocm-smi path
+        command = utils.resolvePath("rocm-smi","ROCM_SMI_PATH")
         # command-line flags for use with rocm-smi to obtained desired metrics
-        rocm_smi_flags = "-P -u -f -t --showmeminfo vram --json"
+        flags = "-P -u -f -t --showmeminfo vram --json"
         # cache query command with options
-        self.__rocm_smi_query = [rocm_smi_command] + rocm_smi_flags.split()
+        self.__rocm_smi_query = [command] + flags.split()
  
         # list of desired metrics to query: (prometheus_metric_name -> rocm-smi-key)
         self.__rocm_smi_metrics = {
@@ -130,4 +114,52 @@ class ROCMSMI(Collector):
                     value = data[gpu][rocmName]
                     self.__GPUmetrics[gpu][metric].set(value)
                     logging.debug("updated: %s = %s" % (metric, value))
+        return
+
+
+# SLURM Job collector
+class SlurmJob(Collector):
+    def __init__(self):
+        logging.debug("Initializing SlurmJob data collector")
+        self.__prefix = "slurmjob_"
+
+         # setup rocm-smi path
+        command = utils.resolvePath("squeue","SLURM_PATH")
+        # command-line flags for use with squeue to obtained desired metrics
+        hostname = platform.node().split('.', 1)[0]
+        flags = "-w " + hostname + " -h  --format=%i,%u,%P,%D,%C"
+        # cache query command with options
+        self.__squeue_query = [command] + flags.split()
+     
+        logging.debug("sqeueue_exec = %s" % self.__squeue_query)
+
+        self.__SLURMmetrics = {}
+
+    def registerMetrics(self):
+        """Register metrics of interest"""
+
+        labels = ["user","partition","nodes","cores"]
+        self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
+
+        for metric in self.__SLURMmetrics:
+            logging.debug("--> Registered SLURM metric = %s" % metric)
+
+    def updateMetrics(self):
+        data = utils.runShellCommand(self.__squeue_query)
+        
+        if data.returncode != 0:
+            # set job to -1 if not a valid slurm host (e.g. maybe a login node)
+            self.__SLURMmetrics["jobid"].set(-1)
+            self.__SLURMmetrics["jobid"].labels(["koomie","mi400","24","-1"])
+            return
+        else:
+            # query output format:
+            # JOBID,USER,PARTITION,NODES,CPUS
+            results = data.stdout.strip().split(',')
+            self.__SLURMmetrics["jobid"].labels(user=results[1],
+                    partition=results[2],
+                    nodes=results[3],
+                    cores=results[4]).set(results[0])
+            
+
         return
