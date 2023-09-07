@@ -92,9 +92,6 @@ def main():
     monitor = Monitor()
     monitor.initMetrics()
 
-    # monitor = Metrics()
-    # monitor.initMetrics()
-
     # Register metrics with Flask app
     app = Flask("omniwatch")
     register_metrics(app, app_version="v0.1.0", app_config="production")
