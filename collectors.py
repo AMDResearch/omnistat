@@ -139,7 +139,8 @@ class SlurmJob(Collector):
         """Register metrics of interest"""
 
         labels = ["user","partition","nodes","cores"]
-        self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
+        # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
+        self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
 
         for metric in self.__SLURMmetrics:
             logging.debug("--> Registered SLURM metric = %s" % metric)
@@ -157,15 +158,20 @@ class SlurmJob(Collector):
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
             results = data.stdout.strip().split(',')
-            self.__SLURMmetrics["jobid"].labels(user=results[1],
-                    partition=results[2],
-                    nodes=results[3],
-                    cores=results[4]).set(results[0])
+            # self.__SLURMmetrics["jobid"].labels(user=results[1],
+            #         partition=results[2],
+            #         nodes=results[3],
+            #         cores=results[4]).set(results[0])
+
+            self.__SLURMmetrics["jobid"].set(results[0])
+
         else:
             # no detected job - mark with (jobid=-1)
-            self.__SLURMmetrics["jobid"].labels(user="",
-                    partition="",
-                    nodes="",
-                    cores="").set(-1)
+            # self.__SLURMmetrics["jobid"].labels(user="",
+            #         partition="",
+            #         nodes="",
+            #         cores="").set(-1)
+
+            self.__SLURMmetrics["jobid"].set(-1)
 
         return
