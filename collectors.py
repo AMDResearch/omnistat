@@ -138,12 +138,14 @@ class SlurmJob(Collector):
     def registerMetrics(self):
         """Register metrics of interest"""
 
-        labels = ["user","partition","nodes","cores"]
-        # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
-        self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
+        # labels = ["user","partition","nodes","cores"]
+        # # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
+        # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
 
+
+        # alternate approach - define an info metric (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid","user","partition"]
-        self.__SLURMmetrics["jobid2"] = Gauge(self.__prefix + "jobid2","SLURM job id2",labels)
+        self.__SLURMmetrics["jobinfo"] = Gauge(self.__prefix + "jobid2","SLURM job id2",labels)
 
         for metric in self.__SLURMmetrics:
             logging.debug("--> Registered SLURM metric = %s" % metric)
@@ -166,9 +168,9 @@ class SlurmJob(Collector):
             #         nodes=results[3],
             #         cores=results[4]).set(results[0])
 
-            self.__SLURMmetrics["jobid"].set(results[0])
+            # self.__SLURMmetrics["jobid"].set(results[0])
 
-            self.__SLURMmetrics["jobid2"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
+            self.__SLURMmetrics["jobinfo"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
             #         nodes=results[3],
             #         cores=results[4]).set(results[0])
 
@@ -180,7 +182,7 @@ class SlurmJob(Collector):
             #         nodes="",
             #         cores="").set(-1)
 
-            self.__SLURMmetrics["jobid"].set(-1)
-            self.__SLURMmetrics["jobid2"].labels(jobid="",user="",partition="").set(1)
+            # self.__SLURMmetrics["jobid"].set(-1)
+            self.__SLURMmetrics["jobinfo"].labels(jobid="",user="",partition="").set(1)
 
         return
