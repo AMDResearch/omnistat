@@ -145,7 +145,7 @@ class SlurmJob(Collector):
 
         # alternate approach - define an info metric (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid","user","partition"]
-        self.__SLURMmetrics["jobinfo"] = Gauge(self.__prefix + "jobid2","SLURM job id2",labels)
+        self.__SLURMmetrics["info"] = Gauge(self.__prefix + "info","SLURM job id2",labels)
 
         for metric in self.__SLURMmetrics:
             logging.debug("--> Registered SLURM metric = %s" % metric)
@@ -170,7 +170,7 @@ class SlurmJob(Collector):
 
             # self.__SLURMmetrics["jobid"].set(results[0])
 
-            self.__SLURMmetrics["jobinfo"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
+            self.__SLURMmetrics["info"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
             #         nodes=results[3],
             #         cores=results[4]).set(results[0])
 
@@ -183,6 +183,6 @@ class SlurmJob(Collector):
             #         cores="").set(-1)
 
             # self.__SLURMmetrics["jobid"].set(-1)
-            self.__SLURMmetrics["jobinfo"].labels(jobid="",user="",partition="").set(1)
+            self.__SLURMmetrics["info"].labels(jobid="",user="",partition="").set(1)
 
         return
