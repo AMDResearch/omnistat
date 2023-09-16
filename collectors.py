@@ -1,8 +1,8 @@
 # Prometheus data collector for HPC systems.
 #
-# Custom collector(s) - defines required methods for all metric collectors 
-# implemented as a child class. 
-#--
+# Custom collector(s) - defines required methods for all metric collectors
+# implemented as a child class.
+# --
 
 import sys
 import utils
@@ -13,32 +13,33 @@ import platform
 from collector_base import Collector
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
+
 class ROCMSMI(Collector):
     def __init__(self):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
 
         # setup rocm-smi path
-        command = utils.resolvePath("rocm-smi","ROCM_SMI_PATH")
+        command = utils.resolvePath("rocm-smi", "ROCM_SMI_PATH")
         # command-line flags for use with rocm-smi to obtained desired metrics
         flags = "-P -u -f -t --showmeminfo vram --json"
         # cache query command with options
         self.__rocm_smi_query = [command] + flags.split()
- 
+
         # list of desired metrics to query: (prometheus_metric_name -> rocm-smi-key)
         self.__rocm_smi_metrics = {
-            self.__prefix+"temp_die_edge": "Temperature (Sensor edge) (C)",
-            self.__prefix+"avg_pwr": "Average Graphics Package Power (W)",
-            self.__prefix+"utilization": "GPU use (%)",
-            self.__prefix+"vram_total": "VRAM Total Memory (B)",
-            self.__prefix+"vram_used": "VRAM Total Used Memory (B)",
+            self.__prefix + "temp_die_edge": "Temperature (Sensor edge) (C)",
+            self.__prefix + "avg_pwr": "Average Graphics Package Power (W)",
+            self.__prefix + "utilization": "GPU use (%)",
+            self.__prefix + "vram_total": "VRAM Total Memory (B)",
+            self.__prefix + "vram_used": "VRAM Total Used Memory (B)",
         }
 
         logging.debug("rocm_smi_exec = %s" % self.__rocm_smi_query)
 
         self.__GPUmetrics = {}
 
-    #--------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------
     # Required child methods
 
     def registerMetrics(self):
@@ -48,7 +49,9 @@ class ROCMSMI(Collector):
         data = json.loads(data.stdout)
 
         # register number of GPUs
-        numGPUs_metric = Gauge(self.__prefix + "num_gpus","# of GPUS available on host")
+        numGPUs_metric = Gauge(
+            self.__prefix + "num_gpus", "# of GPUS available on host"
+        )
         numGPUs_metric.set(len(data))
 
         for gpu in data:
@@ -73,7 +76,7 @@ class ROCMSMI(Collector):
         self.collect_data_incremental()
         return
 
-    #--------------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------------
     # Additional custom methods unique to this collector
 
     def registerGPUMetric(self, gpu, name, type, description):
@@ -123,17 +126,18 @@ class SlurmJob(Collector):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
 
-         # setup rocm-smi path
-        command = utils.resolvePath("squeue","SLURM_PATH")
+        # setup rocm-smi path
+        command = utils.resolvePath("squeue", "SLURM_PATH")
         # command-line flags for use with squeue to obtained desired metrics
-        hostname = platform.node().split('.', 1)[0]
+        hostname = platform.node().split(".", 1)[0]
         flags = "-w " + hostname + " -h  --format=%i,%u,%P,%D,%C"
         # cache query command with options
         self.__squeue_query = [command] + flags.split()
-     
+
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
         self.__SLURMmetrics = {}
+        self.__state = "unknown"
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -142,50 +146,58 @@ class SlurmJob(Collector):
         # # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
         # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
 
-
         # alternate approach - define an info metric (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid","user","partition"]
-        self.__SLURMmetrics["info"] = Gauge(self.__prefix + "info","SLURM job id2",labels)
+        labels = ["jobid", "user", "partition", "nodes"]
+        self.__SLURMmetrics["info"] = Gauge(
+            self.__prefix + "info", "SLURM job id2", labels
+        )
 
         for metric in self.__SLURMmetrics:
             logging.debug("--> Registered SLURM metric = %s" % metric)
 
     def updateMetrics(self):
         data = utils.runShellCommand(self.__squeue_query)
-        
-        # if data.returncode != 0:
-        #     # set job to -1 if not a valid slurm host (e.g. maybe a login node)
-        #     self.__SLURMmetrics["jobid"].set(-1)
-        #     self.__SLURMmetrics["jobid"].labels(["koomie","mi400","24","-1"])
-        #     return
-        # else:
+
+        # Case when SLURM job is allocated
         if data.stdout.strip():
+            #
+
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
-            results = data.stdout.strip().split(',')
-            # self.__SLURMmetrics["jobid"].labels(user=results[1],
-            #         partition=results[2],
-            #         nodes=results[3],
-            #         cores=results[4]).set(results[0])
+            results = data.stdout.strip().split(",")
 
             # self.__SLURMmetrics["jobid"].set(results[0])
-#            self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
-            self.__SLURMmetrics["info"].clear()
-            self.__SLURMmetrics["info"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
-            #         nodes=results[3],
-            #         cores=results[4]).set(results[0])
+            #            self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
 
+            # cache state
+            if self.__state == "NOJOB":
+                self.__SLURMmetrics["info"].clear()
+            self.__state = "JOB_ENABLED"
 
+            self.__SLURMmetrics["info"].labels(
+                jobid=results[0],
+                user=results[1],
+                partition=results[2],
+                nodes=results[3],
+            ).set(1)
+
+        # Case when no job detected
         else:
-            # no detected job - mark with (jobid=-1)
             # self.__SLURMmetrics["jobid"].labels(user="",
             #         partition="",
             #         nodes="",
             #         cores="").set(-1)
 
             # self.__SLURMmetrics["jobid"].set(-1)
-            #self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
-            self.__SLURMmetrics["info"].clear()
-            self.__SLURMmetrics["info"].labels(jobid="",user="",partition="").set(1)
+            # self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
+
+            # cache state
+            if self.__state == "JOB_ENABLED":
+                self.__SLURMmetrics["info"].clear()
+            self.__state = "NOJOB"
+
+            self.__SLURMmetrics["info"].labels(
+                jobid="", user="", partition="", nodes=""
+            ).set(1)
 
         return
