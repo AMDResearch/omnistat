@@ -169,7 +169,8 @@ class SlurmJob(Collector):
             #         cores=results[4]).set(results[0])
 
             # self.__SLURMmetrics["jobid"].set(results[0])
-
+#            self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
+            self.__SLURMmetrics["info"].clear()
             self.__SLURMmetrics["info"].labels(jobid=results[0],user=results[1],partition=results[2]).set(1)
             #         nodes=results[3],
             #         cores=results[4]).set(results[0])
@@ -183,6 +184,8 @@ class SlurmJob(Collector):
             #         cores="").set(-1)
 
             # self.__SLURMmetrics["jobid"].set(-1)
+            #self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
+            self.__SLURMmetrics["info"].clear()
             self.__SLURMmetrics["info"].labels(jobid="",user="",partition="").set(1)
 
         return
