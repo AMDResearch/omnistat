@@ -47,31 +47,19 @@ if jobinfo['end_date'] == "Unknown":
 else:   
     end_time   = datetime.strptime(jobinfo['end_date'],  '%Y-%m-%dT%H:%M:%S')
 
-# print(query)
-# results = prometheus.custom_query_range(query=query,start_time=start_time,end_time = end_time,step=60)
-#results = prometheus.custom_query(query=query)
-#results = prometheus.custom_query_range('card0_rocm_utilization * on (instance) slurmjob_info{jobid="%s"}',start_time,end_time,step=60)
-results = prometheus.custom_query_range("card0_rocm_utilization * on (instance) slurmjob_info{jobid=\"%s\"}" % jobID,start_time,end_time,step=60)
-# #results = prometheus.custom_query("card0_rocm_utilization")
-# print(results)
-# sys.exit(1)
-
 # Detect hosts associated with this job
 hosts = []
+results = prometheus.custom_query_range("card0_rocm_utilization * on (instance) slurmjob_info{jobid=\"%s\"}" % jobID,start_time,end_time,step=60)
 for result in results:
     hosts.append(result['metric']['instance'])
 
-print("# of active hosts = %i" % len(hosts) )
-print(hosts)
-#
+#print("# of active hosts = %i" % len(hosts) )
+#print(hosts)
 
 statistics = {}
 numGpus = config[jobinfo['partition']]['num_gpus']
-print(numGpus)
 
-# Query metrics from assigned hosts during the job begin/end start period
-#for metric in ["card0_rocm_utilization","card1_rocm_utilization","card2_rocm_utilization","card3_rocm_utilization",
-#                "card4_rocm_utilization","card5_rocm_utilization","card6_rocm_utilization","card7_rocm_utilization"]:
+# Query GPU utilization metrics from assigned hosts during the job begin/end start period
 for gpu in range(numGpus):
     metric = "card" + str(gpu) + "_rocm_utilization"
 
@@ -108,45 +96,57 @@ for gpu in range(numGpus):
         # print(myavg)
 
 
-## # Memory utilization
-## for gpu in range(numGpus):
-##     metric_used  = "card" + str(gpu) + "_rocm_vram_used"
-##     metric_total = "card" + str(gpu) + "_rocm_vram_total"
-## 
-##     for host in hosts:
-##         results = prometheus.custom_query_range("max(%s * on (instance) slurmjob_info{jobid=\"%s\"})" %
-##                                                 (metric_used,jobid,),start_time,end_time,step=60)
-## 
-##         print(results)
-##         sys.exit(1)
-##         assert(len(results) == 1)
-##         data = results[0]['values']
-##         # print(data)
-##         # sys.exit(1)
-##         # print("%s %s %s (%i)" % (host,datetime.fromtimestamp(data[0][0]),datetime.fromtimestamp(data[-1][0]),
-##         #     len(data)))
-## 
-##         # compute relevant statistics
-##         data2 = np.asarray(data,dtype=float)
-##         statistics[memory + "_max"]  = np.max(data2[:,1])
-## ##         statistics[metric + "_min"]  = np.min(data2[:,1])
-## ##         statistics[metric + "_mean"] = np.mean(data2[:,1])
-## ##         statistics[metric + "_std"]  = np.std(data2[:,1])        
+# Memory utilization
+gpu_memory_avail = None
+
+for gpu in range(numGpus):
+    
+    # Get total GPU memory - we assume it is the same on all assigned GPUs
+    metric = "card" + str(gpu) + "_rocm_vram_total"
+    results = prometheus.custom_query("max(%s * on (instance) slurmjob_info{jobid=\"%s\"})" %
+                                                (metric,jobID))
+
+    if not gpu_memory_avail:
+        gpu_memory_avail = int(results[0]['value'][1])
+        assert(gpu_memory_avail > 1024*1024*1024)
+    else:
+        assert(int(results[0]['value'][1]) == gpu_memory_avail)
+
+    # query used gpu memory
+    metric_used  = "card" + str(gpu) + "_rocm_vram_used"
+    for host in hosts:
+        results = prometheus.custom_query_range("max(%s * on (instance) slurmjob_info{jobid=\"%s\"})" %
+                                                (metric_used,jobID),start_time,end_time,step=60)
+        assert(len(results) == 1)
+        data = results[0]['values']
+        # compute relevant statistics
+        data2 = np.asarray(data,dtype=int)
+        statistics[metric_used + "_max"]  = np.max(100.0 * data2[:,1] / gpu_memory_avail)
+        statistics[metric_used + "_mean"] = np.mean(100.0 * data2[:,1] / gpu_memory_avail)
+
 
 # summarize statistics
 
 system = "HPC Fund"
 
-print(" ")
-print(" ")
+print("")
+print("-" * 40)
 print("HPC Report Card for Job # %i" % jobID)
-print(" ")
+print("-" * 40)
+print("")
 print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(hosts),system))
 print(" --> Start time = %s" % start_time)
 print(" --> End   time = %s" % end_time.strftime("%Y-%m-%d %H:%M:%S"))
 print("")
 print("--> GPU Core Utilization")
-print("   | GPU # | Min (%) | Max (%) | Mean (%)|")
+print("   | GPU # |  Max (%) | Mean (%)|")
 for card in range(numGpus):
     key = "card" + str(card) + "_rocm_utilization"
-    print("   |%6s |%7.1f  |%7.1f  |%7.1f  |" % (card,statistics[key+"_min"],statistics[key+"_max"],statistics[key+"_mean"]))
+    print("   |%6s |%7.1f  |%7.1f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
+
+print("")
+print("--> GPU Memory Utilization")
+print("   | GPU # |  Max (%) | Mean (%)|")
+for card in range(numGpus):
+    key = "card" + str(card) + "_rocm_vram_used"
+    print("   |%6s |%7.2f  |%7.2f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
