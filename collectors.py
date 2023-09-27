@@ -22,7 +22,7 @@ class ROCMSMI(Collector):
         # setup rocm-smi path
         command = utils.resolvePath("rocm-smi", "ROCM_SMI_PATH")
         # command-line flags for use with rocm-smi to obtained desired metrics
-        flags = "-P -u -f -t --showmeminfo vram --json"
+        flags = "-P -c -u -f -t --showmeminfo vram --json"
         # cache query command with options
         self.__rocm_smi_query = [command] + flags.split()
 
@@ -33,6 +33,8 @@ class ROCMSMI(Collector):
             self.__prefix + "utilization": "GPU use (%)",
             self.__prefix + "vram_total": "VRAM Total Memory (B)",
             self.__prefix + "vram_used": "VRAM Total Used Memory (B)",
+            self.__prefix + "slck_clock_mhz": "sclk clock speed:",
+            self.__prefix + "mclk_clock_mhz": "mclk clock speed:",
         }
 
         logging.debug("rocm_smi_exec = %s" % self.__rocm_smi_query)
@@ -115,6 +117,9 @@ class ROCMSMI(Collector):
                 rocmName = self.__rocm_smi_metrics[metricName]
                 if rocmName in data[gpu]:
                     value = data[gpu][rocmName]
+                    if rocmName.endswith("clock speed:"):
+                        # values need to be parsed to access data, they look like '(300Mhz)'
+                        value = value[1:].rstrip("Mhz)")
                     self.__GPUmetrics[gpu][metric].set(value)
                     logging.debug("updated: %s = %s" % (metric, value))
         return
@@ -146,7 +151,8 @@ class SlurmJob(Collector):
         # # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
         # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
 
-        # alternate approach - define an info metric (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
+        # alternate approach - define an info metric
+        # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid", "user", "partition", "nodes"]
         self.__SLURMmetrics["info"] = Gauge(
             self.__prefix + "info", "SLURM job id2", labels
