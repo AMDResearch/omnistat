@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+
 from prometheus_api_client import PrometheusConnect, MetricSnapshotDataFrame
 from prometheus_api_client.utils import parse_datetime
 from datetime import datetime, timedelta
 import sys
+import os
 import numpy as np
 import subprocess
 import argparse
@@ -10,6 +13,7 @@ import argparse
 config= {}
 config["mi1004x"]     = {"num_gpus":4}
 config["mi1008x"]     = {"num_gpus":8}
+config["ci"]          = {"num_gpus":4}
 config["system_name"] = "HPC Fund"
 
 def query_slurm_job(id):
@@ -27,12 +31,19 @@ def query_slurm_job(id):
 
     return jobdata
 
-# require jobID as input
+# command line args (jobID is required)
 parser = argparse.ArgumentParser()
 parser.add_argument('--job',help='jobId to query',required=True)
+parser.add_argument('--output',help='location for stdout report')
 
 args = parser.parse_args()
 jobID = int(args.job)
+
+outputFile = sys.stdout
+if args.output:
+    outputFile = args.output
+    if not os.path.isfile(outputFile):
+        sys.exit()
 
 #prometheus_url = "http://10.0.100.11:9090"
 prometheus = PrometheusConnect(url="http://10.0.100.11:9090")
@@ -57,7 +68,11 @@ for result in results:
 #print(hosts)
 
 statistics = {}
-numGpus = config[jobinfo['partition']]['num_gpus']
+numGpus = 0
+
+if jobinfo['partition'] in config:
+    if 'num_gpus' in config[jobinfo['partition']]:
+        numGpus = config[jobinfo['partition']]['num_gpus']
 
 # Query GPU utilization metrics from assigned hosts during the job begin/end start period
 for gpu in range(numGpus):
@@ -129,6 +144,10 @@ for gpu in range(numGpus):
 
 system = "HPC Fund"
 
+if args.output:
+    output = open(outputFile,"a")
+    sys.stdout = output
+
 print("")
 print("-" * 40)
 print("HPC Report Card for Job # %i" % jobID)
@@ -142,11 +161,14 @@ print("--> GPU Core Utilization")
 print("   | GPU # |  Max (%) | Mean (%)|")
 for card in range(numGpus):
     key = "card" + str(card) + "_rocm_utilization"
-    print("   |%6s |%7.1f  |%7.1f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
+    print("   |%6s |%8.1f  |%7.1f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
 
 print("")
 print("--> GPU Memory Utilization")
 print("   | GPU # |  Max (%) | Mean (%)|")
 for card in range(numGpus):
     key = "card" + str(card) + "_rocm_vram_used"
-    print("   |%6s |%7.2f  |%7.2f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
+    print("   |%6s |%8.2f  |%7.2f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
+
+if args.output:
+    output.close
