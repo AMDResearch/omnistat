@@ -35,6 +35,7 @@ def query_slurm_job(id):
 parser = argparse.ArgumentParser()
 parser.add_argument('--job',help='jobId to query',required=True)
 parser.add_argument('--output',help='location for stdout report')
+parser.add_argument('--pdf',help='generate PDF report')
 
 args = parser.parse_args()
 jobID = int(args.job)
@@ -57,6 +58,11 @@ if jobinfo['end_date'] == "Unknown":
     end_time   = datetime.now()
 else:   
     end_time   = datetime.strptime(jobinfo['end_date'],  '%Y-%m-%dT%H:%M:%S')
+
+# NOOP if job is very short running
+runtime = (end_time - start_time).total_seconds()
+if runtime < 61:
+    sys.exit()
 
 # Detect hosts associated with this job
 hosts = []
