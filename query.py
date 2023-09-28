@@ -9,172 +9,214 @@ import numpy as np
 import subprocess
 import argparse
 
-# define local site configuration
-config= {}
-config["mi1004x"]     = {"num_gpus":4}
-config["mi1008x"]     = {"num_gpus":8}
-config["ci"]          = {"num_gpus":4}
-config["system_name"] = "HPC Fund"
 
-def query_slurm_job(id):
-    cmd = ["sacct","-n","-P","-X","-j",str(id),"--format","Start,End,NNodes,Partition"]
-    results = subprocess.check_output(cmd,universal_newlines=True).strip()
-    results = results.split("\n")
-    assert(len(results)==1)
+class queryMetrics:
+    # define local site configuration
+    def __init__(self):
+        self.config = {}
+        self.config["mi1004x"] = {"num_gpus": 4}
+        self.config["mi1008x"] = {"num_gpus": 8}
+        self.config["ci"] = {"num_gpus": 4}
+        self.config["system_name"] = "HPC Fund"
+        self.config["prometheus_url"] = "http://10.0.100.11:9090"
 
-    jobdata = {}
-    data = results[0].split("|")
-    jobdata["begin_date"] = data[0]
-    jobdata["end_date"]   = data[1]
-    jobdata["num_nodes"]  = data[2]
-    jobdata["partition"]  = data[3]
+        # command line args (jobID is required)
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--job", help="jobId to query", required=True)
+        parser.add_argument("--output", help="location for stdout report")
+        parser.add_argument("--pdf", help="generate PDF report")
 
-    return jobdata
+        args = parser.parse_args()
+        self.jobID = int(args.job)
 
-# command line args (jobID is required)
-parser = argparse.ArgumentParser()
-parser.add_argument('--job',help='jobId to query',required=True)
-parser.add_argument('--output',help='location for stdout report')
-parser.add_argument('--pdf',help='generate PDF report')
+        # (optionally) redirect stdout
+        outputFile = sys.stdout
+        self.redirect = False
+        if args.output:
+            outputFile = args.output
+            if not os.path.isfile(outputFile):
+                sys.exit()
+            else:
+                self.output = open(outputFile,"a")
+                sys.stdout = self.output
+                self.redirect = True
 
-args = parser.parse_args()
-jobID = int(args.job)
+        self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
 
-outputFile = sys.stdout
-if args.output:
-    outputFile = args.output
-    if not os.path.isfile(outputFile):
-        sys.exit()
+        # query jobinfo
+        assert self.jobID > 1
+        self.jobinfo = self.query_slurm_job()
 
-#prometheus_url = "http://10.0.100.11:9090"
-prometheus = PrometheusConnect(url="http://10.0.100.11:9090")
+        self.start_time = datetime.strptime(
+            self.jobinfo["begin_date"], "%Y-%m-%dT%H:%M:%S"
+        )
+        if self.jobinfo["end_date"] == "Unknown":
+            self.end_time = datetime.now()
+        else:
+            self.end_time = datetime.strptime(
+                self.jobinfo["end_date"], "%Y-%m-%dT%H:%M:%S"
+            )
 
-# query jobinfo
-assert(jobID > 1)
-jobinfo = query_slurm_job(jobID)
+        # NOOP if job is very short running
+        runtime = (self.end_time - self.start_time).total_seconds()
+        if runtime < 61:
+            sys.exit()
 
-start_time = datetime.strptime(jobinfo['begin_date'],'%Y-%m-%dT%H:%M:%S')
-if jobinfo['end_date'] == "Unknown":
-    end_time   = datetime.now()
-else:   
-    end_time   = datetime.strptime(jobinfo['end_date'],  '%Y-%m-%dT%H:%M:%S')
+        self.get_hosts()
 
-# NOOP if job is very short running
-runtime = (end_time - start_time).total_seconds()
-if runtime < 61:
-    sys.exit()
+    # gather relevant job data from resource manager
+    def query_slurm_job(self):
+        id = self.jobID
+        cmd = [
+            "sacct",
+            "-n",
+            "-P",
+            "-X",
+            "-j",
+            str(id),
+            "--format",
+            "Start,End,NNodes,Partition",
+        ]
+        results = subprocess.check_output(cmd, universal_newlines=True).strip()
+        results = results.split("\n")
+        assert len(results) == 1
 
-# Detect hosts associated with this job
-hosts = []
-results = prometheus.custom_query_range("card0_rocm_utilization * on (instance) slurmjob_info{jobid=\"%s\"}" % jobID,start_time,end_time,step=60)
-for result in results:
-    hosts.append(result['metric']['instance'])
+        jobdata = {}
+        data = results[0].split("|")
+        jobdata["begin_date"] = data[0]
+        jobdata["end_date"] = data[1]
+        jobdata["num_nodes"] = data[2]
+        jobdata["partition"] = data[3]
 
-#print("# of active hosts = %i" % len(hosts) )
-#print(hosts)
+        return jobdata
 
-statistics = {}
-numGpus = 0
+    # Detect hosts associated with this job
+    def get_hosts(self):
+        self.hosts = []
+        results = self.prometheus.custom_query_range(
+            'card0_rocm_utilization * on (instance) slurmjob_info{jobid="%s"}'
+            % self.jobID,
+            self.start_time,
+            self.end_time,
+            step=60,
+        )
+        for result in results:
+            self.hosts.append(result["metric"]["instance"])
 
-if jobinfo['partition'] in config:
-    if 'num_gpus' in config[jobinfo['partition']]:
-        numGpus = config[jobinfo['partition']]['num_gpus']
+    def generate_report_card(self):
+        system = "HPC Fund"
 
-# Query GPU utilization metrics from assigned hosts during the job begin/end start period
-for gpu in range(numGpus):
-    metric = "card" + str(gpu) + "_rocm_utilization"
+        statistics = {}
+        numGpus = 0
 
-    for host in hosts:
-        # print(metric)
-        results = prometheus.custom_query_range("avg(%s * on (instance) slurmjob_info{jobid=\"%s\"})" % (metric,jobID),start_time,end_time,step=60)
+        if self.jobinfo["partition"] in self.config:
+            if "num_gpus" in self.config[self.jobinfo["partition"]]:
+                numGpus = self.config[self.jobinfo["partition"]]["num_gpus"]
 
-        # if metric == "card1_rocm_utilization":
-        #     mydata = results[0]['values']
-        #     for item in mydata:
-        #         print("%s %s" % (datetime.fromtimestamp(item[0]),item[1]))
-        #     sys.exit(1)
+        # # Query GPU utilization metrics from assigned hosts during the job begin/end start period
+        for gpu in range(numGpus):
+            metric = "card" + str(gpu) + "_rocm_utilization"
 
-        assert(len(results) == 1)
-        data = results[0]['values']
-        # print(data)
-        # sys.exit(1)
-        # print("%s %s %s (%i)" % (host,datetime.fromtimestamp(data[0][0]),datetime.fromtimestamp(data[-1][0]),
-        #     len(data)))
+            for host in self.hosts:
+                results = self.prometheus.custom_query_range(
+                    'avg(%s * on (instance) slurmjob_info{jobid="%s"})'
+                    % (metric, self.jobID),
+                    self.start_time,
+                    self.end_time,
+                    step=60,
+                )
 
-        # compute relevant statistics
-        data2 = np.asarray(data,dtype=float)
-        statistics[metric + "_max"]  = np.max(data2[:,1])
-        statistics[metric + "_min"]  = np.min(data2[:,1])
-        statistics[metric + "_mean"] = np.mean(data2[:,1])
-        statistics[metric + "_std"]  = np.std(data2[:,1])
- 
-        # verify mean
-        # myavg = 0.0
-        # for result in results[0]['values']:
-        #     print(datetime.fromtimestamp(result[0]),result[1])
-        #     myavg = myavg + float(result[1])
-        # myavg = myavg / len(results[0]['values'])
-        # print(myavg)
+                assert len(results) == 1
+                data = results[0]["values"]
 
+                # compute relevant statistics
+                data2 = np.asarray(data, dtype=float)
+                statistics[metric + "_max"] = np.max(data2[:, 1])
+                statistics[metric + "_min"] = np.min(data2[:, 1])
+                statistics[metric + "_mean"] = np.mean(data2[:, 1])
+                statistics[metric + "_std"] = np.std(data2[:, 1])
 
-# Memory utilization
-gpu_memory_avail = None
+                # verify mean
+                # myavg = 0.0
+                # for result in results[0]['values']:
+                #     print(datetime.fromtimestamp(result[0]),result[1])
+                #     myavg = myavg + float(result[1])
+                # myavg = myavg / len(results[0]['values'])
+                # print(myavg)
 
-for gpu in range(numGpus):
-    
-    # Get total GPU memory - we assume it is the same on all assigned GPUs
-    metric = "card" + str(gpu) + "_rocm_vram_total"
-    results = prometheus.custom_query("max(%s * on (instance) slurmjob_info{jobid=\"%s\"})" %
-                                                (metric,jobID))
+        # Memory utilization
+        gpu_memory_avail = None
 
-    if not gpu_memory_avail:
-        gpu_memory_avail = int(results[0]['value'][1])
-        assert(gpu_memory_avail > 1024*1024*1024)
-    else:
-        assert(int(results[0]['value'][1]) == gpu_memory_avail)
+        for gpu in range(numGpus):
+            # Get total GPU memory - we assume it is the same on all assigned GPUs
+            metric = "card" + str(gpu) + "_rocm_vram_total"
+            results = self.prometheus.custom_query(
+                'max(%s * on (instance) slurmjob_info{jobid="%s"})'
+                % (metric, self.jobID)
+            )
 
-    # query used gpu memory
-    metric_used  = "card" + str(gpu) + "_rocm_vram_used"
-    for host in hosts:
-        results = prometheus.custom_query_range("max(%s * on (instance) slurmjob_info{jobid=\"%s\"})" %
-                                                (metric_used,jobID),start_time,end_time,step=60)
-        assert(len(results) == 1)
-        data = results[0]['values']
-        # compute relevant statistics
-        data2 = np.asarray(data,dtype=int)
-        statistics[metric_used + "_max"]  = np.max(100.0 * data2[:,1] / gpu_memory_avail)
-        statistics[metric_used + "_mean"] = np.mean(100.0 * data2[:,1] / gpu_memory_avail)
+            if not gpu_memory_avail:
+                gpu_memory_avail = int(results[0]["value"][1])
+                assert gpu_memory_avail > 1024 * 1024 * 1024
+            else:
+                assert int(results[0]["value"][1]) == gpu_memory_avail
 
+            # query used gpu memory
+            metric_used = "card" + str(gpu) + "_rocm_vram_used"
+            for host in self.hosts:
+                results = self.prometheus.custom_query_range(
+                    'max(%s * on (instance) slurmjob_info{jobid="%s"})'
+                    % (metric_used, self.jobID),
+                    self.start_time,
+                    self.end_time,
+                    step=60,
+                )
+                assert len(results) == 1
+                data = results[0]["values"]
+                # compute relevant statistics
+                data2 = np.asarray(data, dtype=int)
+                statistics[metric_used + "_max"] = np.max(
+                    100.0 * data2[:, 1] / gpu_memory_avail
+                )
+                statistics[metric_used + "_mean"] = np.mean(
+                    100.0 * data2[:, 1] / gpu_memory_avail
+                )
 
-# summarize statistics
+        # summarize statistics
+        print("")
+        print("-" * 40)
+        print("HPC Report Card for Job # %i" % self.jobID)
+        print("-" * 40)
+        print("")
+        print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
+        print(" --> Start time = %s" % self.start_time)
+        print(" --> End   time = %s" % self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
+        print("")
+        print("--> GPU Core Utilization")
+        print("   | GPU # |  Max (%) | Mean (%)|")
+        for card in range(numGpus):
+            key = "card" + str(card) + "_rocm_utilization"
+            print(
+                "   |%6s |%8.1f  |%7.1f  |"
+                % (card, statistics[key + "_max"], statistics[key + "_mean"])
+            )
+        print("")
+        print("--> GPU Memory Utilization")
+        print("   | GPU # |  Max (%) | Mean (%)|")
+        for card in range(numGpus):
+            key = "card" + str(card) + "_rocm_vram_used"
+            print(
+                "   |%6s |%8.2f  |%7.2f  |"
+                % (card, statistics[key + "_max"], statistics[key + "_mean"])
+            )
 
-system = "HPC Fund"
+    def __del__(self):
+        if self.redirect:
+            self.output.close()
 
-if args.output:
-    output = open(outputFile,"a")
-    sys.stdout = output
+def main():
+    query = queryMetrics()
+    query.generate_report_card()
 
-print("")
-print("-" * 40)
-print("HPC Report Card for Job # %i" % jobID)
-print("-" * 40)
-print("")
-print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(hosts),system))
-print(" --> Start time = %s" % start_time)
-print(" --> End   time = %s" % end_time.strftime("%Y-%m-%d %H:%M:%S"))
-print("")
-print("--> GPU Core Utilization")
-print("   | GPU # |  Max (%) | Mean (%)|")
-for card in range(numGpus):
-    key = "card" + str(card) + "_rocm_utilization"
-    print("   |%6s |%8.1f  |%7.1f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
-
-print("")
-print("--> GPU Memory Utilization")
-print("   | GPU # |  Max (%) | Mean (%)|")
-for card in range(numGpus):
-    key = "card" + str(card) + "_rocm_vram_used"
-    print("   |%6s |%8.2f  |%7.2f  |" % (card,statistics[key+"_max"],statistics[key+"_mean"]))
-
-if args.output:
-    output.close
+if __name__ == "__main__":
+    main()
