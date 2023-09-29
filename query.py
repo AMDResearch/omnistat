@@ -150,16 +150,16 @@ class queryMetrics:
         for gpu in range(numGpus):
             # Get total GPU memory - we assume it is the same on all assigned GPUs
             metric = "card" + str(gpu) + "_rocm_vram_total"
-            results = self.prometheus.custom_query(
+            results = self.prometheus.custom_query_range(
                 'max(%s * on (instance) slurmjob_info{jobid="%s"})'
-                % (metric, self.jobID)
+                % (metric, self.jobID),self.start_time,self.end_time,step=60
             )
 
             if not gpu_memory_avail:
-                gpu_memory_avail = int(results[0]["value"][1])
+                gpu_memory_avail = int(results[0]["values"][0][1])
                 assert gpu_memory_avail > 1024 * 1024 * 1024
             else:
-                assert int(results[0]["value"][1]) == gpu_memory_avail
+                assert int(results[0]["values"][0][1]) == gpu_memory_avail
 
             # query used gpu memory
             metric_used = "card" + str(gpu) + "_rocm_vram_used"
