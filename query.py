@@ -11,7 +11,16 @@ import argparse
 
 
 class queryMetrics:
-    # define local site configuration
+
+    def set_options(self,jobID=None,output_file=None,pdf=None):
+        if jobID:
+            self.jobID=int(jobID)
+        if output_file:
+            self.outputFile = output_file
+        if pdf:
+            self.pdf = pdf
+        return
+
     def __init__(self):
         self.config = {}
         self.config["mi1004x"] = {"num_gpus": 4}
@@ -20,26 +29,72 @@ class queryMetrics:
         self.config["system_name"] = "HPC Fund"
         self.config["prometheus_url"] = "http://10.0.100.11:9090"
 
-        # command line args (jobID is required)
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--job", help="jobId to query", required=True)
-        parser.add_argument("--output", help="location for stdout report")
-        parser.add_argument("--pdf", help="generate PDF report")
+        self.jobID = None
+        self.enable_redirect = False
+        self.output_file = None
+        self.pdf = None
 
-        args = parser.parse_args()
-        self.jobID = int(args.job)
+        # # input options
+        # self.jobID = None
+        # self.redirect_output = False
+        # self.enable_PDF = False
+
+        # # (optionally) redirect stdout
+        # #outputFile = sys.stdout
+        # self.redirect = redirect_output
+        # if self.redirect:
+        #     outputFile = args.output
+        #     if not os.path.isfile(outputFile):
+        #         sys.exit()
+        #     else:
+        #         self.output = open(outputFile,"a")
+        #         sys.stdout = self.output
+        #         self.redirect = True
+
+    # def __init(self,jobID=None):
+    #     self.jobID = jobID
+    #     self.init_config()
+        
+    #     self.initiallize()
+    #     return
+    
+    # def __init__(self):
+
+    #     # command line args (jobID is required)
+    #     parser = argparse.ArgumentParser()
+    #     parser.add_argument("--job", help="jobId to query", required=True)
+    #     parser.add_argument("--output", help="location for stdout report")
+    #     parser.add_argument("--pdf", help="generate PDF report")
+
+    #     args = parser.parse_args()
+    #     self.jobID = int(args.job)
+    #     if args.output
+        
+
+    # define local site configuration
+    def setup(self):
+        # self.config = {}
+        # self.config["mi1004x"] = {"num_gpus": 4}
+        # self.config["mi1008x"] = {"num_gpus": 8}
+        # self.config["ci"] = {"num_gpus": 4}
+        # self.config["system_name"] = "HPC Fund"
+        # self.config["prometheus_url"] = "http://10.0.100.11:9090"
+
+
+        # args = parser.parse_args()
+        # self.jobID = int(args.job)
 
         # (optionally) redirect stdout
-        outputFile = sys.stdout
-        self.redirect = False
-        if args.output:
-            outputFile = args.output
-            if not os.path.isfile(outputFile):
+        # outputFile = sys.stdout
+        # self.redirect = False
+        if self.output_file:
+            #outputFile = self.output_file
+            if not os.path.isfile(self.output_file):
                 sys.exit()
             else:
-                self.output = open(outputFile,"a")
+                self.output = open(self.output_file,"a")
                 sys.stdout = self.output
-                self.redirect = True
+                self.enable_redirect = True
 
         self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
 
@@ -211,11 +266,23 @@ class queryMetrics:
             )
 
     def __del__(self):
-        if self.redirect:
+        if self.enable_redirect:
             self.output.close()
 
 def main():
+
+    # command line args (jobID is required)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--job", help="jobId to query", required=True)
+    parser.add_argument("--output", help="location for stdout report")
+    parser.add_argument("--pdf", help="generate PDF report")
+    args = parser.parse_args()
+
+    # print(args.output,args.pdf)
+
     query = queryMetrics()
+    query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf)
+    query.setup()
     query.generate_report_card()
 
 if __name__ == "__main__":
