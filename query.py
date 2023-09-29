@@ -22,6 +22,8 @@ class queryMetrics:
         return
 
     def __init__(self):
+
+         # local site configuration
         self.config = {}
         self.config["mi1004x"] = {"num_gpus": 4}
         self.config["mi1008x"] = {"num_gpus": 8}
@@ -34,61 +36,11 @@ class queryMetrics:
         self.output_file = None
         self.pdf = None
 
-        # # input options
-        # self.jobID = None
-        # self.redirect_output = False
-        # self.enable_PDF = False
-
-        # # (optionally) redirect stdout
-        # #outputFile = sys.stdout
-        # self.redirect = redirect_output
-        # if self.redirect:
-        #     outputFile = args.output
-        #     if not os.path.isfile(outputFile):
-        #         sys.exit()
-        #     else:
-        #         self.output = open(outputFile,"a")
-        #         sys.stdout = self.output
-        #         self.redirect = True
-
-    # def __init(self,jobID=None):
-    #     self.jobID = jobID
-    #     self.init_config()
-        
-    #     self.initiallize()
-    #     return
-    
-    # def __init__(self):
-
-    #     # command line args (jobID is required)
-    #     parser = argparse.ArgumentParser()
-    #     parser.add_argument("--job", help="jobId to query", required=True)
-    #     parser.add_argument("--output", help="location for stdout report")
-    #     parser.add_argument("--pdf", help="generate PDF report")
-
-    #     args = parser.parse_args()
-    #     self.jobID = int(args.job)
-    #     if args.output
-        
-
-    # define local site configuration
+    # complete setup
     def setup(self):
-        # self.config = {}
-        # self.config["mi1004x"] = {"num_gpus": 4}
-        # self.config["mi1008x"] = {"num_gpus": 8}
-        # self.config["ci"] = {"num_gpus": 4}
-        # self.config["system_name"] = "HPC Fund"
-        # self.config["prometheus_url"] = "http://10.0.100.11:9090"
-
-
-        # args = parser.parse_args()
-        # self.jobID = int(args.job)
 
         # (optionally) redirect stdout
-        # outputFile = sys.stdout
-        # self.redirect = False
         if self.output_file:
-            #outputFile = self.output_file
             if not os.path.isfile(self.output_file):
                 sys.exit()
             else:
