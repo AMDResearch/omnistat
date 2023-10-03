@@ -310,48 +310,107 @@ class queryMetrics:
         Story.append(Spacer(1,0.1*inch))
         Story.append(HRFlowable(width="100%",thickness=2))
         ptext='''
-        <strong>HPC Report Card</strong><br/><br/>
-        <strong>JobID</strong>: %s<br/>
+        <strong>HPC Report Card</strong>: JobID = %s<br/>
         <strong>Start Time</strong>: %s<br/>
         <strong>End Time</strong>: %s<br/>
         ''' % (self.jobID,self.start_time,self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
         Story.append(Paragraph(ptext, styles["Bullet"]))
         Story.append(HRFlowable(width="100%",thickness=2))
         
-
+#             <strong>JobID</strong>: %s<br/>
         # generate Utilization Table
         Story.append(Spacer(1,0.2*inch))
         ptext='''<strong>GPU Statistics</strong>'''
         Story.append(Paragraph(ptext,normal))
-        Story.append(Spacer(1,0.1*inch))
+        Story.append(Spacer(1,0.2*inch))
+        #Story.append(HRFlowable(width="100%",thickness=1))
 
-        stats  = self.query_gpu_metric('rocm_utilization')
-        stats2 = self.query_gpu_metric('rocm_vram_used')
-        stats3 = self.query_gpu_metric('rocm_vram_total')
-  
-  
-        # print(stats)
-        # sys.exit()
+        # Get time series data and compute some stats...
+
+        plots = [{'title':'GPU Core Utilization','metric':'rocm_utilization'},
+                 {'title':'GPU Memory Used (%)','metric':'rocm_vram_used'},
+                 {'title':'GPU Temperature - Die Edge (C)','metric':'rocm_temp_die_edge'},
+                 {'title':'GPU Clock Frequency (MHz)','metric':'rocm_slck_clock_mhz'},
+                 {'title':'GPU Average Power (W)','metric':'rocm_avg_pwr'}]
+        
+        stats = {}
+
+        timeSeries = []
+
+        for plot in plots:
+            metric = plot['metric']
+            plt.figure(figsize=(9,2.5))
+
+            stats[metric + "_min"] = []
+            stats[metric + "_max"] = []
+            stats[metric + "_mean"] = []
+
+            for gpu in range(self.numGPUs):
+                times,values = self.query_time_series_data("card" + str(gpu) + "_" + metric)
+                
+                stats[metric + "_min"].append(np.min(values))
+                stats[metric + "_max"].append(np.max(values))
+                stats[metric + "_mean"].append(np.mean(values))
+                if metric == 'rocm_vram_used':
+                    times2,values2 = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total")
+                    memoryAvail = np.max(values2)
+                    plt.plot(times,100.0 * values / memoryAvail,linewidth=0.4,label='Card %i' % gpu)
+                    stats[metric + "_max"][-1]  = 100.0 * stats[metric + "_max"][-1] / memoryAvail
+                    stats[metric + "_mean"][-1] = 100.0 * stats[metric + "_mean"][-1] / memoryAvail
+                    #plt.ylim([0,100])
+                else:
+                    plt.plot(times,values,linewidth=0.4,label='Card %i' % gpu)
+
+            plt.title(plot['title'])
+            plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center', ncol=self.numGPUs,frameon=False)
+            plt.grid()
+            ax = plt.gca()
+
+            locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
+            formatter = mdates.ConciseDateFormatter(locator)
+            ax.xaxis.set_major_locator(locator)
+            ax.xaxis.set_major_formatter(formatter)
+            plt.savefig('.utilization.png',dpi=150,bbox_inches='tight')
+            plt.close()
+            aplot = Image('.utilization.png')
+            aplot.hAlign='LEFT'
+            aplot._restrictSize(6.5 * inch, 4 * inch)
+            #Story.append(aplot)
+            timeSeries.append(aplot)
+
+        #--
+        # Display general GPU Statistics
+        #--
+
         data = []
-        data.append(['GPU #','Max (%)','Mean (%)','mmean','mmax'])
+        data.append(['','Utilization (%)','','Memory Use (%)','','Temperature (C)','','Power (W)',''])
+        data.append(['GPU #','Max','Mean','Max','Mean','Max','Mean','Max','Mean'])
 
         for gpu in range(self.numGPUs):
-            data.append([gpu,"%.1f" % stats['max'][gpu],"%.1f" % stats['mean'][gpu],
-                        "%.2f" % (100.0 * stats2['max'][gpu] / stats3['max'][gpu]),
-                        "%.2f" % (100.0 * stats2['mean'][gpu] / stats3['max'][gpu]) ] )
+            data.append([gpu,
+                         "%.2f" % stats['rocm_utilization_max'][gpu],"%.2f" % stats['rocm_utilization_mean'][gpu],
+                         "%.2f" % stats['rocm_vram_used_max'][gpu], "%.2f" % stats['rocm_vram_used_mean'][gpu],
+                         "%.2f" % stats['rocm_temp_die_edge_max'][gpu], "%.2f" % stats['rocm_temp_die_edge_mean'][gpu],
+                         "%.2f" % stats['rocm_avg_pwr_max'][gpu], "%.2f" % stats['rocm_avg_pwr_mean'][gpu]
+            ])
 
-        t=Table(data,rowHeights=[.2*inch] * len(data),
-            colWidths=[0.55*inch,0.75*inch])
+        t=Table(data,rowHeights=[.21*inch] * len(data),
+            colWidths=[0.55*inch,0.72*inch])
         t.hAlign='LEFT'
-#        t.setStyle(TableStyle([('LINEABOVE',(0,0),(-1,0),1.25,colors.darkgrey)]))
-        t.setStyle(TableStyle([('LINEBELOW',(0,0),(-1,0),1.5,colors.darkgrey),
+        t.setStyle(TableStyle([('LINEBELOW',(0,1),(-1,1),1.5,colors.black),
                               ('ALIGN',(0,0),(-1,-1),'CENTER')]))
-        t.setStyle(TableStyle([('LINEBEFORE',(1,1),(1,-1),1.25,colors.darkgrey),
-                               ('LINEAFTER', (2,1),(2,-1),1.25,colors.darkgrey)]))
-#         t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.lightgrey)]))
-# #                           ('TEXTCOLOR',(0,0),(1,-1),colors.grey)]))
+        t.setStyle(TableStyle([('LINEBEFORE',(1,0),(1,-1),1.25,colors.darkgrey),
+                               ('LINEAFTER', (2,0),(2,-1),1.25,colors.darkgrey),
+                               ('LINEAFTER', (4,0),(4,-1),1.25,colors.darkgrey),
+                               ('LINEAFTER', (6,0),(6,-1),1.25,colors.darkgrey)
+                               ]))
+        t.setStyle(TableStyle([('SPAN',(1,0),(2,0)),
+                               ('SPAN',(3,0),(4,0)),
+                               ('SPAN',(5,0),(6,0)),
+                               ('SPAN',(7,0),(8,0))
+                               ]))
 
-        for each in range(1,len(data)):
+        for each in range(2,len(data)):
             if each % 2 == 0:
                 bg_color = colors.lightgrey
             else:
@@ -361,123 +420,19 @@ class queryMetrics:
         Story.append(t)
 
 
+
+        # add Time-series plots (assembled previously)
         Story.append(Spacer(1,0.2*inch))
         Story.append(HRFlowable(width="100%",thickness=1))
-        plt.figure(figsize=(9,2.5))
+        Story.append(Spacer(1,0.2*inch))
+        ptext='''<strong>Time Series</strong>'''
+        Story.append(Paragraph(ptext,normal))
+        Story.append(Spacer(1,0.2*inch))
 
-        for gpu in range(self.numGPUs):
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_utilization")
-            plt.plot(time,util,linewidth=0.4,label='Card %i' % gpu)
+        for image in timeSeries:
+            Story.append(image)
 
-        plt.title("GPU Core Utilization")
-        plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
-                   ncol=self.numGPUs,frameon=False)
-        plt.grid()
-        ax = plt.gca()
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        plt.savefig('utilization1.png',dpi=150,bbox_inches='tight')
-        plt.close()
-        aplot = Image('utilization1.png')
-        aplot.hAlign='LEFT'
-        aplot._restrictSize(6.5 * inch, 4 * inch)
-        Story.append(aplot)
-
-        # memory utilization
-        plt.figure(figsize=(9,2.5))
-#        memoryAvail = []
-        for gpu in range(self.numGPUs):
-            
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total")
-            #memoryAvail.append(np.max(util))
-            memoryAvail = np.max(util)
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_used")
-            plt.plot(time,util / memoryAvail,linewidth=0.4,label='Card %i' % gpu)
-
-        #plt.axhline(y=100,linestyle='--',color='green')
-        plt.title("GPU Memory Used (%)")
-        plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
-            ncol=self.numGPUs,frameon=False)
-        plt.grid()
-        ax = plt.gca()
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        plt.savefig('utilization2.png',dpi=150,bbox_inches='tight')
-        plt.close()
-        aplot = Image('utilization2.png')
-        aplot.hAlign='LEFT'
-        aplot._restrictSize(6.5 * inch, 4 * inch)
-        Story.append(aplot)
-        
-
-        # temperature utilization
-        plt.figure(figsize=(9,2.5))
-        for gpu in range(self.numGPUs):
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_temp_die_edge")
-            plt.plot(time,util,linewidth=0.4,label='Card %i' % gpu)
-        plt.title("GPU Temperature - Die Edge (C)")
-        plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
-            ncol=self.numGPUs,frameon=False)
-        plt.grid()
-        ax = plt.gca()
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        plt.savefig('utilization2.png',dpi=150,bbox_inches='tight')
-        plt.close()
-        aplot = Image('utilization2.png')
-        aplot.hAlign='LEFT'
-        aplot._restrictSize(6.5 * inch, 4 * inch)
-        Story.append(aplot)
-
-        # clock frequency
-        plt.figure(figsize=(9,2.5))
-        for gpu in range(self.numGPUs):
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_slck_clock_mhz")
-            plt.plot(time,util,linewidth=0.4,label='Card %i' % gpu)
-        plt.title("GPU Clock Frequency (MHz)")
-        plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
-            ncol=self.numGPUs,frameon=False)
-        plt.grid()
-        ax = plt.gca()
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        plt.savefig('utilization3.png',dpi=150,bbox_inches='tight')
-        plt.close()
-        aplot = Image('utilization3.png')
-        aplot.hAlign='LEFT'
-        aplot._restrictSize(6.5 * inch, 4 * inch)
-        Story.append(aplot)
-
-        # power utilization
-        plt.figure(figsize=(9,2.5))
-        for gpu in range(self.numGPUs):
-            time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_avg_pwr")
-            plt.plot(time,util,linewidth=0.4,label='Card %i' % gpu)
-        plt.title("GPU Average Power (W)")
-        plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
-            ncol=self.numGPUs,frameon=False)
-        plt.grid()
-        ax = plt.gca()
-        locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-        plt.savefig('utilization4.png',dpi=150,bbox_inches='tight')
-        plt.close()
-        aplot = Image('utilization4.png')
-        aplot.hAlign='LEFT'
-        aplot._restrictSize(6.5 * inch, 4 * inch)
-        Story.append(aplot)
-
-
+        # Buiild the .pdf
         doc.build(Story)
 
 
