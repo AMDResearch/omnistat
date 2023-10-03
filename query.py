@@ -321,22 +321,27 @@ class queryMetrics:
 
         # generate Utilization Table
         Story.append(Spacer(1,0.2*inch))
-        ptext='''<strong>GPU Core Utilization</strong>'''
+        ptext='''<strong>GPU Statistics</strong>'''
         Story.append(Paragraph(ptext,normal))
         Story.append(Spacer(1,0.1*inch))
 
-        stats = self.query_gpu_metric('rocm_utilization')
+        stats  = self.query_gpu_metric('rocm_utilization')
+        stats2 = self.query_gpu_metric('rocm_vram_used')
+        stats3 = self.query_gpu_metric('rocm_vram_total')
+  
   
         # print(stats)
         # sys.exit()
         data = []
-        data.append(['GPU #','Max (%)','Mean (%)'])
+        data.append(['GPU #','Max (%)','Mean (%)','mmean','mmax'])
 
         for gpu in range(self.numGPUs):
-            data.append([gpu,"%.1f" % stats['max'][gpu],"%.1f" % stats['mean'][gpu]])
+            data.append([gpu,"%.1f" % stats['max'][gpu],"%.1f" % stats['mean'][gpu],
+                        "%.2f" % (100.0 * stats2['max'][gpu] / stats3['max'][gpu]),
+                        "%.2f" % (100.0 * stats2['mean'][gpu] / stats3['max'][gpu]) ] )
 
         t=Table(data,rowHeights=[.2*inch] * len(data),
-            colWidths=[0.75*inch,0.75*inch])
+            colWidths=[0.55*inch,0.75*inch])
         t.hAlign='LEFT'
 #        t.setStyle(TableStyle([('LINEABOVE',(0,0),(-1,0),1.25,colors.darkgrey)]))
         t.setStyle(TableStyle([('LINEBELOW',(0,0),(-1,0),1.5,colors.darkgrey),
@@ -391,7 +396,7 @@ class queryMetrics:
             time,util = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_used")
             plt.plot(time,util / memoryAvail,linewidth=0.4,label='Card %i' % gpu)
 
-        plt.axhline(y=100,linestyle='--',color='green')
+        #plt.axhline(y=100,linestyle='--',color='green')
         plt.title("GPU Memory Used (%)")
         plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center',
             ncol=self.numGPUs,frameon=False)
