@@ -24,7 +24,7 @@ class queryMetrics:
         if jobID:
             self.jobID=int(jobID)
         if output_file:
-            self.outputFile = output_file
+            self.output_file = output_file
         if pdf:
             self.pdf = pdf
         return
@@ -450,6 +450,8 @@ def main():
     query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf)
     query.setup()
     query.generate_report_card()
+    if args.pdf:
+        query.dumpFile(args.pdf)
 
 if __name__ == "__main__":
     main()
