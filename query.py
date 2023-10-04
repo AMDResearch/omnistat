@@ -377,6 +377,8 @@ class queryMetrics:
             aplot._restrictSize(6.5 * inch, 4 * inch)
             #Story.append(aplot)
             timeSeries.append(aplot)
+            os.remove('.utilization.png')
+
 
         #--
         # Display general GPU Statistics
