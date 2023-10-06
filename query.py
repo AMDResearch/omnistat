@@ -20,15 +20,6 @@ from reportlab.lib.units import inch
 
 class queryMetrics:
 
-    def set_options(self,jobID=None,output_file=None,pdf=None):
-        if jobID:
-            self.jobID=int(jobID)
-        if output_file:
-            self.output_file = output_file
-        if pdf:
-            self.pdf = pdf
-        return
-
     def __init__(self):
 
          # local site configuration
@@ -48,7 +39,15 @@ class queryMetrics:
         if self.enable_redirect:
             self.output.close()
 
-    # complete setup
+    def set_options(self,jobID=None,output_file=None,pdf=None):
+        if jobID:
+            self.jobID=int(jobID)
+        if output_file:
+            self.output_file = output_file
+        if pdf:
+            self.pdf = pdf
+        return
+
     def setup(self):
 
         # (optionally) redirect stdout
@@ -83,6 +82,15 @@ class queryMetrics:
 
         self.get_hosts()
         self.get_num_gpus()
+
+        # Define metrics to report on
+        self.metrics = [
+            {'metric':'rocm_utilization','title':'GPU Core Utilization','title_short':'Utilization (%)'},
+            {'metric':'rocm_vram_used','title':'GPU Memory Used (%)','title_short':'Memory Use (%)'},
+            {'metric':'rocm_temp_die_edge','title':'GPU Temperature - Die Edge (C)','title_short':'Temperature (C)'},
+            {'metric':'rocm_slck_clock_mhz','title':'GPU Clock Frequency (MHz)'},
+            {'metric':'rocm_avg_pwr','title':'GPU Average Power (W)','title_short':'Power (W)'}
+            ]
 
     # gather relevant job data from resource manager
     def query_slurm_job(self):
@@ -130,86 +138,33 @@ class queryMetrics:
             if "num_gpus" in self.config[self.jobinfo["partition"]]:
                 self.numGPUs = self.config[self.jobinfo["partition"]]["num_gpus"]
 
+    def gather_data(self,saveTimeSeries=False):
+        self.stats = {}
+        self.time_series = []
+
+        for entry in self.metrics:
+            metric = entry['metric']
+
+            self.stats[metric + "_min"]  = []
+            self.stats[metric + "_max"]  = []
+            self.stats[metric + "_mean"] = []
+
+            for gpu in range(self.numGPUs):
+                times,values = self.query_time_series_data("card" + str(gpu) + "_" + metric)
+                
+                self.stats[metric + "_max"].append(np.max(values))
+                self.stats[metric + "_mean"].append(np.mean(values))
+                if metric == 'rocm_vram_used':
+                    # compute % memory used
+                    times2,values2 = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total")
+                    memoryAvail = np.max(values2)
+                    self.stats[metric + "_max"] [-1] = 100.0 * self.stats[metric + "_max"] [-1] / memoryAvail
+                    self.stats[metric + "_mean"][-1] = 100.0 * self.stats[metric + "_mean"][-1] / memoryAvail
+        return
+
     def generate_report_card(self):
         system = "HPC Fund"
 
-        statistics = {}
-        # numGpus = 0
-
-        # if self.jobinfo["partition"] in self.config:
-        #     if "num_gpus" in self.config[self.jobinfo["partition"]]:
-        #         numGpus = self.config[self.jobinfo["partition"]]["num_gpus"]
-
-        # Query GPU utilization metrics from assigned hosts during the job begin/end start period
-        for gpu in range(self.numGPUs):
-            metric = "card" + str(gpu) + "_rocm_utilization"
-
-            for host in self.hosts:
-                results = self.prometheus.custom_query_range(
-                    'avg(%s * on (instance) slurmjob_info{jobid="%s"})'
-                    % (metric, self.jobID),
-                    self.start_time,
-                    self.end_time,
-                    step=60,
-                )
-
-                assert len(results) == 1
-                data = results[0]["values"]
-
-                # compute relevant statistics
-                data2 = np.asarray(data, dtype=float)
-                statistics[metric + "_max"] = np.max(data2[:, 1])
-                statistics[metric + "_min"] = np.min(data2[:, 1])
-                statistics[metric + "_mean"] = np.mean(data2[:, 1])
-                statistics[metric + "_std"] = np.std(data2[:, 1])
-
-                # verify mean
-                # myavg = 0.0
-                # for result in results[0]['values']:
-                #     print(datetime.fromtimestamp(result[0]),result[1])
-                #     myavg = myavg + float(result[1])
-                # myavg = myavg / len(results[0]['values'])
-                # print(myavg)
-
-        # Memory utilization
-        gpu_memory_avail = None
-
-        for gpu in range(self.numGPUs):
-            # Get total GPU memory - we assume it is the same on all assigned GPUs
-            metric = "card" + str(gpu) + "_rocm_vram_total"
-            results = self.prometheus.custom_query_range(
-                'max(%s * on (instance) slurmjob_info{jobid="%s"})'
-                % (metric, self.jobID),self.start_time,self.end_time,step=60
-            )
-
-            if not gpu_memory_avail:
-                gpu_memory_avail = int(results[0]["values"][0][1])
-                assert gpu_memory_avail > 1024 * 1024 * 1024
-            else:
-                assert int(results[0]["values"][0][1]) == gpu_memory_avail
-
-            # query used gpu memory
-            metric_used = "card" + str(gpu) + "_rocm_vram_used"
-            for host in self.hosts:
-                results = self.prometheus.custom_query_range(
-                    'max(%s * on (instance) slurmjob_info{jobid="%s"})'
-                    % (metric_used, self.jobID),
-                    self.start_time,
-                    self.end_time,
-                    step=60,
-                )
-                assert len(results) == 1
-                data = results[0]["values"]
-                # compute relevant statistics
-                data2 = np.asarray(data, dtype=int)
-                statistics[metric_used + "_max"] = np.max(
-                    100.0 * data2[:, 1] / gpu_memory_avail
-                )
-                statistics[metric_used + "_mean"] = np.mean(
-                    100.0 * data2[:, 1] / gpu_memory_avail
-                )
-
-        # summarize statistics
         print("")
         print("-" * 40)
         print("HPC Report Card for Job # %i" % self.jobID)
@@ -219,23 +174,34 @@ class queryMetrics:
         print(" --> Start time = %s" % self.start_time)
         print(" --> End   time = %s" % self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
         print("")
-        print("--> GPU Core Utilization")
-        print("   | GPU # |  Max (%) | Mean (%)|")
-        for card in range(self.numGPUs):
-            key = "card" + str(card) + "_rocm_utilization"
-            print(
-                "   |%6s |%8.1f  |%7.1f  |"
-                % (card, statistics[key + "_max"], statistics[key + "_mean"])
-            )
+        print("GPU Statistics:")
         print("")
-        print("--> GPU Memory Utilization")
-        print("   | GPU # |  Max (%) | Mean (%)|")
+        print("    %6s |" % "",end='')
+        for entry in self.metrics:
+            if 'title_short' in entry:
+                #print("%16s |" % entry['title_short'],end='')
+                print(" %s |" % entry['title_short'].center(16),end='')
+        print("")
+        print("    %6s |" % "GPU #",end='')
+        for entry in self.metrics:
+            if 'title_short' in entry:
+                print(" %8s%8s |" % ("Max".center(6),"Mean".center(6)),end='')
+        print("")
+        print("    " + "-" * 84)
+
         for card in range(self.numGPUs):
-            key = "card" + str(card) + "_rocm_vram_used"
-            print(
-                "   |%6s |%8.2f  |%7.2f  |"
-                % (card, statistics[key + "_max"], statistics[key + "_mean"])
-            )
+            print("    %6s |" % card,end='')
+            for entry in self.metrics:
+                if 'title_short' not in entry:
+                    continue
+                metric = entry['metric']
+                print("  %6.2f  %6.2f  |" % (self.stats[metric + "_max"][card],self.stats[metric + "_mean"][card]),end='')
+            print("")
+
+        return
+
+
+            
     def query_time_series_data(self,metric_name,dataType=float):
         results = self.prometheus.custom_query_range(
                     '(%s * on (instance) slurmjob_info{jobid="%s"})'
@@ -451,6 +417,7 @@ def main():
     query = queryMetrics()
     query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf)
     query.setup()
+    query.gather_data()
     query.generate_report_card()
     if args.pdf:
         query.dumpFile(args.pdf)
