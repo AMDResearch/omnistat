@@ -83,7 +83,7 @@ class queryMetrics:
         self.get_hosts()
         self.get_num_gpus()
 
-        # Define metrics to report on
+        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
         self.metrics = [
             {'metric':'rocm_utilization','title':'GPU Core Utilization','title_short':'Utilization (%)'},
             {'metric':'rocm_vram_used','title':'GPU Memory Used (%)','title_short':'Memory Use (%)'},
@@ -140,7 +140,8 @@ class queryMetrics:
 
     def gather_data(self,saveTimeSeries=False):
         self.stats = {}
-        self.time_series = []
+        self.time_series = {}
+        self.max_GPU_memory_avail = []
 
         for entry in self.metrics:
             metric = entry['metric']
@@ -148,6 +149,9 @@ class queryMetrics:
             self.stats[metric + "_min"]  = []
             self.stats[metric + "_max"]  = []
             self.stats[metric + "_mean"] = []
+
+            if saveTimeSeries:
+                self.time_series[metric] = []
 
             for gpu in range(self.numGPUs):
                 times,values = self.query_time_series_data("card" + str(gpu) + "_" + metric)
@@ -160,6 +164,12 @@ class queryMetrics:
                     memoryAvail = np.max(values2)
                     self.stats[metric + "_max"] [-1] = 100.0 * self.stats[metric + "_max"] [-1] / memoryAvail
                     self.stats[metric + "_mean"][-1] = 100.0 * self.stats[metric + "_mean"][-1] / memoryAvail
+                    self.max_GPU_memory_avail.append(memoryAvail)
+                    values = 100.0 * values / memoryAvail
+
+                if saveTimeSeries:
+                    #self.time_series[metric].append([times,values])
+                    self.time_series[metric].append({'time':times,'values':values})
         return
 
     def generate_report_card(self):
@@ -231,6 +241,7 @@ class queryMetrics:
         for gpu in range(self.numGPUs):
             metric = "card" + str(gpu) + "_" + metricName
 
+            #--
             # Mean results
             results = self.prometheus.custom_query_range(
                 'avg(%s * on (instance) slurmjob_info{jobid="%s"})'
@@ -245,6 +256,7 @@ class queryMetrics:
             data2 = np.asarray(data, dtype=float)
             stats['mean'].append(np.mean(data2[:,1]))
 
+            #--
             # Max results
             results = self.prometheus.custom_query_range(
                 'max(%s * on (instance) slurmjob_info{jobid="%s"})'
@@ -258,10 +270,6 @@ class queryMetrics:
             data = results[0]["values"]
             data2 = np.asarray(data, dtype=float)
             stats['max'].append(np.max(data2[:,1]))
-            # statistics[metric + "_max"] = np.max(data2[:, 1])
-            # statistics[metric + "_min"] = np.min(data2[:, 1])
-            # statistics[metric + "_mean"] = np.mean(data2[:, 1])
-            # statistics[metric + "_std"] = np.std(data2[:, 1])
 
         return(stats)
     
@@ -291,59 +299,7 @@ class queryMetrics:
         Story.append(Spacer(1,0.2*inch))
         #Story.append(HRFlowable(width="100%",thickness=1))
 
-        # Get time series data and compute some stats...
 
-        plots = [{'title':'GPU Core Utilization','metric':'rocm_utilization'},
-                 {'title':'GPU Memory Used (%)','metric':'rocm_vram_used'},
-                 {'title':'GPU Temperature - Die Edge (C)','metric':'rocm_temp_die_edge'},
-                 {'title':'GPU Clock Frequency (MHz)','metric':'rocm_slck_clock_mhz'},
-                 {'title':'GPU Average Power (W)','metric':'rocm_avg_pwr'}]
-        
-        stats = {}
-
-        timeSeries = []
-
-        for plot in plots:
-            metric = plot['metric']
-            plt.figure(figsize=(9,2.5))
-
-            stats[metric + "_min"] = []
-            stats[metric + "_max"] = []
-            stats[metric + "_mean"] = []
-
-            for gpu in range(self.numGPUs):
-                times,values = self.query_time_series_data("card" + str(gpu) + "_" + metric)
-                
-                stats[metric + "_min"].append(np.min(values))
-                stats[metric + "_max"].append(np.max(values))
-                stats[metric + "_mean"].append(np.mean(values))
-                if metric == 'rocm_vram_used':
-                    times2,values2 = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total")
-                    memoryAvail = np.max(values2)
-                    plt.plot(times,100.0 * values / memoryAvail,linewidth=0.4,label='Card %i' % gpu)
-                    stats[metric + "_max"][-1]  = 100.0 * stats[metric + "_max"][-1] / memoryAvail
-                    stats[metric + "_mean"][-1] = 100.0 * stats[metric + "_mean"][-1] / memoryAvail
-                    #plt.ylim([0,100])
-                else:
-                    plt.plot(times,values,linewidth=0.4,label='Card %i' % gpu)
-
-            plt.title(plot['title'])
-            plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center', ncol=self.numGPUs,frameon=False)
-            plt.grid()
-            ax = plt.gca()
-
-            locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
-            formatter = mdates.ConciseDateFormatter(locator)
-            ax.xaxis.set_major_locator(locator)
-            ax.xaxis.set_major_formatter(formatter)
-            plt.savefig('.utilization.png',dpi=150,bbox_inches='tight')
-            plt.close()
-            aplot = Image('.utilization.png')
-            aplot.hAlign='LEFT'
-            aplot._restrictSize(6.5 * inch, 4 * inch)
-            #Story.append(aplot)
-            timeSeries.append(aplot)
-            os.remove('.utilization.png')
 
 
         #--
@@ -356,10 +312,10 @@ class queryMetrics:
 
         for gpu in range(self.numGPUs):
             data.append([gpu,
-                         "%.2f" % stats['rocm_utilization_max'][gpu],"%.2f" % stats['rocm_utilization_mean'][gpu],
-                         "%.2f" % stats['rocm_vram_used_max'][gpu], "%.2f" % stats['rocm_vram_used_mean'][gpu],
-                         "%.2f" % stats['rocm_temp_die_edge_max'][gpu], "%.2f" % stats['rocm_temp_die_edge_mean'][gpu],
-                         "%.2f" % stats['rocm_avg_pwr_max'][gpu], "%.2f" % stats['rocm_avg_pwr_mean'][gpu]
+                         "%.2f" % self.stats['rocm_utilization_max'][gpu],   "%.2f" % self.stats['rocm_utilization_mean'][gpu],
+                         "%.2f" % self.stats['rocm_vram_used_max'][gpu],     "%.2f" % self.stats['rocm_vram_used_mean'][gpu],
+                         "%.2f" % self.stats['rocm_temp_die_edge_max'][gpu], "%.2f" % self.stats['rocm_temp_die_edge_mean'][gpu],
+                         "%.2f" % self.stats['rocm_avg_pwr_max'][gpu],       "%.2f" % self.stats['rocm_avg_pwr_mean'][gpu]
             ])
 
         t=Table(data,rowHeights=[.21*inch] * len(data),
@@ -387,9 +343,10 @@ class queryMetrics:
             t.setStyle(TableStyle([('BACKGROUND', (0, each), (-1, each), bg_color)]))
         Story.append(t)
 
+        #--
+        # Display time-series plots
+        #--
 
-
-        # add Time-series plots (assembled previously)
         Story.append(Spacer(1,0.2*inch))
         Story.append(HRFlowable(width="100%",thickness=1))
         Story.append(Spacer(1,0.2*inch))
@@ -397,11 +354,35 @@ class queryMetrics:
         Story.append(Paragraph(ptext,normal))
         Story.append(Spacer(1,0.2*inch))
 
-        for image in timeSeries:
-            Story.append(image)
+        for entry in self.metrics:
+            metric = entry['metric']
+            plt.figure(figsize=(9,2.5))
 
-        # Buiild the .pdf
+            for gpu in range(self.numGPUs):
+                plt.plot(self.time_series[metric][gpu]['time'],
+                         self.time_series[metric][gpu]['values'],linewidth=0.4,label='Card %i' % gpu)
+                
+            plt.title(entry['title'])
+            plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center', ncol=self.numGPUs,frameon=False)
+            plt.grid()
+            ax = plt.gca()
+
+            locator = mdates.AutoDateLocator(minticks=4, maxticks=12)
+            formatter = mdates.ConciseDateFormatter(locator)
+            ax.xaxis.set_major_locator(locator)
+            ax.xaxis.set_major_formatter(formatter)
+            plt.savefig('.utilization.png',dpi=150,bbox_inches='tight')
+            plt.close()
+            aplot = Image('.utilization.png')
+            aplot.hAlign='LEFT'
+            aplot._restrictSize(6.5 * inch, 4 * inch)
+            Story.append(aplot)
+            os.remove('.utilization.png')
+
+        # Build the .pdf
         doc.build(Story)
+        
+        return
 
 
 
@@ -417,7 +398,7 @@ def main():
     query = queryMetrics()
     query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf)
     query.setup()
-    query.gather_data()
+    query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
     if args.pdf:
         query.dumpFile(args.pdf)
