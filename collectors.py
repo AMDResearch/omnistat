@@ -57,7 +57,7 @@ class ROCMSMI(Collector):
             self.__prefix + "utilization": "GPU use (%)",
             self.__prefix + "vram_total": "VRAM Total Memory (B)",
             self.__prefix + "vram_used": "VRAM Total Used Memory (B)",
-            self.__prefix + "slck_clock_mhz": "sclk clock speed:",
+            self.__prefix + "sclk_clock_mhz": "sclk clock speed:",
             self.__prefix + "mclk_clock_mhz": "mclk clock speed:",
         }
 

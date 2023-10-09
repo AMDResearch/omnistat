@@ -111,7 +111,7 @@ class queryMetrics:
             {'metric':'rocm_utilization','title':'GPU Core Utilization','title_short':'Utilization (%)'},
             {'metric':'rocm_vram_used','title':'GPU Memory Used (%)','title_short':'Memory Use (%)'},
             {'metric':'rocm_temp_die_edge','title':'GPU Temperature - Die Edge (C)','title_short':'Temperature (C)'},
-            {'metric':'rocm_slck_clock_mhz','title':'GPU Clock Frequency (MHz)'},
+            {'metric':'rocm_sclk_clock_mhz','title':'GPU Clock Frequency (MHz)'},
             {'metric':'rocm_avg_pwr','title':'GPU Average Power (W)','title_short':'Power (W)'}
             ]
 
