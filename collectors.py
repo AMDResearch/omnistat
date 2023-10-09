@@ -143,6 +143,7 @@ class SlurmJob(Collector):
 
         self.__SLURMmetrics = {}
         self.__state = "unknown"
+        self.__annotation_enabled = False
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -155,7 +156,12 @@ class SlurmJob(Collector):
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid", "user", "partition", "nodes"]
         self.__SLURMmetrics["info"] = Gauge(
-            self.__prefix + "info", "SLURM job id2", labels
+            self.__prefix + "info", "SLURM job id", labels
+        )
+
+        # metric to support user annotations
+        self.__SLURMmetrics["annotations"] = Gauge(
+            self.__prefix + "annotations", "User job annotations", ["marker","jobid"]
         )
 
         for metric in self.__SLURMmetrics:
@@ -166,8 +172,6 @@ class SlurmJob(Collector):
 
         # Case when SLURM job is allocated
         if data.stdout.strip():
-            #
-
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
             results = data.stdout.strip().split(",")
@@ -187,6 +191,22 @@ class SlurmJob(Collector):
                 nodes=results[3],
             ).set(1)
 
+            # Check for user supplied annotations
+            userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
+            if os.path.isfile(userFile):
+                with open(userFile, "r") as file:
+                    data = json.load(file)
+
+                self.__SLURMmetrics["annotations"].labels(
+                    marker=data["annotation"],
+                    jobid=results[0],
+                ).set(data["timestamp_secs"])
+                self.__annotation_enabled = True
+            else:
+               if self.__annotation_enabled:
+                self.__SLURMmetrics["annotations"].clear()
+                self.__annotation_enabled = False
+
         # Case when no job detected
         else:
             # self.__SLURMmetrics["jobid"].labels(user="",
@@ -200,6 +220,7 @@ class SlurmJob(Collector):
             # cache state
             if self.__state == "JOB_ENABLED":
                 self.__SLURMmetrics["info"].clear()
+                self.__SLURMmetrics["annotations"].clear()
             self.__state = "NOJOB"
 
             self.__SLURMmetrics["info"].labels(
