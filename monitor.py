@@ -25,7 +25,7 @@
 # Prometheus data collector for HPC systems.
 #
 # Supporting monitor class to implement a prometheus data collector with one 
-# more custom collector(s).
+# or more custom collector(s).
 #--
 
 import logging
