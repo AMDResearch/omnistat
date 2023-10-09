@@ -1,5 +1,4 @@
 Flask>=2.3.2
 flask_prometheus_metrics>=1.0.0
 prometheus_client>=0.17.0
-prometheus-api-client>=0.5.4
-reportlab>=4.0.5
+
