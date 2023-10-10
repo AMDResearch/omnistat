@@ -57,6 +57,13 @@ class queryMetrics:
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
+        self.sha = "Unknown"
+
+        # Attempt to get current git sha
+        cmd = ["git describe --always"]
+        results = subprocess.run(cmd, capture_output=True,check=False,shell=True)
+        if results.returncode == 0:
+            self.sha = results.stdout.decode("utf-8")
 
     def __del__(self):
         if self.enable_redirect:
@@ -130,7 +137,11 @@ class queryMetrics:
         ]
         results = subprocess.check_output(cmd, universal_newlines=True).strip()
         results = results.split("\n")
-        assert len(results) == 1
+
+        # exit if no jobs found
+        if not results[0]:
+            print("No job found for id=%i" % id)
+            sys.exit(0)
 
         jobdata = {}
         data = results[0].split("|")
