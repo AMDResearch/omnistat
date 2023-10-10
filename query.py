@@ -94,6 +94,9 @@ class queryMetrics:
         # query jobinfo
         assert self.jobID > 1
         self.jobinfo = self.query_slurm_job()
+        if self.jobinfo["begin_date"] == "Unknown":
+            print("Job %s has not run yet." % self.jobID)
+            sys.exit(0)
 
         self.start_time = datetime.strptime(
             self.jobinfo["begin_date"], "%Y-%m-%dT%H:%M:%S"
