@@ -31,6 +31,7 @@ import os
 import numpy as np
 import subprocess
 import argparse
+import timeit
 import matplotlib.pylab as plt
 import matplotlib.dates as mdates
 from reportlab.lib import colors
@@ -44,6 +45,9 @@ from reportlab.lib.units import inch
 class queryMetrics:
 
     def __init__(self):
+
+        # initiate timer
+        self.timer_start = timeit.default_timer()
 
          # local site configuration
         self.config = {}
@@ -245,6 +249,11 @@ class queryMetrics:
                 print("  %6.2f  %6.2f  |" % (self.stats[metric + "_max"][card],self.stats[metric + "_mean"][card]),end='')
             print("")
 
+        print("")
+        print("--")
+        print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
+        print("Version = %s" % self.sha)
+
         return
 
 
@@ -336,9 +345,6 @@ class queryMetrics:
         Story.append(Spacer(1,0.2*inch))
         #Story.append(HRFlowable(width="100%",thickness=1))
 
-
-
-
         #--
         # Display general GPU Statistics
         #--
@@ -415,6 +421,20 @@ class queryMetrics:
             aplot._restrictSize(6.5 * inch, 4 * inch)
             Story.append(aplot)
             os.remove('.utilization.png')
+
+        Story.append(Spacer(1,0.2*inch))
+        Story.append(HRFlowable(width="100%",thickness=1))
+
+        footerStyle = ParagraphStyle('footer',
+                           fontSize=8,
+                           parent=styles['Normal'],
+        )
+
+        ptext='''Query execution time = %.1f secs''' % (timeit.default_timer() - self.timer_start)
+        Story.append(Paragraph(ptext,footerStyle))
+        ptext='''Version = %s''' % self.sha
+        Story.append(Paragraph(ptext,footerStyle))
+        Story.append(HRFlowable(width="100%",thickness=1))
 
         # Build the .pdf
         doc.build(Story)
