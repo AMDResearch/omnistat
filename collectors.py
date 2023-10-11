@@ -166,15 +166,9 @@ class SlurmJob(Collector):
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
         self.__SLURMmetrics = {}
-        self.__state = "unknown"
-        self.__annotation_enabled = False
 
     def registerMetrics(self):
         """Register metrics of interest"""
-
-        # labels = ["user","partition","nodes","cores"]
-        # # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id",labels)
-        # self.__SLURMmetrics["jobid"] = Gauge(self.__prefix + "jobid","SLURM job id")
 
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
@@ -194,20 +188,16 @@ class SlurmJob(Collector):
     def updateMetrics(self):
         data = utils.runShellCommand(self.__squeue_query)
 
+        self.__SLURMmetrics["info"].clear()
+        self.__SLURMmetrics["annotations"].clear()
+
         # Case when SLURM job is allocated
         if data.stdout.strip():
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
             results = data.stdout.strip().split(",")
 
-            # self.__SLURMmetrics["jobid"].set(results[0])
-            #            self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
-
-            # cache state
-            if self.__state == "NOJOB":
-                self.__SLURMmetrics["info"].clear()
-            self.__state = "JOB_ENABLED"
-
+            self.__SLURMmetrics["info"].clear()
             self.__SLURMmetrics["info"].labels(
                 jobid=results[0],
                 user=results[1],
@@ -225,27 +215,9 @@ class SlurmJob(Collector):
                     marker=data["annotation"],
                     jobid=results[0],
                 ).set(data["timestamp_secs"])
-                self.__annotation_enabled = True
-            else:
-               if self.__annotation_enabled:
-                self.__SLURMmetrics["annotations"].clear()
-                self.__annotation_enabled = False
 
         # Case when no job detected
         else:
-            # self.__SLURMmetrics["jobid"].labels(user="",
-            #         partition="",
-            #         nodes="",
-            #         cores="").set(-1)
-
-            # self.__SLURMmetrics["jobid"].set(-1)
-            # self.__SLURMmetrics["info"].remove(["jobid","user","partition"])
-
-            # cache state
-            if self.__state == "JOB_ENABLED":
-                self.__SLURMmetrics["info"].clear()
-                self.__SLURMmetrics["annotations"].clear()
-            self.__state = "NOJOB"
 
             self.__SLURMmetrics["info"].labels(
                 jobid="", user="", partition="", nodes=""
