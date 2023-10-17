@@ -69,10 +69,10 @@ class Monitor():
         enableSLURM = True
 
         if self.enableROCmCollector:
-            from collectors import ROCMSMI
+            from collector_rocm_smi import ROCMSMI
             self.__collectors.append(ROCMSMI())
         if self.enableSLURMCollector:
-            from collectors import SlurmJob
+            from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob())
         
         # Initialize all metrics

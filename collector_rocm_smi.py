@@ -22,11 +22,22 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-# Prometheus data collector for HPC systems.
-#
-# Custom collector(s) - defines required methods for all metric collectors
-# implemented as a child class.
-# --
+"""ROCM-smi data collector
+
+Implements a number of prometheus gauge metrics based on GPU data collected from
+rocm-smi.  The "rocm-smi" binary must be pre-installed to use this data
+collector. This data collector gathers statistics on a per GPU basis and exposes
+metrics with a "card.*_rocm prefix". The following example highlights example
+metrics for card 0:
+
+card0_rocm_temp_die_edge 36.0
+card0_rocm_avg_pwr 30.0
+card0_rocm_utilization 0.0
+card0_rocm_vram_total 3.4342961152e+010
+card0_rocm_vram_used 7.028736e+06
+card0_rocm_sclk_clock_mhz 300.0
+card0_rocm_mclk_clock_mhz 1200.0
+"""
 
 import sys
 import utils
@@ -36,7 +47,6 @@ import os
 import platform
 from collector_base import Collector
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
-
 
 class ROCMSMI(Collector):
     def __init__(self):
@@ -146,82 +156,4 @@ class ROCMSMI(Collector):
                         value = value[1:].rstrip("Mhz)")
                     self.__GPUmetrics[gpu][metric].set(value)
                     logging.debug("updated: %s = %s" % (metric, value))
-        return
-
-
-# SLURM Job collector
-class SlurmJob(Collector):
-    def __init__(self):
-        logging.debug("Initializing SlurmJob data collector")
-        self.__prefix = "slurmjob_"
-
-        # setup slurm binary path
-        command = utils.resolvePath("squeue", "SLURM_PATH")
-        # command-line flags for use with squeue to obtained desired metrics
-        hostname = platform.node().split(".", 1)[0]
-        #flags = "-w " + hostname + " -h  --format=%i,%u,%P,%D,%C"
-        flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
-        # cache query command with options
-        self.__squeue_query = [command] + flags.split()
-
-        logging.debug("sqeueue_exec = %s" % self.__squeue_query)
-
-        self.__SLURMmetrics = {}
-
-    def registerMetrics(self):
-        """Register metrics of interest"""
-
-        # alternate approach - define an info metric
-        # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid", "user", "partition", "nodes","batchflag"]
-        self.__SLURMmetrics["info"] = Gauge(
-            self.__prefix + "info", "SLURM job id", labels
-        )
-
-        # metric to support user annotations
-        self.__SLURMmetrics["annotations"] = Gauge(
-            self.__prefix + "annotations", "User job annotations", ["marker","jobid"]
-        )
-
-        for metric in self.__SLURMmetrics:
-            logging.debug("--> Registered SLURM metric = %s" % metric)
-
-    def updateMetrics(self):
-        data = utils.runShellCommand(self.__squeue_query)
-
-        self.__SLURMmetrics["info"].clear()
-        self.__SLURMmetrics["annotations"].clear()
-
-        # Case when SLURM job is allocated
-        if data.stdout.strip():
-            # query output format:
-            # JOBID,USER,PARTITION,NODES,CPUS
-            results = data.stdout.strip().split(":")
-
-            self.__SLURMmetrics["info"].clear()
-            self.__SLURMmetrics["info"].labels(
-                jobid=results[0],
-                user=results[1],
-                partition=results[2],
-                nodes=results[3],
-                batchflag=results[4]
-            ).set(1)
-
-            # Check for user supplied annotations
-            userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
-            if os.path.isfile(userFile):
-                with open(userFile, "r") as file:
-                    data = json.load(file)
-
-                self.__SLURMmetrics["annotations"].labels(
-                    marker=data["annotation"],
-                    jobid=results[0],
-                ).set(data["timestamp_secs"])
-
-        # Case when no job detected
-        else:
-            self.__SLURMmetrics["info"].labels(
-                jobid="", user="", partition="", nodes="",batchflag=""
-            ).set(1)
-
         return
