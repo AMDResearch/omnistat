@@ -50,7 +50,7 @@ def main():
 
     # Setup metrics endpoint
     app.route("/metrics")(monitor.updateAllMetrics)
-    app.run(host="0.0.0.0", port=8000)
+    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
 
 
 # Run the main function

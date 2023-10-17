@@ -86,3 +86,14 @@ def resolvePath(desiredCommand,envVar):
 
     return path
 
+def removeQuotes(input):
+    """Remove leading/trailing quotes from a string
+
+    Args:
+        input (str): string to update
+    """
+    if input.startswith('"'):
+        input = input.strip('"')
+    elif input.startswith('\''):
+        input = input.strip('\'')
+    return(input)

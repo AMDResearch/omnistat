@@ -28,38 +28,58 @@
 # or more custom collector(s).
 #--
 
+import configparser
 import logging
-import sys
-import re
+import os
 import platform
+import re
+import sys
+import utils
 from prometheus_client import generate_latest, CollectorRegistry
+from pathlib import Path
 
 class Monitor():
     def __init__(self):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
-        # defined GPU prometheus metrics (stored on a per-gpu basis)
-        # self.__GPUmetrics = {}
- 
+
+        # read runtime config (file is required to exist)
+        topDir = Path(__file__).resolve().parent
+        configFile = str(topDir) + "/omniwatch.config"
+        self.runtimeConfig = {}
+
+        if os.path.isfile(configFile):
+            logging.info("Reading runtime-config from %s" % configFile)
+            config = configparser.ConfigParser()
+            config.read(configFile)
+
+            self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
+            self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
+            self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
+
+            if config.has_option('omniwatch.collectors.slurm','host_skip'):
+                self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
+
+        else:
+            utils.error("Unable to find runtime config file %s" % configFile)
+
         # defined global prometheus metrics
         self.__globalMetrics = {}
         self.__registry_global = CollectorRegistry()
-        # Resource manager type
-        self.__rms = "slurm"
 
         # define desired collectors
         self.__collectors = []
 
-        self.enableROCmCollector = True
-        self.enableSLURMCollector = True
-
-        # allow for disablement of slurm collector via regex match
-        SLURM_host_skip="login.*"
-        hostname = platform.node().split('.', 1)[0]
-        p = re.compile(SLURM_host_skip)
-        if p.match(hostname):
-            self.enableSLURMCollector = False
+         # allow for disablement of slurm collector via regex match
+        if self.runtimeConfig['collector_enable_slurm']:
+            if config.has_option('omniwatch.collectors.slurm','host_skip'):
+                host_skip = utils.removeQuotes(config['omniwatch.collectors.slurm']['host_skip'])
+                hostname = platform.node().split('.', 1)[0]
+                p = re.compile(host_skip)
+                if p.match(hostname):
+                    self.runtimeConfig['collector_enable_slurm'] = False
+                    logging.info("Disabling SLURM collector via host_skip match (%s)" % host_skip)
 
         logging.debug("Completed collector initialization (base class)")
         return
@@ -68,10 +88,10 @@ class Monitor():
         rocmSMI = True
         enableSLURM = True
 
-        if self.enableROCmCollector:
+        if self.runtimeConfig['collector_enable_rocm_smi']:
             from collector_rocm_smi import ROCMSMI
             self.__collectors.append(ROCMSMI())
-        if self.enableSLURMCollector:
+        if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob())
         
