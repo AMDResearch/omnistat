@@ -155,7 +155,7 @@ class SlurmJob(Collector):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
 
-        # setup rocm-smi path
+        # setup slurm binary path
         command = utils.resolvePath("squeue", "SLURM_PATH")
         # command-line flags for use with squeue to obtained desired metrics
         hostname = platform.node().split(".", 1)[0]
