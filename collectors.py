@@ -159,7 +159,8 @@ class SlurmJob(Collector):
         command = utils.resolvePath("squeue", "SLURM_PATH")
         # command-line flags for use with squeue to obtained desired metrics
         hostname = platform.node().split(".", 1)[0]
-        flags = "-w " + hostname + " -h  --format=%i,%u,%P,%D,%C"
+        #flags = "-w " + hostname + " -h  --format=%i,%u,%P,%D,%C"
+        flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
         # cache query command with options
         self.__squeue_query = [command] + flags.split()
 
@@ -172,7 +173,7 @@ class SlurmJob(Collector):
 
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid", "user", "partition", "nodes"]
+        labels = ["jobid", "user", "partition", "nodes","batchflag"]
         self.__SLURMmetrics["info"] = Gauge(
             self.__prefix + "info", "SLURM job id", labels
         )
@@ -195,7 +196,7 @@ class SlurmJob(Collector):
         if data.stdout.strip():
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
-            results = data.stdout.strip().split(",")
+            results = data.stdout.strip().split(":")
 
             self.__SLURMmetrics["info"].clear()
             self.__SLURMmetrics["info"].labels(
@@ -203,6 +204,7 @@ class SlurmJob(Collector):
                 user=results[1],
                 partition=results[2],
                 nodes=results[3],
+                batchflag=results[4]
             ).set(1)
 
             # Check for user supplied annotations
@@ -218,9 +220,8 @@ class SlurmJob(Collector):
 
         # Case when no job detected
         else:
-
             self.__SLURMmetrics["info"].labels(
-                jobid="", user="", partition="", nodes=""
+                jobid="", user="", partition="", nodes="",batchflag=""
             ).set(1)
 
         return
