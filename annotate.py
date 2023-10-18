@@ -46,7 +46,7 @@ args = parser.parse_args()
 if args.mode == 'start' and args.text is None:
     parser.error("The --text option is required for \"start\" mode.")
 
-filename="/tmp/omniwatch_" + os.getlogin() + "_annotate.json"
+filename="/tmp/omniwatch_" + os.environ.get('USER') + "_annotate.json"
 
 if args.mode == "start":
     data = {}
