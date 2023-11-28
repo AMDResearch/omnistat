@@ -57,6 +57,15 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
         sys.exit(1)
     return results
 
+def runBGProcess(command,outputFile=".bgcommand.output",mode='w'):
+
+    logging.debug("Command to run in background = %s" % command)
+    #results = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=open(outputFile,"w"))
+
+    outfile = open(outputFile,mode)
+    results = subprocess.Popen(command,stdout=outfile,stderr=outfile)
+    return results
+
 def resolvePath(desiredCommand,envVar):
     """Resolve underlying path to a desired shell command.
 
