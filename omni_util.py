@@ -25,10 +25,12 @@
 import argparse
 import configparser
 import logging
-import sys
 import os
+import subprocess
+import sys
 import time
 import utils
+import yaml
 from pathlib import Path
 
 class UserBasedMonitoring():
@@ -46,51 +48,88 @@ class UserBasedMonitoring():
             self.runtimeConfig = configparser.ConfigParser()
             self.runtimeConfig.read(configFile)
 
+        self.slurmHosts = self.getSlurmHosts()
         return
+    
+    def getSlurmHosts(self):
+        hostlist=os.getenv('SLURM_JOB_NODELIST',None)
+        if hostlist:
+            results = utils.runShellCommand(['scontrol','show','hostname',hostlist])
+            if results.stdout.strip():
+                return results.stdout.splitlines()
+            else:
+                utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
+        else:
+            utils.error("No SLURM_JOB_NODELIST var detected - please verify running under SLURM")
 
-    def startPromServer(self,host='localhost'):
-        if host == "localhost":
-            logging.info("Starting prometheus server on localhost")
+    def startPromServer(self):
 
-            section = 'omniwatch.promserver'
-            ps_template = self.runtimeConfig[section].get('template','prometheus.yml.template')
-            ps_binary = self.runtimeConfig[section].get('binary')
-            ps_datadir = self.runtimeConfig[section].get('datadir','data_prom')
-            ps_logfile = self.runtimeConfig[section].get('logfile','prom_server.log')
+        logging.info("Starting prometheus server on localhost")
+
+        section = 'omniwatch.promserver'
+        ps_template = self.runtimeConfig[section].get('template','prometheus.yml.template')
+        ps_binary = self.runtimeConfig[section].get('binary')
+        ps_datadir = self.runtimeConfig[section].get('datadir','data_prom')
+        ps_logfile = self.runtimeConfig[section].get('logfile','prom_server.log')
+
+        # generate prometheus config file to scrape local exporters
+        computes = {}
+        computes['targets'] = []
+        if self.slurmHosts:
+            for host in self.slurmHosts:
+                computes['targets'].append("%s:%s" % (host,8001))
+
+            prom_config = {}
+            prom_config['scrape_configs'] = []
+            prom_config['scrape_configs'].append({'job_name':'omniwatch',
+                                                'scrape_interval':'60s',
+                                                'scrape_timeout':'5s',
+                                                'static_configs':[computes]})
+            with open('prometheus.yml', 'w') as yaml_file:
+                yaml.dump(prom_config, yaml_file, sort_keys=False) 
 
             command=[ps_binary,
-                    "--config.file=%s" % ps_template,
+                    "--config.file=%s" % 'prometheus.yml',
                     "--storage.tsdb.path=%s" % ps_datadir
             ]
             utils.runBGProcess(command,outputFile=ps_logfile)
-        # elif host == "slurm":
-        #     # launch on *last* host assigned to this job
-        #     logging.info("Starting prometheus server under slurm")
         else:
-            utils.error("Unsupported host type for startPromServer (%s)" % host )
+            utils.error("No compute hosts avail for startPromServer" )
 
-    def stopPromServer(self,host=None):
-        if host == "localhost":
-            logging.info("Stopping prometheus server on localhost")
+    def stopPromServer(self):
+    
+        logging.info("Stopping prometheus server on localhost")
 
-            command=["pkill","-SIGTERM","-u","%s" % os.getuid(),"prometheus"]
+        command=["pkill","-SIGTERM","-u","%s" % os.getuid(),"prometheus"]
 
-            utils.runShellCommand(command)
-            time.sleep(1)
+        utils.runShellCommand(command)
+        time.sleep(1)
         return
 
-    def startExporters(self,host=None):
-        binary = self.topDir / 'node_monitoring.py'
-        logfile = self.runtimeConfig['omniwatch.collectors'].get('logfile','exporter.log')
-        logging.info('Exporter binary = %s (logfile=%s)' % (binary,logfile))
-        utils.runBGProcess(binary,outputFile=logfile)
+    def startExporters(self):
+        port = self.runtimeConfig['omniwatch.collectors'].get('usermode_port','8001')
+
+        if self.slurmHosts:
+            for host in self.slurmHosts:
+                logging.info("Launching exporter on host -> %s" % host)
+                logfile = "exporter.%s.log" % host
+                logpath = self.topDir / logfile
+                cmd=["gunicorn","-D","-b 0.0.0.0:%s" % port,"--capture-output",
+                "--log-file %s" % logpath,"--pythonpath %s" % self.topDir,
+                "node_monitoring:app"]
+
+                logging.debug("-> running command: %s" % (["ssh",host] + cmd))
+                subprocess.run(["ssh",host] + cmd)
         return
     
     def stopExporters(self):
-        command=["pkill","-SIGINT","-f","-u","%s" % os.getuid(),"omniwatch/node_monitoring.py"]
-        logging.info(command)
-        utils.runShellCommand(command)
-        time.sleep(1)
+        # command=["pkill","-SIGINT","-f","-u","%s" % os.getuid(),"python.*omniwatch.*node_monitoring.py"]
+
+        for host in self.slurmHosts:
+            logging.info("Stopping exporter for host -> %s" % host)
+            cmd=["curl","%s:%s/shutdown" % (host,"8001")]
+            logging.debug("-> running command: %s" % cmd)
+            utils.runShellCommand(["ssh",host] + cmd)
         return
     
 
@@ -99,24 +138,25 @@ def main():
     userUtils = UserBasedMonitoring()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("-v","--verbose", help="increase output verbosity",action='store_true')
     parser.add_argument("--startserver", help="Start local prometheus server",action='store_true')
     parser.add_argument("--stopserver", help="Stop local prometheus server",action='store_true')
     parser.add_argument("--startexporters", help="Start data expporters",action='store_true') 
-    parser.add_argument("--stopexporters", help="Stop data exporters",action='store_true') 
-
-    args = parser.parse_args()
+    parser.add_argument("--stopexporters", help="Stop data exporters",action='store_true')
     
-    host="localhost"
-    #host="slurm"
+    args = parser.parse_args()
+
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
     if args.startserver:
         userUtils.startPromServer()
     elif args.stopserver:
-        userUtils.stopPromServer(host=host)
+        userUtils.stopPromServer()
     elif args.startexporters:
         userUtils.startExporters()
     elif args.stopexporters:
         userUtils.stopExporters()
-
 
 if __name__ == "__main__":
     main()
