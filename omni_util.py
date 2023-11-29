@@ -37,7 +37,9 @@ from pathlib import Path
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
+        return
 
+    def setup(self):
         # read runtime config (file is required to exist)
         self.topDir = Path(__file__).resolve().parent
         configFile = str(self.topDir) + "/omniwatch.config"
@@ -48,7 +50,6 @@ class UserBasedMonitoring:
             self.runtimeConfig.read(configFile)
 
         self.slurmHosts = self.getSlurmHosts()
-        return
 
     def getSlurmHosts(self):
         hostlist = os.getenv("SLURM_JOB_NODELIST", None)
@@ -59,8 +60,8 @@ class UserBasedMonitoring:
             else:
                 utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
         else:
-            utils.error(
-                "No SLURM_JOB_NODELIST var detected - please verify running under SLURM"
+            logging.warning(
+                "\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n"
             )
 
     def startPromServer(self):
@@ -149,26 +150,24 @@ def main():
     userUtils = UserBasedMonitoring()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-v", "--verbose", help="increase output verbosity", action="store_true"
-    )
-    parser.add_argument(
-        "--startserver", help="Start local prometheus server", action="store_true"
-    )
-    parser.add_argument(
-        "--stopserver", help="Stop local prometheus server", action="store_true"
-    )
-    parser.add_argument(
-        "--startexporters", help="Start data expporters", action="store_true"
-    )
-    parser.add_argument(
-        "--stopexporters", help="Stop data exporters", action="store_true"
-    )
+    parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
+    parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
+    parser.add_argument("--startexporters", help="Start data expporters", action="store_true")
+    parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
+    parser.add_argument("--start",help="Start all necessary user-based monitoring services",action="store_true")
+    parser.add_argument("--stop",help="Stop all user-based monitoring services",action="store_true")
 
     args = parser.parse_args()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
+
+    if len(sys.argv) <= 1:
+        parser.print_help()
+        sys.exit(1)
+
+    userUtils.setup()
 
     if args.startserver:
         userUtils.startPromServer()
@@ -178,7 +177,14 @@ def main():
         userUtils.startExporters()
     elif args.stopexporters:
         userUtils.stopExporters()
-
+    elif args.start:
+        userUtils.startExporters()
+        userUtils.startPromServer()
+    elif args.stop:
+        userUtils.stopPromServer()
+        userUtils.startExporters()
+    else:
+        parser.print_help()
 
 if __name__ == "__main__":
     main()
