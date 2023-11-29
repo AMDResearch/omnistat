@@ -1,5 +1,9 @@
 rocm-smi
 node_monitoring.py.orig
 __pycache__
+data_prom
+.vscode
+*.log
+*.pdf
 *~
 
