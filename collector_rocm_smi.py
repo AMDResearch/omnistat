@@ -154,6 +154,8 @@ class ROCMSMI(Collector):
                     if rocmName.endswith("clock speed:"):
                         # values need to be parsed to access data, they look like '(300Mhz)'
                         value = value[1:].rstrip("Mhz)")
+                    if value.startswith("N/A"):
+                        value = 0.
                     self.__GPUmetrics[gpu][metric].set(value)
                     logging.debug("updated: %s = %s" % (metric, value))
         return
