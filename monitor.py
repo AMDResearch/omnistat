@@ -60,6 +60,8 @@ class Monitor():
 
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
                 self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
+            if config.has_option('omniwatch.collectors','smi_binary'):
+                self.runtimeConfig['rocm_smi_binary'] = config['omniwatch.collectors']['smi_binary']
 
         else:
             utils.error("Unable to find runtime config file %s" % configFile)
@@ -90,7 +92,10 @@ class Monitor():
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
             from collector_rocm_smi import ROCMSMI
-            self.__collectors.append(ROCMSMI())
+            binary = None
+            if self.runtimeConfig['rocm_smi_binary']:
+                binary = self.runtimeConfig['rocm_smi_binary']
+            self.__collectors.append(ROCMSMI(rocm_smi_binary=binary))
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob())
