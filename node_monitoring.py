@@ -38,21 +38,23 @@
 from monitor import Monitor
 from flask import Flask
 from flask_prometheus_metrics import register_metrics
+import sys
 
-def main():
+app = Flask("omniwatch")
+monitor = Monitor()
+monitor.initMetrics()
 
-    monitor = Monitor()
-    monitor.initMetrics()
+# note: following shutdown procedure works with gunicorn only
+def shutdown():
+    sys.exit(4)
 
-    # Register metrics with Flask app
-    app = Flask("omniwatch")
-    register_metrics(app, app_version="v0.1.0", app_config="production")
+# Register metrics with Flask app
+register_metrics(app, app_version="v0.1.0", app_config="production")
 
-    # Setup metrics endpoint
-    app.route("/metrics")(monitor.updateAllMetrics)
-    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
-
+# Setup endpoint(s)
+app.route("/metrics")(monitor.updateAllMetrics)
+app.route("/shutdown")(shutdown)
 
 # Run the main function
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
