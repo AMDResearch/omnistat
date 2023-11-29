@@ -131,8 +131,9 @@ class UserBasedMonitoring:
                     "node_monitoring:app",
                 ]
 
-                logging.debug("-> running command: %s" % (["ssh", host] + cmd))
-                subprocess.run(["ssh", host] + cmd)
+                base_ssh = ["ssh",host]
+                logging.debug("-> running command: %s" % (base_ssh + cmd))
+                subprocess.run(base_ssh + cmd)
         return
 
     def stopExporters(self):
