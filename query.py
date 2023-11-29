@@ -26,14 +26,16 @@
 from prometheus_api_client import PrometheusConnect, MetricSnapshotDataFrame
 from prometheus_api_client.utils import parse_datetime
 from datetime import datetime, timedelta
+import argparse
+import configparser
 import sys
 import os
 import numpy as np
 import subprocess
-import argparse
 import timeit
 import matplotlib.pylab as plt
 import matplotlib.dates as mdates
+from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
@@ -50,12 +52,22 @@ class queryMetrics:
         self.timer_start = timeit.default_timer()
 
          # local site configuration
+
+        # read runtime config (file is required to exist)
+        self.topDir = Path(__file__).resolve().parent
+        configFile = str(self.topDir) + "/omniwatch.config"
+
+        if os.path.isfile(configFile):
+            runtimeConfig = configparser.ConfigParser()
+            runtimeConfig.read(configFile)
+
+        section = 'omniwatch.query'
         self.config = {}
         self.config["mi1004x"] = {"num_gpus": 4}
         self.config["mi1008x"] = {"num_gpus": 8}
         self.config["ci"] = {"num_gpus": 4}
-        self.config["system_name"] = "HPC Fund"
-        self.config["prometheus_url"] = "http://10.0.100.11:9090"
+        self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
+        self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
         self.jobID = None
         self.enable_redirect = False
