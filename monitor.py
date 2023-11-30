@@ -93,7 +93,7 @@ class Monitor():
         if self.runtimeConfig['collector_enable_rocm_smi']:
             from collector_rocm_smi import ROCMSMI
             binary = None
-            if self.runtimeConfig['rocm_smi_binary']:
+            if 'rocm_smi_binary' in self.runtimeConfig:
                 binary = self.runtimeConfig['rocm_smi_binary']
             self.__collectors.append(ROCMSMI(rocm_smi_binary=binary))
         if self.runtimeConfig['collector_enable_slurm']:
