@@ -37,8 +37,8 @@ from pathlib import Path
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
-        self.scrape_interval = 60  # default scrape inteval in seconds
-        self.timeout = 5          # default scrapte timeout in seconds
+        self.scrape_interval = 60  # default scrape interval in seconds
+        self.timeout = 5           # default scrapte timeout in seconds
         return
 
     def setup(self):
