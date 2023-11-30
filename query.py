@@ -66,6 +66,7 @@ class queryMetrics:
         self.config["mi1004x"] = {"num_gpus": 4}
         self.config["mi1008x"] = {"num_gpus": 8}
         self.config["ci"] = {"num_gpus": 4}
+        self.config["batch"] = {"num_gpus": 8}
         self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
