@@ -183,7 +183,7 @@ def main():
         userUtils.startPromServer()
     elif args.stop:
         userUtils.stopPromServer()
-        userUtils.startExporters()
+        userUtils.stopExporters()
     else:
         parser.print_help()
 
