@@ -37,6 +37,8 @@ from pathlib import Path
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
+        self.scrape_interval = 60  # default scrape inteval in seconds
+        self.timeout = 5          # default scrapte timeout in seconds
         return
 
     def setup(self):
@@ -50,6 +52,10 @@ class UserBasedMonitoring:
             self.runtimeConfig.read(configFile)
 
         self.slurmHosts = self.getSlurmHosts()
+
+    def setMonitoringInterval(self,interval):
+        self.scrape_interval = int(interval)
+        return
 
     def getSlurmHosts(self):
         hostlist = os.getenv("SLURM_JOB_NODELIST", None)
@@ -66,6 +72,13 @@ class UserBasedMonitoring:
 
     def startPromServer(self):
         logging.info("Starting prometheus server on localhost")
+        scrape_interval = "%ss" %self.scrape_interval
+        logging.info("--> sampling interval = %s" % scrape_interval)
+
+        if self.timeout < self.scrape_interval:
+            scrape_timeout = "5s"
+        else:
+            scrape_timeout = scrape_interval
 
         section = "omniwatch.promserver"
         ps_template = self.runtimeConfig[section].get(
@@ -87,8 +100,8 @@ class UserBasedMonitoring:
             prom_config["scrape_configs"].append(
                 {
                     "job_name": "omniwatch",
-                    "scrape_interval": "60s",
-                    "scrape_timeout": "5s",
+                    "scrape_interval": scrape_interval,
+                    "scrape_timeout": scrape_timeout,
                     "static_configs": [computes],
                 }
             )
@@ -125,6 +138,7 @@ class UserBasedMonitoring:
                     "gunicorn",
                     "-D",
                     "-b 0.0.0.0:%s" % port,
+                    "--access-logfile %s" % (self.topDir / "access.log"),
                     "--capture-output",
                     "--log-file %s" % logpath,
                     "--pythonpath %s" % self.topDir,
@@ -158,6 +172,7 @@ def main():
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
     parser.add_argument("--start",help="Start all necessary user-based monitoring services",action="store_true")
     parser.add_argument("--stop",help="Stop all user-based monitoring services",action="store_true")
+    parser.add_argument("--interval",help="Monitoring sampling interval in secs (default=60)")
 
     args = parser.parse_args()
 
@@ -169,6 +184,8 @@ def main():
         sys.exit(1)
 
     userUtils.setup()
+    if args.interval:
+        userUtils.setMonitoringInterval(args.interval)
 
     if args.startserver:
         userUtils.startPromServer()
