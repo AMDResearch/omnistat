@@ -41,50 +41,39 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 
 class SlurmJob(Collector):
-    def __init__(self):
+    def __init__(self,userMode=False):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
-        self.__userMode = False
+        self.__userMode = userMode
         self.__SLURMmetrics = {}
         self.__slurmJobInfo = []
 
-        # check if running within slurm job (user mode profiling) - if so, cache jobinfo
-        if "SLURM_JOB_ID" in os.environ:
-            self.__userMode = True
-            logging.info("Running slurm collector within slurm job...")
-            jobinfo = [None] * 5
+        # setup squeue binary path to query slurm to determine node ownership
+        command = utils.resolvePath("squeue", "SLURM_PATH")
+        # command-line flags for use with squeue to obtained desired metrics
+        hostname = platform.node().split(".", 1)[0]
+        flags = (
+            "-w "
+            + hostname
+            + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
+        )
+        # cache query command with options
+        self.__squeue_query = [command] + flags.split()
+        logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
-            try:
-                jobinfo[0] = os.environ["SLURM_JOB_ID"]
-                jobinfo[1] = os.environ["SLURM_JOB_USER"]
-                jobinfo[2] = os.environ["SLURM_JOB_PARTITION"]
-                jobinfo[3] = os.environ["SLURM_NNODES"]
-            except:
-                utils.error(
-                    "Unable to query expected SLURM environment variables in user mode"
-                )
+        if self.__userMode:
+            # cache current slurm job in user mode profiling - assumption is it doesn't change
+            # note: a longer timeout is provided since we only query once and some systems have slow
+            # slurm response times
+            logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
+            data = self.querySlurmJob(timeout=10,exit_on_error=True)
+            if data.stdout.strip():
+                    self.__slurmJobInfo = data.stdout.strip().split(":")
+                    logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
 
-            if "SLURM_LAUNCH_NODE_IPADDR" in os.environ:
-                jobinfo[4] = 0  # interactive job
-            else:
-                jobinfo[4] = 1  # batch job
-
-            self.__slurmJobInfo = jobinfo
-
-        else:
-            # setup squeue binary path to query slurm to determine node ownership
-            command = utils.resolvePath("squeue", "SLURM_PATH")
-            # command-line flags for use with squeue to obtained desired metrics
-            hostname = platform.node().split(".", 1)[0]
-            flags = (
-                "-w "
-                + hostname
-                + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
-            )
-            # cache query command with options
-            self.__squeue_query = [command] + flags.split()
-
-            logging.debug("sqeueue_exec = %s" % self.__squeue_query)
+    def querySlurmJob(self,timeout=1,exit_on_error=False):
+        data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
+        return(data)
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -113,7 +102,7 @@ class SlurmJob(Collector):
             results = self.__slurmJobInfo
             jobEnabled = True
         else:
-            data = utils.runShellCommand(self.__squeue_query)
+            data = self.querySlurmJob()
             # query output format:
             # JOBID,USER,PARTITION,NODES,CPUS
             if data.stdout.strip():

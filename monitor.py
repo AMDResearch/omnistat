@@ -57,7 +57,9 @@ class Monitor():
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
+            self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].get('usermode',False)
 
+            # optional runtime controls
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
                 self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
             if config.has_option('omniwatch.collectors','smi_binary'):
@@ -98,7 +100,7 @@ class Monitor():
             self.__collectors.append(ROCMSMI(rocm_smi_binary=binary))
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
-            self.__collectors.append(SlurmJob())
+            self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode']))
         
         # Initialize all metrics
         for collector in self.__collectors:
