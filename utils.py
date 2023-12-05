@@ -37,7 +37,7 @@ def error(message):
     logging.error("Error: " + message)
     sys.exit(1)
 
-def runShellCommand(command, capture_output=True, text=True, exit_on_error=False):
+def runShellCommand(command, capture_output=True, text=True, exit_on_error=False,timeout=1.0):
     """Runs a provided shell command
 
     Args:
@@ -48,7 +48,7 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
     """
 
     logging.debug("Command to run = %s" % command)
-    results = subprocess.run(command, capture_output=capture_output, text=text)
+    results = subprocess.run(command, capture_output=capture_output, text=text, timeout=timeout)
     if exit_on_error and results.returncode != 0:
         logging.error("ERROR: Command failed")
         logging.error("       %s" % command)
