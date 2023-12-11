@@ -122,7 +122,7 @@ class UserBasedMonitoring:
 
         command = ["pkill", "-SIGTERM", "-u", "%s" % os.getuid(), "prometheus"]
 
-        utils.runShellCommand(command)
+        utils.runShellCommand(command,timeout=5)
         time.sleep(1)
         return
 
@@ -147,7 +147,8 @@ class UserBasedMonitoring:
 
                 base_ssh = ["ssh",host]
                 logging.debug("-> running command: %s" % (base_ssh + cmd))
-                subprocess.run(base_ssh + cmd)
+                #subprocess.run(base_ssh + cmd,timeout=5,exit_on_error=True)
+                utils.runShellCommand(base_ssh + cmd,timeout=15,exit_on_error=True)
         return
 
     def stopExporters(self):
@@ -157,7 +158,8 @@ class UserBasedMonitoring:
             logging.info("Stopping exporter for host -> %s" % host)
             cmd = ["curl", "%s:%s/shutdown" % (host, "8001")]
             logging.debug("-> running command: %s" % cmd)
-            utils.runShellCommand(["ssh", host] + cmd)
+            #utils.runShellCommand(["ssh", host] + cmd)
+            utils.runShellCommand(cmd,timeout=5)
         return
 
 
