@@ -115,6 +115,7 @@ class UserBasedMonitoring:
                 "--config.file=%s" % "prometheus.yml",
                 "--storage.tsdb.path=%s" % ps_datadir,
             ]
+            logging.debug("Server start command: %s" % command)
             utils.runBGProcess(command, outputFile=ps_logfile)
         else:
             utils.error("No compute hosts avail for startPromServer")
@@ -130,27 +131,44 @@ class UserBasedMonitoring:
 
     def startExporters(self):
         port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
+        corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding","1")
 
         if self.slurmHosts:
             for host in self.slurmHosts:
                 logging.info("Launching exporter on host -> %s" % host)
                 logfile = "exporter.%s.log" % host
                 logpath = self.topDir / logfile
-                cmd = [
-                    "gunicorn",
-                    "-D",
-                    "-b 0.0.0.0:%s" % port,
-                    "--access-logfile %s" % (self.topDir / "access.log"),
-                    "--capture-output",
-                    "--log-file %s" % logpath,
-                    "--pythonpath %s" % self.topDir,
-                    "node_monitoring:app",
-                ]
 
-                base_ssh = ["ssh",host]
-                logging.debug("-> running command: %s" % (base_ssh + cmd))
-                #subprocess.run(base_ssh + cmd,timeout=5,exit_on_error=True)
-                utils.runShellCommand(base_ssh + cmd,timeout=15,exit_on_error=True)
+                # overwrite logfile
+                if os.path.exists(logpath):
+                    os.remove(logpath)
+
+                use_gunicorn = True
+                if use_gunicorn:
+                    cmd = [
+                        "numactl",
+                        "--physcpubind=%s" % corebinding,
+                        "nice",
+                        "-n 20",
+                        "gunicorn",
+                        "-D",
+                        "-b 0.0.0.0:%s" % port,
+    #                    "--access-logfile %s" % (self.topDir / "access.log"),
+#                        "--threads 4",
+                        "--capture-output",
+                        "--log-file %s" % logpath,
+                        "--pythonpath %s" % self.topDir,
+                        "node_monitoring:app",
+                    ]
+                    base_ssh = ["ssh",host]
+                    logging.debug("-> running command: %s" % (base_ssh + cmd))
+                    #subprocess.run(base_ssh + cmd,timeout=5,exit_on_error=True)
+                    utils.runShellCommand(base_ssh + cmd,timeout=15,exit_on_error=True)
+                else:
+                    cmd = ["ssh",host,"%s/node_monitoring.py" % self.topDir]
+                    logging.debug("-> running command: %s" % (cmd))
+                    utils.runBGProcess(cmd,outputFile=logfile)
+
         return
 
     def stopExporters(self):
