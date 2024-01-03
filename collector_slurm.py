@@ -97,6 +97,7 @@ class SlurmJob(Collector):
         self.__SLURMmetrics["info"].clear()
         self.__SLURMmetrics["annotations"].clear()
         jobEnabled = False
+        annotationsEnabled = False
 
         if self.__userMode:
             results = self.__slurmJobInfo
@@ -120,15 +121,16 @@ class SlurmJob(Collector):
             ).set(1)
 
             # Check for user supplied annotations
-            userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
-            if os.path.isfile(userFile):
-                with open(userFile, "r") as file:
-                    data = json.load(file)
+            if annotationsEnabled:
+                userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
+                if os.path.isfile(userFile):
+                    with open(userFile, "r") as file:
+                        data = json.load(file)
 
-                self.__SLURMmetrics["annotations"].labels(
-                    marker=data["annotation"],
-                    jobid=results[0],
-                ).set(data["timestamp_secs"])
+                    self.__SLURMmetrics["annotations"].labels(
+                        marker=data["annotation"],
+                        jobid=results[0],
+                    ).set(data["timestamp_secs"])
 
         # Case when no job detected
         else:
