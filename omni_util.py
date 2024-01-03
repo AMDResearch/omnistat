@@ -87,6 +87,7 @@ class UserBasedMonitoring:
         ps_binary = self.runtimeConfig[section].get("binary")
         ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom")
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
+        ps_corebinding = self.runtimeConfig[section].get("corebinding","0")
 
         # generate prometheus config file to scrape local exporters
         computes = {}
@@ -109,6 +110,7 @@ class UserBasedMonitoring:
                 yaml.dump(prom_config, yaml_file, sort_keys=False)
 
             command = [
+                "numactl","--physcpubind=%s" % ps_corebinding,
                 ps_binary,
                 "--config.file=%s" % "prometheus.yml",
                 "--storage.tsdb.path=%s" % ps_datadir,
