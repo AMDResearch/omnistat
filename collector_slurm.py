@@ -98,7 +98,7 @@ class SlurmJob(Collector):
         self.__SLURMmetrics["annotations"].clear()
         jobEnabled = False
 
-        if self.__userMode == True:
+        if self.__userMode:
             results = self.__slurmJobInfo
             jobEnabled = True
         else:
