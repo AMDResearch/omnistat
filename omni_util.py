@@ -129,7 +129,7 @@ class UserBasedMonitoring:
         time.sleep(1)
         return
 
-    def startExporters(self):
+    def startExporters(self,synthetic_query=False):
         port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
         corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding","1")
 
@@ -144,7 +144,15 @@ class UserBasedMonitoring:
                     os.remove(logpath)
 
                 use_gunicorn = True
-                if use_gunicorn:
+
+                if synthetic_query:
+                    base_ssh = ["ssh",host]
+                    cmd = ["numactl",
+                           "--physcpubind=%s" % corebinding,
+                           "%s/sync.py" % self.topDir,"--interval %s" % self.scrape_interval]
+                    logging.info("-> running command: %s" % (base_ssh + cmd))
+                    utils.runBGProcess(base_ssh + cmd,outputFile=logfile)
+                elif use_gunicorn:
                     cmd = [
                         "numactl",
                         "--physcpubind=%s" % corebinding,
@@ -171,15 +179,20 @@ class UserBasedMonitoring:
 
         return
 
-    def stopExporters(self):
+    def stopExporters(self,synthetic_query=False):
         # command=["pkill","-SIGINT","-f","-u","%s" % os.getuid(),"python.*omniwatch.*node_monitoring.py"]
 
         for host in self.slurmHosts:
             logging.info("Stopping exporter for host -> %s" % host)
-            cmd = ["curl", "%s:%s/shutdown" % (host, "8001")]
-            logging.debug("-> running command: %s" % cmd)
-            #utils.runShellCommand(["ssh", host] + cmd)
-            utils.runShellCommand(cmd,timeout=5)
+            if synthetic_query:
+                cmd = ["pkill","-SIGUSR2","-f","-u","%s" % os.getuid(),"python3.*omniwatch/sync.py.*"]
+                #cmd = ["pkill","-SIGUSR2","-f","-u","%s" % os.getuid(),"ssh.*omniwatch/sync.py.*"]
+                logging.debug("-> running command: %s" % cmd)
+                utils.runShellCommand(["ssh", host] + cmd)
+            else:
+                cmd = ["curl", "%s:%s/shutdown" % (host, "8001")]
+                logging.debug("-> running command: %s" % cmd)
+                utils.runShellCommand(cmd,timeout=5)
         return
 
 
@@ -195,6 +208,7 @@ def main():
     parser.add_argument("--start",help="Start all necessary user-based monitoring services",action="store_true")
     parser.add_argument("--stop",help="Stop all user-based monitoring services",action="store_true")
     parser.add_argument("--interval",help="Monitoring sampling interval in secs (default=60)")
+    parser.add_argument("--smiquery",help="launch rocm-smi periodic execution (mimic exporter)",action="store_true")
 
     args = parser.parse_args()
 
@@ -214,9 +228,16 @@ def main():
     elif args.stopserver:
         userUtils.stopPromServer()
     elif args.startexporters:
-        userUtils.startExporters()
+        if args.smiquery:
+            userUtils.startExporters(synthetic_query=True)
+        else:
+            userUtils.startExporters()
+
     elif args.stopexporters:
-        userUtils.stopExporters()
+        if args.smiquery:
+            userUtils.stopExporters(synthetic_query=True)
+        else:
+            userUtils.stopExporters()
     elif args.start:
         userUtils.startExporters()
         userUtils.startPromServer()
