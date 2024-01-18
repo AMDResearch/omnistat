@@ -134,6 +134,8 @@ class UserBasedMonitoring:
         corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding","1")
 
         if self.slurmHosts:
+            count = 0
+            
             for host in self.slurmHosts:
                 logging.info("Launching exporter on host -> %s" % host)
                 logfile = "exporter.%s.log" % host
@@ -146,10 +148,17 @@ class UserBasedMonitoring:
                 use_gunicorn = True
 
                 if synthetic_query:
+                    max_nodes_participating = 1
+                    count = count + 1
+                    if count > max_nodes_participating:
+                        break
                     base_ssh = ["ssh",host]
+##                    cmd = ["numactl",
+##                            "--physcpubind=%s" % corebinding,
+##                            "%s/sync.py" % self.topDir,"--interval %s" % self.scrape_interval]
                     cmd = ["numactl",
                            "--physcpubind=%s" % corebinding,
-                           "%s/sync.py" % self.topDir,"--interval %s" % self.scrape_interval]
+                           "%s/load.sh" % self.topDir]
                     logging.info("-> running command: %s" % (base_ssh + cmd))
                     utils.runBGProcess(base_ssh + cmd,outputFile=logfile)
                 elif use_gunicorn:
@@ -188,7 +197,7 @@ class UserBasedMonitoring:
                 cmd = ["pkill","-SIGUSR2","-f","-u","%s" % os.getuid(),"python3.*omniwatch/sync.py.*"]
                 #cmd = ["pkill","-SIGUSR2","-f","-u","%s" % os.getuid(),"ssh.*omniwatch/sync.py.*"]
                 logging.debug("-> running command: %s" % cmd)
-                utils.runShellCommand(["ssh", host] + cmd)
+                utils.runShellCommand(["ssh", host] + cmd,timeout=2)
             else:
                 cmd = ["curl", "%s:%s/shutdown" % (host, "8001")]
                 logging.debug("-> running command: %s" % cmd)
