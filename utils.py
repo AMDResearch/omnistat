@@ -59,7 +59,7 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
     if exit_on_error and results.returncode != 0:
         logging.error("ERROR: Command failed")
         logging.error("       %s" % command)
-        logging.error("stdout: %s" % results.stderr)
+        logging.error("stdout: %s" % results.stdout)
         logging.error("stderr: %s" % results.stderr)
         sys.exit(1)
     return results
