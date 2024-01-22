@@ -48,7 +48,14 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
     """
 
     logging.debug("Command to run = %s" % command)
-    results = subprocess.run(command, capture_output=capture_output, text=text, timeout=timeout)
+    try:
+        results = subprocess.run(command, capture_output=capture_output, text=text, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        logging.error("ERROR: Process timed out, ran for more than %i sec(s)" % timeout)
+        logging.error("       %s" % command)
+        if not exit_on_error:
+            return None
+
     if exit_on_error and results.returncode != 0:
         logging.error("ERROR: Command failed")
         logging.error("       %s" % command)
