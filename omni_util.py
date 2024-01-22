@@ -162,8 +162,7 @@ class UserBasedMonitoring:
                     ]
                     base_ssh = ["ssh",host]
                     logging.debug("-> running command: %s" % (base_ssh + cmd))
-                    #subprocess.run(base_ssh + cmd,timeout=5,exit_on_error=True)
-                    utils.runShellCommand(base_ssh + cmd,timeout=25,exit_on_error=True)
+                    utils.runShellCommand(base_ssh + cmd,timeout=25,exit_on_error=False)
                 else:
                     cmd = ["ssh",host,"%s/node_monitoring.py" % self.topDir]
                     logging.debug("-> running command: %s" % (cmd))
