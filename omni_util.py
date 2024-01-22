@@ -28,6 +28,7 @@ import logging
 import os
 import subprocess
 import sys
+import tempfile
 import time
 import utils
 import yaml
@@ -39,6 +40,7 @@ class UserBasedMonitoring:
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
         self.timeout = 5           # default scrapte timeout in seconds
+        self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
         return
 
     def setup(self):
@@ -55,6 +57,10 @@ class UserBasedMonitoring:
 
     def setMonitoringInterval(self,interval):
         self.scrape_interval = int(interval)
+        return
+
+    def enable_pdsh(self):
+        self.use_pdsh = True
         return
 
     def getSlurmHosts(self):
@@ -134,6 +140,39 @@ class UserBasedMonitoring:
         corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding","1")
 
         if self.slurmHosts:
+            if self.use_pdsh:
+                logging.info("Launching exporters in parallel using pdsh")
+                tmp = tempfile.NamedTemporaryFile(mode='w',delete=False)
+                logging.info("--> hosts stored in %s" % tmp.name)
+                for host in self.slurmHosts:
+                    tmp.write("%s\n" % host)
+                tmp.close()
+
+                cmd = [
+                    "numactl",
+                    "--physcpubind=%s" % corebinding,
+                    "nice",
+                    "-n 20",
+                    "gunicorn",
+                    "-D",
+                    "-b 0.0.0.0:%s" % port,
+                    #                    "--access-logfile %s" % (self.topDir / "access.log"),
+                    # "--capture-output",
+                    # "--log-file %s" % logpath,
+                    "--pythonpath %s" % self.topDir,
+                    "node_monitoring:app",
+                ]
+                base_cmd = ["pdsh","-t 55","-w ^%s" % tmp.name]
+                utils.runShellCommand(base_cmd + cmd,timeout=60,exit_on_error=False)
+
+                # verify exporter running on last node...
+                time.sleep(1)
+                logging.info("Querying exporter for last assigned compute node -> %s" % self.slurmHosts[-1])
+                results = utils.runShellCommand(["curl","%s:%s/metrics" % (self.slurmHosts[-1],port)])
+                logging.info(results.stdout)
+
+                return
+
             for host in self.slurmHosts:
                 logging.info("Launching exporter on host -> %s" % host)
                 logfile = "exporter.%s.log" % host
@@ -194,6 +233,7 @@ def main():
     parser.add_argument("--start",help="Start all necessary user-based monitoring services",action="store_true")
     parser.add_argument("--stop",help="Stop all user-based monitoring services",action="store_true")
     parser.add_argument("--interval",help="Monitoring sampling interval in secs (default=60)")
+    parser.add_argument("--use_pdsh",help="Use pdsh utility to launch exporters in parallel",action="store_true")
 
     args = parser.parse_args()
 
@@ -207,6 +247,8 @@ def main():
     userUtils.setup()
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
+    if args.use_pdsh:
+        userUtils.enable_pdsh()
 
     if args.startserver:
         userUtils.startPromServer()
