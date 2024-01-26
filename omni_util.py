@@ -166,7 +166,7 @@ class UserBasedMonitoring:
                 utils.runShellCommand(base_cmd + cmd,timeout=60,exit_on_error=False)
 
                 # verify exporter running on last node...
-                time.sleep(1)
+                time.sleep(5)
                 logging.info("Querying exporter for last assigned compute node -> %s" % self.slurmHosts[-1])
                 results = utils.runShellCommand(["curl","%s:%s/metrics" % (self.slurmHosts[-1],port)])
                 logging.info(results.stdout)
