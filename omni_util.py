@@ -26,6 +26,7 @@ import argparse
 import configparser
 import logging
 import os
+import socket
 import subprocess
 import sys
 import tempfile
@@ -33,6 +34,7 @@ import time
 import utils
 import yaml
 from pathlib import Path
+from pssh.clients import ParallelSSHClient
 
 
 class UserBasedMonitoring:
@@ -141,6 +143,12 @@ class UserBasedMonitoring:
 
         if self.slurmHosts:
             if self.use_pdsh:
+
+                logging.info("Saving SLURM job state locally to compute hosts...")
+                numNodes = os.getenv("SLURM_JOB_NUM_NODES")
+                cmd=["srun","-N %s" % numNodes,"--ntasks-per-node=1","%s/slurm_env.py" % self.topDir]
+                utils.runShellCommand(cmd,timeout=35,exit_on_error=True)
+
                 logging.info("Launching exporters in parallel using pdsh")
                 tmp = tempfile.NamedTemporaryFile(mode='w',delete=False)
                 logging.info("--> hosts stored in %s" % tmp.name)
@@ -162,14 +170,29 @@ class UserBasedMonitoring:
                     "--pythonpath %s" % self.topDir,
                     "node_monitoring:app",
                 ]
-                base_cmd = ["pdsh","-t 55","-w ^%s" % tmp.name]
-                utils.runShellCommand(base_cmd + cmd,timeout=60,exit_on_error=False)
+                # base_cmd = ["pdsh","-O","-f 128","-t 180","-w ^%s" % tmp.name]
+                # utils.runShellCommand(base_cmd + cmd,timeout=185,exit_on_error=False)
 
-                # verify exporter running on last node...
-                time.sleep(5)
-                logging.info("Querying exporter for last assigned compute node -> %s" % self.slurmHosts[-1])
-                results = utils.runShellCommand(["curl","%s:%s/metrics" % (self.slurmHosts[-1],port)])
-                logging.info(results.stdout)
+                client = ParallelSSHClient(self.slurmHosts,allow_agent=False,timeout=120)
+                cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
+                output = client.run_command(cmd)
+
+                # verify exporter available on all nodes...
+                time.sleep(8)    # <-- needed for slow SLURM query times on ORNL
+                numHosts = len(self.slurmHosts)
+                numAvail = 0
+
+                for host in self.slurmHosts:
+                    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+                        result = s.connect_ex((host,8001))
+                        if result == 0:
+                            numAvail = numAvail +1
+                        else:
+                            logging.error("Missing exporter on %s" % host)
+
+                logging.info("%i of %i exporters available" % (numAvail,numHosts))
+                if numAvail == numHosts:
+                    logging.info("User mode data collectors: SUCCESS")
 
                 return
 
