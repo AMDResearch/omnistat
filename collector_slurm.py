@@ -61,13 +61,32 @@ class SlurmJob(Collector):
         self.__squeue_query = [command] + flags.split()
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
+        # cache current slurm job in user mode profiling - assumption is it doesn't change
         if self.__userMode:
-            # cache current slurm job in user mode profiling - assumption is it doesn't change
-            # note: a longer timeout is provided since we only query once and some systems have slow
-            # slurm response times
-            logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
-            data = self.querySlurmJob(timeout=10,exit_on_error=True)
-            if data.stdout.strip():
+            # read from file if available
+            jobFile = "/tmp/omniwatch_slurm_job_assigned"
+            if os.path.isfile(jobFile):
+                with open(jobFile,'r') as f:
+                    jobInfo = json.load(f)
+
+                logging.info(jobInfo)
+                self.__slurmJobInfo = []
+                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_ID"])
+                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_USER"])
+                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_PARTITION"])
+                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_NUM_NODES"])
+                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_BATCHMODE"])
+
+                logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
+
+            else:
+                # no job file data available: query slurm directly
+                # note: a longer timeout is provided since we only query once and some systems have slow
+                # slurm response times
+                logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
+
+                data = self.querySlurmJob(timeout=15,exit_on_error=True)
+                if data.stdout.strip():
                     self.__slurmJobInfo = data.stdout.strip().split(":")
                     logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
 
