@@ -62,7 +62,7 @@ class SlurmJob(Collector):
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
         # cache current slurm job in user mode profiling - assumption is it doesn't change
-        if self.__userMode:
+        if self.__userMode is True:
             # read from file if available
             jobFile = "/tmp/omniwatch_slurm_job_assigned"
             if os.path.isfile(jobFile):
@@ -118,7 +118,7 @@ class SlurmJob(Collector):
         jobEnabled = False
         annotationsEnabled = False
 
-        if self.__userMode:
+        if self.__userMode is True:
             results = self.__slurmJobInfo
             jobEnabled = True
         else:
