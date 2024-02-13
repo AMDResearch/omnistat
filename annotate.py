@@ -25,37 +25,52 @@
 
 """annotate.py
 
-Standalone utility for creating user annotation labels in json format. Intened
+Standalone utility for creating user annotation labels in json format. Intended
 for use in conjunction with companion Slurm data collector that looks for files of the
 following form:
 
 /tmp/omniwatch_${USER}_annotate.json
+
+File can also be imported for direct Python usage.
 """
 
 import argparse
 import time
 import json
 import os
-timestamp = int(time.time())
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--mode", choices = ['start','stop'],help="annotation mode", required=True)
-parser.add_argument("--text", help="desired annotation", required=False)
-args = parser.parse_args()
+class omniwatch_annotate():
+    def __init__(self):
+        self.filename="/tmp/omniwatch_" + os.environ.get('USER') + "_annotate.json"
 
-if args.mode == 'start' and args.text is None:
-    parser.error("The --text option is required for \"start\" mode.")
+    def start(self,label):
+        data = {}
+        data["annotation"] = label
+        data["timestamp_secs"] = int(time.time())
 
-filename="/tmp/omniwatch_" + os.environ.get('USER') + "_annotate.json"
+        with open(self.filename,"w") as outfile:
+            outfile.write(json.dumps(data,indent=4))
+            outfile.write("\n")
+        return
 
-if args.mode == "start":
-    data = {}
-    data["annotation"] = args.text
-    data["timestamp_secs"] = int(time.time())
+    def stop(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+        return
 
-    with open(filename,"w") as outfile:
-        outfile.write(json.dumps(data,indent=4))
-        outfile.write("\n")
-else:
-    if os.path.exists(filename):
-        os.remove(filename) 
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices = ['start','stop'],help="annotation mode", required=True)
+    parser.add_argument("--text", help="desired annotation", required=False)
+    args = parser.parse_args()
+
+    if args.mode == 'start' and args.text is None:
+        parser.error("The --text option is required for \"start\" mode.")
+
+    annotate = omniwatch_annotate()
+
+    if args.mode == "start":
+        annotate.start(args.text)
+    else:
+        annotate.stop()
+
