@@ -89,6 +89,8 @@ class SlurmJob(Collector):
                 if data.stdout.strip():
                     self.__slurmJobInfo = data.stdout.strip().split(":")
                     logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
+        else:
+            logging.info("collector_slurm: not using usermode, will poll slurm periodicaly")
 
     def querySlurmJob(self,timeout=1,exit_on_error=False):
         data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
