@@ -57,7 +57,7 @@ class Monitor():
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
-            self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].get('usermode',False)
+            self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
 
             # optional runtime controls
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
