@@ -178,17 +178,33 @@ class UserBasedMonitoring:
                 output = client.run_command(cmd)
 
                 # verify exporter available on all nodes...
-                time.sleep(8)    # <-- needed for slow SLURM query times on ORNL
+                psecs = 6
+                logging.info("Exporters launched, pausing for %i secs" % psecs)
+                time.sleep(psecs)    # <-- needed for slow SLURM query times on ORNL
                 numHosts = len(self.slurmHosts)
                 numAvail = 0
 
+                logging.info("Testing exporter availability")
+                delay_start = 0.05
                 for host in self.slurmHosts:
-                    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-                        result = s.connect_ex((host,int(port)))
-                        if result == 0:
-                            numAvail = numAvail +1
-                        else:
-                            logging.error("Missing exporter on %s" % host)
+                    host_ok = False
+                    for iter in range(1,25):
+                        with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+                            result = s.connect_ex((host,int(port)))
+                            if result == 0:
+                                numAvail = numAvail +1
+                                logging.debug("Exporter on %s ok" % host)
+                                host_ok = True
+                                break
+                            else:
+                                delay = delay_start * iter
+                                logging.debug("Retrying %s (sleeping for %.2f sec)" % (host,delay))
+                                time.sleep(delay)
+                            s.close()
+
+                    if not host_ok:
+                        logging.error("Missing exporter on %s (%s)" % (host,result))
+
 
                 logging.info("%i of %i exporters available" % (numAvail,numHosts))
                 if numAvail == numHosts:
