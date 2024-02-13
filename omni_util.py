@@ -41,7 +41,7 @@ class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
-        self.timeout = 5           # default scrapte timeout in seconds
+        self.timeout = 5           # default scrape timeout in seconds
         self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
         return
 
@@ -68,7 +68,7 @@ class UserBasedMonitoring:
     def getSlurmHosts(self):
         hostlist = os.getenv("SLURM_JOB_NODELIST", None)
         if hostlist:
-            results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist])
+            results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist],timeout=10)
             if results.stdout.strip():
                 return results.stdout.splitlines()
             else:
@@ -184,7 +184,7 @@ class UserBasedMonitoring:
 
                 for host in self.slurmHosts:
                     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-                        result = s.connect_ex((host,8001))
+                        result = s.connect_ex((host,int(port)))
                         if result == 0:
                             numAvail = numAvail +1
                         else:
