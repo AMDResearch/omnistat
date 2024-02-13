@@ -78,7 +78,7 @@ class SlurmJob(Collector):
                 self.__slurmJobInfo.append(jobInfo["SLURM_JOB_NUM_NODES"])
                 self.__slurmJobInfo.append(jobInfo["SLURM_JOB_BATCHMODE"])
 
-                logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
+                logging.info("--> usermode jobinfo (from file): %s" % self.__slurmJobInfo)
 
             else:
                 # no job file data available: query slurm directly
@@ -89,7 +89,7 @@ class SlurmJob(Collector):
                 data = self.querySlurmJob(timeout=15,exit_on_error=True)
                 if data.stdout.strip():
                     self.__slurmJobInfo = data.stdout.strip().split(":")
-                    logging.info("--> usermode jobinfo: %s" % self.__slurmJobInfo)
+                    logging.info("--> usermode jobinfo (from slurm query): %s" % self.__slurmJobInfo)
         else:
             logging.info("collector_slurm: not using usermode, will poll slurm periodicaly")
 
