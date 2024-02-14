@@ -1599,119 +1599,15 @@
    "templating" : {
       "list" : [
          {
-            "current" : {
-               "selected" : false,
-               "text" : "12204",
-               "value" : "12204"
-            },
-            "description" : "Currently active Jobs",
             "hide" : 2,
-            "label" : "JobID",
-            "name" : "jobid2",
-            "options" : [
-               {
-                  "selected" : true,
-                  "text" : "12204",
-                  "value" : "12204"
-               }
-            ],
-            "query" : "12204",
-            "skipUrlSync" : false,
-            "type" : "textbox"
-         },
-         {
-            "current" : {
-               "selected" : false,
-               "text" : "All",
-               "value" : "$__all"
-            },
-            "datasource" : {
-               "type" : "prometheus",
-               "uid" : "prometheus"
-            },
-            "definition" : "query_result(slurmjob_jobid==12175)",
-            "hide" : 2,
-            "includeAll" : true,
-            "label" : "Nodes",
-            "multi" : true,
-            "name" : "node",
-            "options" : [],
-            "query" : {
-               "qryType" : 3,
-               "query" : "query_result(slurmjob_jobid==12175)",
-               "refId" : "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "refresh" : 1,
-            "regex" : "",
-            "skipUrlSync" : false,
-            "sort" : 1,
-            "type" : "query"
-         },
-         {
-            "current" : {
-               "selected" : false,
-               "text" : "8000",
-               "value" : "8000"
-            },
-            "hide" : 2,
-            "name" : "port",
-            "options" : [
-               {
-                  "selected" : true,
-                  "text" : "8000",
-                  "value" : "8000"
-               }
-            ],
-            "query" : "8000",
-            "skipUrlSync" : false,
-            "type" : "textbox"
-         },
-         {
-            "current" : {
-               "selected" : false,
-               "text" : "20002",
-               "value" : "20002"
-            },
-            "datasource" : {
-               "type" : "prometheus",
-               "uid" : "prometheus"
-            },
-            "definition" : "label_values(slurmjob_info,jobid)",
-            "hide" : 0,
             "includeAll" : false,
-            "label" : "SLURM JobID",
+            "label" : "SLURM Job ID",
             "multi" : false,
             "name" : "jobid",
             "options" : [],
-            "query" : {
-               "qryType" : 1,
-               "query" : "label_values(slurmjob_info,jobid)",
-               "refId" : "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "refresh" : 2,
-            "regex" : "",
+            "query" : "",
             "skipUrlSync" : false,
-            "sort" : 0,
-            "type" : "query"
-         },
-         {
-            "current" : {
-               "selected" : false,
-               "text" : "4",
-               "value" : "4"
-            },
-            "hide" : 2,
-            "name" : "num_gpus",
-            "options" : [
-               {
-                  "selected" : true,
-                  "text" : "4",
-                  "value" : "4"
-               }
-            ],
-            "query" : "4",
-            "skipUrlSync" : false,
-            "type" : "textbox"
+            "type" : "custom"
          }
       ]
    },
