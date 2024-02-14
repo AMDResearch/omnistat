@@ -6,4 +6,4 @@ data_prom
 *.log
 *.pdf
 *~
-
+docker/prometheus-data
