@@ -697,6 +697,7 @@
             "y" : 5
          },
          "id" : 28,
+         "interval": "$interval",
          "options" : {
             "minVizHeight" : 75,
             "minVizWidth" : 75,
@@ -758,6 +759,7 @@
             "y" : 5
          },
          "id" : 27,
+         "interval": "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -870,6 +872,7 @@
             "y" : 13
          },
          "id" : 29,
+         "interval": "$interval",
          "options" : {
             "minVizHeight" : 75,
             "minVizWidth" : 75,
@@ -931,6 +934,7 @@
             "y" : 13
          },
          "id" : 31,
+         "interval": "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -1083,6 +1087,7 @@
             "y" : 23
          },
          "id" : 24,
+         "interval": "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1204,7 +1209,7 @@
                "refId" : "A"
             }
          ],
-         "title" : "GPU Temperature - Die Edge (°C)",
+         "title" : "GPU Temperature - Die Edge (Â°C)",
          "type" : "timeseries"
       },
       {
@@ -1273,6 +1278,7 @@
             "y" : 39
          },
          "id" : 22,
+         "interval": "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1329,6 +1335,7 @@
             "y" : 39
          },
          "id" : 34,
+         "interval": "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -1466,6 +1473,7 @@
             "y" : 47
          },
          "id" : 25,
+         "interval": "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1485,7 +1493,7 @@
                   "uid" : "prometheus"
                },
                "editorMode" : "code",
-                "expr": "avg(label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1561,6 +1569,7 @@
             "y" : 47
          },
          "id" : 23,
+         "interval": "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1608,6 +1617,39 @@
             "query" : "",
             "skipUrlSync" : false,
             "type" : "custom"
+         },
+         {
+            "current" : {
+               "selected" : true,
+               "text" : "5s",
+               "value" : "5s"
+            },
+            "hide" : 0,
+            "includeAll" : false,
+            "label" : "Interval",
+            "multi" : false,
+            "name" : "interval",
+            "options" : [
+               {
+                  "selected" : false,
+                  "text" : "60s",
+                  "value" : "60s"
+               },
+               {
+                  "selected" : false,
+                  "text" : "30s",
+                  "value" : "30s"
+               },
+               {
+                  "selected" : true,
+                  "text" : "5s",
+                  "value" : "5s"
+               }
+            ],
+            "query" : "60s,30s,5s",
+            "queryValue" : "",
+            "skipUrlSync" : false,
+            "type" : "custom"
          }
       ]
    },
@@ -1616,7 +1658,7 @@
       "to" : "now"
    },
    "timepicker" : {
-      "hidden": true
+      "hidden" : true
    },
    "timezone" : "",
    "title" : "omniwatch-job",
