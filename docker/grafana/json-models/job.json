@@ -1204,7 +1204,7 @@
                "refId" : "A"
             }
          ],
-         "title" : "GPU Temperature - Die Edge (Â°C)",
+         "title" : "GPU Temperature - Die Edge (°C)",
          "type" : "timeseries"
       },
       {
