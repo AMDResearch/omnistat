@@ -1485,7 +1485,7 @@
                   "uid" : "prometheus"
                },
                "editorMode" : "code",
-               "expr" : "label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}",
+                "expr": "avg(label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
