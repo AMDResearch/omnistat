@@ -11,6 +11,7 @@ services:
     volumes:
       - ./prometheus:/etc/prometheus
       - ./prometheus-data:/prometheus
+    user: "${PROMETHEUS_USER}"
   grafana:
     image: grafana/grafana
     container_name: grafana
