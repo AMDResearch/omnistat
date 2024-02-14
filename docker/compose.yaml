@@ -23,6 +23,6 @@ services:
       - GF_USERS_DEFAULT_THEME=light
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Editor
-      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/omniwatch-index.json
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/index.json
     volumes:
       - ./grafana:/etc/grafana/provisioning

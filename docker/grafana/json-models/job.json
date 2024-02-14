@@ -2121,7 +2121,7 @@
       "hidden": true
    },
    "timezone" : "",
-   "title" : "omniwatch-slurm",
+   "title" : "omniwatch-job",
    "uid" : "bccbab2a-b53a-4d32-90e7-b7613b67403c",
    "version" : 63,
    "weekStart" : ""
