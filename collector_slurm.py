@@ -41,10 +41,11 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 
 class SlurmJob(Collector):
-    def __init__(self,userMode=False):
+    def __init__(self,userMode=False,annotations=False):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
         self.__userMode = userMode
+        self.__annotationsEnabled = annotations
         self.__SLURMmetrics = {}
         self.__slurmJobInfo = []
 
@@ -118,7 +119,6 @@ class SlurmJob(Collector):
         self.__SLURMmetrics["info"].clear()
         self.__SLURMmetrics["annotations"].clear()
         jobEnabled = False
-        annotationsEnabled = False
 
         if self.__userMode is True:
             results = self.__slurmJobInfo
@@ -142,7 +142,7 @@ class SlurmJob(Collector):
             ).set(1)
 
             # Check for user supplied annotations
-            if annotationsEnabled:
+            if self.__annotationsEnabled:
                 userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
                 if os.path.isfile(userFile):
                     with open(userFile, "r") as file:
