@@ -18,7 +18,6 @@
    "editable" : true,
    "fiscalYearStartMonth" : 0,
    "graphTooltip" : 0,
-   "id" : 1,
    "links" : [],
    "liveNow" : false,
    "panels" : [
@@ -65,7 +64,7 @@
                         "value" : [
                            {
                               "title" : "",
-                              "url" : "/d/bccbab2a-b53a-4d32-90e7-b7613b67403c/omniwatch-slurm?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&${__url_time_range}"
+                              "url" : "/d/bccbab2a-b53a-4d32-90e7-b7613b67403c/omniwatch-slurm?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&from=${__data.fields[\"from\"]}&to=${__data.fields[\"to\"]}"
                            }
                         ]
                      }
@@ -94,6 +93,30 @@
                               "type" : "value"
                            }
                         ]
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "from"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.hidden",
+                        "value" : true
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "to"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.hidden",
+                        "value" : true
                      }
                   ]
                }
@@ -145,7 +168,9 @@
                   "fields" : {
                      "Value" : {
                         "aggregations" : [
-                           "range"
+                           "range",
+                           "firstNotNull",
+                           "lastNotNull"
                         ],
                         "operation" : "aggregate"
                      },
@@ -211,9 +236,41 @@
                }
             },
             {
+               "id" : "calculateField",
+               "options" : {
+                  "alias" : "from",
+                  "binary" : {
+                     "left" : "Value (firstNotNull)",
+                     "operator" : "*",
+                     "right" : "1000"
+                  },
+                  "mode" : "binary",
+                  "reduce" : {
+                     "reducer" : "sum"
+                  }
+               }
+            },
+            {
+               "id" : "calculateField",
+               "options" : {
+                  "alias" : "to",
+                  "binary" : {
+                     "left" : "Value (lastNotNull)",
+                     "operator" : "*",
+                     "right" : "1000"
+                  },
+                  "mode" : "binary",
+                  "reduce" : {
+                     "reducer" : "sum"
+                  }
+               }
+            },
+            {
                "id" : "organize",
                "options" : {
                   "excludeByName" : {
+                     "Value (firstNotNull)" : true,
+                     "Value (lastNotNull)" : true,
                      "Value (range)" : true
                   },
                   "includeByName" : {},
@@ -269,6 +326,6 @@
    "timezone" : "",
    "title" : "omniwatch-index",
    "uid" : "edcmwp08wjhmoa",
-   "version" : 2,
+   "version" : 1,
    "weekStart" : ""
 }
