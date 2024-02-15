@@ -29,7 +29,6 @@
    "editable" : true,
    "fiscalYearStartMonth" : 0,
    "graphTooltip" : 0,
-   "id" : 40,
    "links" : [],
    "liveNow" : false,
    "panels" : [
@@ -65,7 +64,8 @@
                         "value" : null
                      }
                   ]
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -95,7 +95,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -133,7 +133,8 @@
                         "value" : null
                      }
                   ]
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -163,7 +164,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -241,7 +242,8 @@
                         "value" : 80
                      }
                   ]
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -271,7 +273,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -324,7 +326,8 @@
                         "value" : null
                      }
                   ]
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -354,7 +357,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -409,7 +412,8 @@
                         "value" : null
                      }
                   ]
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -439,7 +443,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -504,7 +508,8 @@
                      }
                   ]
                },
-               "unit" : "percent"
+               "unit" : "percent",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -530,7 +535,7 @@
             "showThresholdMarkers" : false,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -594,7 +599,8 @@
                      }
                   ]
                },
-               "unit" : "dthms"
+               "unit" : "dthms",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -624,7 +630,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -686,7 +692,8 @@
                      }
                   ]
                },
-               "unit" : "percent"
+               "unit" : "percent",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -697,7 +704,7 @@
             "y" : 5
          },
          "id" : 28,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "minVizHeight" : 75,
             "minVizWidth" : 75,
@@ -713,7 +720,7 @@
             "showThresholdMarkers" : true,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -748,7 +755,8 @@
                   "scaleDistribution" : {
                      "type" : "linear"
                   }
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -759,7 +767,7 @@
             "y" : 5
          },
          "id" : 27,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -811,7 +819,7 @@
                "reverse" : false
             }
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -861,7 +869,8 @@
                      }
                   ]
                },
-               "unit" : "percent"
+               "unit" : "percent",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -872,7 +881,7 @@
             "y" : 13
          },
          "id" : 29,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "minVizHeight" : 75,
             "minVizWidth" : 75,
@@ -888,7 +897,7 @@
             "showThresholdMarkers" : true,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -923,7 +932,8 @@
                   "scaleDistribution" : {
                      "type" : "linear"
                   }
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -934,7 +944,7 @@
             "y" : 13
          },
          "id" : 31,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -986,7 +996,7 @@
                "reverse" : false
             }
          },
-         "pluginVersion" : "10.4.0-66861",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -1013,7 +1023,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 22
+            "y" : 21
          },
          "id" : 21,
          "panels" : [],
@@ -1076,7 +1086,8 @@
                      }
                   ]
                },
-               "unit" : "percent"
+               "unit" : "percent",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1084,10 +1095,10 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 23
+            "y" : 22
          },
          "id" : 24,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1164,7 +1175,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1172,7 +1184,8 @@
                      }
                   ]
                },
-               "unit" : "celsius"
+               "unit" : "celsius",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1180,7 +1193,7 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 31
+            "y" : 30
          },
          "id" : 33,
          "options" : {
@@ -1209,7 +1222,7 @@
                "refId" : "A"
             }
          ],
-         "title" : "GPU Temperature - Die Edge (Â°C)",
+         "title" : "GPU Temperature - Die Edge (°C)",
          "type" : "timeseries"
       },
       {
@@ -1259,7 +1272,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1267,7 +1281,8 @@
                      }
                   ]
                },
-               "unit" : "watt"
+               "unit" : "watt",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1275,10 +1290,10 @@
             "h" : 8,
             "w" : 12,
             "x" : 0,
-            "y" : 39
+            "y" : 38
          },
          "id" : 22,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1324,7 +1339,8 @@
                   "scaleDistribution" : {
                      "type" : "linear"
                   }
-               }
+               },
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1332,10 +1348,10 @@
             "h" : 8,
             "w" : 12,
             "x" : 12,
-            "y" : 39
+            "y" : 38
          },
          "id" : 34,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "calculate" : false,
             "calculation" : {
@@ -1377,7 +1393,8 @@
                "layout" : "auto"
             },
             "tooltip" : {
-               "show" : true,
+               "mode" : "single",
+               "showColorScale" : false,
                "yHistogram" : false
             },
             "yAxis" : {
@@ -1386,7 +1403,7 @@
                "reverse" : false
             }
          },
-         "pluginVersion" : "10.3.0-62488",
+         "pluginVersion" : "10.3.1",
          "targets" : [
             {
                "datasource" : {
@@ -1454,7 +1471,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1462,7 +1480,8 @@
                      }
                   ]
                },
-               "unit" : "rotmhz"
+               "unit" : "rotmhz",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1470,10 +1489,10 @@
             "h" : 8,
             "w" : 12,
             "x" : 0,
-            "y" : 47
+            "y" : 46
          },
          "id" : 25,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1550,7 +1569,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1558,7 +1578,8 @@
                      }
                   ]
                },
-               "unit" : "rotmhz"
+               "unit" : "rotmhz",
+               "unitScale" : true
             },
             "overrides" : []
          },
@@ -1566,10 +1587,10 @@
             "h" : 8,
             "w" : 12,
             "x" : 12,
-            "y" : 47
+            "y" : 46
          },
          "id" : 23,
-         "interval": "$interval",
+         "interval" : "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -1598,9 +1619,324 @@
          ],
          "title" : "GPU Frequency - Memory Clock (MHz)",
          "type" : "timeseries"
+      },
+      {
+         "collapsed" : false,
+         "gridPos" : {
+            "h" : 1,
+            "w" : 24,
+            "x" : 0,
+            "y" : 54
+         },
+         "id" : 40,
+         "panels" : [],
+         "title" : "Multiple Nodes",
+         "type" : "row"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "palette-classic"
+               },
+               "custom" : {
+                  "axisBorderShow" : false,
+                  "axisCenteredZero" : false,
+                  "axisColorMode" : "text",
+                  "axisLabel" : "",
+                  "axisPlacement" : "auto",
+                  "axisSoftMax" : 100,
+                  "axisSoftMin" : 0,
+                  "hideFrom" : {
+                     "legend" : false,
+                     "tooltip" : false,
+                     "viz" : false
+                  },
+                  "pointSize" : {
+                     "fixed" : 4
+                  },
+                  "scaleDistribution" : {
+                     "type" : "linear"
+                  },
+                  "show" : "points"
+               },
+               "fieldMinMax" : false,
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               },
+               "unit" : "percent",
+               "unitScale" : true
+            },
+            "overrides" : [
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Node"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "unit",
+                        "value" : "none"
+                     }
+                  ]
+               }
+            ]
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 24,
+            "x" : 0,
+            "y" : 55
+         },
+         "id" : 41,
+         "interval" : "$interval",
+         "options" : {
+            "legend" : {
+               "calcs" : [],
+               "displayMode" : "list",
+               "placement" : "bottom",
+               "showLegend" : false
+            },
+            "series" : [
+               {
+                  "x" : "Node",
+                  "y" : "GPU Utilization (%)"
+               }
+            ],
+            "seriesMapping" : "manual",
+            "tooltip" : {
+               "mode" : "single",
+               "sort" : "none"
+            }
+         },
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (instance)",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "Distribution of Average Utilization per Node",
+         "transformations" : [
+            {
+               "id" : "reduce",
+               "options" : {
+                  "reducers" : [
+                     "mean"
+                  ]
+               }
+            },
+            {
+               "id" : "sortBy",
+               "options" : {
+                  "fields" : {},
+                  "sort" : [
+                     {
+                        "desc" : true,
+                        "field" : "Mean"
+                     }
+                  ]
+               }
+            },
+            {
+               "id" : "calculateField",
+               "options" : {
+                  "alias" : "Node",
+                  "mode" : "index",
+                  "reduce" : {
+                     "reducer" : "sum"
+                  }
+               }
+            },
+            {
+               "id" : "organize",
+               "options" : {
+                  "excludeByName" : {},
+                  "includeByName" : {},
+                  "indexByName" : {},
+                  "renameByName" : {
+                     "Mean" : "GPU Utilization (%)"
+                  }
+               }
+            }
+         ],
+         "type" : "xychart"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "palette-classic"
+               },
+               "custom" : {
+                  "axisBorderShow" : false,
+                  "axisCenteredZero" : false,
+                  "axisColorMode" : "text",
+                  "axisLabel" : "",
+                  "axisPlacement" : "auto",
+                  "axisSoftMax" : 100,
+                  "axisSoftMin" : 0,
+                  "hideFrom" : {
+                     "legend" : false,
+                     "tooltip" : false,
+                     "viz" : false
+                  },
+                  "pointSize" : {
+                     "fixed" : 4
+                  },
+                  "scaleDistribution" : {
+                     "type" : "linear"
+                  },
+                  "show" : "points"
+               },
+               "fieldMinMax" : false,
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               },
+               "unit" : "percent",
+               "unitScale" : true
+            },
+            "overrides" : [
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "GPU"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "unit",
+                        "value" : "none"
+                     }
+                  ]
+               }
+            ]
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 24,
+            "x" : 0,
+            "y" : 63
+         },
+         "id" : 42,
+         "interval" : "$interval",
+         "options" : {
+            "legend" : {
+               "calcs" : [],
+               "displayMode" : "list",
+               "placement" : "bottom",
+               "showLegend" : false
+            },
+            "series" : [
+               {
+                  "x" : "GPU",
+                  "y" : "GPU Utilization (%)"
+               }
+            ],
+            "seriesMapping" : "manual",
+            "tooltip" : {
+               "mode" : "single",
+               "sort" : "none"
+            }
+         },
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "Distribution of Average Utilization per GPU",
+         "transformations" : [
+            {
+               "id" : "reduce",
+               "options" : {
+                  "reducers" : [
+                     "mean"
+                  ]
+               }
+            },
+            {
+               "id" : "sortBy",
+               "options" : {
+                  "fields" : {},
+                  "sort" : [
+                     {
+                        "desc" : true,
+                        "field" : "Mean"
+                     }
+                  ]
+               }
+            },
+            {
+               "id" : "calculateField",
+               "options" : {
+                  "alias" : "GPU",
+                  "mode" : "index",
+                  "reduce" : {
+                     "reducer" : "sum"
+                  }
+               }
+            },
+            {
+               "id" : "organize",
+               "options" : {
+                  "excludeByName" : {},
+                  "includeByName" : {},
+                  "indexByName" : {},
+                  "renameByName" : {
+                     "Mean" : "GPU Utilization (%)"
+                  }
+               }
+            }
+         ],
+         "type" : "xychart"
       }
    ],
-   "refresh" : "",
+   "refresh" : false,
    "schemaVersion" : 39,
    "tags" : [
       "omniwatch"
@@ -1608,6 +1944,11 @@
    "templating" : {
       "list" : [
          {
+            "current" : {
+               "selected" : false,
+               "text" : "1656903",
+               "value" : "1656903"
+            },
             "hide" : 2,
             "includeAll" : false,
             "label" : "SLURM Job ID",
@@ -1620,7 +1961,7 @@
          },
          {
             "current" : {
-               "selected" : true,
+               "selected" : false,
                "text" : "5s",
                "value" : "5s"
             },
@@ -1654,8 +1995,8 @@
       ]
    },
    "time" : {
-      "from" : "now-6h",
-      "to" : "now"
+      "from" : "2024-02-15T09:40:00.000Z",
+      "to" : "2024-02-15T10:20:00.000Z"
    },
    "timepicker" : {
       "hidden" : true
@@ -1663,6 +2004,6 @@
    "timezone" : "",
    "title" : "omniwatch-job",
    "uid" : "bccbab2a-b53a-4d32-90e7-b7613b67403c",
-   "version" : 63,
+   "version" : 1,
    "weekStart" : ""
 }
