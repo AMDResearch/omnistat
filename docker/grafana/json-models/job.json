@@ -16,7 +16,7 @@
          {
             "datasource" : {
                "type" : "prometheus",
-               "uid" : "prometheus"
+               "uid" : "$source"
             },
             "enable" : true,
             "expr" : "slurmjob_annotations{jobid=\"$jobid\"}",
@@ -48,7 +48,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -100,7 +100,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -117,7 +117,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -169,7 +169,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -201,7 +201,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -253,7 +253,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "slurmjob_info{jobid=\"$jobid\"}",
@@ -287,7 +287,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -345,7 +345,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card))",
@@ -357,7 +357,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(100 * avg(label_replace({__name__=~\"card(.*)_rocm_vram_used\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_used\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / avg(label_replace({__name__=~\"card(.*)_rocm_vram_total\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_total\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card))",
@@ -374,7 +374,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -426,7 +426,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "disableTextWrap" : false,
                "editorMode" : "builder",
@@ -464,7 +464,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -516,7 +516,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -550,7 +550,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -603,7 +603,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "max(timestamp(slurmjob_info{jobid=\"$jobid\"}))",
@@ -634,7 +634,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -693,7 +693,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -710,7 +710,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -792,7 +792,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -811,7 +811,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -870,7 +870,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -887,7 +887,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -969,7 +969,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "exemplar" : false,
@@ -1001,7 +1001,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1083,7 +1083,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
@@ -1099,7 +1099,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1180,7 +1180,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_temp_die_edge\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_temp_die_edge\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
@@ -1196,7 +1196,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1278,7 +1278,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_avg_pwr\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_avg_pwr\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
@@ -1294,7 +1294,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1376,7 +1376,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
@@ -1392,7 +1392,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1474,7 +1474,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_mclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_mclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
@@ -1503,7 +1503,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1693,7 +1693,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "quantile(0.20, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
@@ -1705,7 +1705,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "quantile(0.5, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
@@ -1718,7 +1718,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "quantile(0.8, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
@@ -1731,7 +1731,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}))",
@@ -1748,7 +1748,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1844,7 +1844,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (instance)",
@@ -1903,7 +1903,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -1999,7 +1999,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}",
@@ -2109,6 +2109,22 @@
             ],
             "query" : "60s,30s,5s",
             "queryValue" : "",
+            "skipUrlSync" : false,
+            "type" : "custom"
+         },
+         {
+            "current" : {
+               "selected" : false,
+               "text" : "prometheus",
+               "value" : "prometheus"
+            },
+            "hide" : 2,
+            "includeAll" : false,
+            "label" : "Data Source",
+            "multi" : false,
+            "name" : "source",
+            "options" : [],
+            "query" : "",
             "skipUrlSync" : false,
             "type" : "custom"
          }
