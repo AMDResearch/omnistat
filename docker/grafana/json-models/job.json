@@ -561,19 +561,6 @@
                "legendFormat" : "GPU Memory",
                "range" : true,
                "refId" : "B"
-            },
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "prometheus"
-               },
-               "editorMode" : "code",
-               "expr" : "avg(100 * avg(label_replace({__name__=~\"card(.*)_rocm_avg_pwr\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_avg_pwr\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / 300)",
-               "hide" : false,
-               "instant" : false,
-               "legendFormat" : "GPU Power",
-               "range" : true,
-               "refId" : "C"
             }
          ],
          "title" : "Utilization Summary",
@@ -1097,7 +1084,7 @@
             "x" : 0,
             "y" : 22
          },
-         "id" : 24,
+         "id" : 43,
          "interval" : "$interval",
          "options" : {
             "legend" : {
@@ -1288,7 +1275,7 @@
          },
          "gridPos" : {
             "h" : 8,
-            "w" : 12,
+            "w" : 24,
             "x" : 0,
             "y" : 38
          },
@@ -1322,107 +1309,6 @@
          ],
          "title" : "GPU Power (W)",
          "type" : "timeseries"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "prometheus"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "custom" : {
-                  "hideFrom" : {
-                     "legend" : false,
-                     "tooltip" : false,
-                     "viz" : false
-                  },
-                  "scaleDistribution" : {
-                     "type" : "linear"
-                  }
-               },
-               "unitScale" : true
-            },
-            "overrides" : []
-         },
-         "gridPos" : {
-            "h" : 8,
-            "w" : 12,
-            "x" : 12,
-            "y" : 38
-         },
-         "id" : 34,
-         "interval" : "$interval",
-         "options" : {
-            "calculate" : false,
-            "calculation" : {
-               "xBuckets" : {
-                  "mode" : "count"
-               },
-               "yBuckets" : {
-                  "mode" : "size",
-                  "scale" : {
-                     "type" : "linear"
-                  }
-               }
-            },
-            "cellGap" : 1,
-            "cellValues" : {
-               "unit" : "percent"
-            },
-            "color" : {
-               "exponent" : 0.5,
-               "fill" : "dark-orange",
-               "max" : 100,
-               "min" : 0,
-               "mode" : "scheme",
-               "reverse" : false,
-               "scale" : "exponential",
-               "scheme" : "RdYlGn",
-               "steps" : 64
-            },
-            "exemplars" : {
-               "color" : "rgba(255,0,255,0.7)"
-            },
-            "filterValues" : {
-               "le" : 1e-09
-            },
-            "legend" : {
-               "show" : true
-            },
-            "rowsFrame" : {
-               "layout" : "auto"
-            },
-            "tooltip" : {
-               "mode" : "single",
-               "showColorScale" : false,
-               "yHistogram" : false
-            },
-            "yAxis" : {
-               "axisLabel" : "Card",
-               "axisPlacement" : "left",
-               "reverse" : false
-            }
-         },
-         "pluginVersion" : "10.3.1",
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "prometheus"
-               },
-               "editorMode" : "code",
-               "exemplar" : false,
-               "expr" : "100 * avg(label_replace({__name__=~\"card(.*)_rocm_avg_pwr\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_avg_pwr\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / 300",
-               "format" : "time_series",
-               "instant" : false,
-               "interval" : "",
-               "legendFormat" : "{{card}}",
-               "range" : true,
-               "refId" : "A"
-            }
-         ],
-         "title" : "Heatmap of GPU Power (%)",
-         "type" : "heatmap"
       },
       {
          "datasource" : {
@@ -1649,6 +1535,251 @@
                   "axisColorMode" : "text",
                   "axisLabel" : "",
                   "axisPlacement" : "auto",
+                  "barAlignment" : 0,
+                  "drawStyle" : "line",
+                  "fillOpacity" : 0,
+                  "gradientMode" : "none",
+                  "hideFrom" : {
+                     "legend" : false,
+                     "tooltip" : false,
+                     "viz" : false
+                  },
+                  "insertNulls" : false,
+                  "lineInterpolation" : "linear",
+                  "lineWidth" : 1,
+                  "pointSize" : 5,
+                  "scaleDistribution" : {
+                     "type" : "linear"
+                  },
+                  "showPoints" : "auto",
+                  "spanNulls" : false,
+                  "stacking" : {
+                     "group" : "A",
+                     "mode" : "none"
+                  },
+                  "thresholdsStyle" : {
+                     "mode" : "off"
+                  }
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     }
+                  ]
+               },
+               "unit" : "percent",
+               "unitScale" : true
+            },
+            "overrides" : [
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Median"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.fillOpacity",
+                        "value" : 15
+                     },
+                     {
+                        "id" : "custom.fillBelowTo",
+                        "value" : "Quantile 0.2 "
+                     },
+                     {
+                        "id" : "color",
+                        "value" : {
+                           "fixedColor" : "blue",
+                           "mode" : "fixed"
+                        }
+                     },
+                     {
+                        "id" : "custom.lineWidth",
+                        "value" : 1
+                     },
+                     {
+                        "id" : "displayName",
+                        "value" : "Median"
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Quantile 0.8"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.fillOpacity",
+                        "value" : 15
+                     },
+                     {
+                        "id" : "custom.fillBelowTo",
+                        "value" : "Median"
+                     },
+                     {
+                        "id" : "color",
+                        "value" : {
+                           "fixedColor" : "blue",
+                           "mode" : "fixed"
+                        }
+                     },
+                     {
+                        "id" : "custom.lineWidth",
+                        "value" : 0
+                     },
+                     {
+                        "id" : "custom.hideFrom",
+                        "value" : {
+                           "legend" : true,
+                           "tooltip" : false,
+                           "viz" : false
+                        }
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Quantile 0.2 "
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.lineWidth",
+                        "value" : 0
+                     },
+                     {
+                        "id" : "displayName"
+                     },
+                     {
+                        "id" : "color",
+                        "value" : {
+                           "fixedColor" : "blue",
+                           "mode" : "fixed"
+                        }
+                     },
+                     {
+                        "id" : "custom.hideFrom",
+                        "value" : {
+                           "legend" : true,
+                           "tooltip" : false,
+                           "viz" : false
+                        }
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Average"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "color",
+                        "value" : {
+                           "fixedColor" : "#8080805e",
+                           "mode" : "fixed"
+                        }
+                     }
+                  ]
+               }
+            ]
+         },
+         "gridPos" : {
+            "h" : 9,
+            "w" : 24,
+            "x" : 0,
+            "y" : 55
+         },
+         "id" : 24,
+         "interval" : "$interval",
+         "options" : {
+            "legend" : {
+               "calcs" : [],
+               "displayMode" : "list",
+               "placement" : "bottom",
+               "showLegend" : true
+            },
+            "tooltip" : {
+               "mode" : "multi",
+               "sort" : "none"
+            }
+         },
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "quantile(0.20, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "instant" : false,
+               "legendFormat" : "Quantile 0.2 ",
+               "range" : true,
+               "refId" : "Quantile 0.2"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "quantile(0.5, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "hide" : false,
+               "instant" : false,
+               "legendFormat" : "Median",
+               "range" : true,
+               "refId" : "Median"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "quantile(0.8, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "hide" : false,
+               "instant" : false,
+               "legendFormat" : "Quantile 0.8",
+               "range" : true,
+               "refId" : "Quantile 0.8"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "avg((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}))",
+               "hide" : false,
+               "instant" : false,
+               "legendFormat" : "Average",
+               "range" : true,
+               "refId" : "Average"
+            }
+         ],
+         "title" : "Distribution of GPU Utilization Over Time (%)",
+         "type" : "timeseries"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "palette-classic"
+               },
+               "custom" : {
+                  "axisBorderShow" : false,
+                  "axisCenteredZero" : false,
+                  "axisColorMode" : "text",
+                  "axisLabel" : "",
+                  "axisPlacement" : "auto",
                   "axisSoftMax" : 100,
                   "axisSoftMin" : 0,
                   "hideFrom" : {
@@ -1698,10 +1829,10 @@
             ]
          },
          "gridPos" : {
-            "h" : 8,
-            "w" : 24,
+            "h" : 9,
+            "w" : 12,
             "x" : 0,
-            "y" : 55
+            "y" : 64
          },
          "id" : 41,
          "interval" : "$interval",
@@ -1849,10 +1980,10 @@
             ]
          },
          "gridPos" : {
-            "h" : 8,
-            "w" : 24,
-            "x" : 0,
-            "y" : 63
+            "h" : 9,
+            "w" : 12,
+            "x" : 12,
+            "y" : 64
          },
          "id" : 42,
          "interval" : "$interval",
@@ -1995,8 +2126,8 @@
       ]
    },
    "time" : {
-      "from" : "2024-02-15T09:40:00.000Z",
-      "to" : "2024-02-15T10:20:00.000Z"
+      "from" : "2024-02-15T06:17:50.606Z",
+      "to" : "2024-02-15T12:39:40.158Z"
    },
    "timepicker" : {
       "hidden" : true
