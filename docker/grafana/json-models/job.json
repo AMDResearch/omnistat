@@ -1823,6 +1823,10 @@
                      {
                         "id" : "unit",
                         "value" : "none"
+                     },
+                     {
+                        "id" : "decimals",
+                        "value" : 0
                      }
                   ]
                }
@@ -1974,6 +1978,10 @@
                      {
                         "id" : "unit",
                         "value" : "none"
+                     },
+                     {
+                        "id" : "decimals",
+                        "value" : 0
                      }
                   ]
                }
