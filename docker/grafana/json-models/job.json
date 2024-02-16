@@ -2114,7 +2114,7 @@
          },
          {
             "current" : {
-               "selected" : false,
+               "selected" : true,
                "text" : "prometheus",
                "value" : "prometheus"
             },
@@ -2126,7 +2126,7 @@
             "options" : [],
             "query" : "",
             "skipUrlSync" : false,
-            "type" : "custom"
+            "type" : "textbox"
          }
       ]
    },
