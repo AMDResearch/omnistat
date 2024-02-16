@@ -70,8 +70,8 @@
             "overrides" : []
          },
          "gridPos" : {
-            "h" : 3,
-            "w" : 2,
+            "h" : 2,
+            "w" : 6,
             "x" : 0,
             "y" : 1
          },
@@ -90,7 +90,7 @@
             },
             "showPercentChange" : false,
             "text" : {
-               "valueSize" : 30
+               "valueSize" : 28
             },
             "textMode" : "auto",
             "wideLayout" : true
@@ -111,7 +111,7 @@
                "refId" : "A"
             }
          ],
-         "title" : "Job Id",
+         "title" : "Job ID",
          "type" : "stat"
       },
       {
@@ -139,123 +139,14 @@
             "overrides" : []
          },
          "gridPos" : {
-            "h" : 3,
-            "w" : 4,
-            "x" : 2,
-            "y" : 1
-         },
-         "id" : 10,
-         "options" : {
-            "colorMode" : "value",
-            "graphMode" : "area",
-            "justifyMode" : "auto",
-            "orientation" : "auto",
-            "reduceOptions" : {
-               "calcs" : [
-                  "lastNotNull"
-               ],
-               "fields" : "/^user$/",
-               "values" : false
-            },
-            "showPercentChange" : false,
-            "text" : {
-               "valueSize" : 30
-            },
-            "textMode" : "auto",
-            "wideLayout" : true
-         },
-         "pluginVersion" : "10.3.1",
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "prometheus"
-               },
-               "disableTextWrap" : false,
-               "editorMode" : "builder",
-               "exemplar" : false,
-               "expr" : "slurmjob_info{jobid=\"$jobid\"}",
-               "fullMetaSearch" : false,
-               "includeNullMetadata" : true,
-               "instant" : false,
-               "legendFormat" : "__auto",
-               "range" : true,
-               "refId" : "A",
-               "useBackend" : false
-            }
-         ],
-         "title" : "User",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {}
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            },
-            {
-               "disabled" : true,
-               "id" : "joinByField",
-               "options" : {
-                  "mode" : "inner"
-               }
-            }
-         ],
-         "type" : "stat"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "prometheus"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "thresholds"
-               },
-               "mappings" : [
-                  {
-                     "options" : {
-                        "0" : {
-                           "color" : "blue",
-                           "index" : 0,
-                           "text" : "interactive"
-                        },
-                        "1" : {
-                           "index" : 1,
-                           "text" : "batch"
-                        }
-                     },
-                     "type" : "value"
-                  }
-               ],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green",
-                        "value" : null
-                     },
-                     {
-                        "color" : "red",
-                        "value" : 80
-                     }
-                  ]
-               },
-               "unitScale" : true
-            },
-            "overrides" : []
-         },
-         "gridPos" : {
-            "h" : 3,
-            "w" : 4,
+            "h" : 2,
+            "w" : 6,
             "x" : 6,
             "y" : 1
          },
          "id" : 36,
          "options" : {
-            "colorMode" : "value",
+            "colorMode" : "none",
             "graphMode" : "none",
             "justifyMode" : "auto",
             "orientation" : "auto",
@@ -268,7 +159,7 @@
             },
             "showPercentChange" : false,
             "text" : {
-               "valueSize" : 30
+               "valueSize" : 28
             },
             "textMode" : "auto",
             "wideLayout" : true
@@ -332,14 +223,14 @@
             "overrides" : []
          },
          "gridPos" : {
-            "h" : 3,
-            "w" : 2,
-            "x" : 10,
+            "h" : 2,
+            "w" : 5,
+            "x" : 12,
             "y" : 1
          },
          "id" : 12,
          "options" : {
-            "colorMode" : "value",
+            "colorMode" : "none",
             "graphMode" : "area",
             "justifyMode" : "auto",
             "orientation" : "auto",
@@ -403,92 +294,6 @@
                "color" : {
                   "mode" : "thresholds"
                },
-               "mappings" : [],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green",
-                        "value" : null
-                     }
-                  ]
-               },
-               "unitScale" : true
-            },
-            "overrides" : []
-         },
-         "gridPos" : {
-            "h" : 3,
-            "w" : 4,
-            "x" : 12,
-            "y" : 1
-         },
-         "id" : 11,
-         "options" : {
-            "colorMode" : "value",
-            "graphMode" : "area",
-            "justifyMode" : "auto",
-            "orientation" : "auto",
-            "reduceOptions" : {
-               "calcs" : [
-                  "lastNotNull"
-               ],
-               "fields" : "/^partition$/",
-               "values" : false
-            },
-            "showPercentChange" : false,
-            "text" : {
-               "valueSize" : 30
-            },
-            "textMode" : "auto",
-            "wideLayout" : true
-         },
-         "pluginVersion" : "10.3.1",
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "prometheus"
-               },
-               "editorMode" : "code",
-               "exemplar" : false,
-               "expr" : "slurmjob_info{jobid=\"$jobid\"}",
-               "instant" : false,
-               "legendFormat" : "__auto",
-               "range" : true,
-               "refId" : "A"
-            }
-         ],
-         "title" : "Partition",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {
-                  "keepLabels" : [
-                     "__name__",
-                     "jobid",
-                     "partition",
-                     "user"
-                  ]
-               }
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            }
-         ],
-         "type" : "stat"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "prometheus"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "thresholds"
-               },
                "decimals" : 0,
                "mappings" : [],
                "thresholds" : {
@@ -514,9 +319,9 @@
             "overrides" : []
          },
          "gridPos" : {
-            "h" : 3,
-            "w" : 5,
-            "x" : 16,
+            "h" : 4,
+            "w" : 7,
+            "x" : 17,
             "y" : 1
          },
          "id" : 32,
@@ -586,20 +391,196 @@
                      }
                   ]
                },
+               "unitScale" : true
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 2,
+            "w" : 6,
+            "x" : 0,
+            "y" : 3
+         },
+         "id" : 10,
+         "options" : {
+            "colorMode" : "none",
+            "graphMode" : "area",
+            "justifyMode" : "auto",
+            "orientation" : "auto",
+            "reduceOptions" : {
+               "calcs" : [
+                  "lastNotNull"
+               ],
+               "fields" : "/^user$/",
+               "values" : false
+            },
+            "showPercentChange" : false,
+            "text" : {
+               "valueSize" : 28
+            },
+            "textMode" : "auto",
+            "wideLayout" : true
+         },
+         "pluginVersion" : "10.3.1",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "disableTextWrap" : false,
+               "editorMode" : "builder",
+               "exemplar" : false,
+               "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "fullMetaSearch" : false,
+               "includeNullMetadata" : true,
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A",
+               "useBackend" : false
+            }
+         ],
+         "title" : "User",
+         "transformations" : [
+            {
+               "id" : "labelsToFields",
+               "options" : {}
+            },
+            {
+               "id" : "merge",
+               "options" : {}
+            },
+            {
+               "disabled" : true,
+               "id" : "joinByField",
+               "options" : {
+                  "mode" : "inner"
+               }
+            }
+         ],
+         "type" : "stat"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "thresholds"
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     }
+                  ]
+               },
+               "unitScale" : true
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 2,
+            "w" : 6,
+            "x" : 6,
+            "y" : 3
+         },
+         "id" : 11,
+         "options" : {
+            "colorMode" : "none",
+            "graphMode" : "area",
+            "justifyMode" : "auto",
+            "orientation" : "auto",
+            "reduceOptions" : {
+               "calcs" : [
+                  "lastNotNull"
+               ],
+               "fields" : "/^partition$/",
+               "values" : false
+            },
+            "showPercentChange" : false,
+            "text" : {
+               "valueSize" : 28
+            },
+            "textMode" : "auto",
+            "wideLayout" : true
+         },
+         "pluginVersion" : "10.3.1",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "exemplar" : false,
+               "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "Partition",
+         "transformations" : [
+            {
+               "id" : "labelsToFields",
+               "options" : {
+                  "keepLabels" : [
+                     "__name__",
+                     "jobid",
+                     "partition",
+                     "user"
+                  ]
+               }
+            },
+            {
+               "id" : "merge",
+               "options" : {}
+            }
+         ],
+         "type" : "stat"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "thresholds"
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     }
+                  ]
+               },
                "unit" : "dthms",
                "unitScale" : true
             },
             "overrides" : []
          },
          "gridPos" : {
-            "h" : 3,
-            "w" : 3,
-            "x" : 21,
-            "y" : 1
+            "h" : 2,
+            "w" : 5,
+            "x" : 12,
+            "y" : 3
          },
          "id" : 39,
          "options" : {
-            "colorMode" : "value",
+            "colorMode" : "none",
             "graphMode" : "none",
             "justifyMode" : "auto",
             "orientation" : "auto",
@@ -612,7 +593,7 @@
             },
             "showPercentChange" : false,
             "text" : {
-               "valueSize" : 30
+               "valueSize" : 28
             },
             "textMode" : "auto",
             "wideLayout" : true
@@ -634,7 +615,7 @@
                "refId" : "A"
             }
          ],
-         "title" : "SLURM Job Duration",
+         "title" : "Job Duration",
          "type" : "stat"
       },
       {
@@ -643,7 +624,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 4
+            "y" : 5
          },
          "id" : 15,
          "panels" : [],
@@ -688,7 +669,7 @@
             "h" : 8,
             "w" : 9,
             "x" : 0,
-            "y" : 5
+            "y" : 6
          },
          "id" : 28,
          "interval" : "$interval",
@@ -751,7 +732,7 @@
             "h" : 8,
             "w" : 15,
             "x" : 9,
-            "y" : 5
+            "y" : 6
          },
          "id" : 27,
          "interval" : "$interval",
@@ -865,7 +846,7 @@
             "h" : 8,
             "w" : 9,
             "x" : 0,
-            "y" : 13
+            "y" : 14
          },
          "id" : 29,
          "interval" : "$interval",
@@ -928,7 +909,7 @@
             "h" : 8,
             "w" : 15,
             "x" : 9,
-            "y" : 13
+            "y" : 14
          },
          "id" : 31,
          "interval" : "$interval",
@@ -1010,7 +991,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 21
+            "y" : 22
          },
          "id" : 21,
          "panels" : [],
@@ -1082,7 +1063,7 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 22
+            "y" : 23
          },
          "id" : 43,
          "interval" : "$interval",
@@ -1180,7 +1161,7 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 30
+            "y" : 31
          },
          "id" : 33,
          "options" : {
@@ -1277,7 +1258,7 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 38
+            "y" : 39
          },
          "id" : 22,
          "interval" : "$interval",
@@ -1375,7 +1356,7 @@
             "h" : 8,
             "w" : 12,
             "x" : 0,
-            "y" : 46
+            "y" : 47
          },
          "id" : 25,
          "interval" : "$interval",
@@ -1473,7 +1454,7 @@
             "h" : 8,
             "w" : 12,
             "x" : 12,
-            "y" : 46
+            "y" : 47
          },
          "id" : 23,
          "interval" : "$interval",
@@ -1512,7 +1493,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 54
+            "y" : 55
          },
          "id" : 40,
          "panels" : [],
@@ -1692,7 +1673,7 @@
             "h" : 9,
             "w" : 24,
             "x" : 0,
-            "y" : 55
+            "y" : 56
          },
          "id" : 24,
          "interval" : "$interval",
@@ -1836,7 +1817,7 @@
             "h" : 9,
             "w" : 12,
             "x" : 0,
-            "y" : 64
+            "y" : 65
          },
          "id" : 41,
          "interval" : "$interval",
@@ -1991,7 +1972,7 @@
             "h" : 9,
             "w" : 12,
             "x" : 12,
-            "y" : 64
+            "y" : 65
          },
          "id" : 42,
          "interval" : "$interval",
