@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+- name: 'omniwatch'
+  orgId: 1
+  folder: ''
+  folderUid: ''
+  type: file
+  disableDeletion: true
+  updateIntervalSeconds: 0
+  allowUiUpdates: false
+  options:
+    path: /etc/grafana/provisioning/json-models
+    foldersFromFilesStructure: true
