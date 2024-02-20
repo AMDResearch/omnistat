@@ -104,7 +104,15 @@
                   "properties" : [
                      {
                         "id" : "custom.hidden",
-                        "value" : true
+                        "value" : false
+                     },
+                     {
+                        "id" : "displayName",
+                        "value" : "Date"
+                     },
+                     {
+                        "id" : "unit",
+                        "value" : "dateTimeAsIso"
                      }
                   ]
                },
@@ -130,7 +138,7 @@
          },
          "id" : 1,
          "interval" : "5s",
-         "maxDataPoints": 10000000,
+         "maxDataPoints" : 10000000,
          "options" : {
             "cellHeight" : "sm",
             "footer" : {
@@ -276,12 +284,16 @@
                   },
                   "includeByName" : {},
                   "indexByName" : {
-                     "Duration (h)" : 6,
+                     "Duration (h)" : 8,
+                     "Value (firstNotNull)" : 9,
+                     "Value (lastNotNull)" : 10,
                      "Value (range)" : 5,
                      "batchflag (lastNotNull)" : 4,
+                     "from" : 6,
                      "jobid" : 0,
                      "nodes (lastNotNull)" : 2,
                      "partition (lastNotNull)" : 3,
+                     "to" : 7,
                      "user (lastNotNull)" : 1
                   },
                   "renameByName" : {
