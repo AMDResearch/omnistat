@@ -124,7 +124,21 @@
                "color" : {
                   "mode" : "thresholds"
                },
-               "mappings" : [],
+               "mappings" : [
+                  {
+                     "options" : {
+                        "0" : {
+                           "index" : 1,
+                           "text" : "Interactive"
+                        },
+                        "1" : {
+                           "index" : 0,
+                           "text" : "Batch"
+                        }
+                     },
+                     "type" : "value"
+                  }
+               ],
                "thresholds" : {
                   "mode" : "absolute",
                   "steps" : [
