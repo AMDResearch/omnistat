@@ -124,7 +124,21 @@
                "color" : {
                   "mode" : "thresholds"
                },
-               "mappings" : [],
+               "mappings" : [
+                  {
+                     "options" : {
+                        "0" : {
+                           "index" : 1,
+                           "text" : "Interactive"
+                        },
+                        "1" : {
+                           "index" : 0,
+                           "text" : "Batch"
+                        }
+                     },
+                     "type" : "value"
+                  }
+               ],
                "thresholds" : {
                   "mode" : "absolute",
                   "steps" : [
@@ -1065,7 +1079,7 @@
             "x" : 0,
             "y" : 23
          },
-         "id" : 43,
+         "id" : 44,
          "interval" : "$interval",
          "options" : {
             "legend" : {
@@ -2054,6 +2068,207 @@
             }
          ],
          "type" : "xychart"
+      },
+      {
+         "collapsed" : false,
+         "gridPos" : {
+            "h" : 1,
+            "w" : 24,
+            "x" : 0,
+            "y" : 74
+         },
+         "id" : 45,
+         "panels" : [],
+         "title" : "Annotations",
+         "type" : "row"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "prometheus"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "thresholds"
+               },
+               "custom" : {
+                  "align" : "auto",
+                  "cellOptions" : {
+                     "type" : "auto"
+                  },
+                  "inspect" : false
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               },
+               "unit" : "s",
+               "unitScale" : true
+            },
+            "overrides" : [
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "First"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.hidden",
+                        "value" : true
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Last"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "custom.hidden",
+                        "value" : true
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Range"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "displayName",
+                        "value" : "Elapsed Time"
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Field"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "displayName",
+                        "value" : "Annotation Tag"
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Mean"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "displayName",
+                        "value" : "Average GPU Utilization"
+                     },
+                     {
+                        "id" : "unit",
+                        "value" : "percent"
+                     }
+                  ]
+               }
+            ]
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 24,
+            "x" : 0,
+            "y" : 75
+         },
+         "id" : 43,
+         "interval" : "$interval",
+         "options" : {
+            "cellHeight" : "sm",
+            "footer" : {
+               "countRows" : false,
+               "fields" : "",
+               "reducer" : [
+                  "sum"
+               ],
+               "show" : false
+            },
+            "frameIndex" : 1,
+            "showHeader" : true
+         },
+         "pluginVersion" : "10.3.1",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "timestamp(count by (marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "prometheus"
+               },
+               "editorMode" : "code",
+               "expr" : "avg by (marker) (avg by (instance) ((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\"))) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker)(slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+               "hide" : false,
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "B"
+            }
+         ],
+         "title" : "Annotated Regions",
+         "transformations" : [
+            {
+               "filter" : {
+                  "id" : "byRefId",
+                  "options" : "A"
+               },
+               "id" : "reduce",
+               "options" : {
+                  "includeTimeField" : false,
+                  "mode" : "seriesToRows",
+                  "reducers" : [
+                     "first",
+                     "last",
+                     "range"
+                  ]
+               },
+               "topic" : "series"
+            },
+            {
+               "filter" : {
+                  "id" : "byRefId",
+                  "options" : "B"
+               },
+               "id" : "reduce",
+               "options" : {
+                  "reducers" : [
+                     "mean"
+                  ]
+               }
+            },
+            {
+               "id" : "merge",
+               "options" : {}
+            }
+         ],
+         "type" : "table"
       }
    ],
    "refresh" : false,
@@ -2066,8 +2281,8 @@
          {
             "current" : {
                "selected" : false,
-               "text" : "1656903",
-               "value" : "1656903"
+               "text" : "0",
+               "value" : "0"
             },
             "hide" : 2,
             "includeAll" : false,
@@ -2131,11 +2346,11 @@
       ]
    },
    "time" : {
-      "from" : "2024-02-15T06:17:50.606Z",
-      "to" : "2024-02-15T12:39:40.158Z"
+      "from" : "2024-02-22T18:45:00.000Z",
+      "to" : "2024-02-22T19:05:00.000Z"
    },
    "timepicker" : {
-      "hidden" : true
+      "hidden" : false
    },
    "timezone" : "",
    "title" : "omniwatch-job",
