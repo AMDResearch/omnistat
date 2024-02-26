@@ -99,20 +99,24 @@
                {
                   "matcher" : {
                      "id" : "byName",
+                     "options" : "Date"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "unit",
+                        "value" : "dateTimeAsIso"
+                     }
+                  ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
                      "options" : "from"
                   },
                   "properties" : [
                      {
                         "id" : "custom.hidden",
-                        "value" : false
-                     },
-                     {
-                        "id" : "displayName",
-                        "value" : "Date"
-                     },
-                     {
-                        "id" : "unit",
-                        "value" : "dateTimeAsIso"
+                        "value" : true
                      }
                   ]
                },
@@ -275,18 +279,35 @@
                }
             },
             {
+               "id" : "calculateField",
+               "options" : {
+                  "alias" : "Date",
+                  "binary" : {
+                     "left" : "from",
+                     "right" : "0"
+                  },
+                  "mode" : "binary",
+                  "reduce" : {
+                     "reducer" : "sum"
+                  }
+               }
+            },
+            {
                "id" : "organize",
                "options" : {
                   "excludeByName" : {
                      "Value (firstNotNull)" : true,
                      "Value (lastNotNull)" : true,
-                     "Value (range)" : true
+                     "Value (range)" : true,
+                     "from" : false,
+                     "to" : false
                   },
                   "includeByName" : {},
                   "indexByName" : {
-                     "Duration (h)" : 8,
-                     "Value (firstNotNull)" : 9,
-                     "Value (lastNotNull)" : 10,
+                     "Date" : 8,
+                     "Duration (h)" : 9,
+                     "Value (firstNotNull)" : 10,
+                     "Value (lastNotNull)" : 11,
                      "Value (range)" : 5,
                      "batchflag (lastNotNull)" : 4,
                      "from" : 6,
