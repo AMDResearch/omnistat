@@ -5,6 +5,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=1y'
+      - '--storage.tsdb.allow-overlapping-blocks'
     ports:
       - 9090:9090
     restart: unless-stopped
