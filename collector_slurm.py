@@ -48,6 +48,7 @@ class SlurmJob(Collector):
         self.__annotationsEnabled = annotations
         self.__SLURMmetrics = {}
         self.__slurmJobInfo = []
+        self.__lastAnnotationLabel = None
 
         # setup squeue binary path to query slurm to determine node ownership
         command = utils.resolvePath("squeue", "SLURM_PATH")
@@ -144,14 +145,31 @@ class SlurmJob(Collector):
             # Check for user supplied annotations
             if self.__annotationsEnabled:
                 userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
-                if os.path.isfile(userFile):
+
+                userFileExists = os.path.isfile(userFile)
+                if userFileExists:
                     with open(userFile, "r") as file:
                         data = json.load(file)
 
+                # Reset existing annotation in two scenarios:
+                #  1. Previous annotation stopped (file no longer present)
+                #  2. There is a new annotation (label has changed)
+                if self.__lastAnnotationLabel != None and (
+                    not userFileExists
+                    or self.__lastAnnotationLabel != data["annotation"]
+                ):
+                    self.__SLURMmetrics["annotations"].labels(
+                        marker=self.__lastAnnotationLabel,
+                        jobid=results[0],
+                    ).set(0)
+                    self.__lastAnnotationLabel = None
+
+                if userFileExists:
                     self.__SLURMmetrics["annotations"].labels(
                         marker=data["annotation"],
                         jobid=results[0],
                     ).set(data["timestamp_secs"])
+                    self.__lastAnnotationLabel = data["annotation"]
 
         # Case when no job detected
         else:
