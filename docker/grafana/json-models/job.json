@@ -2224,7 +2224,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg by (marker) (avg by (instance) ((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\"))) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker)(slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+               "expr": "avg by (marker) ((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\")) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "__auto",
