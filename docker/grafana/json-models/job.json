@@ -2085,7 +2085,7 @@
       {
          "datasource" : {
             "type" : "prometheus",
-            "uid" : "prometheus"
+            "uid" : "$source"
          },
          "fieldConfig" : {
             "defaults" : {
@@ -2209,7 +2209,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "timestamp(count by (marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
@@ -2221,7 +2221,7 @@
             {
                "datasource" : {
                   "type" : "prometheus",
-                  "uid" : "prometheus"
+                  "uid" : "$source"
                },
                "editorMode" : "code",
                "expr" : "avg by (marker) (avg by (instance) ((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\"))) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker)(slurmjob_annotations{jobid=\"$jobid\"} > 0))",
