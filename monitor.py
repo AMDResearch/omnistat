@@ -56,6 +56,7 @@ class Monitor():
 
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
+            self.runtimeConfig['collector_enable_rocprofiler'] = config['omniwatch.collectors'].getboolean('enable_rocprofiler',False)
             self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
@@ -65,6 +66,8 @@ class Monitor():
                 self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
             if config.has_option('omniwatch.collectors','smi_binary'):
                 self.runtimeConfig['rocm_smi_binary'] = config['omniwatch.collectors']['smi_binary']
+            if config.has_option('omniwatch.collectors.rocprofiler','metrics'):
+                self.runtimeConfig['rocprofiler_metrics'] = config['omniwatch.collectors.rocprofiler']['metrics'].split(',')
 
         else:
             utils.error("Unable to find runtime config file %s" % configFile)
@@ -103,6 +106,9 @@ class Monitor():
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
                                               annotations=self.runtimeConfig['slurm_collector_annotations']))
+        if self.runtimeConfig['collector_enable_rocprofiler']:
+            from collector_rocprofiler import rocprofiler
+            self.__collectors.append(rocprofiler(self.runtimeConfig['rocprofiler_metrics']))
         
         # Initialize all metrics
         for collector in self.__collectors:

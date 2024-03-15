@@ -6,13 +6,17 @@ usermode = True
 usermode_port = 8001
 enable_rocm_smi = True
 enable_slurm = True
+enable_rocprofiler = False
 corebinding = 31
 logfile = exporter.log
 
 [omniwatch.collectors.slurm]
-
 host_skip = "login.*"
 enable_annotations = True
+
+[omniwatch.collectors.rocprofiler]
+# comma-separated list of metric names
+metrics = GRBM_COUNT,SQ_WAVES
 
 [omniwatch.report]
 
