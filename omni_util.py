@@ -179,8 +179,18 @@ class UserBasedMonitoring:
                 # utils.runShellCommand(base_cmd + cmd,timeout=185,exit_on_error=False)
 
                 client = ParallelSSHClient(self.slurmHosts,allow_agent=False,timeout=120)
+                gunicorn_path = utils.resolvePath("gunicorn",'NONE')
+
                 # cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
-                cmd = "gunicorn -D -b 0.0.0.0:%s --pythonpath %s node_monitoring:app" % (port, self.topDir)
+
+                # build up ssh command, preserving PYTHON environment
+                if "PYTHONPATH" in os.environ:
+                    cmd = "PYTHONPATH=%s " % (os.getenv("PYTHONPATH"))
+                else:
+                    cmd = ""
+
+                cmd += "%s -D -b 0.0.0.0:%s" % (gunicorn_path, port)
+                cmd += " --pythonpath %s node_monitoring:app" % (self.topDir)
                 output = client.run_command(cmd)
 
                 # verify exporter available on all nodes...
