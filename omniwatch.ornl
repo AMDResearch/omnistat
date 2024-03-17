@@ -1,0 +1,35 @@
+#--
+# Configuration for ORNL Crusher/Frontier
+#--
+
+[omniwatch.collectors]
+
+port = 8001
+usermode = True
+usermode_port = 8001
+enable_rocm_smi = True
+enable_slurm = True
+corebinding = 31
+logfile = exporter.log
+
+[omniwatch.collectors.slurm]
+
+host_skip = "login.*"
+enable_annotations = True
+
+[omniwatch.report]
+
+[omniwatch.query]
+prometheus_url = http://localhost:9090
+system_name = ORNL Frontier/Crusher
+
+# options for user-spawned promserver
+[omniwatch.promserver]
+template = prometheus.yml.template
+logfile = prom_server.log
+corebinding = 95
+binary=/autofs/nccs-svm1_sw/crusher/amdsw/omniwatch/prometheus-2.45.1.linux-amd64/prometheus
+datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/scratch/%(USER)s/data_prom
+
+
+
