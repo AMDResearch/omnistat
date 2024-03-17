@@ -93,7 +93,7 @@ class UserBasedMonitoring:
             "template", "prometheus.yml.template"
         )
         ps_binary = self.runtimeConfig[section].get("binary")
-        ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom")
+        ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].get("corebinding","0")
 
