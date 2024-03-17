@@ -150,31 +150,32 @@ class UserBasedMonitoring:
                 utils.runShellCommand(cmd,timeout=35,exit_on_error=True)
 
                 logging.info("Launching exporters in parallel using pdsh")
-                tmp = tempfile.NamedTemporaryFile(mode='w',delete=False)
-                logging.info("--> hosts stored in %s" % tmp.name)
-                for host in self.slurmHosts:
-                    tmp.write("%s\n" % host)
-                tmp.close()
-
-                cmd = [
-                    "numactl",
-                    "--physcpubind=%s" % corebinding,
-                    "nice",
-                    "-n 20",
-                    "gunicorn",
-                    "-D",
-                    "-b 0.0.0.0:%s" % port,
-                    #                    "--access-logfile %s" % (self.topDir / "access.log"),
-                    # "--capture-output",
-                    # "--log-file %s" % logpath,
-                    "--pythonpath %s" % self.topDir,
-                    "node_monitoring:app",
-                ]
+                # tmp = tempfile.NamedTemporaryFile(mode='w',delete=False)
+                # logging.info("--> hosts stored in %s" % tmp.name)
+                # for host in self.slurmHosts:
+                #     tmp.write("%s\n" % host)
+                # tmp.close()
+                # 
+                # cmd = [
+                #     "numactl",
+                #     "--physcpubind=%s" % corebinding,
+                #     "nice",
+                #     "-n 20",
+                #     "gunicorn",
+                #     "-D",
+                #     "-b 0.0.0.0:%s" % port,
+                #     #                    "--access-logfile %s" % (self.topDir / "access.log"),
+                #     # "--capture-output",
+                #     # "--log-file %s" % logpath,
+                #     "--pythonpath %s" % self.topDir,
+                #     "node_monitoring:app",
+                # ]
                 # base_cmd = ["pdsh","-O","-f 128","-t 180","-w ^%s" % tmp.name]
                 # utils.runShellCommand(base_cmd + cmd,timeout=185,exit_on_error=False)
 
                 client = ParallelSSHClient(self.slurmHosts,allow_agent=False,timeout=120)
-                cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
+                # cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
+                cmd = "gunicorn -D -b 0.0.0.0:%s --pythonpath %s node_monitoring:app" % (port, self.topDir)
                 output = client.run_command(cmd)
 
                 # verify exporter available on all nodes...
