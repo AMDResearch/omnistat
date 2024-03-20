@@ -94,6 +94,11 @@ class UserBasedMonitoring:
         )
         ps_binary = self.runtimeConfig[section].get("binary")
         ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
+
+        # datadir can be overridden by separate env variable
+        if "OMNIWATCH_PROMSERVER_DATADIR" in os.environ:
+            ps_datadir = os.getenv("OMNIWATCH_PROMSERVER_DATADIR")
+
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].get("corebinding","0")
 
