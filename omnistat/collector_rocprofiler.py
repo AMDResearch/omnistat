@@ -21,7 +21,7 @@ class rocprofiler(Collector):
         for name in self.__names:
             metric_name = prefix + name
             self.__metrics.append(Gauge(metric_name, ""))
-            logging.info("  --> [registered] %s (counter)" % (metric_name))
+            logging.info("  --> [registered] %s (gauge)" % (metric_name))
         self.__session.start()
 
     def updateMetrics(self):
