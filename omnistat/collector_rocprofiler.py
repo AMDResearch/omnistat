@@ -11,21 +11,23 @@ class rocprofiler(Collector):
     def __init__(self, names):
         logging.debug("Initializing rocprofiler data collector")
         self.__names = names
-        self.__metrics = []
         self.__session = DeviceSession()
-        self.__session.create(self.__names)
+        num_gpus = self.__session.create(self.__names)
+        self.__metrics = [[]] * num_gpus
         logging.info("pyrocprofiler initialized")
 
     def registerMetrics(self):
-        prefix = "card0_rocprofiler_"
-        for name in self.__names:
-            metric_name = prefix + name
-            self.__metrics.append(Gauge(metric_name, ""))
-            logging.info("  --> [registered] %s (gauge)" % (metric_name))
+        for gpu_id, gpu_metrics in enumerate(self.__metrics):
+            prefix = f"card{gpu_id}_rocprofiler_"
+            for name in self.__names:
+                metric_name = prefix + name
+                gpu_metrics.append(Gauge(metric_name, ""))
+                logging.info("  --> [registered] %s (gauge)" % (metric_name))
         self.__session.start()
 
     def updateMetrics(self):
         values = self.__session.poll()
         for i, _ in enumerate(self.__metrics):
-            self.__metrics[i].set(values[i])
+            for j, _ in enumerate(self.__names):
+                self.__metrics[i][j].set(values[i][j])
         return generate_latest()

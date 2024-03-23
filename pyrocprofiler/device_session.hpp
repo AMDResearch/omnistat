@@ -24,40 +24,52 @@
 
 class DeviceSession {
 public:
-  DeviceSession() {
-    hipDeviceProp_t prop;
-    HIP_CHECK(hipGetDeviceProperties(&prop, 0));
+  int create(std::vector<const char*>& metric_names) {
+    HIP_CHECK(hipGetDeviceCount(&m_num_gpus));
     ROCPROF_CHECK(rocprofiler_initialize());
-  }
 
-  void create(std::vector<const char*>& counters) {
-    m_metrics = std::vector<rocprofiler_device_profile_metric_t>(counters.size());
-    int gpu_agent = 0;
+    m_sessions = std::vector<rocprofiler_session_id_t>(m_num_gpus);
+    m_metrics = std::vector<std::vector<rocprofiler_device_profile_metric_t>>(
+      m_num_gpus, std::vector<rocprofiler_device_profile_metric_t>(metric_names.size()));
+
     int cpu_agent = 0;
-    ROCPROF_CHECK(rocprofiler_device_profiling_session_create(&counters[0], counters.size(), &m_id,
-                                                              cpu_agent, gpu_agent));
+    for (int i = 0; i < m_num_gpus; i++) {
+      ROCPROF_CHECK(rocprofiler_device_profiling_session_create(
+        &metric_names[0], metric_names.size(), &m_sessions[i], cpu_agent, i));
+    }
+
+    return m_num_gpus;
   }
 
   void destroy() {
-    ROCPROF_CHECK(rocprofiler_device_profiling_session_destroy(m_id));
+    for (int i = 0; i < m_num_gpus; i++) {
+      ROCPROF_CHECK(rocprofiler_device_profiling_session_destroy(m_sessions[i]));
+    }
   }
 
   void start() {
-    ROCPROF_CHECK(rocprofiler_device_profiling_session_start(m_id));
+    for (int i = 0; i < m_num_gpus; i++) {
+      ROCPROF_CHECK(rocprofiler_device_profiling_session_start(m_sessions[i]));
+    }
   }
 
   void stop() {
-    ROCPROF_CHECK(rocprofiler_device_profiling_session_stop(m_id));
+    for (int i = 0; i < m_num_gpus; i++) {
+      ROCPROF_CHECK(rocprofiler_device_profiling_session_stop(m_sessions[i]));
+    }
   }
 
-  const std::vector<rocprofiler_device_profile_metric_t>& poll() {
-    ROCPROF_CHECK(rocprofiler_device_profiling_session_poll(m_id, &m_metrics[0]));
+  const std::vector<std::vector<rocprofiler_device_profile_metric_t>>& poll() {
+    for (int i = 0; i < m_num_gpus; i++) {
+      ROCPROF_CHECK(rocprofiler_device_profiling_session_poll(m_sessions[i], &m_metrics[i][0]));
+    }
     return m_metrics;
   }
 
 private:
-  rocprofiler_session_id_t m_id;
-  std::vector<rocprofiler_device_profile_metric_t> m_metrics;
+  int m_num_gpus;
+  std::vector<rocprofiler_session_id_t> m_sessions;
+  std::vector<std::vector<rocprofiler_device_profile_metric_t>> m_metrics;
 };
 
 #endif

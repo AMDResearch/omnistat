@@ -63,21 +63,23 @@ PyObject* DeviceSession_create(PyObject* self, PyObject* args) {
     return NULL;
   }
 
-  Py_ssize_t num_counters = PyList_Size(list);
-  std::vector<const char*> counters;
-  counters.reserve(num_counters);
-  for (int i = 0; i < num_counters; i++) {
+  Py_ssize_t num_metrics = PyList_Size(list);
+  std::vector<const char*> metric_names;
+  metric_names.reserve(num_metrics);
+  for (std::size_t i = 0; i < num_metrics; i++) {
     item = PyList_GetItem(list, i);
     if (!PyUnicode_Check(item)) {
       PyErr_SetString(PyExc_TypeError, "List items must be strings");
       return NULL;
     }
     bytes = PyUnicode_AsUTF8String(item);
-    counters.emplace_back(PyBytes_AsString(bytes));
+    metric_names.emplace_back(PyBytes_AsString(bytes));
   }
 
-  _self->m_device_session->create(counters);
-  Py_RETURN_NONE;
+  int num_gpus = _self->m_device_session->create(metric_names);
+
+  PyObject* value = Py_BuildValue("i", num_gpus);
+  return value;
 }
 
 PyObject* DeviceSession_destroy(PyObject* self, PyObject* args) {
@@ -104,12 +106,20 @@ PyObject* DeviceSession_stop(PyObject* self, PyObject* args) {
 PyObject* DeviceSession_poll(PyObject* self, PyObject* args) {
   assert(self);
   DeviceSessionObject* _self = reinterpret_cast<DeviceSessionObject*>(self);
-  auto metrics = _self->m_device_session->poll();
-  PyObject* python_val = PyList_New(metrics.size());
-  int i = 0;
-  for (const auto& metric : metrics) {
-    PyObject* python_double = Py_BuildValue("d", metric.value.value);
-    PyList_SetItem(python_val, i++, python_double);
+
+  auto sample = _self->m_device_session->poll();
+  auto num_gpus = sample.size();
+  auto num_metrics = sample[0].size();
+
+  auto list = PyList_New(num_gpus);
+  for (std::size_t i = 0; i < num_gpus; i++) {
+    PyObject* list_metrics = PyList_New(num_metrics);
+    for (std::size_t j = 0; j < num_metrics; j++) {
+      auto value = sample[i][j].value.value;
+      PyList_SetItem(list_metrics, j, PyFloat_FromDouble(value));
+    }
+    PyList_SetItem(list, i, list_metrics);
   }
-  return python_val;
+
+  return list;
 }
