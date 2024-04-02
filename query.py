@@ -86,13 +86,14 @@ class queryMetrics:
         if self.enable_redirect:
             self.output.close()
 
-    def set_options(self,jobID=None,output_file=None,pdf=None):
+    def set_options(self,jobID=None,output_file=None,pdf=None,interval=None):
         if jobID:
             self.jobID=int(jobID)
         if output_file:
             self.output_file = output_file
         if pdf:
             self.pdf = pdf
+        self.interval = interval
         return
 
     def setup(self):
@@ -208,22 +209,40 @@ class queryMetrics:
                 self.time_series[metric] = []
 
             for gpu in range(self.numGPUs):
-                times,values = self.query_time_series_data("card" + str(gpu) + "_" + metric)
-                
-                self.stats[metric + "_max"].append(np.max(values))
-                self.stats[metric + "_mean"].append(np.mean(values))
+
+                # (1) capture time series that assembles [mean] value at each timestamp across all assigned nodes
+                times,values_mean = self.query_time_series_data("card" + str(gpu) + "_" + metric,"avg")
+
+                # (2) capture time series that assembles [max] value at each timestamp across all assigned nodes
+                times,values_max = self.query_time_series_data("card" + str(gpu) + "_" + metric,"max")
+
+                # if gpu == 0:
+                #     for i in range(len(times)):
+                #         print("%s %s %s" % (times[i],values_mean[i], values_max[i]))
+
+                self.stats[metric + "_max"].append(np.max(values_max))
+                self.stats[metric + "_mean"].append(np.mean(values_mean))
+
                 if metric == 'rocm_vram_used':
                     # compute % memory used
-                    times2,values2 = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total")
-                    memoryAvail = np.max(values2)
+                    times2,values2_min = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total","min")
+                    times2,values2_max = self.query_time_series_data("card" + str(gpu) + "_rocm_vram_total","max")
+
+                    memoryMin = np.min(values2_min)
+                    memoryMax = np.max(values2_max)
+                    if memoryMin != memoryMax:
+                        print("[ERROR]: non-homogeneous memory sizes detected on assigned compute nodes")
+                        sys.exit(1)
+
+                    memoryAvail = memoryMax
                     self.stats[metric + "_max"] [-1] = 100.0 * self.stats[metric + "_max"] [-1] / memoryAvail
                     self.stats[metric + "_mean"][-1] = 100.0 * self.stats[metric + "_mean"][-1] / memoryAvail
                     self.max_GPU_memory_avail.append(memoryAvail)
-                    values = 100.0 * values / memoryAvail
+                    values_mean = 100.0 * values_mean / memoryAvail
+                    values_max  = 100.0 * values_max / memoryAvail
 
                 if saveTimeSeries:
-                    #self.time_series[metric].append([times,values])
-                    self.time_series[metric].append({'time':times,'values':values})
+                    self.time_series[metric].append({'time':times,'values':values_mean})
         return
 
     def generate_report_card(self):
@@ -271,14 +290,25 @@ class queryMetrics:
 
 
             
-    def query_time_series_data(self,metric_name,dataType=float):
-        results = self.prometheus.custom_query_range(
-                    '(%s * on (instance) slurmjob_info{jobid="%s"})'
-                    % (metric_name, self.jobID),
-                    self.start_time,
-                    self.end_time,
-                    step=60*1,
-                )
+    def query_time_series_data(self,metric_name,reducer=None,dataType=float):
+
+        if reducer is None:
+            results = self.prometheus.custom_query_range(
+                '(%s * on (instance) slurmjob_info{jobid="%s"})'
+                % (metric_name, self.jobID),
+                self.start_time,
+                self.end_time,
+                step=self.interval,
+            )
+        else:
+            results = self.prometheus.custom_query_range(
+                '%s(%s * on (instance) group_left() slurmjob_info{jobid="%s"})'
+                % (reducer, metric_name, self.jobID),
+                self.start_time,
+                self.end_time,
+                step=self.interval,
+            )
+
         results = np.asarray(results[0]['values'])
 
         # convert to time format
@@ -291,7 +321,7 @@ class queryMetrics:
             values = results[:,1].astype(float)
 
         return time,values
-    
+
     def query_gpu_metric(self,metricName):
         stats = {}
         stats['mean'] = []
@@ -461,12 +491,13 @@ def main():
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
     parser.add_argument("--job", help="jobId to query", required=True)
+    parser.add_argument("--interval",type=int,help="sampling interval in secs (default=60)",default=60)
     parser.add_argument("--output", help="location for stdout report")
     parser.add_argument("--pdf", help="generate PDF report")
     args = parser.parse_args()
 
     query = queryMetrics()
-    query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf)
+    query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf,interval=args.interval)
     query.setup()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
