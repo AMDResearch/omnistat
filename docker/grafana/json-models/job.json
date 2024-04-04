@@ -382,7 +382,7 @@
                "refId" : "B"
             }
          ],
-         "title" : "Utilization Summary",
+         "title" : "Mean Utilization Summary",
          "type" : "gauge"
       },
       {
@@ -870,7 +870,7 @@
             "orientation" : "auto",
             "reduceOptions" : {
                "calcs" : [
-                  "mean"
+                  "max"
                ],
                "fields" : "",
                "values" : false
@@ -1177,7 +1177,8 @@
             "x" : 0,
             "y" : 31
          },
-         "id" : 33,
+          "id" : 33,
+         "interval" : "$interval",
          "options" : {
             "legend" : {
                "calcs" : [],
@@ -2070,7 +2071,7 @@
          "type" : "xychart"
       },
       {
-         "collapsed" : false,
+         "collapsed" : true,
          "gridPos" : {
             "h" : 1,
             "w" : 24,
