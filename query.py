@@ -64,10 +64,6 @@ class queryMetrics:
 
         section = 'omniwatch.query'
         self.config = {}
-        self.config["mi1004x"] = {"num_gpus": 4}
-        self.config["mi1008x"] = {"num_gpus": 8}
-        self.config["ci"] = {"num_gpus": 4}
-        self.config["batch"] = {"num_gpus": 8}
         self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
@@ -133,7 +129,7 @@ class queryMetrics:
             sys.exit()
 
         self.get_hosts()
-        self.get_num_gpus()
+        # self.get_num_gpus()
 
         # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
         self.metrics = [
@@ -187,6 +183,7 @@ class queryMetrics:
                 break
 
         assert(num_gpus > 0)
+        self.numGPUs = num_gpus
         return jobdata
 
 
@@ -286,11 +283,11 @@ class queryMetrics:
             self.hosts.append(result["metric"]["instance"])
 
 
-    def get_num_gpus(self):
-        self.numGPUs = 0
-        if self.jobinfo["partition"] in self.config:
-            if "num_gpus" in self.config[self.jobinfo["partition"]]:
-                self.numGPUs = self.config[self.jobinfo["partition"]]["num_gpus"]
+    # def get_num_gpus(self):
+    #     self.numGPUs = 0
+    #     if self.jobinfo["partition"] in self.config:
+    #         if "num_gpus" in self.config[self.jobinfo["partition"]]:
+    #             self.numGPUs = self.config[self.jobinfo["partition"]]["num_gpus"]
 
     def gather_data(self,saveTimeSeries=False):
         self.stats = {}
