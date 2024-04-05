@@ -207,13 +207,6 @@ class queryMetrics:
                 endWindow = aend
                 firstTimestamp = datetime.fromtimestamp(results[0]['values'][0][0])
                 continue
-                # if firstTimestamp > astart:
-                #     print("stopping here")
-                #     print(firstTimestamp)
-                #     print(astart)
-                #     break
-                # else:
-                #     continue
             elif lastTimestamp and len(results) > 0:
                 firstTimestamp = datetime.fromtimestamp(results[0]['values'][0][0])
                 continue
