@@ -35,6 +35,7 @@ import subprocess
 import timeit
 import matplotlib.pylab as plt
 import matplotlib.dates as mdates
+import shutil
 from pathlib import Path
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
@@ -111,7 +112,7 @@ class queryMetrics:
 
         # query jobinfo
         assert self.jobID > 1
-        self.jobinfo = self.query_slurm_job()
+        self.jobinfo = self.query_slurm_job_internal()
         if self.jobinfo["begin_date"] == "Unknown":
             print("Job %s has not run yet." % self.jobID)
             sys.exit(0)
@@ -143,7 +144,95 @@ class queryMetrics:
             {'metric':'rocm_avg_pwr','title':'GPU Average Power (W)','title_short':'Power (W)'}
             ]
 
-    # gather relevant job data from resource manager
+    # Query job data info given start/stop time window
+    def query_jobinfo(self,start,end):
+        duration_mins = (end - start).total_seconds() / 60
+        assert(duration_mins > 0)
+
+        # assemble coarsened query step based on job duration
+        if duration_mins > 60:
+            step = '1h'
+        elif duration_mins > 15:
+            step = '15m'
+        elif duration_mins > 5:
+            step = '5m'
+        else:
+            step = '1m'
+
+        # Cull job info
+        results = self.prometheus.custom_query_range('(slurmjob_info{jobid="%s"})' % self.jobID,
+                                                       start,end,step=step)
+
+        assert(len(results) > 0)
+        num_nodes = int(results[0]['metric']['nodes'])
+        partition = results[0]['metric']['partition']
+        assert(num_nodes > 0)
+        jobdata = {}
+        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["end_date"]   = end.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["num_nodes"]  = num_nodes
+        jobdata["partition"]  = partition
+
+        # Cull number of gpus
+        results = self.prometheus.custom_query_range('(rocm_num_gpus * on (instance) slurmjob_info{jobid="%s"})' % self.jobID,
+                                                       start,end,step=step)
+        assert(len(results) == num_nodes)
+        num_gpus = int(results[0]['values'][0][1])
+
+        # warn if nodes do not have same gpu counts
+        for node in range(len(results)):
+            value = int(results[node]['values'][0][1])
+            if value != num_gpus:
+                print("[WARNING]: compute nodes detected with differning number of GPUs (%i,%i) " % (num_gpus,value))
+                break
+
+        assert(num_gpus > 0)
+        return jobdata
+
+
+    # gather relevant job data from info metric
+    def query_slurm_job_internal(self):
+
+        firstTimestamp = None
+        lastTimestamp = None
+
+        now = datetime.now()
+
+        # loop over days starting from now to find time window covering desired job
+        for day in range(365):
+            aend = now - timedelta(days=day)
+            astart = (aend - timedelta(days=1))
+
+            results = self.prometheus.custom_query_range('max(slurmjob_info{jobid="%s"})' % self.jobID,
+                                                       astart,aend,step='1m')
+            if not lastTimestamp and len(results) > 0:
+                lastTimestamp = datetime.fromtimestamp(results[0]['values'][-1][0])
+                endWindow = aend
+                firstTimestamp = datetime.fromtimestamp(results[0]['values'][0][0])
+                if firstTimestamp > astart:
+                    break
+                else:
+                    continue
+            elif lastTimestamp and len(results) > 0:
+                firstTimestamp = datetime.fromtimestamp(results[0]['values'][0][0])
+                continue
+            elif lastTimestamp and len(results) == 0:
+                #startWindow = astart
+                break
+
+        if not firstTimestamp:
+            print("[ERROR]: no monitoring data found for job=%i" % self.jobID)
+            sys.exit(1)
+
+        # expand job window to nearest minute
+        firstTimestamp = firstTimestamp.replace(second=0,microsecond=0)
+        lastTimestamp += timedelta(minutes=1)
+        lastTimestamp = lastTimestamp.replace(second=0,microsecond=0)
+
+        jobdata = self.query_jobinfo(firstTimestamp, lastTimestamp)
+        return jobdata
+
+    # gather relevant job data from resource manager directly
     def query_slurm_job(self):
         id = self.jobID
         cmd = [
@@ -156,7 +245,17 @@ class queryMetrics:
             "--format",
             "Start,End,NNodes,Partition",
         ]
-        results = subprocess.check_output(cmd, universal_newlines=True).strip()
+        path = shutil.which('sacct')
+        if path is None:
+            print("[ERROR]: unable to resolve 'sacct' binary")
+            sys.exit(1)
+
+        try:
+            results = subprocess.check_output(cmd, universal_newlines=True).strip()
+        except subprocess.CalledProcessError as e:
+            print("[ERROR]: unable to query resource manager for job %i" % id)
+            sys.exit(1)
+
         results = results.split("\n")
 
         # exit if no jobs found
@@ -219,6 +318,7 @@ class queryMetrics:
                 # if gpu == 0:
                 #     for i in range(len(times)):
                 #         print("%s %s %s" % (times[i],values_mean[i], values_max[i]))
+                # sys.exit(1)
 
                 self.stats[metric + "_max"].append(np.max(values_max))
                 self.stats[metric + "_mean"].append(np.mean(values_mean))
