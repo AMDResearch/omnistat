@@ -543,7 +543,8 @@ class queryMetrics:
 
             for gpu in range(self.numGPUs):
                 plt.plot(self.time_series[metric][gpu]['time'],
-                         self.time_series[metric][gpu]['values'],marker='o',markersize=2,linewidth=0.4,label='Card %i' % gpu)
+                         self.time_series[metric][gpu]['values'],linewidth=0.4,label='Card %i' % gpu)
+#                         self.time_series[metric][gpu]['values'],marker='o',markersize=1,linewidth=0.4,label='Card %i' % gpu)
                 
             plt.title(entry['title'])
             plt.legend(bbox_to_anchor=(1.,0.5),loc='center left', ncol=1,frameon=True)
