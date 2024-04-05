@@ -449,7 +449,7 @@ class queryMetrics:
                          self.time_series[metric][gpu]['values'],marker='o',markersize=2,linewidth=0.4,label='Card %i' % gpu)
                 
             plt.title(entry['title'])
-            plt.legend(bbox_to_anchor =(0.5,-0.27), loc='lower center', ncol=self.numGPUs,frameon=False)
+            plt.legend(bbox_to_anchor=(1.,0.5),loc='center left', ncol=1,frameon=True)
             plt.grid()
             ax = plt.gca()
 
