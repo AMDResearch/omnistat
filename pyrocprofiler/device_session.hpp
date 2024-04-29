@@ -59,6 +59,13 @@ public:
     }
   }
 
+  void fake_event() {
+    hipEvent_t event;
+    ROCPROF_CHECK(hipEventCreate(&event));
+    ROCPROF_CHECK(hipEventRecord(event, hipStreamDefault));
+    ROCPROF_CHECK(hipEventDestroy(event));
+  }
+
   const std::vector<std::vector<rocprofiler_device_profile_metric_t>>& poll() {
     for (int i = 0; i < m_num_gpus; i++) {
       ROCPROF_CHECK(rocprofiler_device_profiling_session_poll(m_sessions[i], &m_metrics[i][0]));
