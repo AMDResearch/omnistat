@@ -27,6 +27,7 @@ import subprocess
 import sys
 import os
 import shutil
+from pathlib import Path
 
 def error(message):
     """Log an error message and exit
@@ -110,6 +111,40 @@ def removeQuotes(input):
     """
     if input.startswith('"'):
         input = input.strip('"')
-    elif input.startswith('\''):
-        input = input.strip('\'')
-    return(input)
+    elif input.startswith("'"):
+        input = input.strip("'")
+    return input
+
+
+def getVersion():
+    """Return omniwatch version info"""
+    omniwatch_home = Path(__file__).resolve().parent
+    versionFile = os.path.join(omniwatch_home, "VERSION")
+    try:
+        with open(versionFile, "r") as file:
+            VER = file.read().replace("\n", "")
+    except EnvironmentError:
+        error("Cannot find VERSION file at {}".format(version))
+
+    # git version info
+    SHA = "Unknown"
+    gitDir = os.path.join(omniwatch_home, ".git")
+    if (shutil.which("git") is not None) and os.path.exists(gitDir):
+        gitQuery = subprocess.run(
+            ["git", "log", "--pretty=format:%h", "-n", "1"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        if gitQuery.returncode == 0:
+            SHA = gitQuery.stdout.decode("utf-8")
+
+    versionData = {"version": VER, "sha": SHA}
+    return versionData
+
+
+def displayVersion(versionData):
+    """Pretty print versioning info"""
+    print("-" * 40)
+    print("Omniwatch version: %s" % versionData["version"])
+    print("Git revision:      %s" % versionData["sha"])
+    print("-" * 40)

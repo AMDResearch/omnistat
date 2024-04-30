@@ -28,10 +28,11 @@ from prometheus_api_client.utils import parse_datetime
 from datetime import datetime, timedelta
 import argparse
 import configparser
-import sys
-import os
+import logging
 import numpy as np
+import os
 import subprocess
+import sys
 import timeit
 import matplotlib.pylab as plt
 import matplotlib.dates as mdates
@@ -44,10 +45,11 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
+from utils import displayVersion, getVersion, error
 
 class queryMetrics:
 
-    def __init__(self):
+    def __init__(self, versionData):
 
         # initiate timer
         self.timer_start = timeit.default_timer()
@@ -71,13 +73,8 @@ class queryMetrics:
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
-        self.sha = "Unknown"
-
-        # Attempt to get current git sha
-        cmd = ["git describe --always"]
-        results = subprocess.run(cmd, capture_output=True,check=False,shell=True)
-        if results.returncode == 0:
-            self.sha = results.stdout.decode("utf-8")
+        self.sha = versionData["sha"]
+        self.version = versionData["version"]
 
     def __del__(self):
         if self.enable_redirect:
@@ -377,8 +374,10 @@ class queryMetrics:
         print("")
         print("--")
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
-        print("Version = %s" % self.sha)
-
+        version = self.version
+        if self.sha != "Unknown":
+            version += " (%s)" % self.sha
+        print("Version = %s" % version)
         return
 
 
@@ -584,14 +583,26 @@ def main():
 
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--job", help="jobId to query", required=True)
+    parser.add_argument("--job", help="jobId to query")
     parser.add_argument("--interval",type=int,help="sampling interval in secs (default=60)",default=60)
     parser.add_argument("--output", help="location for stdout report")
+    parser.add_argument("-v", "--version", help="print version info and exit", action="store_true")
     parser.add_argument("--pdf", help="generate PDF report")
     args = parser.parse_args()
 
-    query = queryMetrics()
-    query.set_options(jobID=args.job,output_file=args.output,pdf=args.pdf,interval=args.interval)
+    # logger config
+    logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
+
+    versionData = getVersion()
+    if args.version:
+        displayVersion(versionData)
+        sys.exit(0)
+
+    if not args.job:
+        error("The following arguments are required: --job")
+
+    query = queryMetrics(versionData)
+    query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)
     query.setup()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
