@@ -568,7 +568,10 @@ class queryMetrics:
 
         ptext='''Query execution time = %.1f secs''' % (timeit.default_timer() - self.timer_start)
         Story.append(Paragraph(ptext,footerStyle))
-        ptext='''Version = %s''' % self.sha
+        version = self.version
+        if self.sha != "Unknown":
+            version += " (%s)" % self.sha
+        ptext='''Version = %s''' % version
         Story.append(Paragraph(ptext,footerStyle))
         Story.append(HRFlowable(width="100%",thickness=1))
 
