@@ -113,3 +113,10 @@ def removeQuotes(input):
     elif input.startswith('\''):
         input = input.strip('\'')
     return(input)
+
+def string_to_list(input,delimiter=","):
+    """Convert input string to list and trim any leading/trailing white spaces"""
+    output = []
+    for entry in input.split(delimiter):
+        output.append(entry.strip())
+    return output

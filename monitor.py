@@ -67,7 +67,7 @@ class Monitor():
             if config.has_option('omniwatch.collectors','smi_binary'):
                 self.runtimeConfig['rocm_smi_binary'] = config['omniwatch.collectors']['smi_binary']
             if config.has_option('omniwatch.collectors.rocprofiler','metrics'):
-                self.runtimeConfig['rocprofiler_metrics'] = config['omniwatch.collectors.rocprofiler']['metrics'].split(',')
+                self.runtimeConfig['rocprofiler_metrics'] = utils.string_to_list(config['omniwatch.collectors.rocprofiler']['metrics'])
 
         else:
             utils.error("Unable to find runtime config file %s" % configFile)
