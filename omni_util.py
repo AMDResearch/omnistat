@@ -102,6 +102,22 @@ class UserBasedMonitoring:
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].get("corebinding","0")
 
+        # check if remote_write is desired
+        remoteWrite = self.runtimeConfig[section].getboolean("remote_write", False)
+        if remoteWrite:
+            remoteWriteConfig = {}
+            remoteWriteConfig["url"] = self.runtimeConfig[section].get(
+                "remote_write_url", "unknown"
+            )
+            remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get(
+                "remote_write_basic_auth_user", "user"
+            )
+            remoteWriteConfig["auth_cred"] = self.runtimeConfig[section].get(
+                "remote_write_basic_auth_cred", "credential"
+            )
+            logging.debug("Remote write url:  %s" % remoteWriteConfig["url"])
+            logging.debug("Remote write user: %s" % remoteWriteConfig["auth_user"])
+
         # generate prometheus config file to scrape local exporters
         computes = {}
         computes["targets"] = []
@@ -119,6 +135,19 @@ class UserBasedMonitoring:
                     "static_configs": [computes],
                 }
             )
+            if remoteWrite:
+                auth = {
+                    "username": remoteWriteConfig["auth_user"],
+                    "password": remoteWriteConfig["auth_cred"],
+                }
+
+                prom_config["remote_write"] = []
+                prom_config["remote_write"].append(
+                    {
+                        "url": remoteWriteConfig["url"],
+                        "basic_auth": auth}
+                     )
+
             with open("prometheus.yml", "w") as yaml_file:
                 yaml.dump(prom_config, yaml_file, sort_keys=False)
 
