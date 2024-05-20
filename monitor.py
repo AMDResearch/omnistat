@@ -28,6 +28,7 @@
 # or more custom collector(s).
 #--
 
+import argparse
 import configparser
 import logging
 import os
@@ -44,9 +45,15 @@ class Monitor():
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--configFile",type=str,
+                            help="runtime config file (default=omniwatch.config)",
+                            default="omniwatch.config")
+        args = parser.parse_args()
+
         # read runtime config (file is required to exist)
         topDir = Path(__file__).resolve().parent
-        configFile = str(topDir) + "/omniwatch.config"
+        configFile = str(topDir) + "/" + args.configFile
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
