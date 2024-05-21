@@ -63,7 +63,7 @@ class ROCMSMI(Collector):
         self.__prefix = "rocm_"
 
         # load smi runtime
-        rocm_lib = "/opt/rocm-5.7.1/lib"
+        rocm_lib = "/opt/rocm/lib"
         self.__libsmi = ctypes.CDLL(rocm_lib + "/librocm_smi64.so")
         logging.info("Runtime library loaded")
 
