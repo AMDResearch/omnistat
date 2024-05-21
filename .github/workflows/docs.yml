@@ -30,7 +30,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Additional python packages
-        run: pip3 install -r src/requirements-doc.txt
+        run: pip3 install -r src/requirements-docs.txt
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Build current docs
