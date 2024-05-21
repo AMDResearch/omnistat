@@ -7,3 +7,6 @@ data_prom
 *.pdf
 *~
 docker/prometheus-data
+*.config
+build
+dist
