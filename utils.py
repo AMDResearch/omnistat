@@ -124,7 +124,7 @@ def getVersion():
         with open(versionFile, "r") as file:
             VER = file.read().replace("\n", "")
     except EnvironmentError:
-        error("Cannot find VERSION file at {}".format(version))
+        error("Cannot find VERSION file at {}".format(versionFile))
 
     # git version info
     SHA = "Unknown"
