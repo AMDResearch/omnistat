@@ -1,0 +1,9 @@
+This subdirectory houses the input markup for Omniwatch documentation using
+Sphinx.
+
+You can build a local copy of the documentation in this directory using
+"make html" assuming you have the necessary sphinx dependencies installed.
+
+The base python dependencies for documentation builds are housed in
+requirements-docs.txt. In addition, the Makefile relies on the
+sphinx-build binary which also needs to be available locally.
