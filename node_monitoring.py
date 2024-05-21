@@ -40,8 +40,13 @@ from flask import Flask
 from flask_prometheus_metrics import register_metrics
 import sys
 
+if len(sys.argv) > 1:
+    config_file = sys.argv[1]
+else:
+    config_file = None
+
 app = Flask("omniwatch")
-monitor = Monitor()
+monitor = Monitor(configFilePath=config_file)
 monitor.initMetrics()
 
 # note: following shutdown procedure works with gunicorn only
