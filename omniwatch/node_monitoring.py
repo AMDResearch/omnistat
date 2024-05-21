@@ -36,10 +36,12 @@
 
 import sys
 
+
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
 
 from omniwatch.monitor import Monitor
+
 
 # note: following shutdown procedure works with gunicorn only
 def shutdown():
