@@ -28,7 +28,6 @@
 # or more custom collector(s).
 #--
 
-import argparse
 import configparser
 import logging
 import os
@@ -40,20 +39,17 @@ from prometheus_client import generate_latest, CollectorRegistry
 from pathlib import Path
 
 class Monitor():
-    def __init__(self):
+    def __init__(self, configFilePath=None):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
+        if configFilePath and os.path.isfile(configFilePath):
+            configFile = configFilePath
+        else:
+            # read runtime config (file is required to exist)
+            topDir = Path(__file__).resolve().parent
+            configFile = str(topDir) + "/omniwatch.config"
 
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--configFile",type=str,
-                            help="runtime config file (default=omniwatch.config)",
-                            default="omniwatch.config")
-        args = parser.parse_args()
-
-        # read runtime config (file is required to exist)
-        topDir = Path(__file__).resolve().parent
-        configFile = str(topDir) + "/" + args.configFile
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
