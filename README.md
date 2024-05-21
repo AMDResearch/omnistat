@@ -22,6 +22,11 @@ The data can be scraped for detailed visualization and analysis via
 a combination of [Prometheus](https://prometheus.io/) and
 [Grafana](https://github.com/grafana/grafana).
 
+# To Build the Executable
+```bash
+sh build.sh
+```
+
 
 For more information on available features and installation steps
 please refer to the online [documentation](https://amdresearch.github.io/omniwatch/).
