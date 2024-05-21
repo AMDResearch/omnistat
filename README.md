@@ -56,5 +56,10 @@ sudo enable omniwatch
 sudo start omniwatch
 ```
 
+# To Build the Executable
+```bash
+sh build.sh
+```
+
 
 
