@@ -72,16 +72,16 @@ source_suffix = {
     ".md": "markdown",
 }
 
-# sphinxmark_enable = True
-# sphinxmark_image = "text"
-# sphinxmark_text = "Release Candidate"
-# sphinxmark_text_size = 80
-# sphinxmark_div = "document"
-# sphinxmark_fixed = False
-# sphinxmark_text_rotation = 30
-# sphinxmark_text_color = (128, 128, 128)
-# sphinxmark_text_spacing = 800
-# sphinxmark_text_opacity = 30
+sphinxmark_enable = True
+sphinxmark_image = "text"
+sphinxmark_text = "D R A F T"
+sphinxmark_text_size = 80
+sphinxmark_div = "document"
+sphinxmark_fixed = False
+sphinxmark_text_rotation = 30
+sphinxmark_text_color = (128, 128, 128)
+sphinxmark_text_spacing = 800
+sphinxmark_text_opacity = 30
 
 from recommonmark.parser import CommonMarkParser
 
