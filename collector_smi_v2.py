@@ -22,55 +22,58 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""ROCM-smi data collector
+"""amd-smi data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
-rocm smi library.  The ROCm runtime must be pre-installed to use this data
+amd smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with a "card.*_rocm prefix". The following example highlights example
-metrics for card 0:
+metrics with "amd-smi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
 
-card0_rocm_temp_die_edge 36.0
-card0_rocm_avg_pwr 30.0
-card0_rocm_utilization 0.0
-card0_rocm_vram_total 3.4342961152e+010
-card0_rocm_vram_used 7.028736e+06
-card0_rocm_sclk_clock_mhz 300.0
-card0_rocm_mclk_clock_mhz 1200.0
+amd-smi_temp_die_edge 36.0
+amd-smi_avg_pwr 30.0
+amd-smi_utilization 0.0
+amd-smi_vram_total 3.4342961152e+010
+amd-smi_vram_used 7.028736e+06
+amd-smi_sclk_clock_mhz 300.0
+amd-smi_mclk_clock_mhz 1200.0
 """
 
 import ctypes
 import logging
-import os
 from collector_base import Collector
-from prometheus_client import Gauge, generate_latest, CollectorRegistry
+from prometheus_client import Gauge
 
-# lifted from rsmiBindings.py
-RSMI_MAX_NUM_FREQUENCIES = 32
+# lifted from amdsmi_interface.py
+AMDSMI_MAX_NUM_FREQUENCIES = 33
+
+
 class rsmi_frequencies_t(ctypes.Structure):
     _fields_ = [('num_supported', ctypes.c_int32),
                 ('current', ctypes.c_uint32),
-                ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
+                ('frequency', ctypes.c_uint64 * AMDSMI_MAX_NUM_FREQUENCIES)]
 
-rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
+
+rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2, \
                        'socclk': 0x3, 'mclk': 0x4}
 
-#--
 
-class ROCMSMI(Collector):
-    def __init__(self,rocm_smi_binary=None):
-        logging.debug("Initializing ROCm SMI data collector")
-        self.__prefix = "rocm_"
+class AMDSMI(Collector):
+    def __init__(self, amd_smi_binary=None):
+        logging.debug("Initializing AMD SMI data collector")
+        self.__prefix = "amd-smi_"
 
         # load smi runtime
-        rocm_lib = "/opt/rocm/lib"
-        self.__libsmi = ctypes.CDLL(rocm_lib + "/librocm_smi64.so")
+        if amd_smi_binary:
+            rocm_lib = amd_smi_binary
+        else:
+            rocm_lib = "/opt/rocm/lib"
+        self.__libsmi = ctypes.CDLL(rocm_lib + "/libamd_smi.so")
         logging.info("Runtime library loaded")
 
         # initialize smi library
-        ret_init = self.__libsmi.rsmi_init(0)
-        assert(ret_init == 0)
-        logging.info("SMI library API initialized")
+        ret_init = self.__libsmi.amdsmi_init(2)
+        assert (ret_init == 0)
+        logging.info("AMD SMI library API initialized")
 
         self.__GPUmetrics = {}
 
@@ -79,16 +82,11 @@ class ROCMSMI(Collector):
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
-        # proto_devices = self.__libsmi.rsmi_num_monitor_devices
-        # # proto_devices.argtypes = [ctypes.byref(ctypes.c_uint32)]
-        # # proto_devices.argtype = [ctypes.pointer(ctypes.c_uint32)]
-        # # proto_devices.restype = ctypes.c_int
-        # # proto_devices = ctypes.CFUNCTYPE(ctypes.c_int,ctypes.byref(ctypes.c_uint32))
 
         numDevices = ctypes.c_uint32(0)
-        #numDevices = 0
-        ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
-        # ret = proto_devices(ctypes.byref(numDevices))
+        null_ptr = ctypes.POINTER(ctypes.POINTER(None))()
+        ret = self.__libsmi.amdsmi_get_socket_handles(ctypes.byref(numDevices), null_ptr)
+        print("Num of GPUS:", numDevices.value, "Ret code: ", ret)
         logging.debug("Number of devices = %i" % numDevices.value)
 
         # register number of GPUs
@@ -115,8 +113,8 @@ class ROCMSMI(Collector):
             self.registerGPUMetric(gpu, self.__prefix + "vram_total", "gauge", "VRAM Total Memory (B)")
             self.registerGPUMetric(gpu, self.__prefix + "vram_used", "gauge", "VRAM Total Used Memory (B)")
             # utilization
-            self.registerGPUMetric(gpu, self.__prefix + "utilization","gauge","GPU use (%)")
-        
+            self.registerGPUMetric(gpu, self.__prefix + "utilization", "gauge", "GPU use (%)")
+
         return
 
     def updateMetrics(self):
@@ -155,22 +153,21 @@ class ROCMSMI(Collector):
 
     def collect_data_incremental(self):
         # ---
-        # Collect and parse latest GPU metrics from rocm SMI library
+        # Collect and parse latest GPU metrics from AMD SMI library
         # ---
 
         temperature = ctypes.c_int64(0)
-        temp_metric = ctypes.c_int32(0)    # 0=RSMI_TEMP_CURRENT
+        temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         freq = rsmi_frequencies_t()
-        freq_system_clock = 0   # 0=RSMI_CLK_TYPE_SYS
-        freq_mem_clock = 4      # 4=RSMI_CLK_TYPE_MEM
+        freq_system_clock = 0  # 0=RSMI_CLK_TYPE_SYS
+        freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
-        vram_used  = ctypes.c_uint64(0)
+        vram_used = ctypes.c_uint64(0)
         utilization = ctypes.c_uint32(0)
 
         for i in range(self.__num_gpus):
-            
             gpu = "card" + str(i)
             device = ctypes.c_uint32(i)
 
@@ -192,27 +189,27 @@ class ROCMSMI(Collector):
             #--
             # clock speeds [Hz, converted to megaHz]
             metric = self.__prefix + "sclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_system_clock, ctypes.byref(freq))
+            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_system_clock, ctypes.byref(freq))
             self.__GPUmetrics[gpu][metric].labels(card=gpu).set(freq.frequency[freq.current] / 1000000.0)
-            
+
             metric = self.__prefix + "mclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_mem_clock, ctypes.byref(freq))
+            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_mem_clock, ctypes.byref(freq))
             self.__GPUmetrics[gpu][metric].labels(card=gpu).set(freq.frequency[freq.current] / 1000000.0)
 
             #--
             # memory [Hz, converted to megaHz]
             metric = self.__prefix + "vram_total"
-            ret = self.__libsmi.rsmi_dev_memory_total_get(device,0x0,ctypes.byref(vram_used))
+            ret = self.__libsmi.rsmi_dev_memory_total_get(device, 0x0, ctypes.byref(vram_used))
             self.__GPUmetrics[gpu][metric].labels(card=gpu).set(vram_used.value)
 
             metric = self.__prefix + "vram_used"
-            ret = self.__libsmi.rsmi_dev_memory_usage_get(device,0x0,ctypes.byref(vram_total))
+            ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_total))
             self.__GPUmetrics[gpu][metric].labels(card=gpu).set(vram_total.value)
 
             #--
             # utilization
             metric = self.__prefix + "utilization"
-            ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
+            ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[gpu][metric].labels(card=gpu).set(utilization.value)
 
             # # util omri
@@ -220,6 +217,5 @@ class ROCMSMI(Collector):
             # ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
             # # self.__GPUmetrics[gpu][metric].set(utilization.value)
             # self.__GPUmetrics[gpu][metric].labels(card=gpu).set(utilization.value)
-
 
         return
