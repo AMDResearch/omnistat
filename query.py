@@ -340,7 +340,7 @@ class queryMetrics:
 
         print("")
         print("-" * 40)
-        print("HPC Report Card for Job # %i" % self.jobID)
+        print("Omniwatch Report Card for Job # %i" % self.jobID)
         print("-" * 40)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
