@@ -25,17 +25,17 @@
 """amd-smi data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
-amd smi library.  The ROCm runtime must be pre-installed to use this data
+amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with "amd-smi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
+metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
 
-amd-smi_temp_die_edge 36.0
-amd-smi_avg_pwr 30.0
-amd-smi_utilization 0.0
-amd-smi_vram_total 3.4342961152e+010
-amd-smi_vram_used 7.028736e+06
-amd-smi_sclk_clock_mhz 300.0
-amd-smi_mclk_clock_mhz 1200.0
+amdsmi_temp_die_edge 36.0
+amdsmi_avg_pwr 30.0
+amdsmi_utilization 0.0
+amdsmi_vram_total 3.4342961152e+010
+amdsmi_vram_used 7.028736e+06
+amdsmi_sclk_clock_mhz 300.0
+amdsmi_mclk_clock_mhz 1200.0
 """
 
 import logging
