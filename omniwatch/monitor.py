@@ -43,22 +43,11 @@ from prometheus_client import generate_latest, CollectorRegistry
 import omniwatch.utils as utils
 
 class Monitor():
-<<<<<<< HEAD:omniwatch/monitor.py
     def __init__(self, configFile):
-=======
-    def __init__(self, configFilePath=None):
->>>>>>> ec61159 (basic support for config file as argument):monitor.py
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
-        if configFilePath and os.path.isfile(configFilePath):
-            configFile = configFilePath
-        else:
-            # read runtime config (file is required to exist)
-            topDir = Path(__file__).resolve().parent
-            configFile = str(topDir) + "/omniwatch.config"
 
-<<<<<<< HEAD:omniwatch/monitor.py
 
         # Resolve path to default config file in the current installation.
         # This configuration is only meant to provide sane defaults to run
@@ -72,8 +61,6 @@ class Monitor():
             configFile = os.environ["OMNIWATCH_CONFIG"]
 
 
-=======
->>>>>>> ec61159 (basic support for config file as argument):monitor.py
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
