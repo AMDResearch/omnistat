@@ -128,7 +128,6 @@ class AMDSMI(Collector):
         self.collect_data_incremental()
         return
 
-
     def collect_data_incremental(self):
         for idx, device in enumerate(self.devices):
             metrics = get_gpu_metrics(device)
