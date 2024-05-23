@@ -6,11 +6,11 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['prometheus_client,flask'],
+    hiddenimports=['prometheus_client', 'flask'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['amdsmi'],
     noarchive=False,
     optimize=0,
 )

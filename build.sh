@@ -1,1 +1,1 @@
-pyinstaller -D -F -n omniwatch --hidden-import prometheus_client,flask "node_monitoring.py"
+pyinstaller -D -F -n omniwatch --hidden-import prometheus_client --hidden-import flask --exclude-module amdsmi "node_monitoring.py"
