@@ -58,7 +58,7 @@ else:
     sys.exit(1)
 
 app = Flask("omniwatch")
-monitor = Monitor(configFilePath=configFile)
+monitor = Monitor(configFile=configFile)
 monitor.initMetrics()
 
 # note: following shutdown procedure works with gunicorn only
