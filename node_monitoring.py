@@ -39,14 +39,26 @@ from monitor import Monitor
 from flask import Flask
 from flask_prometheus_metrics import register_metrics
 import sys
+import os
+
+DEFAULT_CONFIG_FILE_PATH = "/etc/omniwatch/omniwatch.config"
+
+config_file_possible_locations = [DEFAULT_CONFIG_FILE_PATH, "./omniwatch.config"]
 
 if len(sys.argv) > 1:
-    config_file = sys.argv[1]
+    # Add the command line argument as the first possible location
+    config_file_possible_locations.insert(0, sys.argv[1])
+
+for config_file in config_file_possible_locations:
+    if os.path.isfile(config_file):
+        configFile = config_file
+        break
 else:
-    config_file = None
+    print(f"Config file not found at {config_file_possible_locations}.")
+    sys.exit(1)
 
 app = Flask("omniwatch")
-monitor = Monitor(configFilePath=config_file)
+monitor = Monitor(configFilePath=configFile)
 monitor.initMetrics()
 
 # note: following shutdown procedure works with gunicorn only
