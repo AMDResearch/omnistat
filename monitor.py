@@ -39,16 +39,10 @@ from prometheus_client import generate_latest, CollectorRegistry
 from pathlib import Path
 
 class Monitor():
-    def __init__(self, configFilePath=None):
+    def __init__(self, configFile):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
-        if configFilePath and os.path.isfile(configFilePath):
-            configFile = configFilePath
-        else:
-            # read runtime config (file is required to exist)
-            topDir = Path(__file__).resolve().parent
-            configFile = str(topDir) + "/omniwatch.config"
 
         self.runtimeConfig = {}
 
@@ -59,6 +53,7 @@ class Monitor():
 
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
+            self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', True)
             self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
@@ -102,6 +97,14 @@ class Monitor():
             if 'rocm_smi_binary' in self.runtimeConfig:
                 binary = self.runtimeConfig['rocm_smi_binary']
             self.__collectors.append(ROCMSMI(rocm_smi_binary=binary))
+
+        if self.runtimeConfig['collector_enable_amd_smi']:
+            from collector_smi_v2 import AMDSMI
+            binary = None
+            if 'rocm_smi_binary' in self.runtimeConfig:
+                binary = self.runtimeConfig['rocm_smi_binary']
+            self.__collectors.append(AMDSMI())
+
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
