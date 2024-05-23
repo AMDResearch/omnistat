@@ -43,16 +43,10 @@ from prometheus_client import generate_latest, CollectorRegistry
 import omniwatch.utils as utils
 
 class Monitor():
-    def __init__(self, configFilePath=None):
+    def __init__(self, configFile):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
-        if configFilePath and os.path.isfile(configFilePath):
-            configFile = configFilePath
-        else:
-            # read runtime config (file is required to exist)
-            topDir = Path(__file__).resolve().parent
-            configFile = str(topDir) + "/omniwatch.config"
 
 
         # Resolve path to default config file in the current installation.
@@ -76,6 +70,7 @@ class Monitor():
 
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
+            self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', True)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
             self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
@@ -123,6 +118,9 @@ class Monitor():
         if self.runtimeConfig['collector_enable_rocm_smi']:
             from omniwatch.collector_smi import ROCMSMI
             self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig['collector_rocm_path']))
+        if self.runtimeConfig['collector_enable_amd_smi']:
+            from collector_smi_v2 import AMDSMI
+            self.__collectors.append(AMDSMI())
         if self.runtimeConfig['collector_enable_slurm']:
             from omniwatch.collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
