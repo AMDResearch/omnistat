@@ -40,7 +40,13 @@ import os
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
 
+<<<<<<< HEAD:omniwatch/node_monitoring.py
 from omniwatch.monitor import Monitor
+=======
+app = Flask("omniwatch")
+monitor = Monitor(configFile=configFile)
+monitor.initMetrics()
+>>>>>>> 748146e (fixed tyop):node_monitoring.py
 
 # note: following shutdown procedure works with gunicorn only
 def shutdown():
