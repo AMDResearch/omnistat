@@ -38,82 +38,101 @@ amd-smi_sclk_clock_mhz 300.0
 amd-smi_mclk_clock_mhz 1200.0
 """
 
-import ctypes
 import logging
 from collector_base import Collector
 from prometheus_client import Gauge
+import statistics
 
-# lifted from amdsmi_interface.py
-AMDSMI_MAX_NUM_FREQUENCIES = 33
-
-
-class rsmi_frequencies_t(ctypes.Structure):
-    _fields_ = [('num_supported', ctypes.c_int32),
-                ('current', ctypes.c_uint32),
-                ('frequency', ctypes.c_uint64 * AMDSMI_MAX_NUM_FREQUENCIES)]
+from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
+                    amdsmi_get_gpu_process_list, amdsmi_get_gpu_memory_total, amdsmi_get_gpu_process_info,
+                    AmdSmiMemoryType)
 
 
-rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2, \
-                       'socclk': 0x3, 'mclk': 0x4}
+def get_gpu_metrics(device):
+    result = amdsmi_get_gpu_metrics_info(device)
+    for k, v in result.items():
+        if type(v) is str:
+            # Filter 'N/A' values introduced by rocm 6.1
+            result[k] = 0
+            continue
+        elif type(v) is bool:
+            # Filter boolean values introduced by rocm 6.1
+            result[k] = 0
+            continue
+        # Average of list values
+        elif type(v) is list:
+            v = [x for x in v if type(x) not in [bool, str]]
+            if not v:
+                # Filter empty lists
+                result[k] = 0
+                continue
+            v = int(statistics.mean(v))
+            result[k] = v
+        # Bigger than signed 64-bit integer
+        if v >= 9223372036854775807 or v <= -9223372036854775808:
+            result[k] = 0
+    return result
+
+
+def get_gpu_processes(device):
+    processes = amdsmi_get_gpu_process_list(device)
+    # PCIE Metrics - Disabled due to slow performance, check again with rocm 6.1
+    # pcie_info = amdsmi_get_pcie_info(device)
+
+    # Get Total VRAM for GPU
+    device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
+    result = []
+    for p in processes:
+        p = amdsmi_get_gpu_process_info(device, p)
+        # Ignore the Python process itself for the reading
+        if p['name'] == 'python3' and (p['mem'] == 4096 or p["memory_usage"]["vram_mem"] == 12288):
+            continue
+        result.append(p)
+    return result
+        # out = f'{PROCESS_MEASUREMENT_NAME},name=card{idx},process_name="{p["name"]}",process_pid={p["pid"]} vram_usage={p["memory_usage"]["vram_mem"]}i,cpu_memory_usage={p["memory_usage"]["cpu_mem"]}i,gfx_usage={p["engine_usage"]["gfx"]}i,vram_total={device_total_vram}i {int(time.time()):<019d}'
+        # print(out)
 
 
 class AMDSMI(Collector):
-    def __init__(self, amd_smi_binary=None):
+    def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
-        self.__prefix = "amd-smi_"
-
-        # load smi runtime
-        if amd_smi_binary:
-            rocm_lib = amd_smi_binary
-        else:
-            rocm_lib = "/opt/rocm/lib"
-        self.__libsmi = ctypes.CDLL(rocm_lib + "/libamd_smi.so")
-        logging.info("Runtime library loaded")
-
-        # initialize smi library
-        ret_init = self.__libsmi.amdsmi_init(2)
-        assert (ret_init == 0)
+        self.__prefix = "amdsmi_"
+        amdsmi_init()
         logging.info("AMD SMI library API initialized")
-
-        self.__GPUmetrics = {}
-
-    # --------------------------------------------------------------------------------------
-    # Required child methods
+        self.num_gpus = 0
+        self.devices = []
+        self.GPUMetrics = {}
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
-        numDevices = ctypes.c_uint32(0)
-        null_ptr = ctypes.POINTER(ctypes.POINTER(None))()
-        ret = self.__libsmi.amdsmi_get_socket_handles(ctypes.byref(numDevices), null_ptr)
-        print("Num of GPUS:", numDevices.value, "Ret code: ", ret)
-        logging.debug("Number of devices = %i" % numDevices.value)
+        devices = amdsmi_get_processor_handles()
+        self.devices = devices
+        self.num_gpus = len(devices)
+        logging.debug(f"Number of devices = {self.num_gpus}")
 
         # register number of GPUs
         numGPUs_metric = Gauge(
-            self.__prefix + "num_gpus", "# of GPUS available on host"
+            self.__prefix + "num_gpus", "# of GPUS available on host",
         )
-        numGPUs_metric.set(numDevices.value)
-        self.__num_gpus = numDevices.value
+        numGPUs_metric.set(self.num_gpus)
 
-        # register desired metrics (per device)
-        for i in range(self.__num_gpus):
-            gpu = "card" + str(i)
-            # init storage per gpu
-            self.__GPUmetrics[gpu] = {}
-
-            # temperature
-            self.registerGPUMetric(gpu, self.__prefix + "temp_die_edge", "gauge", "Temperature (Sensor edge) (C)")
-            # power
-            self.registerGPUMetric(gpu, self.__prefix + "avg_pwr", "gauge", "Average Graphics Package Power (W)")
-            # clock speeds
-            self.registerGPUMetric(gpu, self.__prefix + "sclk_clock_mhz", "gauge", "sclk clock speed (Mhz)")
-            self.registerGPUMetric(gpu, self.__prefix + "mclk_clock_mhz", "gauge", "mclk clock speed (Mhz)")
-            # memory
-            self.registerGPUMetric(gpu, self.__prefix + "vram_total", "gauge", "VRAM Total Memory (B)")
-            self.registerGPUMetric(gpu, self.__prefix + "vram_used", "gauge", "VRAM Total Used Memory (B)")
-            # utilization
-            self.registerGPUMetric(gpu, self.__prefix + "utilization", "gauge", "GPU use (%)")
+        for idx, device in enumerate(self.devices):
+            metrics = get_gpu_metrics(device)
+            for k, v in metrics.items():
+                metric_name = self.__prefix + k
+                if metric_name not in self.GPUMetrics.keys():
+                    # add Gauge Metric only once
+                    metric = Gauge(
+                        self.__prefix + k,
+                        f"{k}",
+                        labelnames=["card"],
+                    )
+                    self.GPUMetrics[metric_name] = metric
+                else:
+                    metric = self.GPUMetrics[metric_name]
+                # Set metric once per GPU
+                metric.labels(card=str(idx)).set(v)
 
         return
 
@@ -121,101 +140,12 @@ class AMDSMI(Collector):
         self.collect_data_incremental()
         return
 
-    # --------------------------------------------------------------------------------------
-    # Additional custom methods unique to this collector
-
-    def registerGPUMetric(self, gpu, name, type, description):
-        # encode gpu in name for uniqueness
-        metricName = name
-        if metricName in self.__GPUmetrics[gpu]:
-            logging.error(
-                "Ignoring duplicate metric name addition: %s (gpu=%s)" % (name, gpu)
-            )
-            return
-
-        if type == "gauge":
-            if metricName not in self.__GPUmetrics:
-                self.__GPUmetrics[metricName] = "1"
-            else:
-                return
-            self.__GPUmetrics[gpu][metricName] = Gauge(metricName, description, labelnames=['card'])
-            logging.info(
-                "  --> [registered] %s -> %s (gauge)" % (metricName, description)
-            )
-            # # Omri Test
-            # self.__GPUmetrics[gpu][metricName + "_omri"] = Gauge(name, description, labelnames=['card'])
-            # logging.info(
-            #     "  --> [registered] %s -> %s (gauge)" % (metricName + "_omri", description)
-            # )
-        else:
-            logging.error("Ignoring unknown metric type -> %s" % type)
-        return
-
     def collect_data_incremental(self):
-        # ---
-        # Collect and parse latest GPU metrics from AMD SMI library
-        # ---
-
-        temperature = ctypes.c_int64(0)
-        temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
-        temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
-        power = ctypes.c_uint64(0)
-        freq = rsmi_frequencies_t()
-        freq_system_clock = 0  # 0=RSMI_CLK_TYPE_SYS
-        freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
-        vram_total = ctypes.c_uint64(0)
-        vram_used = ctypes.c_uint64(0)
-        utilization = ctypes.c_uint32(0)
-
-        for i in range(self.__num_gpus):
-            gpu = "card" + str(i)
-            device = ctypes.c_uint32(i)
-
-            #--
-            # temperature [millidegrees Celcius, converted to degrees Celcius]
-            metric = self.__prefix + "temp_die_edge"
-            ret = self.__libsmi.rsmi_dev_temp_metric_get(device,
-                                                         temp_location,
-                                                         temp_metric,
-                                                         ctypes.byref(temperature))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(temperature.value / 1000.0)
-
-            #--
-            # average power [micro Watts, converted to Watts]
-            metric = self.__prefix + "avg_pwr"
-            ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(power.value / 1000000.0)
-
-            #--
-            # clock speeds [Hz, converted to megaHz]
-            metric = self.__prefix + "sclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_system_clock, ctypes.byref(freq))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(freq.frequency[freq.current] / 1000000.0)
-
-            metric = self.__prefix + "mclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_mem_clock, ctypes.byref(freq))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(freq.frequency[freq.current] / 1000000.0)
-
-            #--
-            # memory [Hz, converted to megaHz]
-            metric = self.__prefix + "vram_total"
-            ret = self.__libsmi.rsmi_dev_memory_total_get(device, 0x0, ctypes.byref(vram_used))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(vram_used.value)
-
-            metric = self.__prefix + "vram_used"
-            ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_total))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(vram_total.value)
-
-            #--
-            # utilization
-            metric = self.__prefix + "utilization"
-            ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
-            self.__GPUmetrics[gpu][metric].labels(card=gpu).set(utilization.value)
-
-            # # util omri
-            # metric = self.__prefix + "utilization" + "_omri"
-            # ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
-            # # self.__GPUmetrics[gpu][metric].set(utilization.value)
-            # self.__GPUmetrics[gpu][metric].labels(card=gpu).set(utilization.value)
-
+        for idx, device in enumerate(self.devices):
+            metrics = get_gpu_metrics(device)
+            for k, v in metrics.items():
+                metric_name = self.__prefix + k
+                metric = self.GPUMetrics[metric_name]
+                # Set metric
+                metric.labels(card=str(idx)).set(v)
         return
