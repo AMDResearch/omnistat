@@ -174,7 +174,7 @@ class queryMetrics:
         for node in range(len(results)):
             value = int(results[node]["values"][0][1])
             if value != num_gpus:
-                print("[WARNING]: compute nodes detected with differning number of GPUs (%i,%i) " % (num_gpus, value))
+                print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus,value))
                 break
 
         assert num_gpus > 0
