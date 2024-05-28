@@ -79,8 +79,7 @@ def get_gpu_processes(device):
     # PCIE Metrics - Disabled due to slow performance, check again with rocm 6.1
     # pcie_info = amdsmi_get_pcie_info(device)
 
-    # Get Total VRAM for GPU
-    device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
+
     result = []
     for p in processes:
         p = amdsmi_get_gpu_process_info(device, p)
@@ -117,7 +116,15 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.num_gpus)
 
+        # Register Total VRAM for GPU metric
+        total_vram_metric = Gauge(
+            self.__prefix + "total_vram", "Total VRAM available on GPU", labelnames=["card"])
+
         for idx, device in enumerate(self.devices):
+
+            device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
+            total_vram_metric.labels(card=str(idx)).set(device_total_vram)
+
             metrics = get_gpu_metrics(device)
             for k, v in metrics.items():
                 metric_name = self.__prefix + k
