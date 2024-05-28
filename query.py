@@ -79,17 +79,6 @@ class queryMetrics:
         self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
-        self.jobID = None
-        self.enable_redirect = False
-        self.output_file = None
-        self.pdf = None
-        self.sha = versionData["sha"]
-        self.version = versionData["version"]
-
-    def __del__(self):
-        if self.enable_redirect:
-            self.output.close()
-
     def set_options(self,jobID=None,output_file=None,pdf=None,interval=None):
         if jobID:
             self.jobID=int(jobID)
@@ -289,6 +278,7 @@ class queryMetrics:
         self.stats = {}
         self.time_series = {}
         self.max_GPU_memory_avail = []
+        self.gpu_energy_total_kwh = 0
 
         for entry in self.metrics:
             metric = entry['metric']
@@ -307,6 +297,17 @@ class queryMetrics:
 
                 # (2) capture time series that assembles [max] value at each timestamp across all assigned nodes
                 times,values_max = self.query_time_series_data("card" + str(gpu) + "_" + metric,"max")
+
+                # (3) capture raw time series
+                times_raw,values_raw, hosts = self.query_time_series_data("card" + str(gpu) + "_" + metric)
+
+                # Sum total energy per gpu across all hosts
+                if metric == 'rocm_avg_pwr':
+                    powerTotal = 0.0
+                    for i in range(len(times_raw)):
+                        x = np.array(times_raw[i],dtype=np.float32)
+                        powerTotal += np.trapz(values_raw[i],x=x)   # Units: W x sec -> Joules
+                    self.gpu_energy_total_kwh = powerTotal / (1000 * 3600)
 
                 # if gpu == 0:
                 #     for i in range(len(times)):
@@ -375,6 +376,9 @@ class queryMetrics:
             print("")
 
         print("")
+        print("Total GPU Energy Consumed = %.2f kWh" % self.gpu_energy_total_kwh)
+        print("")
+
         print("--")
         print("Query interval = %i secs" % self.interval)
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
@@ -390,7 +394,7 @@ class queryMetrics:
 
         if reducer is None:
             results = self.prometheus.custom_query_range(
-                '(%s * on (instance) slurmjob_info{jobid="%s"})'
+                '(%s * on (instance) group_left() slurmjob_info{jobid="%s"})'
                 % (metric_name, self.jobID),
                 self.start_time,
                 self.end_time,
@@ -405,18 +409,36 @@ class queryMetrics:
                 step=self.interval,
             )
 
-        results = np.asarray(results[0]['values'])
+        if reducer is None:
+            # return lists with raw time series data from all hosts for given metric
+            times  = []
+            values = []
+            hosts  = []
 
-        # convert to time format
-        time = results[:,0].astype(int).astype('datetime64[s]')
-        #time = results[:,0].astype(int)
-        # let user decide on conversion type for gauge metric
-        if dataType == int:
-            values = results[:,1].astype(int)
-        elif dataType == float:
-            values = results[:,1].astype(float)
+            for i in range(len(results)):
+                tmpresult = np.asarray(results[i]['values'])
+                # convert to time format
+                tmptime = tmpresult[:,0].astype(int).astype('datetime64[s]')
+                if dataType == int:
+                    tmpvalues = tmpresult[:,1].astype(int)
+                elif dataType == float:
+                    tmpvalues = tmpresult[:,1].astype(float)
+                times.append(tmptime)
+                values.append(tmpvalues)
+                hosts.append(results[i]['metric']['instance'])
+            return times, values, hosts
+        else:
+            # only have a single time series when reduction operator applied
+            results = np.asarray(results[0]['values'])
 
-        return time,values
+            # convert to time format
+            time = results[:,0].astype(int).astype('datetime64[s]')
+            # let user decide on conversion type for gauge metric
+            if dataType == int:
+                values = results[:,1].astype(int)
+            elif dataType == float:
+                values = results[:,1].astype(float)
+            return time,values
 
     def query_gpu_metric(self,metricName):
         stats = {}
@@ -524,6 +546,10 @@ class queryMetrics:
 
             t.setStyle(TableStyle([('BACKGROUND', (0, each), (-1, each), bg_color)]))
         Story.append(t)
+
+        Story.append(Spacer(1,0.2*inch))
+        ptext='''Total GPU Energy Consumed = %.2f kWh''' % (self.gpu_energy_total_kwh)
+        Story.append(Paragraph(ptext,normal))
 
         #--
         # Display time-series plots
