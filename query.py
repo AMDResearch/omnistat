@@ -366,6 +366,7 @@ class queryMetrics:
 
         print("")
         print("--")
+        print("Query interval = %i secs" % self.interval)
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
         version = self.version
         if self.sha != "Unknown":
@@ -559,6 +560,8 @@ class queryMetrics:
                            parent=styles['Normal'],
         )
 
+        ptext='''Query interval = %i secs''' % self.interval
+        Story.append(Paragraph(ptext,footerStyle))
         ptext='''Query execution time = %.1f secs''' % (timeit.default_timer() - self.timer_start)
         Story.append(Paragraph(ptext,footerStyle))
         version = self.version
