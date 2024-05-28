@@ -275,13 +275,6 @@ class queryMetrics:
         for result in results:
             self.hosts.append(result["metric"]["instance"])
 
-
-    # def get_num_gpus(self):
-    #     self.numGPUs = 0
-    #     if self.jobinfo["partition"] in self.config:
-    #         if "num_gpus" in self.config[self.jobinfo["partition"]]:
-    #             self.numGPUs = self.config[self.jobinfo["partition"]]["num_gpus"]
-
     def gather_data(self,saveTimeSeries=False):
         self.stats = {}
         self.time_series = {}
