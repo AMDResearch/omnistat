@@ -32,6 +32,18 @@ from importlib.metadata import version
 
 from pathlib import Path
 
+GPU_MAPPING_ORDER = {
+    0: 2,
+    1: 3,
+    2: 0,
+    3: 1,
+    4: 6,
+    5: 7,
+    6: 4,
+    7: 5
+}
+
+
 def error(message):
     """Log an error message and exit
 
@@ -41,7 +53,8 @@ def error(message):
     logging.error("Error: " + message)
     sys.exit(1)
 
-def runShellCommand(command, capture_output=True, text=True, exit_on_error=False,timeout=1.0):
+
+def runShellCommand(command, capture_output=True, text=True, exit_on_error=False, timeout=1.0):
     """Runs a provided shell command
 
     Args:
@@ -68,16 +81,17 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
         sys.exit(1)
     return results
 
-def runBGProcess(command,outputFile=".bgcommand.output",mode='w'):
 
+def runBGProcess(command, outputFile=".bgcommand.output", mode='w'):
     logging.debug("Command to run in background = %s" % command)
     #results = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=open(outputFile,"w"))
 
-    outfile = open(outputFile,mode)
-    results = subprocess.Popen(command,stdout=outfile,stderr=outfile)
+    outfile = open(outputFile, mode)
+    results = subprocess.Popen(command, stdout=outfile, stderr=outfile)
     return results
 
-def resolvePath(desiredCommand,envVar):
+
+def resolvePath(desiredCommand, envVar):
     """Resolve underlying path to a desired shell command.
 
     Args:
@@ -90,11 +104,11 @@ def resolvePath(desiredCommand,envVar):
     command = desiredCommand
     if envVar in os.environ:
         customPath = os.getenv(envVar)
-        logging.debug("Overriding command search path with %s=%s" % (envVar,customPath))
+        logging.debug("Overriding command search path with %s=%s" % (envVar, customPath))
         if os.path.isdir(customPath):
             command = customPath + "/" + desiredCommand
         else:
-            error("provided %s does not exist -> %s" % (envVar,customPath))
+            error("provided %s does not exist -> %s" % (envVar, customPath))
             sys.exit(1)
 
     # verify we can resolve the desired binary
@@ -102,9 +116,10 @@ def resolvePath(desiredCommand,envVar):
     if not path:
         error("Unable to resolve path for %s" % command)
     else:
-        logging.debug("--> %s path = %s" % (desiredCommand,path))
+        logging.debug("--> %s path = %s" % (desiredCommand, path))
 
     return path
+
 
 def removeQuotes(input):
     """Remove leading/trailing quotes from a string
