@@ -58,7 +58,7 @@ class omniwatch_annotate():
             os.remove(self.filename)
         return
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices = ['start','stop'],help="annotation mode", required=True)
     parser.add_argument("--text", help="desired annotation", required=False)
@@ -74,3 +74,5 @@ if __name__ == '__main__':
     else:
         annotate.stop()
 
+if __name__ == '__main__':
+    main()

@@ -45,7 +45,8 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Tabl
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
-from utils import displayVersion, getVersion, error
+
+from omniwatch.utils import displayVersion, getVersion, error
 
 class queryMetrics:
 
