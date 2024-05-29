@@ -74,24 +74,6 @@ def get_gpu_metrics(device):
     return result
 
 
-def get_gpu_processes(device):
-    processes = amdsmi_get_gpu_process_list(device)
-    # PCIE Metrics - Disabled due to slow performance, check again with rocm 6.1
-    # pcie_info = amdsmi_get_pcie_info(device)
-
-
-    result = []
-    for p in processes:
-        p = amdsmi_get_gpu_process_info(device, p)
-        # Ignore the Python process itself for the reading
-        if p['name'] == 'python3' and (p['mem'] == 4096 or p["memory_usage"]["vram_mem"] == 12288):
-            continue
-        result.append(p)
-    return result
-        # out = f'{PROCESS_MEASUREMENT_NAME},name=card{idx},process_name="{p["name"]}",process_pid={p["pid"]} vram_usage={p["memory_usage"]["vram_mem"]}i,cpu_memory_usage={p["memory_usage"]["cpu_mem"]}i,gfx_usage={p["engine_usage"]["gfx"]}i,vram_total={device_total_vram}i {int(time.time()):<019d}'
-        # print(out)
-
-
 class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
