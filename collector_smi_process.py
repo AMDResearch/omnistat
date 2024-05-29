@@ -41,8 +41,8 @@ amdsmi_mclk_clock_mhz 1200.0
 import logging
 from collector_base import Collector
 from prometheus_client import Gauge
-
-from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info)
+from utils import GPU_MAPPING_ORDER
+from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info
 
 def get_gpu_processes(device):
     processes = amdsmi_get_gpu_process_list(device)
@@ -118,16 +118,16 @@ class AMDSMIProcess(Collector):
             processes = get_gpu_processes(device)
 
             for process in processes:
-                metric_tuple = (str(idx), process["name"], str(process["pid"]))
+                metric_tuple = (str(GPU_MAPPING_ORDER[idx]), process["name"], str(process["pid"]))
 
                 self.process_metrics[metric_tuple] = self.c
                 self.metric_vram.labels(
-                    card=str(idx),
+                    card=str(GPU_MAPPING_ORDER[idx]),
                     name=str(process["name"]),
                     pid=str(process["pid"]),
                 ).set(process["memory_usage"]["vram_mem"])
                 self.metric_compute.labels(
-                    card=str(idx),
+                    card=str(GPU_MAPPING_ORDER[idx]),
                     name=str(process["name"]),
                     pid=str(process["pid"]),
                 ).set(process["engine_usage"]["gfx"])
