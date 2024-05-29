@@ -22,6 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # -------------------------------------------------------------------------------
+
 import argparse
 import configparser
 import logging
@@ -31,11 +32,13 @@ import subprocess
 import sys
 import tempfile
 import time
-import utils
 import yaml
+
 from pathlib import Path
+
 from pssh.clients import ParallelSSHClient
 
+from omniwatch import utils
 
 class UserBasedMonitoring:
     def __init__(self):
