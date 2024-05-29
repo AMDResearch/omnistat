@@ -35,9 +35,12 @@ import os
 import platform
 import re
 import sys
-import utils
-from prometheus_client import generate_latest, CollectorRegistry
+
 from pathlib import Path
+
+from prometheus_client import generate_latest, CollectorRegistry
+
+from omniwatch import utils
 
 class Monitor():
     def __init__(self):
