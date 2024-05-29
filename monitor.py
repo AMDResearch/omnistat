@@ -54,6 +54,8 @@ class Monitor():
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
             self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', True)
+            self.runtimeConfig['collector_enable_amd_smi_process'] = config['omniwatch.collectors'].getboolean('enable_amd_smi_process',
+                                                                                                       True)
             self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
@@ -100,10 +102,11 @@ class Monitor():
 
         if self.runtimeConfig['collector_enable_amd_smi']:
             from collector_smi_v2 import AMDSMI
-            binary = None
-            if 'rocm_smi_binary' in self.runtimeConfig:
-                binary = self.runtimeConfig['rocm_smi_binary']
             self.__collectors.append(AMDSMI())
+
+        if self.runtimeConfig['collector_enable_amd_smi_process']:
+            from collector_smi_process import AMDSMIProcess
+            self.__collectors.append(AMDSMIProcess())
 
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
