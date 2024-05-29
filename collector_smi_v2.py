@@ -42,7 +42,7 @@ import logging
 from collector_base import Collector
 from prometheus_client import Gauge
 import statistics
-
+from utils import GPU_MAPPING_ORDER
 from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
                     amdsmi_get_gpu_process_list, amdsmi_get_gpu_memory_total, amdsmi_get_gpu_process_info,
                     AmdSmiMemoryType)
@@ -136,5 +136,5 @@ class AMDSMI(Collector):
                 metric_name = self.__prefix + k
                 metric = self.GPUMetrics[metric_name]
                 # Set metric
-                metric.labels(card=str(idx)).set(v)
+                metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(v)
         return
