@@ -42,9 +42,7 @@ import logging
 from collector_base import Collector
 from prometheus_client import Gauge
 
-from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
-                    amdsmi_get_gpu_process_list, amdsmi_get_gpu_memory_total, amdsmi_get_gpu_process_info,
-                    AmdSmiMemoryType)
+from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info)
 
 def get_gpu_processes(device):
     processes = amdsmi_get_gpu_process_list(device)
