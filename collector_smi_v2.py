@@ -43,8 +43,7 @@ from collector_base import Collector
 from prometheus_client import Gauge
 import statistics
 from utils import GPU_MAPPING_ORDER
-from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
-                    amdsmi_get_gpu_process_list, amdsmi_get_gpu_memory_total, amdsmi_get_gpu_process_info,
+from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info, amdsmi_get_gpu_memory_total,
                     AmdSmiMemoryType)
 
 
