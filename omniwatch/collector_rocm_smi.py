@@ -40,13 +40,15 @@ card0_rocm_mclk_clock_mhz 1200.0
 """
 
 import sys
-import utils
 import json
 import logging
 import os
 import platform
-from collector_base import Collector
+
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
+
+import omniwatch.utils as utils
+from omniwatch.collector_base import Collector
 
 class ROCMSMI(Collector):
     def __init__(self,rocm_path="/opt/rocm"):
