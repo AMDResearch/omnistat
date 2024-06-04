@@ -30,6 +30,7 @@
 
 import argparse
 import configparser
+import importlib
 import logging
 import os
 import platform
@@ -48,15 +49,20 @@ class Monitor():
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
 
+        # Resolve path to default config file in the current installation.
+        # This configuration is only meant to provide sane defaults to run
+        # locally, but most installations will need a custom file.
+        # It can be overridden using the configFile option below.
+        packageDir = importlib.resources.files("omniwatch")
+        defaultConfigFile = packageDir.joinpath("config/omniwatch.default")
+
         parser = argparse.ArgumentParser()
         parser.add_argument("--configFile",type=str,
-                            help="runtime config file (default=omniwatch.config)",
-                            default="omniwatch.config")
+                            help=f"runtime config file (default={defaultConfigFile})",
+                            default=defaultConfigFile)
         args = parser.parse_args()
 
-        # read runtime config (file is required to exist)
-        topDir = Path(__file__).resolve().parent
-        configFile = str(topDir) + "/" + args.configFile
+        configFile = args.configFile
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
@@ -85,7 +91,7 @@ class Monitor():
         # define desired collectors
         self.__collectors = []
 
-         # allow for disablement of slurm collector via regex match
+        # allow for disablement of slurm collector via regex match
         if self.runtimeConfig['collector_enable_slurm']:
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
                 host_skip = utils.removeQuotes(config['omniwatch.collectors.slurm']['host_skip'])
