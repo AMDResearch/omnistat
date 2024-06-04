@@ -39,7 +39,7 @@ from pathlib import Path
 
 from prometheus_client import generate_latest, CollectorRegistry
 
-from omniwatch import utils
+import omniwatch.utils as utils
 
 class Monitor():
     def __init__(self):
@@ -107,10 +107,10 @@ class Monitor():
         enableSLURM = True
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
-            from collector_smi import ROCMSMI
+            from omniwatch.collector_smi import ROCMSMI
             self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig['collector_rocm_path']))
         if self.runtimeConfig['collector_enable_slurm']:
-            from collector_slurm import SlurmJob
+            from omniwatch.collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
                                               annotations=self.runtimeConfig['slurm_collector_annotations'],
                                               jobDetection=self.jobDetection))
