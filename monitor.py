@@ -66,12 +66,11 @@ class Monitor():
             self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
+            self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
 
             # optional runtime controls
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
                 self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
-            if config.has_option('omniwatch.collectors','smi_binary'):
-                self.runtimeConfig['rocm_smi_binary'] = config['omniwatch.collectors']['smi_binary']
 
         else:
             utils.error("Unable to find runtime config file %s" % configFile)
@@ -102,10 +101,7 @@ class Monitor():
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
             from collector_smi import ROCMSMI
-            binary = None
-            if 'rocm_smi_binary' in self.runtimeConfig:
-                binary = self.runtimeConfig['rocm_smi_binary']
-            self.__collectors.append(ROCMSMI(rocm_smi_binary=binary))
+            self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig['collector_rocm_path']))
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],

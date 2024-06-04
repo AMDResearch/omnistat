@@ -8,6 +8,7 @@ enable_rocm_smi = True
 enable_slurm = True
 corebinding = 31
 logfile = exporter.log
+rocm_path = /opt/rocm
 
 [omniwatch.collectors.slurm]
 

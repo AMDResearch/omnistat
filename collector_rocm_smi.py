@@ -49,14 +49,13 @@ from collector_base import Collector
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 class ROCMSMI(Collector):
-    def __init__(self,rocm_smi_binary=None):
+    def __init__(self,rocm_path="/opt/rocm"):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
 
         # setup rocm-smi path
-        if rocm_smi_binary:
-            command = rocm_smi_binary
-        else:
+        command = rocm_path + "/bin/rocm-smi"
+        if not os.path.isfile(command):
             command = utils.resolvePath("rocm-smi", "ROCM_SMI_PATH")
 
         # command-line flags for use with rocm-smi to obtained desired metrics
