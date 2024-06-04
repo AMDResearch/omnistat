@@ -60,13 +60,12 @@ rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
 #--
 
 class ROCMSMI(Collector):
-    def __init__(self,rocm_smi_binary=None):
+    def __init__(self,rocm_path="/opt/rocm"):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
 
         # load smi runtime
-        rocm_lib = "/opt/rocm-5.7.1/lib"
-        self.__libsmi = ctypes.CDLL(rocm_lib + "/librocm_smi64.so")
+        self.__libsmi = ctypes.CDLL(rocm_path + "/lib/librocm_smi64.so")
         logging.info("Runtime library loaded")
 
         # initialize smi library
