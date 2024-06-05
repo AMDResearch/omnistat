@@ -123,14 +123,9 @@ class Monitor():
         if self.runtimeConfig['collector_enable_amd_smi']:
             from collector_smi_v2 import AMDSMI
             self.__collectors.append(AMDSMI())
-<<<<<<< HEAD:omniwatch/monitor.py
-=======
-
         if self.runtimeConfig['collector_enable_amd_smi_process']:
             from collector_smi_process import AMDSMIProcess
             self.__collectors.append(AMDSMIProcess())
-
->>>>>>> f15f669 (add support for amdsmi process collector):monitor.py
         if self.runtimeConfig['collector_enable_slurm']:
             from omniwatch.collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
