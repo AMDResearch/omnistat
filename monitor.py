@@ -36,7 +36,7 @@ import re
 import sys
 import utils
 from prometheus_client import generate_latest, CollectorRegistry
-from pathlib import Path
+
 
 class Monitor():
     def __init__(self, configFile):
