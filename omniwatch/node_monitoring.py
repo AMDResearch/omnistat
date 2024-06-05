@@ -35,26 +35,34 @@
 #   * polling frequency is desired to be controlled externally
 # ---
 
-from monitor import Monitor
-from flask import Flask
-from flask_prometheus_metrics import register_metrics
 import sys
 
-app = Flask("omniwatch")
-monitor = Monitor()
-monitor.initMetrics()
+from flask import Flask
+from flask_prometheus_metrics import register_metrics
+
+from omniwatch.monitor import Monitor
 
 # note: following shutdown procedure works with gunicorn only
 def shutdown():
     sys.exit(4)
 
-# Register metrics with Flask app
-register_metrics(app, app_version="v0.1.0", app_config="production")
+def main():
+    # Setting root_path is mandatory within a package. This path is not used
+    # because omniwatch doesn't need to serve any static files, so it is set
+    # to /tmp for simplicity.
+    app = Flask("omniwatch", root_path="/tmp")
+    monitor = Monitor()
+    monitor.initMetrics()
 
-# Setup endpoint(s)
-app.route("/metrics")(monitor.updateAllMetrics)
-app.route("/shutdown")(shutdown)
+    # Register metrics with Flask app
+    register_metrics(app, app_version="v0.1.0", app_config="production")
+
+    # Setup endpoint(s)
+    app.route("/metrics")(monitor.updateAllMetrics)
+    app.route("/shutdown")(shutdown)
+
+    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
 
 # Run the main function
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
+    main()
