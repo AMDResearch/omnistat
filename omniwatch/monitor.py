@@ -30,7 +30,7 @@
 
 import argparse
 import configparser
-import importlib
+import importlib.resources
 import logging
 import os
 import platform
