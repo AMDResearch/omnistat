@@ -137,3 +137,4 @@ class AMDSMI(Collector):
                 # Set metric
                 metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(v)
         return
+
