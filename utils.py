@@ -28,6 +28,8 @@ import sys
 import os
 import shutil
 from pathlib import Path
+import argparse
+
 
 def error(message):
     """Log an error message and exit
@@ -148,3 +150,28 @@ def displayVersion(versionData):
     print("Omniwatch version: %s" % versionData["version"])
     print("Git revision:      %s" % versionData["sha"])
     print("-" * 40)
+
+
+def getConfigPath():
+
+    # 1 - User supplied argument # TODO extract args at higher level?
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--configFile", type=str,
+                        help="runtime config file path",
+                        default=None)
+    args = parser.parse_args()
+    if args.configFile:
+        # user supplied config file
+        return args.configFile
+
+    # 2 - look in same directory as this script
+    if os.path.isfile("./omniwatch.config"):
+        return "./omniwatch.config"
+
+    # 3 - look in /etc/omniwatch
+    if os.path.isfile("/etc/omniwatch/omniwatch.config"):
+        return "/etc/omniwatch/omniwatch.config"
+
+    # raise error if config file not found
+    print(f"Config file not found in expected locations")
+    sys.exit(1)
