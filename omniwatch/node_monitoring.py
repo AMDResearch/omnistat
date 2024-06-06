@@ -45,22 +45,16 @@ from omniwatch.monitor import Monitor
 def shutdown():
     sys.exit(4)
 
-def main():
-    # Setting root_path is mandatory within a package. This path is not used
-    # because omniwatch doesn't need to serve any static files, so it is set
-    # to /tmp for simplicity.
-    app = Flask("omniwatch", root_path="/tmp")
-    monitor = Monitor()
-    monitor.initMetrics()
+app = Flask("omniwatch")
+monitor = Monitor()
+monitor.initMetrics()
 
-    # Register metrics with Flask app
-    register_metrics(app, app_version="v0.1.0", app_config="production")
+# Register metrics with Flask app
+register_metrics(app, app_version="v0.1.0", app_config="production")
 
-    # Setup endpoint(s)
-    app.route("/metrics")(monitor.updateAllMetrics)
-    app.route("/shutdown")(shutdown)
-
-    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
+# Setup endpoint(s)
+app.route("/metrics")(monitor.updateAllMetrics)
+app.route("/shutdown")(shutdown)
 
 # Enforce network restrictions
 @app.before_request
@@ -76,4 +70,4 @@ def forbidden(e):
 
 # Run the main function
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
