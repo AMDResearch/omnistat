@@ -28,7 +28,6 @@
 # or more custom collector(s).
 #--
 
-import argparse
 import configparser
 import logging
 import os
