@@ -55,6 +55,29 @@ class queryMetrics:
         # initiate timer
         self.timer_start = timeit.default_timer()
 
+         # local site configuration
+
+        # Resolve path to default config file in the current installation.
+        # This configuration is only meant to provide sane defaults to run
+        # locally, but most installations will need a custom file.
+        # It can be overridden using the configFile option below.
+        packageDir = importlib.resources.files("omniwatch")
+        configFile = packageDir.joinpath("config/omniwatch.default")
+
+        # check for override of default configFile
+        if "OMNIWATCH_CONFIG" in os.environ:
+            logging.info("Overriding default config file")
+            configFile = os.environ["OMNIWATCH_CONFIG"]
+
+        if os.path.isfile(configFile):
+            runtimeConfig = configparser.ConfigParser()
+            runtimeConfig.read(configFile)
+
+        section = 'omniwatch.query'
+        self.config = {}
+        self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
+        self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
+
         self.jobID = None
         self.enable_redirect = False
         self.output_file = None
