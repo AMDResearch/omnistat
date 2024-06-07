@@ -22,20 +22,18 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""amd-smi data collector
+"""amd-smi GPU process data collector
 
-Implements a number of prometheus gauge metrics based on GPU data collected from
+*Collector was run as Sudo fetch all system processes
+
+Implements a number of prometheus gauge metrics based on GPU process data collected from
 amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
+metrics with "amdsmi_process_{metric_name}" with labels for each GPU number, PID and Process Name.
+The following example highlights example metrics:
 
-amdsmi_temp_die_edge 36.0
-amdsmi_avg_pwr 30.0
-amdsmi_utilization 0.0
-amdsmi_vram_total 3.4342961152e+010
-amdsmi_vram_used 7.028736e+06
-amdsmi_sclk_clock_mhz 300.0
-amdsmi_mclk_clock_mhz 1200.0
+amdsmi_process_compute (card=0, pid=123, name=torchrun) 36.0
+amdsmi_process_vram (card=0, pid=123, name=torchrun) 3784658734
 """
 
 import logging
@@ -43,6 +41,7 @@ from collector_base import Collector
 from prometheus_client import Gauge
 from utils import GPU_MAPPING_ORDER
 from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info
+
 
 def get_gpu_processes(device):
     processes = amdsmi_get_gpu_process_list(device)
