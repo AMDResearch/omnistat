@@ -87,7 +87,6 @@ class UserBasedMonitoring:
             scrape_timeout = scrape_interval
 
         section = "omniwatch.promserver"
-        ps_template = self.runtimeConfig[section].get("template", "prometheus.yml.template")
         ps_binary = self.runtimeConfig[section].get("binary")
         ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
 
