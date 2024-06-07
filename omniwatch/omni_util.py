@@ -257,7 +257,7 @@ class UserBasedMonitoring:
             for host in self.slurmHosts:
                 logging.info("Launching exporter on host -> %s" % host)
                 logfile = "exporter.%s.log" % host
-                logpath = self.topDir / logfile
+                logpath = logfile
 
                 # overwrite logfile
                 if os.path.exists(logpath):
