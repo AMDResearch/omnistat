@@ -28,7 +28,6 @@ import sys
 import os
 import shutil
 from pathlib import Path
-import argparse
 
 
 def error(message):
