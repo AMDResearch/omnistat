@@ -57,9 +57,17 @@ class queryMetrics:
 
          # local site configuration
 
-        # read runtime config (file is required to exist)
-        self.topDir = Path(__file__).resolve().parent
-        configFile = str(self.topDir) + "/omniwatch.config"
+        # Resolve path to default config file in the current installation.
+        # This configuration is only meant to provide sane defaults to run
+        # locally, but most installations will need a custom file.
+        # It can be overridden using the configFile option below.
+        packageDir = importlib.resources.files("omniwatch")
+        configFile = packageDir.joinpath("config/omniwatch.default")
+
+        # check for override of default configFile
+        if "OMNIWATCH_CONFIG" in os.environ:
+            logging.info("Overriding default config file")
+            configFile = os.environ["OMNIWATCH_CONFIG"]
 
         if os.path.isfile(configFile):
             runtimeConfig = configparser.ConfigParser()
