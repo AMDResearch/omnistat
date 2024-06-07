@@ -179,6 +179,7 @@ class UserBasedMonitoring:
                     "srun",
                     "-N %s" % numNodes,
                     "--ntasks-per-node=1",
+
                     "%s/slurm_env.py" % self.topDir,
                     "%s" % self.runtimeConfig["omniwatch.collectors.slurm"].get("job_detection_file")
                 ]
@@ -187,18 +188,11 @@ class UserBasedMonitoring:
                 logging.info("Launching exporters in parallel using pdsh")
 
                 client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-                gunicorn_path = utils.resolvePath("gunicorn", "NONE")
+                gunicorn_path = f"{sys.prefix}/bin/gunicorn"
 
                 # cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
+                cmd += "%s -D -b 0.0.0.0:%s omniwatch.node_monitoring:app" % (gunicorn_path, port)
 
-                # build up ssh command, preserving PYTHON environment
-                if "PYTHONPATH" in os.environ:
-                    cmd = "PYTHONPATH=%s " % (os.getenv("PYTHONPATH"))
-                else:
-                    cmd = ""
-
-                cmd += "%s -D -e OMNIWATCH_CONFIG=%s -b 0.0.0.0:%s" % (gunicorn_path, self.configFile, port)
-                cmd += " --pythonpath %s node_monitoring:app" % (self.topDir)
                 output = client.run_command(cmd)
 
                 # verify exporter available on all nodes...
@@ -260,13 +254,13 @@ class UserBasedMonitoring:
                             "--capture-output",
                             "--log-file %s" % logpath,
                             "--pythonpath %s" % self.topDir,
-                            "node_monitoring:app",
+                            "omniwatch.node_monitoring:app",
                         ]
                         base_ssh = ["ssh", host]
                         logging.debug("-> running command: %s" % (base_ssh + cmd))
                         utils.runShellCommand(base_ssh + cmd, timeout=25, exit_on_error=False)
                     else:
-                        cmd = ["ssh", host, "%s/node_monitoring.py" % self.topDir]
+                        cmd = ["ssh", host, "%s/bin/python -m omniwatch.node_monitoring.py" % sys.prefix]                        
                         logging.debug("-> running command: %s" % (cmd))
                         utils.runBGProcess(cmd, outputFile=logfile)
 
