@@ -166,5 +166,4 @@ def getConfigPath():
         return "/etc/omniwatch/omniwatch.config"
 
     # raise error if config file not found
-    print(f"Config file not found in expected locations")
-    sys.exit(1)
+    error(f"Config file not found in expected locations")
