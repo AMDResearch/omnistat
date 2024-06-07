@@ -31,7 +31,6 @@ import shutil
 from importlib.metadata import version
 
 from pathlib import Path
-import argparse
 
 
 GPU_MAPPING_ORDER = {
