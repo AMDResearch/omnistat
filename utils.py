@@ -28,7 +28,6 @@ import sys
 import os
 import shutil
 from pathlib import Path
-import argparse
 
 
 GPU_MAPPING_ORDER = {
@@ -169,15 +168,9 @@ def displayVersion(versionData):
 
 def getConfigPath():
 
-    # 1 - User supplied argument # TODO extract args at higher level?
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--configFile", type=str,
-                        help="runtime config file path",
-                        default=None)
-    args = parser.parse_args()
-    if args.configFile:
-        # user supplied config file
-        return args.configFile
+    # 1 - OS Environment variable
+    if os.environ.get("OMNIWATCH_CONFIG", None):
+        return os.environ.get("OMNIWATCH_CONFIG")
 
     # 2 - look in same directory as this script
     if os.path.isfile("./omniwatch.config"):
@@ -188,5 +181,4 @@ def getConfigPath():
         return "/etc/omniwatch/omniwatch.config"
 
     # raise error if config file not found
-    print(f"Config file not found in expected locations")
-    sys.exit(1)
+    error(f"Config file not found in expected locations")
