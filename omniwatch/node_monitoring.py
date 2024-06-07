@@ -24,10 +24,9 @@
 # -------------------------------------------------------------------------------
 #
 # Prometheus data collector for HPC systems.
-# --> intended for use with resource manager prolog/epilog hooks
-# --> two primary data collection points are defined
-#     (1) global - at job begin/end
-#     (2) incremental - periodically executed during job execution
+# --> intended for two primary usage modes:
+#     - system-mode (collect data continuously on all compute hosts)
+#     - user-mode (user spawns data collection within a specific job)
 #
 # Assumptions:
 #   * user job has exclusive allocation to host
@@ -37,7 +36,7 @@
 
 import sys
 
-from flask import Flask
+from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
 
 from omniwatch.monitor import Monitor
@@ -56,6 +55,16 @@ register_metrics(app, app_version="v0.1.0", app_config="production")
 # Setup endpoint(s)
 app.route("/metrics")(monitor.updateAllMetrics)
 app.route("/shutdown")(shutdown)
+
+# Enforce network restrictions
+@app.before_request
+def restrict_ips():
+    if request.remote_addr not in monitor.runtimeConfig['collector_allowed_ips']:
+        abort(403)
+
+@app.errorhandler(403)
+def forbidden(e):
+    return jsonify(error="Access denied"), 403
 
 # Run the main function
 if __name__ == "__main__":
