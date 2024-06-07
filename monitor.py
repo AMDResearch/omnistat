@@ -67,6 +67,10 @@ class Monitor():
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
             self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
 
+            allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
+            # convert comma-separated string into list
+            self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
+
             # optional runtime controls
             if config.has_option('omniwatch.collectors.slurm','host_skip'):
                 self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
