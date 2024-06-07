@@ -39,11 +39,13 @@ from prometheus_client import generate_latest, CollectorRegistry
 
 
 class Monitor():
-    def __init__(self, configFile):
+    def __init__(self):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
 
+
+        configFile = utils.getConfigPath()
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
