@@ -44,15 +44,12 @@ class Monitor():
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
 
-        # check for override of default configFile
+        # setup runtine config that can be overridden via env variable
         configFile = "omniwatch.default"
         if "OMNIWATCH_CONFIG" in os.environ:
             logging.info("Overriding default config file")
             configFile = os.environ["OMNIWATCH_CONFIG"]
 
-        # read runtime config (file is required to exist)
-        topDir = Path(__file__).resolve().parent
-        configFile = str(topDir) + "/" + configFile
         self.runtimeConfig = {}
 
         if os.path.isfile(configFile):
