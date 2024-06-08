@@ -184,14 +184,14 @@ class SlurmJob(Collector):
                 ):
                     self.__SLURMmetrics["annotations"].labels(
                         marker=self.__lastAnnotationLabel,
-                        jobid=results[0],
+                        jobid=results["SLURM_JOB_ID"],
                     ).set(0)
                     self.__lastAnnotationLabel = None
 
                 if userFileExists:
                     self.__SLURMmetrics["annotations"].labels(
                         marker=data["annotation"],
-                        jobid=results[0],
+                        jobid=results["SLURM_JOB_ID"],
                     ).set(data["timestamp_secs"])
                     self.__lastAnnotationLabel = data["annotation"]
 
