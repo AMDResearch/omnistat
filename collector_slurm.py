@@ -117,7 +117,6 @@ class SlurmJob(Collector):
                 keys = ["SLURM_JOB_ID","SLURM_JOB_USER","SLURM_JOB_PARTITION","SLURM_JOB_NUM_NODES","SLURM_JOB_BATCHMODE"]
                 results = dict(zip(keys,data))
         elif self.__slurmJobMode == 'file-based':
-            logging.info("do some file based stuff")
             jobFileExists = os.path.isfile(self.__slurmJobFile)
             if jobFileExists:
                 with open(self.__slurmJobFile, "r") as file:
