@@ -71,16 +71,7 @@ class SlurmJob(Collector):
             jobFile = self.__slurmJobFile
             if os.path.isfile(jobFile):
                 with open(jobFile,'r') as f:
-                    jobInfo = json.load(f)
-
-                logging.info(jobInfo)
-                self.__slurmJobInfo = []
-                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_ID"])
-                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_USER"])
-                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_PARTITION"])
-                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_NUM_NODES"])
-                self.__slurmJobInfo.append(jobInfo["SLURM_JOB_BATCHMODE"])
-
+                    self.__slurmJobInfo = json.load(f)
                 logging.info("--> usermode jobinfo (from file): %s" % self.__slurmJobInfo)
 
             else:
@@ -88,11 +79,9 @@ class SlurmJob(Collector):
                 # note: a longer timeout is provided since we only query once and some systems have slow
                 # slurm response times
                 logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
+                self.__slurmJobInfo = self.querySlurmJob(timeout=15,exit_on_error=True,mode='squeue')
+                logging.info("--> usermode jobinfo (from slurm query): %s" % self.__slurmJobInfo)
 
-                data = self.querySlurmJob(timeout=15,exit_on_error=True)
-                if data.stdout.strip():
-                    self.__slurmJobInfo = data.stdout.strip().split(":")
-                    logging.info("--> usermode jobinfo (from slurm query): %s" % self.__slurmJobInfo)
         else:
             if self.__slurmJobMode == 'file-based':
                 logging.info("collector_slurm: reading job information from prolog/epilog derived file (%s)" % self.__slurmJobFile)
@@ -101,22 +90,23 @@ class SlurmJob(Collector):
             else:
                 logging.error("Unsupported slurm job data collection mode")
 
-    def querySlurmJob(self,timeout=1,exit_on_error=False):
+    def querySlurmJob(self,timeout=1,exit_on_error=False,mode='squeue'):
         """
         Query SLURM and return job info for local host.
+        Supports two query modes: squeue call and read from file.
 
-        Return dictionary containing job id, user, partition, # of nodes, and batchmode flag
+        Returns dictionary containing job id, user, partition, # of nodes, and batchmode flag
         """
 
         results = {}
-        if self.__slurmJobMode == 'squeue':
+        if mode == 'squeue':
             data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
             if data.stdout.strip():
                 data = data.stdout.strip().split(":")
                 keys = ["SLURM_JOB_ID","SLURM_JOB_USER","SLURM_JOB_PARTITION","SLURM_JOB_NUM_NODES","SLURM_JOB_BATCHMODE"]
                 results = dict(zip(keys,data))
-        elif self.__slurmJobMode == 'file-based':
+        elif mode == 'file-based':
             jobFileExists = os.path.isfile(self.__slurmJobFile)
             if jobFileExists:
                 with open(self.__slurmJobFile, "r") as file:
@@ -152,7 +142,7 @@ class SlurmJob(Collector):
             results = self.__slurmJobInfo
             jobEnabled = True
         else:
-            results = self.querySlurmJob()
+            results = self.querySlurmJob(mode=self.__slurmJobMode)
             if results:
                 jobEnabled = True
 
