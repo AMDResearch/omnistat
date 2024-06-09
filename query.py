@@ -62,8 +62,9 @@ class queryMetrics:
         self.version = versionData["version"]
 
     def __del__(self):
-        if self.enable_redirect:
-            self.output.close()
+        if hasattr(self,'enable_redirect'):
+            if self.enable_redirect:
+                self.output.close()
 
     def read_config(self,configFileName):
         """read runtime config (file is required to exist)"""
@@ -73,18 +74,14 @@ class queryMetrics:
         if os.path.isfile(configFile):
             runtimeConfig = configparser.ConfigParser()
             runtimeConfig.read(configFile)
+        else:
+            print("[ERROR]: unable to open runtime config file -> %s" % configFile)
+            sys.exit(1)
 
         section = 'omniwatch.query'
         self.config = {}
         self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
-
-        self.jobID = None
-        self.enable_redirect = False
-        self.output_file = None
-        self.pdf = None
-        self.sha = versionData["sha"]
-        self.version = versionData["version"]
 
     def __del__(self):
         if self.enable_redirect:
