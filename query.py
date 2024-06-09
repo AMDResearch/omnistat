@@ -80,7 +80,7 @@ class queryMetrics:
 
         section = 'omniwatch.query'
         self.config = {}
-        self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
+        self.config["system_name"] = runtimeConfig[section].get('system_name','My Snazzy Cluster')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
     def __del__(self):
@@ -343,7 +343,8 @@ class queryMetrics:
         return
 
     def generate_report_card(self):
-        system = "HPC Fund"
+        system = self.config["system_name"]
+
 
         print("")
         print("-" * 40)
