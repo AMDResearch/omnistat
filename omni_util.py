@@ -41,19 +41,24 @@ class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
-        self.timeout = 5  # default scrape timeout in seconds
-        self.use_pdsh = False  # whether to use pdsh for parallel exporter launch
+        self.timeout = 5           # default scrape timeout in seconds
+        self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
+
+
         return
 
-    def setup(self):
+    def setup(self,runtimeConfigFile):
         # read runtime config (file is required to exist)
         self.topDir = Path(__file__).resolve().parent
-        configFile = str(self.topDir) + "/omniwatch.config"
+        self.configFile = str(self.topDir) + "/" + runtimeConfigFile
 
-        if os.path.isfile(configFile):
-            logging.info("Reading runtime-config from %s" % configFile)
+        if os.path.isfile(self.configFile):
+            logging.info("Reading runtime-config from %s" % self.configFile)
             self.runtimeConfig = configparser.ConfigParser()
-            self.runtimeConfig.read(configFile)
+            self.runtimeConfig.read(self.configFile)
+        else:
+            print("[ERROR]: unable to open runtime config file -> %s" % self.configFile)
+            sys.exit(1)
 
         self.slurmHosts = self.getSlurmHosts()
 
@@ -165,7 +170,6 @@ class UserBasedMonitoring:
 
         if self.slurmHosts:
             if self.use_pdsh:
-
                 logging.info("Saving SLURM job state locally to compute hosts...")
                 numNodes = os.getenv("SLURM_JOB_NUM_NODES")
                 cmd = [
@@ -173,32 +177,11 @@ class UserBasedMonitoring:
                     "-N %s" % numNodes,
                     "--ntasks-per-node=1",
                     "%s/slurm_env.py" % self.topDir,
+                    "%s" % self.runtimeConfig["omniwatch.collectors.slurm"].get("job_detection_file")
                 ]
                 utils.runShellCommand(cmd, timeout=35, exit_on_error=True)
 
                 logging.info("Launching exporters in parallel using pdsh")
-                # tmp = tempfile.NamedTemporaryFile(mode='w',delete=False)
-                # logging.info("--> hosts stored in %s" % tmp.name)
-                # for host in self.slurmHosts:
-                #     tmp.write("%s\n" % host)
-                # tmp.close()
-                #
-                # cmd = [
-                #     "numactl",
-                #     "--physcpubind=%s" % corebinding,
-                #     "nice",
-                #     "-n 20",
-                #     "gunicorn",
-                #     "-D",
-                #     "-b 0.0.0.0:%s" % port,
-                #     #                    "--access-logfile %s" % (self.topDir / "access.log"),
-                #     # "--capture-output",
-                #     # "--log-file %s" % logpath,
-                #     "--pythonpath %s" % self.topDir,
-                #     "node_monitoring:app",
-                # ]
-                # base_cmd = ["pdsh","-O","-f 128","-t 180","-w ^%s" % tmp.name]
-                # utils.runShellCommand(base_cmd + cmd,timeout=185,exit_on_error=False)
 
                 client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
                 gunicorn_path = utils.resolvePath("gunicorn", "NONE")
@@ -211,7 +194,7 @@ class UserBasedMonitoring:
                 else:
                     cmd = ""
 
-                cmd += "%s -D -b 0.0.0.0:%s" % (gunicorn_path, port)
+                cmd += "%s -D -e OMNIWATCH_CONFIG=%s -b 0.0.0.0:%s" % (gunicorn_path, self.configFile, port)
                 cmd += " --pythonpath %s node_monitoring:app" % (self.topDir)
                 output = client.run_command(cmd)
 
@@ -247,41 +230,42 @@ class UserBasedMonitoring:
                 if numAvail == numHosts:
                     logging.info("User mode data collectors: SUCCESS")
 
-                return
+            else:
+                # Launch with serialized ssh
+                for host in self.slurmHosts:
+                    logging.info("Launching exporter on host -> %s" % host)
+                    logfile = "exporter.%s.log" % host
+                    logpath = self.topDir / logfile
 
-            for host in self.slurmHosts:
-                logging.info("Launching exporter on host -> %s" % host)
-                logfile = "exporter.%s.log" % host
-                logpath = self.topDir / logfile
+                    # overwrite logfile
+                    if os.path.exists(logpath):
+                        os.remove(logpath)
 
-                # overwrite logfile
-                if os.path.exists(logpath):
-                    os.remove(logpath)
-
-                use_gunicorn = True
-                if use_gunicorn:
-                    cmd = [
-                        "numactl",
-                        "--physcpubind=%s" % corebinding,
-                        "nice",
-                        "-n 20",
-                        "gunicorn",
-                        "-D",
-                        "-b 0.0.0.0:%s" % port,
-                        #                    "--access-logfile %s" % (self.topDir / "access.log"),
-                        #                        "--threads 4",
-                        "--capture-output",
-                        "--log-file %s" % logpath,
-                        "--pythonpath %s" % self.topDir,
-                        "node_monitoring:app",
-                    ]
-                    base_ssh = ["ssh", host]
-                    logging.debug("-> running command: %s" % (base_ssh + cmd))
-                    utils.runShellCommand(base_ssh + cmd, timeout=25, exit_on_error=False)
-                else:
-                    cmd = ["ssh", host, "%s/node_monitoring.py" % self.topDir]
-                    logging.debug("-> running command: %s" % (cmd))
-                    utils.runBGProcess(cmd, outputFile=logfile)
+                    use_gunicorn = True
+                    if use_gunicorn:
+                        cmd = [
+                            "numactl",
+                            "--physcpubind=%s" % corebinding,
+                            "nice",
+                            "-n 20",
+                            "gunicorn",
+                            "-e OMNIWATCH_CONFIG=%s" % self.configFile,
+                            "-D",
+                            "-b 0.0.0.0:%s" % port,
+                            #                    "--access-logfile %s" % (self.topDir / "access.log"),
+                            #                        "--threads 4",
+                            "--capture-output",
+                            "--log-file %s" % logpath,
+                            "--pythonpath %s" % self.topDir,
+                            "node_monitoring:app",
+                        ]
+                        base_ssh = ["ssh", host]
+                        logging.debug("-> running command: %s" % (base_ssh + cmd))
+                        utils.runShellCommand(base_ssh + cmd, timeout=25, exit_on_error=False)
+                    else:
+                        cmd = ["ssh", host, "%s/node_monitoring.py" % self.topDir]
+                        logging.debug("-> running command: %s" % (cmd))
+                        utils.runBGProcess(cmd, outputFile=logfile)
 
         return
 
@@ -302,6 +286,9 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser.add_argument("--configFile",type=str,
+                            help="runtime config file (default=omniwatch.default)",
+                            default="omniwatch.config")
     parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
     parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
     parser.add_argument("--startexporters", help="Start data expporters", action="store_true")
@@ -309,7 +296,7 @@ def main():
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", help="Monitoring sampling interval in secs (default=60)")
-    parser.add_argument("--use_pdsh", help="Use pdsh utility to launch exporters in parallel", action="store_true")
+    parser.add_argument("--use_pdsh", help="Use pdsh utility to launch exporters in parallel (default mode)", default=True,action="store_true")
 
     args = parser.parse_args()
 
@@ -320,7 +307,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    userUtils.setup()
+    userUtils.setup(args.configFile)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
     if args.use_pdsh:
