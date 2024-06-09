@@ -595,8 +595,8 @@ def main():
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
     parser.add_argument("--configFile",type=str,
-                            help="runtime config file (default=omniwatch.config)",
-                            default="omniwatch.config")
+                            help="runtime config file (default=omniwatch.default)",
+                            default="omniwatch.default")
     parser.add_argument("--job", help="jobId to query")
     parser.add_argument("--interval",type=int,help="sampling interval in secs (default=60)",default=60)
     parser.add_argument("--output", help="location for stdout report")
