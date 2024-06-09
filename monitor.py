@@ -66,6 +66,7 @@ class Monitor():
             allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
             # convert comma-separated string into list
             self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
+            logging.info("Allowed query IPs = %s" % self.runtimeConfig['collector_allowed_ips'])
 
             # additional slurm collector controls
             if self.runtimeConfig['collector_enable_slurm'] == True:
