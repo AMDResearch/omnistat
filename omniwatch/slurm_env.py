@@ -22,16 +22,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # -------------------------------------------------------------------------------
-
+#
 # Query relevant SLURM env variables and save to local file. Intended
 # for use with SLURM data collector on systems where direct API query
 # is slow/problematic.
+#
+# Usage: slurm_env.py [output_file]
+#
+# Default path for output_file: /tmp/omni_slurmjobinfo
 
 import json
 import os
 import sys
 
 jobData = {}
+jobFile = "/tmp/omni_slurmjobinfo"
+
+if len(sys.argv) > 1:
+    jobFile = sys.argv[1]
 
 if "SLURM_JOB_ID" in os.environ:
     jobData["SLURM_JOB_ID"] = os.getenv("SLURM_JOB_ID")
@@ -43,7 +51,7 @@ if "SLURM_JOB_ID" in os.environ:
     else:
         jobData["SLURM_JOB_BATCHMODE"] = 1
 
-    json.dump(jobData,open("/tmp/omniwatch_slurm_job_assigned","w"),indent=4)
+    json.dump(jobData,open(jobFile,"w"),indent=4)
 
 else:
     print("ERROR: SLURM settings not visible in current environment. Verify running in active job")

@@ -55,35 +55,31 @@ class queryMetrics:
         # initiate timer
         self.timer_start = timeit.default_timer()
 
-         # local site configuration
-
-        # Resolve path to default config file in the current installation.
-        # This configuration is only meant to provide sane defaults to run
-        # locally, but most installations will need a custom file.
-        # It can be overridden using the configFile option below.
-        packageDir = importlib.resources.files("omniwatch")
-        configFile = packageDir.joinpath("config/omniwatch.default")
-
-        # check for override of default configFile
-        if "OMNIWATCH_CONFIG" in os.environ:
-            logging.info("Overriding default config file")
-            configFile = os.environ["OMNIWATCH_CONFIG"]
-
-        if os.path.isfile(configFile):
-            runtimeConfig = configparser.ConfigParser()
-            runtimeConfig.read(configFile)
-
-        section = 'omniwatch.query'
-        self.config = {}
-        self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
-        self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
-
         self.jobID = None
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
         self.sha = versionData["sha"]
         self.version = versionData["version"]
+
+    def __del__(self):
+        if hasattr(self,'enable_redirect'):
+            if self.enable_redirect:
+                self.output.close()
+
+    def read_config(self,configFileName):
+        """read runtime config (file is required to exist)"""
+        if os.path.isfile(configFile):
+            runtimeConfig = configparser.ConfigParser()
+            runtimeConfig.read(configFile)
+        else:
+            print("[ERROR]: unable to open runtime config file -> %s" % configFile)
+            sys.exit(1)
+
+        section = 'omniwatch.query'
+        self.config = {}
+        self.config["system_name"] = runtimeConfig[section].get('system_name','My Snazzy Cluster')
+        self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
     def __del__(self):
         if self.enable_redirect:
@@ -345,7 +341,8 @@ class queryMetrics:
         return
 
     def generate_report_card(self):
-        system = "HPC Fund"
+        system = self.config["system_name"]
+
 
         print("")
         print("-" * 40)
@@ -595,6 +592,9 @@ def main():
 
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
+    parser.add_argument("--configFile",type=str,
+                            help="runtime config file (default=omniwatch.config)",
+                            default="omniwatch.config")
     parser.add_argument("--job", help="jobId to query")
     parser.add_argument("--interval",type=int,help="sampling interval in secs (default=60)",default=60)
     parser.add_argument("--output", help="location for stdout report")
@@ -615,6 +615,7 @@ def main():
 
     query = queryMetrics(versionData)
     query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)
+    query.read_config(args.configFile)
     query.setup()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()

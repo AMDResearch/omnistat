@@ -42,7 +42,7 @@ import omniwatch.utils as utils
 from omniwatch.collector_base import Collector
 
 class SlurmJob(Collector):
-    def __init__(self,userMode=False,annotations=False):
+    def __init__(self,userMode=False,annotations=False,jobDetection=None):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
         self.__userMode = userMode
@@ -50,6 +50,8 @@ class SlurmJob(Collector):
         self.__SLURMmetrics = {}
         self.__slurmJobInfo = []
         self.__lastAnnotationLabel = None
+        self.__slurmJobMode = jobDetection['mode']
+        self.__slurmJobFile = jobDetection['file']
 
         # setup squeue binary path to query slurm to determine node ownership
         command = utils.resolvePath("squeue", "SLURM_PATH")
@@ -64,10 +66,10 @@ class SlurmJob(Collector):
         self.__squeue_query = [command] + flags.split()
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
-        # cache current slurm job in user mode profiling - assumption is it doesn't change
+        # cache current slurm job in user mode profiling - assumption is that it does not change
         if self.__userMode is True:
             # read from file if available
-            jobFile = "/tmp/omniwatch_slurm_job_assigned"
+            jobFile = self.__slurmJobFile
             if os.path.isfile(jobFile):
                 with open(jobFile,'r') as f:
                     jobInfo = json.load(f)
@@ -93,11 +95,34 @@ class SlurmJob(Collector):
                     self.__slurmJobInfo = data.stdout.strip().split(":")
                     logging.info("--> usermode jobinfo (from slurm query): %s" % self.__slurmJobInfo)
         else:
-            logging.info("collector_slurm: not using usermode, will poll slurm periodicaly")
+            if self.__slurmJobMode == 'file-based':
+                logging.info("collector_slurm: reading job information from prolog/epilog derived file (%s)" % self.__slurmJobFile)
+            elif self.__slurmJobMode == 'squeue':
+                logging.info("collector_slurm: will poll slurm periodicaly with squeue")
+            else:
+                logging.error("Unsupported slurm job data collection mode")
 
     def querySlurmJob(self,timeout=1,exit_on_error=False):
-        data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
-        return(data)
+        """
+        Query SLURM and return job info for local host.
+
+        Return dictionary containing job id, user, partition, # of nodes, and batchmode flag
+        """
+
+        results = {}
+        if self.__slurmJobMode == 'squeue':
+            data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
+            # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
+            if data.stdout.strip():
+                data = data.stdout.strip().split(":")
+                keys = ["SLURM_JOB_ID","SLURM_JOB_USER","SLURM_JOB_PARTITION","SLURM_JOB_NUM_NODES","SLURM_JOB_BATCHMODE"]
+                results = dict(zip(keys,data))
+        elif self.__slurmJobMode == 'file-based':
+            jobFileExists = os.path.isfile(self.__slurmJobFile)
+            if jobFileExists:
+                with open(self.__slurmJobFile, "r") as file:
+                    results = json.load(file)
+        return(results)
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -122,30 +147,29 @@ class SlurmJob(Collector):
         self.__SLURMmetrics["annotations"].clear()
         jobEnabled = False
 
+        results = None
+
         if self.__userMode is True:
             results = self.__slurmJobInfo
             jobEnabled = True
         else:
-            data = self.querySlurmJob()
-            # query output format:
-            # JOBID,USER,PARTITION,NODES,CPUS
-            if data.stdout.strip():
-                results = data.stdout.strip().split(":")
+            results = self.querySlurmJob()
+            if results:
                 jobEnabled = True
 
         # Case when SLURM job is allocated
         if jobEnabled:
             self.__SLURMmetrics["info"].labels(
-                jobid=results[0],
-                user=results[1],
-                partition=results[2],
-                nodes=results[3],
-                batchflag=results[4],
+                jobid=results["SLURM_JOB_ID"],
+                user=results["SLURM_JOB_USER"],
+                partition=results["SLURM_JOB_PARTITION"],
+                nodes=results["SLURM_JOB_NUM_NODES"],
+                batchflag=results["SLURM_JOB_BATCHMODE"],
             ).set(1)
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
-                userFile = "/tmp/omniwatch_%s_annotate.json" % results[1]
+                userFile = "/tmp/omniwatch_%s_annotate.json" % results["SLURM_JOB_USER"]
 
                 userFileExists = os.path.isfile(userFile)
                 if userFileExists:
@@ -161,14 +185,14 @@ class SlurmJob(Collector):
                 ):
                     self.__SLURMmetrics["annotations"].labels(
                         marker=self.__lastAnnotationLabel,
-                        jobid=results[0],
+                        jobid=results["SLURM_JOB_ID"],
                     ).set(0)
                     self.__lastAnnotationLabel = None
 
                 if userFileExists:
                     self.__SLURMmetrics["annotations"].labels(
                         marker=data["annotation"],
-                        jobid=results[0],
+                        jobid=results["SLURM_JOB_ID"],
                     ).set(data["timestamp_secs"])
                     self.__lastAnnotationLabel = data["annotation"]
 
