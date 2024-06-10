@@ -173,8 +173,9 @@ def getConfigPath():
         return os.environ.get("OMNIWATCH_CONFIG")
 
     # 2 - look in same directory as this script
-    if os.path.isfile("./omniwatch.config"):
-        return "./omniwatch.config"
+    directory = os.path.dirname(os.path.abspath(__file__))
+    if os.path.isfile(f"{directory}/omniwatch.config"):
+        return f"{directory}/omniwatch.config"
 
     # 3 - look in /etc/omniwatch
     if os.path.isfile("/etc/omniwatch/omniwatch.config"):
