@@ -60,7 +60,7 @@ app.route("/shutdown")(shutdown)
 # Enforce network restrictions
 @app.before_request
 def restrict_ips():
-    if request.remote_addr not in monitor.runtimeConfig['collector_allowed_ips']:
+    if monitor.runtimeConfig['collector_restrict_access'] and request.remote_addr not in monitor.runtimeConfig['collector_allowed_ips']:
         abort(403)
 
 @app.errorhandler(403)
