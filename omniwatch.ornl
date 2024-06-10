@@ -5,13 +5,18 @@
 [omniwatch.collectors]
 
 port = 8001
-usermode = True
+usermode = False
 usermode_port = 8001
 enable_rocm_smi = True
 enable_slurm = True
-corebinding = 31
-logfile = exporter.log
+
+# Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm-default
+
+# List of IPs allowed to query the collector (comma separated). By
+# default, access will be restricted to the localhost (127.0.0.1).
+# Set this value to IP of companion Prometheus server.
+allowed_ips = 127.0.0.1, 10.129.7.250
 
 [omniwatch.collectors.slurm]
 
@@ -22,7 +27,7 @@ enable_annotations = True
 
 [omniwatch.query]
 prometheus_url = http://localhost:9090
-system_name = ORNL Frontier/Crusher
+system_name = ORNL Frontier/Borg
 
 # options for user-spawned promserver
 [omniwatch.promserver]

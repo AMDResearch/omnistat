@@ -68,10 +68,14 @@ class Monitor():
             # convert comma-separated string into list
             self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
 
-            # optional runtime controls
-            if config.has_option('omniwatch.collectors.slurm','host_skip'):
-                self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
-
+            # additional slurm collector controls
+            if self.runtimeConfig['collector_enable_slurm'] == True:
+                self.jobDetection = {}
+                self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
+                self.jobDetection['mode'] = config['omniwatch.collectors.slurm'].get('job_detection_mode','file-based')
+                self.jobDetection['file']= config['omniwatch.collectors.slurm'].get('job_detection_file','/tmp/omni_slurmjobinfo')
+                if config.has_option('omniwatch.collectors.slurm','host_skip'):
+                    self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
         else:
             utils.error("Unable to find runtime config file %s" % configFile)
 
@@ -113,7 +117,8 @@ class Monitor():
         if self.runtimeConfig['collector_enable_slurm']:
             from collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
-                                              annotations=self.runtimeConfig['slurm_collector_annotations']))
+                                              annotations=self.runtimeConfig['slurm_collector_annotations'],
+                                              jobDetection=self.jobDetection))
         
         # Initialize all metrics
         for collector in self.__collectors:

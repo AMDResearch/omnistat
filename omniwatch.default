@@ -23,6 +23,8 @@ allowed_ips = 127.0.0.1
 
 host_skip = "login.*"
 enable_annotations = False
+job_detection_mode = file-based
+job_detection_file = /tmp/omni_slurmjobinfo
 
 [omniwatch.report]
 
