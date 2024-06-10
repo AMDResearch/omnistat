@@ -56,9 +56,9 @@ class Monitor():
 
             self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
             self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
-            self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', True)
+            self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', False)
             self.runtimeConfig['collector_enable_amd_smi_process'] = config['omniwatch.collectors'].getboolean('enable_amd_smi_process',
-                                                                                                       True)
+                                                                                                       False)
             self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
