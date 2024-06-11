@@ -1,13 +1,15 @@
 [Unit]
-Description=Exporter for HPC oriented metrics
+Description=Prometheus exporter for HPC/GPU oriented metrics
 Documentation=tbd
 Requires=network-online.target
 After=network-online.target
 
 [Service]
 Restart=on-failure
-EnvironmentFile=/etc/default/hpc-node-exporter
-ExecStart=/opt/omniwatch/node_monitoring.py
+Environment="OMNIWATCH_DIR=/opt/omniwatch"
+Environment="OMNIWATCH_CONFIG=/etc/omniwatch/config"
+Environment="OMNIWATCH_PORT=8000"
+ExecStart=/opt/omniwatch/bin/gunicorn -b 0.0.0.0:${OMNIWATCH_PORT} omniwatch.node_monitoring:app
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
