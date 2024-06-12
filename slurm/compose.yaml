@@ -1,0 +1,41 @@
+services:
+  controller:
+    build:
+      context: ../
+      dockerfile: slurm/Dockerfile
+    command: controller
+    image: slurm
+    hostname: controller
+    volumes:
+      - jobs_dir:/jobs
+      - ../:/host-source
+    expose:
+      - 6817
+    ports:
+      - 9090:9090
+
+  node:
+    build:
+      context: ../
+      dockerfile: slurm/Dockerfile
+    command: node
+    image: slurm
+    hostname: node
+    volumes:
+      - jobs_dir:/jobs
+      - ../:/host-source
+    expose:
+      - 6818
+      - 8000
+    devices:
+      - /dev/kfd
+      - /dev/dri
+    security_opt:
+      - seccomp=unconfined
+    depends_on:
+      - controller
+    links:
+      - controller
+
+volumes:
+  jobs_dir:
