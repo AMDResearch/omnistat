@@ -6,6 +6,6 @@ data_prom
 *.log
 *.pdf
 *~
-docker/prometheus-data
+docker/usermode/prometheus-data
 build
 omniwatch.egg-info/

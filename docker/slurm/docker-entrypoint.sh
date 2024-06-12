@@ -6,7 +6,7 @@ if [ "$1" = "controller" ]; then
     service munge start
     service slurmctld start
 
-    cp /host-source/slurm/prometheus.yml /etc/prometheus/
+    cp /host-source/docker/slurm/prometheus.yml /etc/prometheus/
     service prometheus start
 fi
 
@@ -30,7 +30,7 @@ if [ "$1" = "node" ]; then
     # Enable access from the controller container, which is running the
     # prometheus scraper.
     ip=$(dig +short controller)
-    sed "s/127.0.0.1/127.0.0.1, $ip/" /host-source/slurm/omniwatch.slurm \
+    sed "s/127.0.0.1/127.0.0.1, $ip/" /host-source/docker/slurm/omniwatch.slurm \
         > /etc/omniwatch.config
 
     OMNIWATCH_CONFIG=/etc/omniwatch.config /opt/omniwatch/bin/gunicorn \

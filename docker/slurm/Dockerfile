@@ -21,8 +21,8 @@ RUN mkdir /var/spool/slurmctld && \
     mkdir /var/spool/slurmd && \
     chown slurm.slurm /var/spool/slurm*
 
-COPY slurm/slurm.conf /etc/slurm/
+COPY docker/slurm/slurm.conf /etc/slurm/
 
-COPY slurm/docker-entrypoint.sh /usr/local/bin/entrypoint
+COPY docker/slurm/docker-entrypoint.sh /usr/local/bin/entrypoint
 
 ENTRYPOINT ["/usr/local/bin/entrypoint"]
