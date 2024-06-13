@@ -6,8 +6,8 @@ After=network-online.target
 
 [Service]
 Restart=on-failure
-EnvironmentFile=/etc/default/hpc-node-exporter
-ExecStart=/opt/omniwatch/node_monitoring.py
+EnvironmentFile=
+ExecStart=/usr/bin/python3 /opt/omniwatch/node_monitoring.py /opt/omniwatch/omniwatch.config
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
