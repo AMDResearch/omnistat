@@ -200,5 +200,66 @@ depending on the characteristics and scale of the system.
 
 ## User-mode execution with SLURM
 
-### Local docker environment
+### Installing Omniwatch
 
+1. Create a virtual environment in a shared directory, with Python 3.8, 3.9,
+   or 3.10.
+   ```
+   python -m venv ~/omniwatch
+   ```
+
+2. From to root directory of the Omniwatch repository, install omniwatch in
+   the virtual environment.
+   ```
+   ~/omniwatch/bin/python -m pip install .[query]
+   ```
+
+### Running a SLURM Job
+
+In the SLURM job script, add the following lines to start and stop the data
+collection before and after running the application.
+
+```
+export OMNIWATCH_CONFIG=~/omniwatch/omniwatch.config
+
+# Start data collector
+~/omniwatch/bin/omniwatch-util --start --interval 1
+
+# Run application
+sleep 10
+
+# Stop data collector
+~/omniwatch/bin/omniwatch-util --stop
+
+# Query server to generate job report
+~/omniwatch/bin/omniwatch-util --startserver
+~/omniwatch/bin/omniwatch-util --job ${SLURM_JOB_ID}
+~/omniwatch/bin/omniwatch-util --stopserver
+```
+
+### Exploring results with a local Docker environment
+
+To explore results generated for user-mode executions of Omniwatch, we provide
+a Docker environment that will automatically launch the required services
+locally. That includes Prometheus to read and query the stored data, and
+Grafana as visualization platform to display time series and other metrics.
+
+To explore results:
+
+1. Copy Prometheus data collected with Omniwatch to `./prometheus-data`. The
+   entire `datadir` defined in the Omniwatch configuration needs to be copied
+   (e.g. a `data` directory should be present under `./prometheus-data`).
+2. Start services:
+   ```
+   export PROMETHEUS_USER="$(id -u):$(id -g)"
+   docker compose up -d
+   ```
+   User and group IDs are exported with the `PROMETHEUS_USER` variable to ensure
+   the container has the right permissions to read the local data under the
+   `./prometheus-data` directory.
+4. Access Grafana dashboard at [http://localhost:3000](http://localhost:3000).
+   Note that starting Grafana can take a few seconds.
+5. Stop services:
+   ```
+   docker compose down
+   ```
