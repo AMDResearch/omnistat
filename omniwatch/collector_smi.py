@@ -42,9 +42,8 @@ card0_rocm_mclk_clock_mhz 1200.0
 import ctypes
 import logging
 import os
-
+import sys
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
-
 from omniwatch.collector_base import Collector
 
 # lifted from rsmiBindings.py
@@ -65,13 +64,22 @@ class ROCMSMI(Collector):
         self.__prefix = "rocm_"
 
         # load smi runtime
-        self.__libsmi = ctypes.CDLL(rocm_path + "/lib/librocm_smi64.so")
-        logging.info("Runtime library loaded")
+        smi_lib = rocm_path + "/lib/librocm_smi64.so"
+        if os.path.isfile(smi_lib):
+            self.__libsmi = ctypes.CDLL(smi_lib)
+            logging.info("Runtime library loaded from %s" % smi_lib)
 
-        # initialize smi library
-        ret_init = self.__libsmi.rsmi_init(0)
-        assert(ret_init == 0)
-        logging.info("SMI library API initialized")
+            # initialize smi library
+            ret_init = self.__libsmi.rsmi_init(0)
+            assert(ret_init == 0)
+            logging.info("SMI library API initialized")
+        else:
+            logging.error("")
+            logging.error("ERROR: Unable to load SMI library.")
+            logging.error("--> looking for %s" % smi_lib)
+            logging.error("--> please verify path and set \"rocm_path\" in runtime config file if necesssary.")
+            logging.error("")
+            sys.exit(4)
 
         self.__GPUmetrics = {}
 
