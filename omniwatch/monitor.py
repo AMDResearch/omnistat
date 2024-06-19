@@ -53,15 +53,11 @@ class Monitor():
         # locally, but most installations will need a custom file.
         # It can be overridden using the configFile option below.
         packageDir = importlib.resources.files("omniwatch")
-        defaultConfigFile = packageDir.joinpath("config/omniwatch.default")
+        configFile = packageDir.joinpath("config/omniwatch.default")
 
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--configFile",type=str,
-                            help=f"runtime config file (default={defaultConfigFile})",
-                            default=defaultConfigFile)
-        args = parser.parse_args()
-
-        configFile = args.configFile
+        if "OMNIWATCH_CONFIG" in os.environ:
+            logging.info("Overriding default config file")
+            configFile = os.environ["OMNIWATCH_CONFIG"]
 
         self.runtimeConfig = {}
 
