@@ -1,25 +1,8 @@
 [project]
 name = "omniwatch"
-dynamic = ["version"]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 readme = "README.md"
 requires-python = ">=3.8,<3.11"
-dependencies = [
-    "pyyaml",
-    "importlib-metadata",
-    "Flask>=2.3.2",
-    "flask_prometheus_metrics>=1.0.0",
-    "prometheus_client>=0.17.0",
-    "gunicorn>=21.2.0",
-    "parallel-ssh>=2.12.0",
-]
-
-[project.optional-dependencies]
-query = [
-    "numpy>=1.25.2",
-    "matplotlib>=3.7.2",
-    "prometheus-api-client>=0.5.4",
-    "reportlab>=4.0.5",
-]
 
 [project.scripts]
 omniwatch-util = "omniwatch.omni_util:main"
@@ -32,6 +15,10 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["omniwatch"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+optional-dependencies = { query = { file = ["requirements_query.txt"] } }
 
 [tool.setuptools.package-data]
 "omniwatch" = ["config/omniwatch.default"]
