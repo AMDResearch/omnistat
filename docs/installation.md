@@ -8,96 +8,134 @@
 
 ## System-wide deployment
 
-Installing Omniwatch in a data center is expected to rely on external tools to
-coordinate its deployment, generally with a high level of customization for
-each system.
-
-This section first describes the manual steps to install the Omniwatch client
-and server, and then provides an example to deploy Omniwatch in a data center
-using Ansible.
+There are different ways to deploy and install Omniwatch in a data center, and
+each system will generally require a certain level of customization. This
+section first describes the basic manual steps to install the Omniwatch client
+and server, and then provides an example of how to deploy Omniwatch in a data
+center using Ansible.
 
 ### Node-level deployment (client)
 
-1. Create a virtual environment, with Python 3.8, 3.9, or 3.10.
+The following two subsections describe two different ways of running the
+Omniwach client: executing directly from a local directory, or installing it
+as a package.
+
+#### Option A. Run client from local directory
+
+1. Clone repository.
    ```
-   python -m venv /opt/omniwatch
+   $ git clone https://github.com/AMDResearch/omniwatch.git
    ```
 
-2. Install omniwatch in a virtual environment. The virtual environment can
+2. Install dependencies.
+   ```
+   $ cd omniwatch
+   $ pip install --user -r requirements.txt
+   ```
+
+3. Launch client with `gunicorn`. Needs to be executed from the root
+   directory of the Omniwatch project.
+   ```
+   $ gunicorn -b 0.0.0.0:8000 "omniwatch.node_monitoring:app"
+   ```
+
+#### Option B. Install package
+
+1. Clone repository.
+   ```
+   $ git clone https://github.com/AMDResearch/omniwatch.git
+   ```
+
+2. Create a virtual environment, with Python 3.8, 3.9, or 3.10.
+   ```
+   $ cd omniwatch
+   $ python -m venv /opt/omniwatch
+   ```
+
+3. Install omniwatch in a virtual environment. The virtual environment can
    also be used by sourcing the `./opt/omniwatch/bin/activate` file, and that
    way there is no need to keep using the complete `./venv/bin` path every
    time. This guide uses the complete path for clarity. Needs to be
    executed from the root directory of the Omniwatch repository.
    ```
-   /opt/omniwatch/bin/python -m pip install .
+   $ /opt/omniwatch/bin/python -m pip install .
    ```
    Alternatively, use the following line to install Omniwatch with the
    optional dependencies for the `omniwatch-query` tool.
    ```
-   /opt/omniwatch/bin/python -m pip install .[query]
+   $ /opt/omniwatch/bin/python -m pip install .[query]
    ```
 
-3. Launch the client with `gunicorn`.
+4. Launch the client with `gunicorn`. To make sure the installed version of
+   Omniwatch is being used, this shouldn't be executed from the root directory
+   of the project.
    ```
-   /opt/omniwatch/bin/gunicorn -b 0.0.0.0:8000 "omniwatch.node_monitoring:app"
-   ```
-   This will read the default configuration file that is installed in the
-   package. To use a different configuration file, use the `OMNIWATCH_CONFIG`
-   environment variable.
-   ```
-   OMNIWATCH_CONFIG=/path/to/config/file /opt/omniwatch/bin/gunicorn -b 0.0.0.0:8000 "omniwatch.node_monitoring:app"
-   ```
-   As a sanity check, this is the expected output you should see when
-   launching the Omniwatch client manually:
-   ```
-   [2024-06-08 18:50:56 -0400] [5834] [INFO] Starting gunicorn 21.2.0
-   [2024-06-08 18:50:56 -0400] [5834] [INFO] Listening at: http://0.0.0.0:8000 (5834)
-   ...
-   Reading runtime-config from omniwatch.ornl
-   Runtime library loaded
-   SMI library API initialized
-   collector_slurm: reading job information from prolog/epilog derived file (/tmp/omni_slurmjobinfo)
-   --> [registered] card0_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
-   --> [registered] card0_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
-   --> [registered] card0_rocm_sclk_clock_mhz -> sclk clock speed (Mhz) (gauge)
-   --> [registered] card0_rocm_mclk_clock_mhz -> mclk clock speed (Mhz) (gauge)
-   --> [registered] card0_rocm_vram_total -> VRAM Total Memory (B) (gauge)
-   --> [registered] card0_rocm_vram_used -> VRAM Total Used Memory (B) (gauge)
-   --> [registered] card0_rocm_utilization -> GPU use (%) (gauge)
-   --> [registered] card1_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
-   --> [registered] card1_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
-   ```
-   In the same node, confirm the client is responding to requests with non-zero
-   values for GPU metrics:
-   ```
-   $ curl localhost:8000/metrics | grep rocm | grep -v "^#"
-   rocm_num_gpus 8.0
-   card0_rocm_temp_die_edge 32.0
-   card0_rocm_avg_pwr 93.0
-   card0_rocm_sclk_clock_mhz 1700.0
-   card0_rocm_mclk_clock_mhz 1600.0
-   card0_rocm_vram_total 6.870269952e+010
-   card0_rocm_vram_used 1.0993664e+07
-   card0_rocm_utilization 0.0
-   ...
+   $ /opt/omniwatch/bin/gunicorn -b 0.0.0.0:8000 "omniwatch.node_monitoring:app"
    ```
 
-4. To run the Omniwatch client permanently on a host, configure the service via
-   systemd. An [example service file](https://github.com/AMDResearch/omniwatch/blob/main/omniwatch.service)
-   is available in the repository, including the following key lines:
-   ```
-   Environment="OMNIWATCH_CONFIG=/etc/omniwatch/config"
-   Environment="OMNIWATCH_PORT=8000"
-   ExecStart=/opt/omniwatch/bin/gunicorn -b 0.0.0.0:${OMNIWATCH_PORT} "omniwatch.node_monitoring:app"
-   ```
+#### Configure client
 
-In addition to the Omniwatch client, optional standalone scripts are available
-in the same installation path:
+Launching the Omniwatch client as described above will load the default
+configuration options. To use a different configuration file, use the
+`OMNIWATCH_CONFIG` environment variable.
 ```
-/opt/omniwatch/bin/omniwatch-util # Utility to help run in user mode in SLURM cluster
-/opt/omniwatch/bin/omniwatch-annotate # Annotate executions in SLURM jobs
-/opt/omniwatch/bin/omniwatch-query # Query server to generate a SLURM job report
+$ OMNIWATCH_CONFIG=/path/to/config/file gunicorn -b 0.0.0.0:8000 "omniwatch.node_monitoring:app"
 ```
+
+A [sample configuration
+file](https://github.com/AMDResearch/omniwatch/blob/main/omniwatch.default) is
+available in the respository.
+
+#### Check installation
+
+As a sanity check, this is the expected output you should see when launching
+the Omniwatch client:
+```
+[2024-06-08 18:50:56 -0400] [5834] [INFO] Starting gunicorn 21.2.0
+[2024-06-08 18:50:56 -0400] [5834] [INFO] Listening at: http://0.0.0.0:8000 (5834)
+...
+Runtime library loaded
+SMI library API initialized
+collector_slurm: reading job information from prolog/epilog derived file (/tmp/omni_slurmjobinfo)
+--> [registered] card0_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
+--> [registered] card0_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
+--> [registered] card0_rocm_sclk_clock_mhz -> sclk clock speed (Mhz) (gauge)
+--> [registered] card0_rocm_mclk_clock_mhz -> mclk clock speed (Mhz) (gauge)
+--> [registered] card0_rocm_vram_total -> VRAM Total Memory (B) (gauge)
+--> [registered] card0_rocm_vram_used -> VRAM Total Used Memory (B) (gauge)
+--> [registered] card0_rocm_utilization -> GPU use (%) (gauge)
+--> [registered] card1_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
+--> [registered] card1_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
+...
+```
+In the same node, confirm the client is responding to requests with non-zero
+values for GPU metrics:
+```
+$ curl localhost:8000/metrics | grep rocm | grep -v "^#"
+rocm_num_gpus 8.0
+card0_rocm_temp_die_edge 32.0
+card0_rocm_avg_pwr 93.0
+card0_rocm_sclk_clock_mhz 1700.0
+card0_rocm_mclk_clock_mhz 1600.0
+card0_rocm_vram_total 6.870269952e+010
+card0_rocm_vram_used 1.0993664e+07
+card0_rocm_utilization 0.0
+...
+```
+
+#### Enable systemd service
+
+To run the Omniwatch client permanently on a host, configure the service via
+systemd. An [example service
+file](https://github.com/AMDResearch/omniwatch/blob/main/omniwatch.service) is
+available in the repository, including the following key lines:
+```
+Environment="OMNIWATCH_CONFIG=/etc/omniwatch/config"
+Environment="OMNIWATCH_PORT=8000"
+ExecStart=/opt/omniwatch/bin/gunicorn -b 0.0.0.0:${OMNIWATCH_PORT} "omniwatch.node_monitoring:app"
+```
+Please set `OMNIWATCH_CONFIG` and `OMNIWATCH_PORT` as needed depending on how
+Omniwatch is installed.
 
 ### Prometheus installation and configuration (server)
 
@@ -134,8 +172,8 @@ On a separate server with access to compute nodes, install and configure
 
 ### Ansible example
 
-For a cluster or data center deployment, management tools like Ansible are
-recommended to install Omniwatch.
+For a cluster or data center deployment, management tools like Ansible may be
+used to install Omniwatch.
 
 The following Ansible playbook will fetch the Omniwatch repository in each
 node, create a virtual environment for Omniwatch under `/opt/omniwatch`,
@@ -205,13 +243,13 @@ depending on the characteristics and scale of the system.
 1. Create a virtual environment in a shared directory, with Python 3.8, 3.9,
    or 3.10.
    ```
-   python -m venv ~/omniwatch
+   $ python -m venv ~/omniwatch
    ```
 
 2. From to root directory of the Omniwatch repository, install omniwatch in
    the virtual environment.
    ```
-   ~/omniwatch/bin/python -m pip install .[query]
+   $ ~/omniwatch/bin/python -m pip install .[query]
    ```
 
 ### Running a SLURM Job
@@ -251,8 +289,8 @@ To explore results:
    (e.g. a `data` directory should be present under `./prometheus-data`).
 2. Start services:
    ```
-   export PROMETHEUS_USER="$(id -u):$(id -g)"
-   docker compose up -d
+   $ export PROMETHEUS_USER="$(id -u):$(id -g)"
+   $ docker compose up -d
    ```
    User and group IDs are exported with the `PROMETHEUS_USER` variable to ensure
    the container has the right permissions to read the local data under the
@@ -261,5 +299,5 @@ To explore results:
    Note that starting Grafana can take a few seconds.
 5. Stop services:
    ```
-   docker compose down
+   $ docker compose down
    ```
