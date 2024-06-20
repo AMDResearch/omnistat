@@ -1,0 +1,40 @@
+[omniwatch.collectors]
+port = 8000
+usermode = False
+usermode_port = 8000
+enable_rocm_smi = True
+enable_slurm = True
+
+# Path to local ROCM install to access SMI library
+rocm_path = /opt/rocm
+
+# List of IPs allowed to query the collector (comma separated). By
+# default, access will be restricted to the localhost (127.0.0.1).
+# Set this value to IP of companion Prometheus server.
+allowed_ips = 127.0.0.1
+
+# corebinding = 31
+
+
+[omniwatch.collectors.slurm]
+host_skip = "login.*"
+enable_annotations = False
+job_detection_mode = file-based
+job_detection_file = /tmp/omni_slurmjobinfo
+
+[omniwatch.report]
+
+[omniwatch.query]
+prometheus_url = http://localhost:9090
+system_name = SLURM in Docker Cluster
+
+#--
+# User-mode Settings
+#--
+
+# --user-spawned promserver
+[omniwatch.promserver]
+logfile = prom_server.log
+binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
+datadir = data_prom
+corebinding = 95
