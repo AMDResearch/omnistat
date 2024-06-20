@@ -43,11 +43,10 @@ from prometheus_client import generate_latest, CollectorRegistry
 import omniwatch.utils as utils
 
 class Monitor():
-    def __init__(self, configFile):
+    def __init__(self):
         logging.basicConfig(
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
-
 
         # Resolve path to default config file in the current installation.
         # This configuration is only meant to provide sane defaults to run
@@ -59,7 +58,6 @@ class Monitor():
         if "OMNIWATCH_CONFIG" in os.environ:
             logging.info("Overriding default config file")
             configFile = os.environ["OMNIWATCH_CONFIG"]
-
 
         self.runtimeConfig = {}
 
@@ -76,7 +74,7 @@ class Monitor():
             self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
             self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
             self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
-            self.runtimeConfig['collector_restrict_access'] = config['omniwatch.collectors'].getboolean('restrict_access', True)
+
             allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
             # convert comma-separated string into list
             self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
