@@ -121,7 +121,7 @@ class AMDSMI(Collector):
                     metric = self.GPUMetrics[metric_name]
                 # Set metric once per GPU
                 metric.labels(card=str(idx)).set(v)
-                
+
         return
 
     def updateMetrics(self):
