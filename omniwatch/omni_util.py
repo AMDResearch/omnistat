@@ -48,21 +48,10 @@ class UserBasedMonitoring:
         self.timeout = 5           # default scrape timeout in seconds
         self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
 
-
         return
 
-    def setup(self):
-        # Resolve path to default config file in the current installation.
-        # This configuration is only meant to provide sane defaults to run
-        # locally, but most installations will need a custom file.
-        # It can be overridden using the configFile option below.
-        packageDir = importlib.resources.files("omniwatch")
-        configFile = packageDir.joinpath("config/omniwatch.default")
-
-        # check for override of default configFile
-        if "OMNIWATCH_CONFIG" in os.environ:
-            logging.info("Overriding default config file")
-            configFile = os.environ["OMNIWATCH_CONFIG"]
+    def setup(self, runtimeConfigFile):
+        self.configFile = runtimeConfigFile
 
         if os.path.isfile(self.configFile):
             logging.info("Reading runtime-config from %s" % self.configFile)
@@ -188,8 +177,7 @@ class UserBasedMonitoring:
                     "srun",
                     "-N %s" % numNodes,
                     "--ntasks-per-node=1",
-
-                    "%s/slurm_env.py" % self.topDir,
+                    "%s/bin/python -m omniwatch.slurm_env" % sys.prefix,
                     "%s" % self.runtimeConfig["omniwatch.collectors.slurm"].get("job_detection_file")
                 ]
                 utils.runShellCommand(cmd, timeout=35, exit_on_error=True)
@@ -200,7 +188,7 @@ class UserBasedMonitoring:
                 gunicorn_path = f"{sys.prefix}/bin/gunicorn"
 
                 # cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
-                cmd += "%s -D -b 0.0.0.0:%s omniwatch.node_monitoring:app" % (gunicorn_path, port)
+                cmd = "%s -D -b 0.0.0.0:%s omniwatch.node_monitoring:app" % (gunicorn_path, port)
 
                 output = client.run_command(cmd)
 
@@ -254,7 +242,7 @@ class UserBasedMonitoring:
                             "--physcpubind=%s" % corebinding,
                             "nice",
                             "-n 20",
-                            "gunicorn",
+                            "%s/bin/gunicorn" % sys.prefix,
                             "-e OMNIWATCH_CONFIG=%s" % self.configFile,
                             "-D",
                             "-b 0.0.0.0:%s" % port,
@@ -262,14 +250,13 @@ class UserBasedMonitoring:
                             #                        "--threads 4",
                             "--capture-output",
                             "--log-file %s" % logpath,
-                            "--pythonpath %s" % self.topDir,
                             "omniwatch.node_monitoring:app",
                         ]
                         base_ssh = ["ssh", host]
                         logging.debug("-> running command: %s" % (base_ssh + cmd))
                         utils.runShellCommand(base_ssh + cmd, timeout=25, exit_on_error=False)
                     else:
-                        cmd = ["ssh", host, "%s/bin/python -m omniwatch.node_monitoring.py" % sys.prefix]                        
+                        cmd = ["ssh", host, "%s/bin/python -m omniwatch.node_monitoring" % sys.prefix]
                         logging.debug("-> running command: %s" % (cmd))
                         utils.runBGProcess(cmd, outputFile=logfile)
 
