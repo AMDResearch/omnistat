@@ -25,7 +25,6 @@
 
 import argparse
 import configparser
-import importlib.resources
 import logging
 import os
 import socket
@@ -50,16 +49,19 @@ class UserBasedMonitoring:
 
         return
 
-    def setup(self, runtimeConfigFile):
-        self.configFile = runtimeConfigFile
+    def setup(self, configFile):
+        # If configFile hasn't been explicitly set in the command line, attempt
+        # to get a different configuration file from a different source.
+        if configFile == None:
+            configFile = utils.getConfigFile()
+        elif not os.path.isfile(configFile):
+            utils.error(f"Unable to find configuration file: {configFile}")
 
-        if os.path.isfile(self.configFile):
-            logging.info("Reading runtime-config from %s" % self.configFile)
-            self.runtimeConfig = configparser.ConfigParser()
-            self.runtimeConfig.read(self.configFile)
-        else:
-            print("[ERROR]: unable to open runtime config file -> %s" % self.configFile)
-            sys.exit(1)
+        self.configFile = configFile
+
+        logging.info(f"Reading runtime-config from {self.configFile}")
+        self.runtimeConfig = configparser.ConfigParser()
+        self.runtimeConfig.read(self.configFile)
 
         self.slurmHosts = self.getSlurmHosts()
 
@@ -279,9 +281,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("--configFile",type=str,
-                            help="runtime config file (default=omniwatch.default)",
-                            default="omniwatch.config")
+    parser.add_argument("--configFile",type=str, help="runtime config file", default=None)
     parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
     parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
     parser.add_argument("--startexporters", help="Start data expporters", action="store_true")

@@ -22,11 +22,12 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
+import importlib.resources
 import logging
-import subprocess
-import sys
 import os
 import shutil
+import subprocess
+import sys
 
 from importlib.metadata import version
 
@@ -40,6 +41,35 @@ def error(message):
     """
     logging.error("Error: " + message)
     sys.exit(1)
+
+def getConfigFile():
+    """Identify configuration file location
+
+    Checks and returns the first of the following options that is present in
+    the filesystem:
+     1. File pointed by OMNIWATCH_CONFIG (if defined)
+     2. "omniwatch.config" in the current directory
+     3. Default configuration file in the package
+
+    Returns:
+        string: path to an existing configuration file
+    """
+    # Resolve path to default config file in the current installation.
+    # This configuration is only meant to provide sane defaults to run
+    # locally, but most installations will need a custom file.
+    packageDir = importlib.resources.files("omniwatch")
+    configFile = packageDir.joinpath("config/omniwatch.default")
+
+    if os.path.isfile("./omniwatch.config"):
+        configFile = "./omniwatch.config"
+
+    if "OMNIWATCH_CONFIG" in os.environ:
+        configFile = os.environ["OMNIWATCH_CONFIG"]
+
+    if not os.path.isfile(configFile):
+        error(f"Unable to find configuration file: {configFile}")
+
+    return configFile
 
 def runShellCommand(command, capture_output=True, text=True, exit_on_error=False,timeout=1.0):
     """Runs a provided shell command

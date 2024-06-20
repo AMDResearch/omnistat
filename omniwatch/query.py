@@ -46,7 +46,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
 
-from omniwatch.utils import displayVersion, getVersion, error
+import omniwatch.utils as utils
 
 class queryMetrics:
 
@@ -54,29 +54,6 @@ class queryMetrics:
 
         # initiate timer
         self.timer_start = timeit.default_timer()
-
-         # local site configuration
-
-        # Resolve path to default config file in the current installation.
-        # This configuration is only meant to provide sane defaults to run
-        # locally, but most installations will need a custom file.
-        # It can be overridden using the configFile option below.
-        packageDir = importlib.resources.files("omniwatch")
-        configFile = packageDir.joinpath("config/omniwatch.default")
-
-        # check for override of default configFile
-        if "OMNIWATCH_CONFIG" in os.environ:
-            logging.info("Overriding default config file")
-            configFile = os.environ["OMNIWATCH_CONFIG"]
-
-        if os.path.isfile(configFile):
-            runtimeConfig = configparser.ConfigParser()
-            runtimeConfig.read(configFile)
-
-        section = 'omniwatch.query'
-        self.config = {}
-        self.config["system_name"] = runtimeConfig[section].get('system_name','unknown')
-        self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
 
         self.jobID = None
         self.enable_redirect = False
@@ -90,17 +67,18 @@ class queryMetrics:
             if self.enable_redirect:
                 self.output.close()
 
-    def read_config(self,configFileName):
-        """read runtime config (file is required to exist)"""
-        self.topDir = Path(__file__).resolve().parent
-        configFile = str(self.topDir) + "/" + configFileName
+    def read_config(self, configFile):
+        # """read runtime config"""
 
-        if os.path.isfile(configFile):
-            runtimeConfig = configparser.ConfigParser()
-            runtimeConfig.read(configFile)
-        else:
-            print("[ERROR]: unable to open runtime config file -> %s" % configFile)
-            sys.exit(1)
+        # If configFile hasn't been explicitly set in the command line, attempt
+        # to get a different configuration file from a different source.
+        if configFile == None:
+            configFile = utils.getConfigFile()
+        elif not os.path.isfile(configFile):
+            utils.error(f"Unable to find configuration file: {configFile}")
+
+        runtimeConfig = configparser.ConfigParser()
+        runtimeConfig.read(configFile)
 
         section = 'omniwatch.query'
         self.config = {}
@@ -413,7 +391,6 @@ class queryMetrics:
         return
 
 
-            
     def query_time_series_data(self,metric_name,reducer=None,dataType=float):
 
         if reducer is None:
@@ -463,7 +440,7 @@ class queryMetrics:
                 self.end_time,
                 step=60,
             )
-            
+
             assert len(results) == 1
             data = results[0]["values"]
             data2 = np.asarray(data, dtype=float)
@@ -485,12 +462,12 @@ class queryMetrics:
             stats['max'].append(np.max(data2[:,1]))
 
         return(stats)
-    
+
     def dumpFile(self,outputFile):
         doc = SimpleDocTemplate(outputFile,pagesize=letter,
                             rightMargin=1 * inch,leftMargin=1 * inch,
                             topMargin=62,bottomMargin=18,showBoundary=0)
-        
+
         styles = getSampleStyleSheet()
         normal = ParagraphStyle('normal')
         Story=[]
@@ -503,7 +480,7 @@ class queryMetrics:
         ''' % (self.jobID,self.start_time,self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
         Story.append(Paragraph(ptext, styles["Bullet"]))
         Story.append(HRFlowable(width="100%",thickness=2))
-        
+
 #             <strong>JobID</strong>: %s<br/>
         # generate Utilization Table
         Story.append(Spacer(1,0.2*inch))
@@ -572,7 +549,7 @@ class queryMetrics:
                 plt.plot(self.time_series[metric][gpu]['time'],
                          self.time_series[metric][gpu]['values'],linewidth=0.4,label='Card %i' % gpu)
 #                         self.time_series[metric][gpu]['values'],marker='o',markersize=1,linewidth=0.4,label='Card %i' % gpu)
-                
+
             plt.title(entry['title'])
             plt.legend(bbox_to_anchor=(1.,0.5),loc='center left', ncol=1,frameon=True)
             plt.grid()
@@ -609,7 +586,7 @@ class queryMetrics:
 
         # Build the .pdf
         doc.build(Story)
-        
+
         return
 
 
@@ -618,9 +595,7 @@ def main():
 
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--configFile",type=str,
-                            help="runtime config file (default=omniwatch.default)",
-                            default="omniwatch.default")
+    parser.add_argument("--configFile", type=str, help="runtime config file", default=None)
     parser.add_argument("--job", help="jobId to query")
     parser.add_argument("--interval",type=int,help="sampling interval in secs (default=60)",default=60)
     parser.add_argument("--output", help="location for stdout report")
@@ -631,13 +606,13 @@ def main():
     # logger config
     logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
-    versionData = getVersion()
+    versionData = utils.getVersion()
     if args.version:
-        displayVersion(versionData)
+        utils.displayVersion(versionData)
         sys.exit(0)
 
     if not args.job:
-        error("The following arguments are required: --job")
+        utils.error("The following arguments are required: --job")
 
     query = queryMetrics(versionData)
     query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)

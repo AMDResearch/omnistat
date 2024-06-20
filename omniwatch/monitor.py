@@ -29,7 +29,6 @@
 #--
 
 import configparser
-import importlib.resources
 import logging
 import os
 import platform
@@ -48,45 +47,32 @@ class Monitor():
             format="%(message)s", level=logging.INFO, stream=sys.stdout
         )
 
-        # Resolve path to default config file in the current installation.
-        # This configuration is only meant to provide sane defaults to run
-        # locally, but most installations will need a custom file.
-        # It can be overridden using the configFile option below.
-        packageDir = importlib.resources.files("omniwatch")
-        configFile = packageDir.joinpath("config/omniwatch.default")
+        configFile = utils.getConfigFile()
 
-        if "OMNIWATCH_CONFIG" in os.environ:
-            logging.info("Overriding default config file")
-            configFile = os.environ["OMNIWATCH_CONFIG"]
+        logging.info(f"Reading runtime-config from {configFile}")
+        config = configparser.ConfigParser()
+        config.read(configFile)
 
         self.runtimeConfig = {}
+        self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
+        self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
+        self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
+        self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
+        self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
 
-        if os.path.isfile(configFile):
-            logging.info("Reading runtime-config from %s" % configFile)
-            config = configparser.ConfigParser()
-            config.read(configFile)
+        allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
+        # convert comma-separated string into list
+        self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
+        logging.info("Allowed query IPs = %s" % self.runtimeConfig['collector_allowed_ips'])
 
-            self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
-            self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
-            self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
-            self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
-            self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
-
-            allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
-            # convert comma-separated string into list
-            self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
-            logging.info("Allowed query IPs = %s" % self.runtimeConfig['collector_allowed_ips'])
-
-            # additional slurm collector controls
-            if self.runtimeConfig['collector_enable_slurm'] == True:
-                self.jobDetection = {}
-                self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
-                self.jobDetection['mode'] = config['omniwatch.collectors.slurm'].get('job_detection_mode','file-based')
-                self.jobDetection['file']= config['omniwatch.collectors.slurm'].get('job_detection_file','/tmp/omni_slurmjobinfo')
-                if config.has_option('omniwatch.collectors.slurm','host_skip'):
-                    self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
-        else:
-            utils.error("Unable to find runtime config file %s" % configFile)
+        # additional slurm collector controls
+        if self.runtimeConfig['collector_enable_slurm'] == True:
+            self.jobDetection = {}
+            self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
+            self.jobDetection['mode'] = config['omniwatch.collectors.slurm'].get('job_detection_mode','file-based')
+            self.jobDetection['file']= config['omniwatch.collectors.slurm'].get('job_detection_file','/tmp/omni_slurmjobinfo')
+            if config.has_option('omniwatch.collectors.slurm','host_skip'):
+                self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
