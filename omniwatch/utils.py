@@ -145,22 +145,3 @@ def displayVersion(version):
     print("-" * 40)
     print("Omniwatch version: %s" % version)
     print("-" * 40)
-
-
-def getConfigPath():
-
-    # 1 - OS Environment variable
-    if os.environ.get("OMNIWATCH_CONFIG", None):
-        return os.environ.get("OMNIWATCH_CONFIG")
-
-    # 2 - look in same directory as this script
-    directory = os.path.dirname(os.path.abspath(__file__))
-    if os.path.isfile(f"{directory}/omniwatch.config"):
-        return f"{directory}/omniwatch.config"
-
-    # 3 - look in /etc/omniwatch
-    if os.path.isfile("/etc/omniwatch/omniwatch.config"):
-        return "/etc/omniwatch/omniwatch.config"
-
-    # raise error if config file not found
-    error(f"Config file not found in expected locations")
