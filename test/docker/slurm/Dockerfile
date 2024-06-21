@@ -22,6 +22,8 @@ RUN mkdir /var/spool/slurmctld && \
     chown slurm.slurm /var/spool/slurm*
 
 COPY test/docker/slurm/slurm.conf /etc/slurm/
+COPY test/docker/slurm/slurm-prolog.sh /etc/slurm/prolog.sh
+COPY test/docker/slurm/slurm-epilog.sh /etc/slurm/epilog.sh
 
 COPY test/docker/slurm/docker-entrypoint.sh /usr/local/bin/entrypoint
 
