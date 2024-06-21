@@ -2,7 +2,7 @@ services:
   controller:
     build:
       context: ../../../
-      dockerfile: docker/slurm/Dockerfile
+      dockerfile: test/docker/slurm/Dockerfile
     command: controller
     image: slurm
     hostname: controller
@@ -17,7 +17,7 @@ services:
   node:
     build:
       context: ../../../
-      dockerfile: docker/slurm/Dockerfile
+      dockerfile: test/docker/slurm/Dockerfile
     command: node
     image: slurm
     hostname: node
