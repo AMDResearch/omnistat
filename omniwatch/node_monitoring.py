@@ -35,17 +35,18 @@
 # ---
 
 import sys
-
+import os
+import signal
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
-
 from omniwatch.monitor import Monitor
 
-# note: following shutdown procedure works with gunicorn only
-def shutdown():
-    sys.exit(4)
 
-app = Flask("omniwatch")
+def shutdown():
+    os.kill(os.getppid(), signal.SIGTERM)
+    return jsonify({'message': 'Shutting down...'}), 200
+
+app = Flask("omnistat")
 monitor = Monitor()
 monitor.initMetrics()
 
