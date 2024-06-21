@@ -44,7 +44,7 @@ import logging
 import os
 import sys
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
-from omniwatch.collector_base import Collector
+from collector_base import Collector
 
 # lifted from rsmiBindings.py
 RSMI_MAX_NUM_FREQUENCIES = 32

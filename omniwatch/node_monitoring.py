@@ -34,41 +34,79 @@
 #   * polling frequency is desired to be controlled externally
 # ---
 
-import sys
+import argparse
+import configparser
 import os
 import signal
+import sys
+import gunicorn.app.base
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
-from omniwatch.monitor import Monitor
-
+from monitor import Monitor
 
 def shutdown():
     os.kill(os.getppid(), signal.SIGTERM)
     return jsonify({'message': 'Shutting down...'}), 200
 
-app = Flask("omnistat")
-monitor = Monitor()
-monitor.initMetrics()
+def readRuntimeConfig(configFile):
+    if os.path.isfile(configFile):
+        print("Reading runtime-config from %s" % configFile)
+        config = configparser.ConfigParser()
+        config.read(configFile)
+        return(config)
+    else:
+        print("[ERROR]: unable to open runtime config file -> %s" % configFile)
+        sys.exit(1)
 
-# Register metrics with Flask app
-register_metrics(app, app_version="v0.1.0", app_config="production")
+class OmniStatServer(gunicorn.app.base.BaseApplication):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.application = app
+        super().__init__()
 
-# Setup endpoint(s)
-app.route("/metrics")(monitor.updateAllMetrics)
-app.route("/shutdown")(shutdown)
+    def load_config(self):
+        config = {key: value for key, value in self.options.items()
+                  if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
 
-# Enforce network restrictions
-@app.before_request
-def restrict_ips():
-    if '0.0.0.0' in monitor.runtimeConfig['collector_allowed_ips']:
-        return
-    elif request.remote_addr not in monitor.runtimeConfig['collector_allowed_ips']:
-        abort(403)
+    def load(self):
+        return self.application
 
-@app.errorhandler(403)
-def forbidden(e):
-    return jsonify(error="Access denied"), 403
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--configFile",type=str,
+                            help="runtime config file (default=omniwatch.default)",
+                            default="omniwatch/config/omniwatch.default")
+    args = parser.parse_args()
+    config = readRuntimeConfig(args.configFile)
 
-# Run the main function
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=monitor.runtimeConfig['collector_port'])
+    # Setup Flask app for data collection
+    app = Flask("omnistat")
+    monitor = Monitor(config)
+    monitor.initMetrics()
+
+    register_metrics(app, app_version="v0.1.0", app_config="production")
+    app.route("/metrics")(monitor.updateAllMetrics)
+    app.route("/shutdown")(shutdown)
+
+    # Enforce network restrictions
+    @app.before_request
+    def restrict_ips():
+        if '0.0.0.0' in monitor.runtimeConfig['collector_allowed_ips']:
+            return
+        elif request.remote_addr not in monitor.runtimeConfig['collector_allowed_ips']:
+            abort(403)
+
+    @app.errorhandler(403)
+    def forbidden(e):
+        return jsonify(error="Access denied"), 403
+
+    listenPort = config['omniwatch.collectors'].get('port',8000)
+    options = {
+        'bind': '%s:%s' % ('127.0.0.1', listenPort),
+        'workers': 2,
+    }
+
+    # Launch gunicorn
+    OmniStatServer(app, options).run()
