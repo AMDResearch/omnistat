@@ -39,10 +39,10 @@ amdsmi_mclk_clock_mhz 1200.0
 """
 
 import logging
-from omniwatch.collector_base import Collector
+from collector_base import Collector
 from prometheus_client import Gauge
 import statistics
-from omniwatch.utils import GPU_MAPPING_ORDER
+from utils import GPU_MAPPING_ORDER
 from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info, amdsmi_get_gpu_memory_total,
                     AmdSmiMemoryType)
 
