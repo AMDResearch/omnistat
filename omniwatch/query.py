@@ -46,7 +46,13 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
 
-import omniwatch.utils as utils
+try:
+    from omniwatch import utils
+except ImportError:
+    # Ensure current directory is part of Python's path; allows direct execution
+    # from the root directory of the project when package is not installed.
+    sys.path.insert(0, "")
+    from omniwatch import utils
 
 class queryMetrics:
 
