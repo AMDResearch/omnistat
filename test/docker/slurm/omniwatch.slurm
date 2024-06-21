@@ -3,6 +3,7 @@ port = 8000
 usermode = False
 usermode_port = 8000
 enable_rocm_smi = True
+enable_amd_smi = False
 enable_slurm = True
 
 # Path to local ROCM install to access SMI library
