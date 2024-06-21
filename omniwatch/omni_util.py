@@ -272,7 +272,6 @@ class UserBasedMonitoring:
         for host in self.slurmHosts:
             logging.info("Stopping exporter for host -> %s" % host)
             cmd = ["curl", f"{host}:{port}/shutdown"]
-            print(cmd)
             logging.debug("-> running command: %s" % cmd)
             # utils.runShellCommand(["ssh", host] + cmd)
             utils.runShellCommand(cmd, timeout=5)
