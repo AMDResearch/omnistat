@@ -27,16 +27,16 @@
 Implements a number of prometheus gauge metrics based on GPU data collected from
 rocm smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with a "card.*_rocm prefix". The following example highlights example
-metrics for card 0:
+metrics with a "rocm" prefix with individual cards denotes by labels. The
+following example highlights example metrics for card 0:
 
-card0_rocm_temp_die_edge 36.0
-card0_rocm_avg_pwr 30.0
-card0_rocm_utilization 0.0
-card0_rocm_vram_total 3.4342961152e+010
-card0_rocm_vram_used 7.028736e+06
-card0_rocm_sclk_clock_mhz 300.0
-card0_rocm_mclk_clock_mhz 1200.0
+rocm_temp_die_edge{card="0"} 34.0
+rocm_avg_pwr{card="0"} 42.0
+rocm_sclk_clock_mhz{card="0"} 1700.0
+rocm_mclk_clock_mhz{card="0"} 1600.0
+rocm_vram_total{card="0"} 6.870269952e+010
+rocm_vram_used{card="0"} 1.0989568e+07
+rocm_utilization{card="0"} 0.0
 """
 
 import ctypes
@@ -96,10 +96,8 @@ class ROCMSMI(Collector):
         # # proto_devices = ctypes.CFUNCTYPE(ctypes.c_int,ctypes.byref(ctypes.c_uint32))
 
         numDevices = ctypes.c_uint32(0)
-        #numDevices = 0
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
-        # ret = proto_devices(ctypes.byref(numDevices))
-        logging.debug("Number of devices = %i" % numDevices.value)
+        logging.info("Number of GPU devices = %i" % numDevices.value)
 
         # register number of GPUs
         numGPUs_metric = Gauge(
@@ -108,24 +106,21 @@ class ROCMSMI(Collector):
         numGPUs_metric.set(numDevices.value)
         self.__num_gpus = numDevices.value
 
-        # register desired metrics (per device)
-        for i in range(self.__num_gpus):
-            gpu = "card" + str(i)
-            # init storage per gpu
-            self.__GPUmetrics[gpu] = {}
+        # register desired metric names
+        self.__GPUmetrics = {}
 
-            # temperature
-            self.registerGPUMetric(gpu, self.__prefix + "temp_die_edge", "gauge", "Temperature (Sensor edge) (C)")
-            # power
-            self.registerGPUMetric(gpu, self.__prefix + "avg_pwr", "gauge", "Average Graphics Package Power (W)")
-            # clock speeds
-            self.registerGPUMetric(gpu, self.__prefix + "sclk_clock_mhz", "gauge", "sclk clock speed (Mhz)")
-            self.registerGPUMetric(gpu, self.__prefix + "mclk_clock_mhz", "gauge", "mclk clock speed (Mhz)")
-            # memory
-            self.registerGPUMetric(gpu, self.__prefix + "vram_total", "gauge", "VRAM Total Memory (B)")
-            self.registerGPUMetric(gpu, self.__prefix + "vram_used", "gauge", "VRAM Total Used Memory (B)")
-            # utilization
-            self.registerGPUMetric(gpu, self.__prefix + "utilization","gauge","GPU use (%)")
+        # temperature
+        self.registerGPUMetric(self.__prefix + "temp_die_edge", "gauge", "Temperature (Sensor edge) (C)")
+        # power
+        self.registerGPUMetric(self.__prefix + "avg_pwr", "gauge", "Average Graphics Package Power (W)")
+        # clock speeds
+        self.registerGPUMetric(self.__prefix + "sclk_clock_mhz", "gauge", "sclk clock speed (Mhz)")
+        self.registerGPUMetric(self.__prefix + "mclk_clock_mhz", "gauge", "mclk clock speed (Mhz)")
+        # memory
+        self.registerGPUMetric(self.__prefix + "vram_total", "gauge", "VRAM Total Memory (B)")
+        self.registerGPUMetric(self.__prefix + "vram_used", "gauge", "VRAM Total Used Memory (B)")
+        # utilization
+        self.registerGPUMetric(self.__prefix + "utilization","gauge","GPU use (%)")
         
         return
 
@@ -136,18 +131,17 @@ class ROCMSMI(Collector):
     # --------------------------------------------------------------------------------------
     # Additional custom methods unique to this collector
 
-    def registerGPUMetric(self, gpu, name, type, description):
-        # encode gpu in name for uniqueness
-        metricName = gpu + "_" + name
-        if metricName in self.__GPUmetrics[gpu]:
+    def registerGPUMetric(self, metricName, type, description):
+        if metricName in self.__GPUmetrics:
             logging.error(
-                "Ignoring duplicate metric name addition: %s (gpu=%s)" % (name, gpu)
+                "Ignoring duplicate metric name addition: %s" % (name)
             )
             return
         if type == "gauge":
-            self.__GPUmetrics[gpu][metricName] = Gauge(metricName, description)
+            self.__GPUmetrics[metricName] = Gauge(metricName, description,labelnames=["card"])
+
             logging.info(
-                "  --> [registered] %s -> %s (gauge)" % (metricName, description)
+                "--> [registered] %s -> %s (gauge)" % (metricName, description)
             )
         else:
             logging.error("Ignoring unknown metric type -> %s" % type)
@@ -171,48 +165,48 @@ class ROCMSMI(Collector):
 
         for i in range(self.__num_gpus):
             
-            gpu = "card" + str(i)
             device = ctypes.c_uint32(i)
+            gpuLabel = str(i)
 
             #--
             # temperature [millidegrees Celcius, converted to degrees Celcius]
-            metric = gpu + "_" + self.__prefix + "temp_die_edge"
+            metric = self.__prefix + "temp_die_edge"
             ret = self.__libsmi.rsmi_dev_temp_metric_get(device,
                                                          temp_location,
                                                          temp_metric,
                                                          ctypes.byref(temperature))
-            self.__GPUmetrics[gpu][metric].set(temperature.value / 1000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
 
             #--
             # average power [micro Watts, converted to Watts]
-            metric = gpu + "_" + self.__prefix + "avg_pwr"
+            metric = self.__prefix + "avg_pwr"
             ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
-            self.__GPUmetrics[gpu][metric].set(power.value / 1000000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
 
             #--
             # clock speeds [Hz, converted to megaHz]
-            metric = gpu + "_" + self.__prefix + "sclk_clock_mhz"
+            metric = self.__prefix + "sclk_clock_mhz"
             ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_system_clock, ctypes.byref(freq))
-            self.__GPUmetrics[gpu][metric].set(freq.frequency[freq.current] / 1000000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
             
-            metric = gpu + "_" + self.__prefix + "mclk_clock_mhz"
+            metric = self.__prefix + "mclk_clock_mhz"
             ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_mem_clock, ctypes.byref(freq))
-            self.__GPUmetrics[gpu][metric].set(freq.frequency[freq.current] / 1000000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
 
             #--
             # memory [Hz, converted to megaHz]
-            metric = gpu + "_" + self.__prefix + "vram_total"
+            metric = self.__prefix + "vram_total"
             ret = self.__libsmi.rsmi_dev_memory_total_get(device,0x0,ctypes.byref(vram_used))
-            self.__GPUmetrics[gpu][metric].set(vram_used.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_used.value)
 
-            metric = gpu + "_" + self.__prefix + "vram_used"
+            metric = self.__prefix + "vram_used"
             ret = self.__libsmi.rsmi_dev_memory_usage_get(device,0x0,ctypes.byref(vram_total))
-            self.__GPUmetrics[gpu][metric].set(vram_total.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_total.value)
 
             #--
             # utilization
-            metric = gpu + "_" + self.__prefix + "utilization"
+            metric = self.__prefix + "utilization"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
-            self.__GPUmetrics[gpu][metric].set(utilization.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
 
         return
