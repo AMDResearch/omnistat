@@ -82,6 +82,7 @@ class AMDSMI(Collector):
         self.num_gpus = 0
         self.devices = []
         self.GPUMetrics = {}
+        self.__metricMapping = {}
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
@@ -97,6 +98,9 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.num_gpus)
 
+        # define any metric naming override(s)
+        self.__metricMapping["average_gfx_activity"] = "utilization"
+
         # Register Total VRAM for GPU metric
         total_vram_metric = Gauge(
             self.__prefix + "total_vram", "Total VRAM available on GPU", labelnames=["card"])
@@ -107,20 +111,15 @@ class AMDSMI(Collector):
             total_vram_metric.labels(card=str(idx)).set(device_total_vram)
 
             metrics = get_gpu_metrics(device)
-            for k, v in metrics.items():
-                metric_name = self.__prefix + k
+
+            for metric, value in metrics.items():
+                if self.__metricMapping.get(metric):
+                    metric = self.__metricMapping.get(metric)
+                metric_name = self.__prefix + metric
+
+                # add Gauge metric only once
                 if metric_name not in self.GPUMetrics.keys():
-                    # add Gauge Metric only once
-                    metric = Gauge(
-                        self.__prefix + k,
-                        f"{k}",
-                        labelnames=["card"],
-                    )
-                    self.GPUMetrics[metric_name] = metric
-                else:
-                    metric = self.GPUMetrics[metric_name]
-                # Set metric once per GPU
-                metric.labels(card=str(idx)).set(v)
+                    self.GPUMetrics[metric_name] = Gauge(metric_name,f"{metric}",labelnames=["card"])
 
         return
 
@@ -131,10 +130,12 @@ class AMDSMI(Collector):
     def collect_data_incremental(self):
         for idx, device in enumerate(self.devices):
             metrics = get_gpu_metrics(device)
-            for k, v in metrics.items():
-                metric_name = self.__prefix + k
-                metric = self.GPUMetrics[metric_name]
+            for metric, value in metrics.items():
+                if self.__metricMapping.get(metric):
+                    metric = self.__metricMapping.get(metric)
+                metric_name = self.__prefix + metric
+                metric = self.GPUMetrics[self.__prefix + metric]
                 # Set metric
-                metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(v)
+                metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(value)
         return
 
