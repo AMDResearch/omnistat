@@ -93,8 +93,6 @@ class Monitor():
         return
 
     def initMetrics(self):
-        rocmSMI = True
-        enableSLURM = True
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
             from omniwatch.collector_smi import ROCMSMI
