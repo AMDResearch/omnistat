@@ -1,9 +1,16 @@
 import os
 import pytest
 import requests
+import shutil
 import time
 
+import pytest
+
 from prometheus_api_client import PrometheusConnect
+
+# Variable used to disable tests that depend on a ROCm installation; assume
+# ROCm is installed if we can find `rocminfo' in the host.
+disable_rocm = False if shutil.which("rocminfo") else True
 
 class TestPrometheus:
     url = "http://localhost:9090/"
@@ -28,6 +35,7 @@ class TestPrometheus:
         results = prometheus.custom_query("slurmjob_info")
         assert len(results) >= 1, "Metric slurmjob_info not available"
 
+    @pytest.mark.skipif(disable_rocm, reason="requires ROCm")
     def test_query_rocm(self):
         prometheus = PrometheusConnect(url=self.url)
         query = f"card0_rocm_avg_pwr{{instance='{self.node}'}}"
