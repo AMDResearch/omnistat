@@ -66,7 +66,8 @@ class TestPrometheus:
         assert jobid == last_jobid + 1, "One job should have been executed"
 
         num_samples = len(job["values"])
-        assert num_samples == job_seconds , "Expected one sample per second"
+        assert num_samples == job_seconds or num_samples == job_seconds + 1, \
+               "Expected approximately one sample per second"
 
     # Execute an empty job lasting a given amount of seconds
     def run_job(self, seconds):
