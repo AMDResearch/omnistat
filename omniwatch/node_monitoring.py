@@ -39,10 +39,19 @@ import configparser
 import os
 import signal
 import sys
+
 import gunicorn.app.base
+
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
-from monitor import Monitor
+
+try:
+    from omniwatch.monitor import Monitor
+except ImportError:
+    # Ensure current directory is part of Python's path; allows direct execution
+    # from the root directory of the project when package is not installed.
+    sys.path.insert(0, "")
+    from omniwatch.monitor import Monitor
 
 def shutdown():
     os.kill(os.getppid(), signal.SIGTERM)
