@@ -97,16 +97,16 @@ class Monitor():
         enableSLURM = True
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
-            from collector_smi import ROCMSMI
+            from omniwatch.collector_smi import ROCMSMI
             self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig['collector_rocm_path']))
         if self.runtimeConfig['collector_enable_amd_smi']:
-            from collector_smi_v2 import AMDSMI
+            from omniwatch.collector_smi_v2 import AMDSMI
             self.__collectors.append(AMDSMI())
         if self.runtimeConfig['collector_enable_amd_smi_process']:
-            from collector_smi_process import AMDSMIProcess
+            from omniwatch.collector_smi_process import AMDSMIProcess
             self.__collectors.append(AMDSMIProcess())
         if self.runtimeConfig['collector_enable_slurm']:
-            from collector_slurm import SlurmJob
+            from omniwatch.collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
                                               annotations=self.runtimeConfig['slurm_collector_annotations'],
                                               jobDetection=self.jobDetection))
