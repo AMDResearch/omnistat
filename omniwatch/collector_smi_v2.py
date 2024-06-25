@@ -29,13 +29,13 @@ amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
 
-amdsmi_temp_die_edge 36.0
-amdsmi_avg_pwr 30.0
-amdsmi_utilization 0.0
-amdsmi_vram_total 3.4342961152e+010
-amdsmi_vram_used 7.028736e+06
-amdsmi_sclk_clock_mhz 300.0
-amdsmi_mclk_clock_mhz 1200.0
+amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
+amdsmi_temperature_edge_celsius{card="0"} 42.0
+amdsmi_utilization_percentage{card="0"} 0.0
+amdsmi_vram_used_percentage{card="0"} 0.0
+amdsmi_average_socket_power_watts{card="0"} 35.0
+amdsmi_mlck_clock_mhz{card="0"} 1200.0
+amdsmi_slck_clock_mhz{card="0"} 300.0
 """
 
 import logging
@@ -80,15 +80,16 @@ class AMDSMI(Collector):
         amdsmi_init()
         logging.info("AMD SMI library API initialized")
         self.num_gpus = 0
-        self.devices = []
-        self.GPUMetrics = {}
+        self.__devices = []
+        self.__GPUMetrics = {}
         self.__metricMapping = {}
+        self.__dumpMappedMetricsOnly = True
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
         devices = amdsmi_get_processor_handles()
-        self.devices = devices
+        self.__devices = devices
         self.num_gpus = len(devices)
         logging.debug(f"Number of devices = {self.num_gpus}")
 
@@ -98,14 +99,24 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.num_gpus)
 
-        # define any metric naming override(s)
-        self.__metricMapping["average_gfx_activity"] = "utilization"
+        # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
+        self.__metricMapping = {
+            # core GPU metric definitions
+            "average_gfx_activity" : "utilization_percentage",
+            "vram_total": "vram_total_bytes",
+            "average_umc_activity" : "vram_used_percentage",
+            "average_socket_power" : "average_socket_power_watts",
+            "temperature_edge": "temperature_edge_celsius",
+            "current_gfxclks": "slck_clock_mhz",
+            "average_uclk_frequency": "mlck_clock_mhz"
+        }
 
         # Register Total VRAM for GPU metric
         total_vram_metric = Gauge(
-            self.__prefix + "total_vram", "Total VRAM available on GPU", labelnames=["card"])
+            self.__prefix + "vram_total_bytes", "Total VRAM available on GPU", labelnames=["card"])
 
-        for idx, device in enumerate(self.devices):
+        # Register remaining metrics of interest available from get_gpu_metrics()
+        for idx, device in enumerate(self.__devices):
 
             device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
             total_vram_metric.labels(card=str(idx)).set(device_total_vram)
@@ -115,11 +126,13 @@ class AMDSMI(Collector):
             for metric, value in metrics.items():
                 if self.__metricMapping.get(metric):
                     metric = self.__metricMapping.get(metric)
+                elif self.__dumpMappedMetricsOnly is True:
+                    continue
                 metric_name = self.__prefix + metric
 
                 # add Gauge metric only once
-                if metric_name not in self.GPUMetrics.keys():
-                    self.GPUMetrics[metric_name] = Gauge(metric_name,f"{metric}",labelnames=["card"])
+                if metric_name not in self.__GPUMetrics.keys():
+                    self.__GPUMetrics[metric_name] = Gauge(metric_name,f"{metric}",labelnames=["card"])
 
         return
 
@@ -128,13 +141,14 @@ class AMDSMI(Collector):
         return
 
     def collect_data_incremental(self):
-        for idx, device in enumerate(self.devices):
+        for idx, device in enumerate(self.__devices):
             metrics = get_gpu_metrics(device)
             for metric, value in metrics.items():
                 if self.__metricMapping.get(metric):
                     metric = self.__metricMapping.get(metric)
-                metric_name = self.__prefix + metric
-                metric = self.GPUMetrics[self.__prefix + metric]
+                elif self.__dumpMappedMetricsOnly is True:
+                    continue
+                metric = self.__GPUMetrics[self.__prefix + metric]
                 # Set metric
                 metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(value)
         return
