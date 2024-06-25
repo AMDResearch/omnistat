@@ -30,13 +30,13 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with a "rocm" prefix with individual cards denotes by labels. The
 following example highlights example metrics for card 0:
 
-rocm_temp_die_edge{card="0"} 34.0
-rocm_avg_pwr{card="0"} 42.0
-rocm_sclk_clock_mhz{card="0"} 1700.0
-rocm_mclk_clock_mhz{card="0"} 1600.0
-rocm_vram_total{card="0"} 6.870269952e+010
-rocm_vram_used{card="0"} 1.0989568e+07
-rocm_utilization{card="0"} 0.0
+rocm_temperature_edge_celsius{card="0"} 41.0
+rocm_average_socket_power_watts{card="0"} 35.0
+rocm_sclk_clock_mhz{card="0"} 1502.0
+rocm_mclk_clock_mhz{card="0"} 1200.0
+rocm_vram_total_bytes{card="0"} 3.4342961152e+010
+rocm_vram_used_percentage{card="0"} 0.0198
+rocm_utilization_percentage{card="0"} 0.0
 """
 
 import ctypes
@@ -110,17 +110,17 @@ class ROCMSMI(Collector):
         self.__GPUmetrics = {}
 
         # temperature
-        self.registerGPUMetric(self.__prefix + "temp_die_edge", "gauge", "Temperature (Sensor edge) (C)")
+        self.registerGPUMetric(self.__prefix + "temperature_edge_celsius", "gauge", "Temperature (Sensor edge) (C)")
         # power
-        self.registerGPUMetric(self.__prefix + "avg_pwr", "gauge", "Average Graphics Package Power (W)")
+        self.registerGPUMetric(self.__prefix + "average_socket_power_watts", "gauge", "Average Graphics Package Power (W)")
         # clock speeds
-        self.registerGPUMetric(self.__prefix + "sclk_clock_mhz", "gauge", "sclk clock speed (Mhz)")
-        self.registerGPUMetric(self.__prefix + "mclk_clock_mhz", "gauge", "mclk clock speed (Mhz)")
+        self.registerGPUMetric(self.__prefix + "sclk_clock_mhz", "gauge", "current sclk clock speed (Mhz)")
+        self.registerGPUMetric(self.__prefix + "mclk_clock_mhz", "gauge", "current mclk clock speed (Mhz)")
         # memory
-        self.registerGPUMetric(self.__prefix + "vram_total", "gauge", "VRAM Total Memory (B)")
-        self.registerGPUMetric(self.__prefix + "vram_used", "gauge", "VRAM Total Used Memory (B)")
+        self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
+        self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
         # utilization
-        self.registerGPUMetric(self.__prefix + "utilization","gauge","GPU use (%)")
+        self.registerGPUMetric(self.__prefix + "utilization_percentage","gauge","GPU use (%)")
         
         return
 
@@ -157,8 +157,8 @@ class ROCMSMI(Collector):
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         freq = rsmi_frequencies_t()
-        freq_system_clock = 0   # 0=RSMI_CLK_TYPE_SYS
-        freq_mem_clock = 4      # 4=RSMI_CLK_TYPE_MEM
+        freq_system_clock = 0     # 0=RSMI_CLK_TYPE_SYS
+        freq_mem_clock = 4        # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
         vram_used  = ctypes.c_uint64(0)
         utilization = ctypes.c_uint32(0)
@@ -170,7 +170,7 @@ class ROCMSMI(Collector):
 
             #--
             # temperature [millidegrees Celcius, converted to degrees Celcius]
-            metric = self.__prefix + "temp_die_edge"
+            metric = self.__prefix + "temperature_edge_celsius"
             ret = self.__libsmi.rsmi_dev_temp_metric_get(device,
                                                          temp_location,
                                                          temp_metric,
@@ -179,7 +179,7 @@ class ROCMSMI(Collector):
 
             #--
             # average power [micro Watts, converted to Watts]
-            metric = self.__prefix + "avg_pwr"
+            metric = self.__prefix + "average_socket_power_watts"
             ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
 
@@ -194,18 +194,19 @@ class ROCMSMI(Collector):
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
 
             #--
-            # memory [Hz, converted to megaHz]
-            metric = self.__prefix + "vram_total"
-            ret = self.__libsmi.rsmi_dev_memory_total_get(device,0x0,ctypes.byref(vram_used))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_used.value)
-
-            metric = self.__prefix + "vram_used"
-            ret = self.__libsmi.rsmi_dev_memory_usage_get(device,0x0,ctypes.byref(vram_total))
+            # gpu memory [total_vram in bytes]
+            metric = self.__prefix + "vram_total_bytes"
+            ret = self.__libsmi.rsmi_dev_memory_total_get(device,0x0,ctypes.byref(vram_total))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_total.value)
+
+            metric = self.__prefix + "vram_used_percentage"
+            ret = self.__libsmi.rsmi_dev_memory_usage_get(device,0x0,ctypes.byref(vram_used))
+            percentage = round(100.0 * vram_used.value / vram_total.value, 4)
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(percentage)
 
             #--
             # utilization
-            metric = self.__prefix + "utilization"
+            metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
 
