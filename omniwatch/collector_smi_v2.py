@@ -107,8 +107,8 @@ class AMDSMI(Collector):
             "average_umc_activity" : "vram_used_percentage",
             "average_socket_power" : "average_socket_power_watts",
             "temperature_edge": "temperature_edge_celsius",
-            "current_gfxclks": "slck_clock_mhz",
-            "average_uclk_frequency": "mlck_clock_mhz"
+            "current_gfxclks": "sclk_clock_mhz",
+            "average_uclk_frequency": "mclk_clock_mhz"
         }
 
         # Register Total VRAM for GPU metric
