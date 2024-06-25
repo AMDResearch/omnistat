@@ -82,7 +82,7 @@ class OmnistatServer(gunicorn.app.base.BaseApplication):
     def load(self):
         return self.application
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--configfile",type=str,
                             help="runtime config file (default=omniwatch.default)",
@@ -119,3 +119,6 @@ if __name__ == '__main__':
 
     # Launch gunicorn
     OmnistatServer(app, options).run()
+
+if __name__ == '__main__':
+    main()
