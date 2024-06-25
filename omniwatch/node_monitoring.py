@@ -67,7 +67,7 @@ def readRuntimeConfig(configFile):
         print("[ERROR]: unable to open runtime config file -> %s" % configFile)
         sys.exit(1)
 
-class OmniStatServer(gunicorn.app.base.BaseApplication):
+class OmnistatServer(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
         self.options = options or {}
         self.application = app
@@ -84,11 +84,11 @@ class OmniStatServer(gunicorn.app.base.BaseApplication):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--configFile",type=str,
+    parser.add_argument("--configfile",type=str,
                             help="runtime config file (default=omniwatch.default)",
                             default="omniwatch/config/omniwatch.default")
     args = parser.parse_args()
-    config = readRuntimeConfig(args.configFile)
+    config = readRuntimeConfig(args.configfile)
 
     # Setup Flask app for data collection
     app = Flask("omnistat")
@@ -118,4 +118,4 @@ if __name__ == '__main__':
     }
 
     # Launch gunicorn
-    OmniStatServer(app, options).run()
+    OmnistatServer(app, options).run()
