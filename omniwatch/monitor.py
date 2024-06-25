@@ -38,7 +38,8 @@ import sys
 
 from pathlib import Path
 from prometheus_client import generate_latest, CollectorRegistry
-import utils
+
+from omniwatch import utils
 
 class Monitor():
     def __init__(self,config):
