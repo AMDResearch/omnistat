@@ -47,20 +47,51 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 from omniwatch.collector_base import Collector
 
-# lifted from rsmiBindings.py
-RSMI_MAX_NUM_FREQUENCIES = 32
-class rsmi_frequencies_t(ctypes.Structure):
-    _fields_ = [('num_supported', ctypes.c_int32),
-                ('current', ctypes.c_uint32),
-                ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
-
 rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
                        'socclk': 0x3, 'mclk': 0x4}
+
+def get_rsmi_frequencies_type(rsmiVersion):
+    """
+    Instantiates and returns a struct for use with RSMI frequency queries.
+    This data structure is library version dependent. Mimics definitions in
+    rsmiBindings.py.
+
+    Args:
+        rsmiVersion (dict): ROCm SMI library version info
+
+    Returns:
+        C Struct: struct for use with rsmi_dev_power_get() and rsmi_dev_power_ave_get()
+    """
+    if rsmiVersion["major"] < 6:
+        logging.info("SMI version < 6")
+        RSMI_MAX_NUM_FREQUENCIES = 32
+
+        class rsmi_frequencies_t(ctypes.Structure):
+            _fields_ = [('num_supported', ctypes.c_int32),
+                        ('current', ctypes.c_uint32),
+                        ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
+        return rsmi_frequencies_t()
+    else:
+        logging.info("SMI version >= 6")
+        RSMI_MAX_NUM_FREQUENCIES = 33
+        class rsmi_frequencies_t(ctypes.Structure):
+            _fields_ = [('has_deep_sleep', ctypes.c_bool),
+                        ('num_supported', ctypes.c_int32),
+                        ('current', ctypes.c_uint32),
+                        ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
+        return rsmi_frequencies_t()
 
 class rsmi_power_type_t(ctypes.c_int):
             RSMI_AVERAGE_POWER = 0,
             RSMI_CURRENT_POWER = 1,
             RSMI_INVALID_POWER = 0xFFFFFFFF
+
+class rsmi_version_t(ctypes.Structure):
+     _fields_ = [('major', ctypes.c_uint32),
+                 ('minor', ctypes.c_uint32),
+                 ('patch', ctypes.c_uint32),
+                 ('build', ctypes.c_char_p)]
+
 #--
 
 class ROCMSMI(Collector):
@@ -78,6 +109,14 @@ class ROCMSMI(Collector):
             ret_init = self.__libsmi.rsmi_init(0)
             assert(ret_init == 0)
             logging.info("SMI library API initialized")
+
+            # cache smi library version
+            verInfo = rsmi_version_t()
+            ret = self.__libsmi.rsmi_version_get(ctypes.byref(verInfo))
+            self.__smiVersion = {"major":verInfo.major,"minor":verInfo.minor,"patch":verInfo.patch}
+
+            self.__rsmi_frequencies_type = get_rsmi_frequencies_type(self.__smiVersion)
+
         else:
             logging.error("")
             logging.error("ERROR: Unable to load SMI library.")
@@ -161,7 +200,8 @@ class ROCMSMI(Collector):
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         power_type = rsmi_power_type_t()
-        freq = rsmi_frequencies_t()
+        # freq = rsmi_frequencies_t()
+        freq = self.__rsmi_frequencies_type
         freq_system_clock = 0     # 0=RSMI_CLK_TYPE_SYS
         freq_mem_clock = 4        # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
@@ -185,7 +225,10 @@ class ROCMSMI(Collector):
             #--
             # average socket power [micro Watts, converted to Watts]
             metric = self.__prefix + "average_socket_power_watts"
-            ret = self.__libsmi.rsmi_dev_power_get(device,ctypes.byref(power),ctypes.byref(power_type))
+            if self.__smiVersion["major"] < 6:
+                ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
+            else:
+                ret = self.__libsmi.rsmi_dev_power_get(device,ctypes.byref(power),ctypes.byref(power_type))
             if ret == 0:
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
             else:
