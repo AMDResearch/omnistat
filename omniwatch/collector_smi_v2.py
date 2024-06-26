@@ -43,8 +43,8 @@ from omniwatch.collector_base import Collector
 from prometheus_client import Gauge
 import statistics
 from omniwatch.utils import GPU_MAPPING_ORDER
-from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info, amdsmi_get_gpu_memory_total,
-                    AmdSmiMemoryType)
+from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
+                    amdsmi_get_gpu_memory_total, amdsmi_get_gpu_memory_usage, AmdSmiMemoryType)
 
 
 def get_gpu_metrics(device):
@@ -104,22 +104,18 @@ class AMDSMI(Collector):
             # core GPU metric definitions
             "average_gfx_activity" : "utilization_percentage",
             "vram_total": "vram_total_bytes",
-            "average_umc_activity" : "vram_used_percentage",
             "average_socket_power" : "average_socket_power_watts",
             "temperature_edge": "temperature_edge_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz"
         }
 
-        # Register Total VRAM for GPU metric
-        total_vram_metric = Gauge(
-            self.__prefix + "vram_total_bytes", "Total VRAM available on GPU", labelnames=["card"])
+        # Register memory related metrics
+        self.__GPUMetrics["vram_total_bytes"] = Gauge(self.__prefix + "vram_total_bytes","VRAM Memory in Use (%)",labelnames=["card"])
+        self.__GPUMetrics["vram_used_percentage"] = Gauge(self.__prefix + "vram_used_percentage","VRAM Memory in Use (%)",labelnames=["card"])
 
         # Register remaining metrics of interest available from get_gpu_metrics()
         for idx, device in enumerate(self.__devices):
-
-            device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
-            total_vram_metric.labels(card=str(idx)).set(device_total_vram)
 
             metrics = get_gpu_metrics(device)
 
@@ -142,6 +138,15 @@ class AMDSMI(Collector):
 
     def collect_data_incremental(self):
         for idx, device in enumerate(self.__devices):
+
+            # gpu memory-related stats
+            device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
+            self.__GPUMetrics["vram_total_bytes"].labels(card=str(idx)).set(device_total_vram)
+            vram_used_bytes = amdsmi_get_gpu_memory_usage(device, AmdSmiMemoryType.VRAM)
+            percentage = round(100.0 * vram_used_bytes / device_total_vram, 4)
+            self.__GPUMetrics["vram_used_percentage"].labels(card=str(idx)).set(percentage)
+
+            # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
             for metric, value in metrics.items():
                 if self.__metricMapping.get(metric):
