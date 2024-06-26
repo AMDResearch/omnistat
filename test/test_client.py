@@ -8,9 +8,9 @@ import pytest
 
 from prometheus_api_client import PrometheusConnect
 
-# Variable used to disable tests that depend on a ROCm installation; assume
+# Variable used to skip tests that depend on a ROCm installation; assume
 # ROCm is installed if we can find `rocminfo' in the host.
-disable_rocm = False if shutil.which("rocminfo") else True
+rocm_host = True if shutil.which("rocminfo") else False
 
 class TestPrometheus:
     url = "http://localhost:9090/"
@@ -35,7 +35,7 @@ class TestPrometheus:
         results = prometheus.custom_query("slurmjob_info")
         assert len(results) >= 1, "Metric slurmjob_info not available"
 
-    @pytest.mark.skipif(disable_rocm, reason="requires ROCm")
+    @pytest.mark.skipif(not rocm_host, reason="requires ROCm")
     def test_query_rocm(self):
         prometheus = PrometheusConnect(url=self.url)
         query = f"card0_rocm_avg_pwr{{instance='{self.node}'}}"
@@ -45,6 +45,17 @@ class TestPrometheus:
         results = prometheus.custom_query(query)
         _, value = results[0]["value"]
         assert int(value) >= 0, "Reported power is too low"
+
+    @pytest.mark.skipif(rocm_host, reason="requires no GPUs in the host")
+    def test_query_gpus(self):
+        prometheus = PrometheusConnect(url=self.url)
+        query = f"rocm_num_gpus{{instance='{self.node}'}}"
+        results = prometheus.custom_query(query)
+        assert len(results) >= 1, "Metric rocm_num_gpus not available"
+
+        results = prometheus.custom_query(query)
+        _, value = results[0]["value"]
+        assert int(value) == 0, "There should be no GPUs"
 
     def test_job(self):
         prometheus = PrometheusConnect(url=self.url)
