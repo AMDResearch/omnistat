@@ -36,12 +36,6 @@ services:
       - controller
     links:
       - controller
-    healthcheck:
-      test: curl --fail localhost:8000/metrics || exit 1
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
 
 volumes:
   jobs_dir:

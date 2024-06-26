@@ -1,0 +1,37 @@
+name: Test Omniwatch
+on: [push]
+jobs:
+  test:
+    name: Test Omniwatch integration
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install pytest
+        run: sudo apt-get install -y python3-pytest
+      - name: Comment out GPU devices (not available in GitHub)
+        run: sed -i "/devices:/,+2 s/^/#/" test/docker/slurm/compose.yaml
+      - name: Disable SMI collector (won't work in GitHub)
+        run: >
+          sed -i "s/enable_rocm_smi = True/enable_rocm_smi = False/" \
+            test/docker/slurm/omniwatch.slurm
+      - name: Start containerized environment
+        run: docker compose -f test/docker/slurm/compose.yaml up -d
+      - name: Wait for Prometheus
+        run: >
+          timeout 1m bash -c \
+            'until $(curl -o /dev/null --fail -s localhost:9090/metrics); do \
+               echo "Waiting for Prometheus..."; \
+               sleep 5; \
+             done'
+      - name: Wait for Omniwatch
+        run: >
+          timeout 15m bash -c \
+            'until [[ $(curl -s -g "localhost:9090/api/v1/series?match[]={instance=\"node:8000\"}" | jq ".data|length") != 0 ]]; do \
+               echo "Waiting for Omnistat..."; \
+               sleep 15; \
+             done'
+      - name: Install test dependencies
+        run: pip3 install prometheus_api_client
+      - name: Run tests
+        run: pytest-3 -v test
