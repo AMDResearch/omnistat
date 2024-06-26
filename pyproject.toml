@@ -30,6 +30,12 @@ count_commits_from_version_file = true
 dev_template = "{tag}+git.{sha}"
 dirty_template = "{tag}+git.{sha}.uncommitted"
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning::", # ignore third-party deprecation warnings
+    "default::DeprecationWarning:omniwatch.*:",
+]
+
 [tool.black]
 line-length = 120
 include = '\.py$'
