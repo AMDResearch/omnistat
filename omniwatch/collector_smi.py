@@ -57,6 +57,10 @@ class rsmi_frequencies_t(ctypes.Structure):
 rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
                        'socclk': 0x3, 'mclk': 0x4}
 
+class rsmi_power_type_t(ctypes.c_int):
+            RSMI_AVERAGE_POWER = 0,
+            RSMI_CURRENT_POWER = 1,
+            RSMI_INVALID_POWER = 0xFFFFFFFF
 #--
 
 class ROCMSMI(Collector):
@@ -156,6 +160,7 @@ class ROCMSMI(Collector):
         temp_metric = ctypes.c_int32(0)    # 0=RSMI_TEMP_CURRENT
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
+        power_type = rsmi_power_type_t()
         freq = rsmi_frequencies_t()
         freq_system_clock = 0     # 0=RSMI_CLK_TYPE_SYS
         freq_mem_clock = 4        # 4=RSMI_CLK_TYPE_MEM
@@ -178,10 +183,13 @@ class ROCMSMI(Collector):
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
 
             #--
-            # average power [micro Watts, converted to Watts]
+            # average socket power [micro Watts, converted to Watts]
             metric = self.__prefix + "average_socket_power_watts"
-            ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
+            ret = self.__libsmi.rsmi_dev_power_get(device,ctypes.byref(power),ctypes.byref(power_type))
+            if ret == 0:
+                self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
+            else:
+                self.__GPUmetrics[metric].labels(card=gpuLabel).set(0.0)
 
             #--
             # clock speeds [Hz, converted to megaHz]
