@@ -12,7 +12,7 @@ from prometheus_api_client import PrometheusConnect
 # ROCm is installed if we can find `rocminfo' in the host.
 rocm_host = True if shutil.which("rocminfo") else False
 
-class TestPrometheus:
+class TestIntegration:
     url = "http://localhost:9090/"
     node = "node:8000"
     time_range = "30m"
