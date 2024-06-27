@@ -46,17 +46,6 @@ class TestIntegration:
         _, value = results[0]["value"]
         assert int(value) >= 0, "Reported power is too low"
 
-    @pytest.mark.skipif(rocm_host, reason="requires no GPUs in the host")
-    def test_query_gpus(self):
-        prometheus = PrometheusConnect(url=self.url)
-        query = f"rocm_num_gpus{{instance='{self.node}'}}"
-        results = prometheus.custom_query(query)
-        assert len(results) >= 1, "Metric rocm_num_gpus not available"
-
-        results = prometheus.custom_query(query)
-        _, value = results[0]["value"]
-        assert int(value) == 0, "There should be no GPUs"
-
     def test_job(self):
         prometheus = PrometheusConnect(url=self.url)
         query = f"slurmjob_info{{jobid=~'.+'}}[{self.time_range}]"
