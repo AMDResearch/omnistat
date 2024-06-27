@@ -39,11 +39,13 @@ amdsmi_slck_clock_mhz{card="0"} 300.0
 """
 
 import logging
+import packaging.version
+import statistics
+import sys
 from omniwatch.collector_base import Collector
 from prometheus_client import Gauge
-import statistics
 from omniwatch.utils import GPU_MAPPING_ORDER
-from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
+from amdsmi import (amdsmi_init, amdsmi_get_lib_version, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
                     amdsmi_get_gpu_memory_total, amdsmi_get_gpu_memory_usage, AmdSmiMemoryType)
 
 
@@ -72,6 +74,19 @@ def get_gpu_metrics(device):
             result[k] = 0
     return result
 
+def check_min_version(minVersion):
+    localVer = amdsmi_get_lib_version()
+    localVerString = '.'.join([str(localVer["year"]),str(localVer["major"]),str(localVer["minor"])])
+    vmin = packaging.version.Version(minVersion)
+    vloc = packaging.version.Version(localVerString)
+    if vloc < vmin:
+        logging.error("")
+        logging.error("ERROR: Minimum amdsmi version not met.")
+        logging.error("--> Detected version = %s (>= %s required)" % (vloc,vmin))
+        logging.error("")
+        sys.exit(4)
+    else:
+        logging.info("--> library version = %s" % vloc)
 
 class AMDSMI(Collector):
     def __init__(self):
@@ -84,6 +99,9 @@ class AMDSMI(Collector):
         self.__GPUMetrics = {}
         self.__metricMapping = {}
         self.__dumpMappedMetricsOnly = True
+        # verify minimum version met
+        check_min_version("24.5.2")
+
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
