@@ -292,7 +292,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("--configFile",type=str,
+    parser.add_argument("--configfile",type=str,
                             help="runtime config file (default=omniwatch.default)",
                             default="omniwatch.config")
     parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
@@ -313,7 +313,7 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    userUtils.setup(args.configFile)
+    userUtils.setup(args.configfile)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
     if args.use_pdsh:
