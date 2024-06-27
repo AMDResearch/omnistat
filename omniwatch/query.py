@@ -618,7 +618,7 @@ def main():
 
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--configFile",type=str,
+    parser.add_argument("--configfile",type=str,
                             help="runtime config file (default=omniwatch.default)",
                             default="omniwatch.default")
     parser.add_argument("--job", help="jobId to query")
@@ -641,7 +641,7 @@ def main():
 
     query = queryMetrics(versionData)
     query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)
-    query.read_config(args.configFile)
+    query.read_config(args.configfile)
     query.setup()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
