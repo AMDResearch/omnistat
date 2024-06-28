@@ -22,11 +22,13 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
+import configparser
+import importlib.resources
 import logging
-import subprocess
-import sys
 import os
 import shutil
+import subprocess
+import sys
 
 from importlib.metadata import version
 
@@ -53,6 +55,58 @@ def error(message):
     """
     logging.error("Error: " + message)
     sys.exit(1)
+
+
+def findConfigFile(configFileArgument = None):
+    """Identify configuration file location
+
+    Try to find one of the following locations in the filesystem:
+     1. File pointed by configFileArgument (if defined)
+     2. File pointed by OMNIWATCH_CONFIG (if defined)
+     3. "omniwatch.config" in the current directory
+     4. Default configuration file in the package
+
+    Args:
+        configFileArgument (string, optional): optional path to config file
+          provided as argument in the CLI
+
+    Returns:
+        string: path to an existing configuration file
+    """
+    # Resolve path to default config file in the current installation.
+    # This configuration is only meant to provide sane defaults to run
+    # locally, but most installations will need a custom file.
+    packageDir = importlib.resources.files("omniwatch")
+    configFile = packageDir.joinpath("config/omniwatch.default")
+
+    if os.path.isfile("./omniwatch.config"):
+        configFile = "./omniwatch.config"
+
+    if "OMNIWATCH_CONFIG" in os.environ:
+        configFile = os.environ["OMNIWATCH_CONFIG"]
+
+    if configFileArgument != None:
+        configFile = configFileArgument
+
+    if not os.path.isfile(configFile):
+        error(f"Unable to find configuration file {configFile}")
+
+    return configFile
+
+
+def readConfig(configFile):
+    """Read and parse configuration file
+
+    Args:
+        configFile (string): path to config file
+
+    Returns:
+        ConfigParser: object containing configuration options
+    """
+    print(f"Reading configuration from {configFile}")
+    config = configparser.ConfigParser()
+    config.read(configFile)
+    return config
 
 
 def runShellCommand(command, capture_output=True, text=True, exit_on_error=False, timeout=1.0):
