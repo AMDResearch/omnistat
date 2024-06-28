@@ -27,6 +27,7 @@ import argparse
 import importlib.resources
 import logging
 import os
+import shutil
 import socket
 import subprocess
 import sys
@@ -54,7 +55,7 @@ class UserBasedMonitoring:
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
-        self.config = utils.readConfig(self.configFile)
+        self.runtimeConfig = utils.readConfig(self.configFile)
         self.slurmHosts = self.getSlurmHosts()
 
     def setMonitoringInterval(self, interval):
@@ -163,29 +164,36 @@ class UserBasedMonitoring:
         port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
         corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding", "1")
 
+        cwd = os.getcwd()
+        cmd = (
+            f"nice -n 20 {sys.executable} -m"
+            f" omniwatch.node_monitoring --configfile={self.configFile}"
+        )
+
+        # Assume environment is the same across nodes; if numactl is present
+        # here, we expect it to be present in all nodes.
+        numactl = shutil.which("numactl")
+        if numactl:
+            cmd = f"numactl --physcpubind={corebinding} {cmd}"
+
         if self.slurmHosts:
             if self.use_pdsh:
                 logging.info("Saving SLURM job state locally to compute hosts...")
                 numNodes = os.getenv("SLURM_JOB_NUM_NODES")
-                cmd = [
+                srun_cmd = [
                     "srun",
                     "-N %s" % numNodes,
                     "--ntasks-per-node=1",
-
-                    "%s/slurm_env.py" % self.topDir,
+                    "%s" % sys.executable,
+                    "-m", "omniwatch.slurm_env",
                     "%s" % self.runtimeConfig["omniwatch.collectors.slurm"].get("job_detection_file")
                 ]
-                utils.runShellCommand(cmd, timeout=35, exit_on_error=True)
+                utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 
                 logging.info("Launching exporters in parallel using pdsh")
 
                 client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-                gunicorn_path = f"{sys.prefix}/bin/gunicorn"
-
-                # cmd = "gunicorn -D -b 0.0.0.0:%s --error-logfile %s --capture-output --pythonpath %s node_monitoring:app" % (port,self.topDir / "error.log" ,self.topDir)
-                cmd += "%s -D -b 0.0.0.0:%s omniwatch.node_monitoring:app" % (gunicorn_path, port)
-
-                output = client.run_command(cmd)
+                output = client.run_command(f"sh -c 'cd {cwd} && {cmd}'")
 
                 # verify exporter available on all nodes...
                 psecs = 6
@@ -223,47 +231,31 @@ class UserBasedMonitoring:
                 # Launch with serialized ssh
                 for host in self.slurmHosts:
                     logging.info("Launching exporter on host -> %s" % host)
-                    logfile = "exporter.%s.log" % host
-                    logpath = self.topDir / logfile
-
-                    # overwrite logfile
-                    if os.path.exists(logpath):
-                        os.remove(logpath)
 
                     use_gunicorn = True
                     if use_gunicorn:
-                        cmd = [
-                            "numactl",
-                            "--physcpubind=%s" % corebinding,
-                            "nice",
-                            "-n 20",
-                            "gunicorn",
-                            "-e OMNIWATCH_CONFIG=%s" % self.configFile,
-                            "-D",
-                            "-b 0.0.0.0:%s" % port,
-                            #                    "--access-logfile %s" % (self.topDir / "access.log"),
-                            #                        "--threads 4",
-                            "--capture-output",
-                            "--log-file %s" % logpath,
-                            "--pythonpath %s" % self.topDir,
-                            "omniwatch.node_monitoring:app",
-                        ]
-                        base_ssh = ["ssh", host]
-                        logging.debug("-> running command: %s" % (base_ssh + cmd))
-                        utils.runShellCommand(base_ssh + cmd, timeout=25, exit_on_error=False)
+                        logfile = f"exporter.{host}.log"
+                        # Overwrite previous log file
+                        if os.path.exists(logfile):
+                            os.remove(logfile)
+
+                        host_cmd = f"{cmd} --capture-output --log-file {logfile}"
+                        ssh_cmd = ["ssh", host, f"sh -c 'cd {cwd} && {host_cmd} {app}'"]
+                        logging.debug("-> running command: %s" % (ssh_cmd))
+                        utils.runShellCommand(ssh_cmd, timeout=25, exit_on_error=False)
                     else:
-                        cmd = ["ssh", host, "%s/bin/python -m omniwatch.node_monitoring.py" % sys.prefix]                        
+                        cmd = ["ssh", host, "%s -m omniwatch.node_monitoring" % sys.executable]
                         logging.debug("-> running command: %s" % (cmd))
                         utils.runBGProcess(cmd, outputFile=logfile)
 
         return
 
     def stopExporters(self):
-        # command=["pkill","-SIGINT","-f","-u","%s" % os.getuid(),"python.*omniwatch.*node_monitoring.py"]
+        port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
 
         for host in self.slurmHosts:
             logging.info("Stopping exporter for host -> %s" % host)
-            cmd = ["curl", "%s:%s/shutdown" % (host, "8001")]
+            cmd = ["curl", f"{host}:{port}/shutdown"]
             logging.debug("-> running command: %s" % cmd)
             # utils.runShellCommand(["ssh", host] + cmd)
             utils.runShellCommand(cmd, timeout=5)
