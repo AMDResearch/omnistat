@@ -45,6 +45,11 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
 
+# Ensure current directory is part of Python's path; allows direct execution
+# from the top directory of the project when package is not installed.
+if os.path.isdir("omniwatch") and sys.path[0]:
+    sys.path.insert(0, "")
+
 from omniwatch.utils import displayVersion, getVersion, error
 
 class queryMetrics:
