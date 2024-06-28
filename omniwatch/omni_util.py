@@ -232,21 +232,15 @@ class UserBasedMonitoring:
                 for host in self.slurmHosts:
                     logging.info("Launching exporter on host -> %s" % host)
 
-                    use_gunicorn = True
-                    if use_gunicorn:
-                        logfile = f"exporter.{host}.log"
-                        # Overwrite previous log file
-                        if os.path.exists(logfile):
-                            os.remove(logfile)
+                    logfile = f"exporter.{host}.log"
+                    # Overwrite previous log file
+                    if os.path.exists(logfile):
+                        os.remove(logfile)
 
-                        host_cmd = f"{cmd} --capture-output --log-file {logfile}"
-                        ssh_cmd = ["ssh", host, f"sh -c 'cd {cwd} && {host_cmd} {app}'"]
-                        logging.debug("-> running command: %s" % (ssh_cmd))
-                        utils.runShellCommand(ssh_cmd, timeout=25, exit_on_error=False)
-                    else:
-                        cmd = ["ssh", host, "%s -m omniwatch.node_monitoring" % sys.executable]
-                        logging.debug("-> running command: %s" % (cmd))
-                        utils.runBGProcess(cmd, outputFile=logfile)
+                    host_cmd = f"{cmd} --capture-output --log-file {logfile}"
+                    ssh_cmd = ["ssh", host, f"sh -c 'cd {cwd} && {host_cmd} {app}'"]
+                    logging.debug("-> running command: %s" % (ssh_cmd))
+                    utils.runShellCommand(ssh_cmd, timeout=25, exit_on_error=False)
 
         return
 
