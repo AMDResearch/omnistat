@@ -24,7 +24,6 @@
 # -------------------------------------------------------------------------------
 
 import argparse
-import configparser
 import importlib.resources
 import logging
 import os
@@ -48,30 +47,9 @@ class UserBasedMonitoring:
         self.timeout = 5           # default scrape timeout in seconds
         self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
 
-
-        return
-
-    def setup(self):
-        # Resolve path to default config file in the current installation.
-        # This configuration is only meant to provide sane defaults to run
-        # locally, but most installations will need a custom file.
-        # It can be overridden using the configFile option below.
-        packageDir = importlib.resources.files("omniwatch")
-        configFile = packageDir.joinpath("config/omniwatch.default")
-
-        # check for override of default configFile
-        if "OMNIWATCH_CONFIG" in os.environ:
-            logging.info("Overriding default config file")
-            configFile = os.environ["OMNIWATCH_CONFIG"]
-
-        if os.path.isfile(self.configFile):
-            logging.info("Reading runtime-config from %s" % self.configFile)
-            self.runtimeConfig = configparser.ConfigParser()
-            self.runtimeConfig.read(self.configFile)
-        else:
-            print("[ERROR]: unable to open runtime config file -> %s" % self.configFile)
-            sys.exit(1)
-
+    def setup(self, configFileArgument):
+        self.configFile = utils.findConfigFile(configFileArgument)
+        self.config = utils.readConfig(self.configFile)
         self.slurmHosts = self.getSlurmHosts()
 
     def setMonitoringInterval(self, interval):
@@ -292,9 +270,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
-    parser.add_argument("--configfile",type=str,
-                            help="runtime config file (default=omniwatch.default)",
-                            default="omniwatch.config")
+    parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
     parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
     parser.add_argument("--startexporters", help="Start data expporters", action="store_true")
