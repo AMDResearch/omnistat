@@ -27,7 +27,6 @@ from prometheus_api_client import PrometheusConnect, MetricSnapshotDataFrame
 from prometheus_api_client.utils import parse_datetime
 from datetime import datetime, timedelta
 import argparse
-import configparser
 import logging
 import numpy as np
 import os
