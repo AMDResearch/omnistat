@@ -38,6 +38,11 @@ from pathlib import Path
 
 from pssh.clients import ParallelSSHClient
 
+# Ensure current directory is part of Python's path; allows direct execution
+# from the top directory of the project when package is not installed.
+if os.path.isdir("omniwatch") and sys.path[0]:
+    sys.path.insert(0, "")
+
 from omniwatch import utils
 
 class UserBasedMonitoring:
