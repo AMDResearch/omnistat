@@ -101,7 +101,7 @@ def main():
 
     listenPort = config['omniwatch.collectors'].get('port',8000)
     options = {
-        'bind': '%s:%s' % ('127.0.0.1', listenPort),
+        'bind': '%s:%s' % ('0.0.0.0', listenPort),
         'workers': 2,
     }
 
