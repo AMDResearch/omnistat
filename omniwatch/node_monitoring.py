@@ -35,7 +35,6 @@
 # ---
 
 import argparse
-import configparser
 import os
 import signal
 import sys
@@ -45,27 +44,17 @@ import gunicorn.app.base
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
 
-try:
-    from omniwatch.monitor import Monitor
-except ImportError:
-    # Ensure current directory is part of Python's path; allows direct execution
-    # from the root directory of the project when package is not installed.
+# Ensure current directory is part of Python's path; allows direct execution
+# from the top directory of the project when package is not installed.
+if os.path.isdir("omniwatch") and sys.path[0]:
     sys.path.insert(0, "")
-    from omniwatch.monitor import Monitor
+
+from omniwatch import utils
+from omniwatch.monitor import Monitor
 
 def shutdown():
     os.kill(os.getppid(), signal.SIGTERM)
     return jsonify({'message': 'Shutting down...'}), 200
-
-def readRuntimeConfig(configFile):
-    if os.path.isfile(configFile):
-        print("Reading runtime-config from %s" % configFile)
-        config = configparser.ConfigParser()
-        config.read(configFile)
-        return(config)
-    else:
-        print("[ERROR]: unable to open runtime config file -> %s" % configFile)
-        sys.exit(1)
 
 class OmnistatServer(gunicorn.app.base.BaseApplication):
     def __init__(self, app, options=None):
@@ -84,11 +73,10 @@ class OmnistatServer(gunicorn.app.base.BaseApplication):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--configfile",type=str,
-                            help="runtime config file (default=omniwatch.default)",
-                            default="omniwatch/config/omniwatch.default")
+    parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     args = parser.parse_args()
-    config = readRuntimeConfig(args.configfile)
+
+    config = utils.readConfig(utils.findConfigFile(args.configfile))
 
     # Setup Flask app for data collection
     app = Flask("omnistat")
