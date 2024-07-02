@@ -92,7 +92,7 @@ class AMDSMI(Collector):
         self.__prefix = "amdsmi_"
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
-        self.num_gpus = 0
+        self.__num_gpus = 0
         self.__devices = []
         self.__GPUMetrics = {}
         self.__metricMapping = {}
@@ -106,8 +106,8 @@ class AMDSMI(Collector):
 
         devices = smi.amdsmi_get_processor_handles()
         self.__devices = devices
-        self.num_gpus = len(devices)
-        logging.debug(f"Number of devices = {self.num_gpus}")
+        self.__num_gpus = len(devices)
+        logging.debug(f"Number of devices = {self.__num_gpus}")
 
         # Register/set metrics that we do not expect to change
 
@@ -115,14 +115,14 @@ class AMDSMI(Collector):
         numGPUs_metric = Gauge(
             self.__prefix + "num_gpus", "# of GPUS available on host",
         )
-        numGPUs_metric.set(self.num_gpus)
+        numGPUs_metric.set(self.__num_gpus)
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         for index, device in enumerate(self.__devices):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
             bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
             self.__bdfMapping[index] = convert_bdf_to_gpuid(bdf)
-        self.__indexMapping = gpu_index_mapping(self.__bdfMapping, self.num_gpus)
+        self.__indexMapping = gpu_index_mapping(self.__bdfMapping, self.__num_gpus)
 
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
