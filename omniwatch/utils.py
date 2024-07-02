@@ -46,6 +46,93 @@ GPU_MAPPING_ORDER = {
     7: 5
 }
 
+def convert_bdf_to_gpuid(bdf_string):
+    """
+    Converts BDF text string in hex format to a GPU location id in the form written by kfd driver
+    into /sys/class/kfd/kfd/topology/nodes/<node>/properties
+
+    Args:
+        bdf_string (string): bdf string for GPU (domain:bus:device.func)
+
+    Returns:
+        int: location_id
+    """
+
+    domain = int(bdf_string.split(':')[0],16)
+    # strip leading domain
+    bdf = bdf_string .split(':')[1:]
+    # cull out bus, device, and function as ints
+    bus = int(bdf[0],16)
+    dev_func = bdf[1].split('.')
+    device = int(dev_func[0],16)
+    function = int(dev_func[1],16)
+    # assemble id per kfd driver
+    location_id = ((bus << 8) | function)
+    return location_id
+
+def pass_through_indexing(numGpus):
+    """returns a pass through GPU indexingwith 0:0, 1:1, etc.  Intended for use in cases where
+       exact mapping cannot be ascertained by reading sysfs topology files.
+    """
+    gpu_index_mapping = {}
+    for i in range(numGpus):
+        gpu_index_mapping[i] = str(i)
+    return gpu_index_mapping
+
+def gpu_index_mapping(bdfMapping, expectedNumGPUs):
+    """Generate a mapping between kfd gpu indexing (SMI lib) to those of HIP_VISIBLE_DEVICES. Intended for
+    use with metric labeling to identify devices based on HIP_VISIBLE_DEVICES indexing.
+
+    Args:
+        bdfMapping (dict): maps kfd indices to location ids derived from bfd strings
+        expectedNumGPUs (int): number of GPUs detected locally
+
+    Returns:
+        dict: maps kfd indices to HIP_VISIBLE_DEVICES indices
+    """
+    kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
+    logging.info("Scanning devices from %s"% kfd_nodes)
+    if not os.path.isdir(kfd_nodes):
+        logging.warn("--> directory not found")
+        return pass_through_indexing(expectedNumGPUs)
+
+    devices = os.listdir(kfd_nodes)
+    numNonGPUs = 0
+    numGPUs = 0
+    tmpMapping = {}
+    for id in range(len(devices)):
+        file = os.path.join(kfd_nodes, str(id), "properties")
+        logging.info("--> reading contents of %s" % file)
+        if os.path.isfile(file):
+            properties = {}
+            with open(file) as f:
+                for line in f:
+                    key, value = line.strip().split(' ')
+                    if key == 'location_id':
+                        location_id = int(value)
+            if location_id == 0:
+                numNonGPUs += 1
+                logging.info("--> ...ignoring CPU device")
+            else:
+                tmpMapping[location_id] = numGPUs
+                numGPUs += 1
+        else:
+            logging.warn("Unable to access expected file (%s)" % file)
+            return pass_through_indexing(expectedNumGPUs)
+
+    if numGPUs != expectedNumGPUs:
+        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs,expectedNumGPUs))
+        return pass_through_indexing(expectedNumGPUs)
+
+    gpuMappingOrder = {}
+    for gpuIndex, id in bdfMapping.items():
+        if id in tmpMapping:
+            gpuMappingOrder[gpuIndex] = str(tmpMapping[id])
+        else:
+            logging.warn("--> unable to resolve gpu location_id=%s" % id)
+            return pass_through_indexing(expectedNumGPUs)
+
+    return gpuMappingOrder
 
 def error(message):
     """Log an error message and exit
