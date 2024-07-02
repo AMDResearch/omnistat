@@ -34,18 +34,6 @@ from importlib.metadata import version
 
 from pathlib import Path
 
-
-GPU_MAPPING_ORDER = {
-    0: 2,
-    1: 3,
-    2: 0,
-    3: 1,
-    4: 6,
-    5: 7,
-    6: 4,
-    7: 5
-}
-
 def convert_bdf_to_gpuid(bdf_string):
     """
     Converts BDF text string in hex format to a GPU location id in the form written by kfd driver
@@ -91,7 +79,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
         dict: maps kfd indices to HIP_VISIBLE_DEVICES indices
     """
     kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
-    logging.info("Scanning devices from %s"% kfd_nodes)
+    logging.info("GPU topology indexing: Scanning devices from %s"% kfd_nodes)
     if not os.path.isdir(kfd_nodes):
         logging.warn("--> directory not found")
         return pass_through_indexing(expectedNumGPUs)
@@ -102,7 +90,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
     tmpMapping = {}
     for id in range(len(devices)):
         file = os.path.join(kfd_nodes, str(id), "properties")
-        logging.info("--> reading contents of %s" % file)
+        logging.debug("--> reading contents of %s" % file)
         if os.path.isfile(file):
             properties = {}
             with open(file) as f:
@@ -112,7 +100,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
                         location_id = int(value)
             if location_id == 0:
                 numNonGPUs += 1
-                logging.info("--> ...ignoring CPU device")
+                logging.debug("--> ...ignoring CPU device")
             else:
                 tmpMapping[location_id] = numGPUs
                 numGPUs += 1
@@ -132,6 +120,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
             logging.warn("--> unable to resolve gpu location_id=%s" % id)
             return pass_through_indexing(expectedNumGPUs)
 
+    logging.info("--> Mapping: %s" % gpuMappingOrder)
     return gpuMappingOrder
 
 def error(message):
