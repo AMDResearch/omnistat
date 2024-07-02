@@ -42,15 +42,13 @@ import logging
 import packaging.version
 import statistics
 import sys
+import amdsmi as smi
 from omniwatch.collector_base import Collector
 from prometheus_client import Gauge
-from omniwatch.utils import GPU_MAPPING_ORDER
-from amdsmi import (amdsmi_init, amdsmi_get_lib_version, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info,
-                    amdsmi_get_gpu_memory_total, amdsmi_get_gpu_memory_usage, AmdSmiMemoryType)
-
+from omniwatch.utils import convert_bdf_to_gpuid, gpu_index_mapping
 
 def get_gpu_metrics(device):
-    result = amdsmi_get_gpu_metrics_info(device)
+    result = smi.amdsmi_get_gpu_metrics_info(device)
     for k, v in result.items():
         if type(v) is str:
             # Filter 'N/A' values introduced by rocm 6.1
@@ -75,7 +73,7 @@ def get_gpu_metrics(device):
     return result
 
 def check_min_version(minVersion):
-    localVer = amdsmi_get_lib_version()
+    localVer = smi.amdsmi_get_lib_version()
     localVerString = '.'.join([str(localVer["year"]),str(localVer["major"]),str(localVer["minor"])])
     vmin = packaging.version.Version(minVersion)
     vloc = packaging.version.Version(localVerString)
@@ -92,30 +90,39 @@ class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
         self.__prefix = "amdsmi_"
-        amdsmi_init()
+        smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
         self.num_gpus = 0
         self.__devices = []
         self.__GPUMetrics = {}
         self.__metricMapping = {}
+        self.__bdfMapping = {}
         self.__dumpMappedMetricsOnly = True
         # verify minimum version met
         check_min_version("24.5.2")
 
-
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
-        devices = amdsmi_get_processor_handles()
+        devices = smi.amdsmi_get_processor_handles()
         self.__devices = devices
         self.num_gpus = len(devices)
         logging.debug(f"Number of devices = {self.num_gpus}")
 
-        # register number of GPUs
+        # Register/set metrics that we do not expect to change
+
+        # number of GPUs
         numGPUs_metric = Gauge(
             self.__prefix + "num_gpus", "# of GPUS available on host",
         )
         numGPUs_metric.set(self.num_gpus)
+
+        # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
+        for index, device in enumerate(self.__devices):
+            bdf = smi.amdsmi_get_gpu_device_bdf(device)
+            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
+            self.__bdfMapping[index] = convert_bdf_to_gpuid(bdf)
+        self.__indexMapping = gpu_index_mapping(self.__bdfMapping, self.num_gpus)
 
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
@@ -157,12 +164,15 @@ class AMDSMI(Collector):
     def collect_data_incremental(self):
         for idx, device in enumerate(self.__devices):
 
+            # map GPU index
+            cardId = self.__indexMapping[idx]
+
             # gpu memory-related stats
-            device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
-            self.__GPUMetrics["vram_total_bytes"].labels(card=str(idx)).set(device_total_vram)
-            vram_used_bytes = amdsmi_get_gpu_memory_usage(device, AmdSmiMemoryType.VRAM)
+            device_total_vram = smi.amdsmi_get_gpu_memory_total(device, smi.AmdSmiMemoryType.VRAM)
+            self.__GPUMetrics["vram_total_bytes"].labels(card=cardId).set(device_total_vram)
+            vram_used_bytes = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
             percentage = round(100.0 * vram_used_bytes / device_total_vram, 4)
-            self.__GPUMetrics["vram_used_percentage"].labels(card=str(idx)).set(percentage)
+            self.__GPUMetrics["vram_used_percentage"].labels(card=cardId).set(percentage)
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
@@ -173,6 +183,6 @@ class AMDSMI(Collector):
                     continue
                 metric = self.__GPUMetrics[self.__prefix + metric]
                 # Set metric
-                metric.labels(card=str(GPU_MAPPING_ORDER[idx])).set(value)
+                metric.labels(card=cardId).set(value)
         return
 
