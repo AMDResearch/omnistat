@@ -33,8 +33,8 @@ if [ "$1" = "node" ]; then
     sed "s/127.0.0.1/127.0.0.1, $ip/" \
         /host-source/test/docker/slurm/omnistat.slurm > /etc/omnistat.config
 
-    OMNISTAT_CONFIG=/etc/omnistat.config /opt/omnistat/bin/gunicorn \
-        -b 0.0.0.0:8000 omnistat.node_monitoring:app --daemon
+    OMNISTAT_CONFIG=/etc/omnistat.config /opt/omnistat/bin/python -m \
+        omnistat.node_monitoring
 fi
 
 sleep infinity
