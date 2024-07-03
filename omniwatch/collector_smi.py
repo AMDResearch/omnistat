@@ -46,6 +46,7 @@ import sys
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 from omniwatch.collector_base import Collector
+from omniwatch.utils import gpu_index_mapping
 
 rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
                        'socclk': 0x3, 'mclk': 0x4}
@@ -140,6 +141,7 @@ class ROCMSMI(Collector):
 
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
+        assert(ret == 0)
         logging.info("Number of GPU devices = %i" % numDevices.value)
 
         # register number of GPUs
@@ -148,6 +150,17 @@ class ROCMSMI(Collector):
         )
         numGPUs_metric.set(numDevices.value)
         self.__num_gpus = numDevices.value
+
+
+        # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
+        bdfid = ctypes.c_int64(0)
+        bdfMapping = {}
+        for i in range(self.__num_gpus):
+            device = ctypes.c_uint32(i)
+            ret = self.__libsmi.rsmi_dev_pci_id_get(device,ctypes.byref(bdfid))
+            assert(ret == 0)
+            bdfMapping[i] = bdfid.value
+        self.__indexMapping = gpu_index_mapping(bdfMapping, self.__num_gpus)
 
         # register desired metric names
         self.__GPUmetrics = {}
@@ -211,7 +224,7 @@ class ROCMSMI(Collector):
         for i in range(self.__num_gpus):
             
             device = ctypes.c_uint32(i)
-            gpuLabel = str(i)
+            gpuLabel = self.__indexMapping[i]
 
             #--
             # temperature [millidegrees Celcius, converted to degrees Celcius]
