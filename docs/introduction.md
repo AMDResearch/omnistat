@@ -6,13 +6,13 @@
    :maxdepth: 4
 ```
 
-Welcome to the documentation area for the **Omniwatch** project.  Use the navigation links on the left-hand side of this page to access more information on installation and capabilities.
+Welcome to the documentation area for the **Omnistat** project.  Use the navigation links on the left-hand side of this page to access more information on installation and capabilities.
 
-[Browse Omniwatch source code on Github](https://github.com/AMDResearch/omniwatch)
+[Browse Omnistat source code on Github](https://github.com/AMDResearch/omnistat)
 
-## What is Omniwatch?
+## What is Omnistat?
 
-Omniwatch provides a set of utilities to aid cluster administrators or individual application developers to aggregate scale-out system metrics via low-overhead sampling across all hosts in a cluster or, alternatively on a subset of hosts associated with a specific user job. At its core, Omniwatch was designed to aid collection of key telemetry from AMD Instinct(tm) accelerators (on a per-GPU basis). Relevant target metrics include:
+Omnistat provides a set of utilities to aid cluster administrators or individual application developers to aggregate scale-out system metrics via low-overhead sampling across all hosts in a cluster or, alternatively on a subset of hosts associated with a specific user job. At its core, Omnistat was designed to aid collection of key telemetry from AMD Instinct(tm) accelerators (on a per-GPU basis). Relevant target metrics include:
 
 * GPU utilization (occupancy)
 * High-bandwidth memory (HBM) usage
@@ -22,27 +22,27 @@ Omniwatch provides a set of utilities to aid cluster administrators or individua
 * GPU memory clock frequency (Mhz)
 * GPU throttling events
 
-To enable scalable collection of these metrics, Omniwatch provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
+To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
 
 ## User-mode vs System-level monitoring 
 
-Omniwatch utilities can be deployed with two primary use-cases in mind that differ based on the end-consumer and whether the user has administrative rights or not.  The use cases are denoted as follows:
+Omnistat utilities can be deployed with two primary use-cases in mind that differ based on the end-consumer and whether the user has administrative rights or not.  The use cases are denoted as follows:
 
 1. __System-wide monitoring__: requires administrative rights and is typically used to monitor all GPU hosts within a given cluster in a 24x7 mode of operation. Use this approach to support system-wide telemetry collection for all user workloads and optionally, provide job-level insights for systems running the [SLURM](https://slurm.schedmd.com) workload manager.
-1. __User-mode monitoring__: does not require administrative rights and can be run entirely within user-space. This case is typically exercised by end application users running on production SLURM clusters who want to gather telemetry data within a single SLURM job allocation.  Frequently, this approach is performed entirely within a command-line `ssh` environment but Omniwatch includes support for downloading data after a job for visualization with a dockerized Grafana environment. Alternatively, standalone query utilities can be used to summarize collected metrics at the conclusion of a SLURM job.
+1. __User-mode monitoring__: does not require administrative rights and can be run entirely within user-space. This case is typically exercised by end application users running on production SLURM clusters who want to gather telemetry data within a single SLURM job allocation.  Frequently, this approach is performed entirely within a command-line `ssh` environment but Omnistat includes support for downloading data after a job for visualization with a dockerized Grafana environment. Alternatively, standalone query utilities can be used to summarize collected metrics at the conclusion of a SLURM job.
 
-To demonstrate the overall data collection architecture employed by Omniwatch in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
+To demonstrate the overall data collection architecture employed by Omnistat in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
 
 ![System Mode](images/architecture_system-mode.png)
 ![User Mode](images/architecture_user-mode.png)
 
 In the __system-wide monitoring__ case, a system administrator enables data collectors permanently on all relevant hosts within the cluster and configures a Prometheus server to periodically poll these nodes (e.g. at 1 minute or 5 minute intervals). The Prometheus server typically runs on the cluster head node (or separate administrative host) and does not require GPU resources locally. For real-time and historical queries, the system administrator also enables a Grafana instance that queries the Prometheus datastore to provide a variety of visualizations with collected data. Example visualization panels using this approach are highlighted in the [Grafana](./grafana.md) section.
 
-Conversely, in the __user-mode__ case,  Omniwatch data collector(s) and a companion prometheus server are deployed temporarily on hosts assigned to a user's SLURM job.  At the end of the job, Omniwatch utilities can query cached telemetry data to summarize GPU utilization details or it can be visualized offline after the job completes. An example command-line summary from this user-mode approach is highlighted as follows:
+Conversely, in the __user-mode__ case,  Omnistat data collector(s) and a companion prometheus server are deployed temporarily on hosts assigned to a user's SLURM job.  At the end of the job, Omnistat utilities can query cached telemetry data to summarize GPU utilization details or it can be visualized offline after the job completes. An example command-line summary from this user-mode approach is highlighted as follows:
 
 ```none
 ----------------------------------------
-Omniwatch Report Card for Job # 44092
+Omnistat Report Card for Job # 44092
 ----------------------------------------
 
 Job Overview (Num Nodes = 1, Machine = Snazzy Cluster)
@@ -66,7 +66,7 @@ Version = 0.2.0
 
 ## Software dependencies
 
-The basic minimum dependencies to enable data collection via Omniwatch tools in user-mode are as follows:
+The basic minimum dependencies to enable data collection via Omnistat tools in user-mode are as follows:
 
 * [ROCm](https://rocm.docs.amd.com/en/latest)
 * Python dependencies (see top-level requirements.txt)

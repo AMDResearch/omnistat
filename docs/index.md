@@ -1,4 +1,4 @@
-# Welcome to the [Omniwatch](https://github.com/AMDResearch/omniwatch) Documentation!
+# Welcome to the [Omnistat](https://github.com/AMDResearch/omnistat) Documentation!
 
 ```eval_rst
 .. toctree::

@@ -1,4 +1,4 @@
-This subdirectory houses the input markup for Omniwatch documentation using
+This subdirectory houses the input markup for Omnistat documentation using
 Sphinx.
 
 You can build a local copy of the documentation in this directory using
