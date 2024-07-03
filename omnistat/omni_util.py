@@ -37,7 +37,9 @@ import yaml
 
 from pathlib import Path
 
-from pssh.clients import ParallelSSHClient
+# Use libssh instead of the default libssh2 to avoid issues with certain keys
+# and newer versions of SSH.
+from pssh.clients.ssh.parallel import ParallelSSHClient
 
 # Ensure current directory is part of Python's path; allows direct execution
 # from the top directory of the project when package is not installed.
