@@ -64,7 +64,7 @@
                         "value" : [
                            {
                               "title" : "",
-                              "url" : "/d/bccbab2a-b53a-4d32-90e7-b7613b67403c/omniwatch-job?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&from=${__data.fields[\"from\"]}&to=${__data.fields[\"to\"]}"
+                              "url" : "/d/bccbab2a-b53a-4d32-90e7-b7613b67403c/omnistat-job?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&from=${__data.fields[\"from\"]}&to=${__data.fields[\"to\"]}"
                            }
                         ]
                      }
@@ -347,7 +347,7 @@
    "refresh" : "",
    "schemaVersion" : 39,
    "tags" : [
-      "omniwatch"
+      "omnistat"
    ],
    "templating" : {
       "list" : []
@@ -358,7 +358,7 @@
    },
    "timepicker" : {},
    "timezone" : "",
-   "title" : "omniwatch-index",
+   "title" : "omnistat-index",
    "uid" : "edcmwp08wjhmoa",
    "version" : 1,
    "weekStart" : ""

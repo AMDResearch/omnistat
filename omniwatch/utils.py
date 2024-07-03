@@ -138,7 +138,7 @@ def findConfigFile(configFileArgument = None):
 
     Try to find one of the following locations in the filesystem:
      1. File pointed by configFileArgument (if defined)
-     2. File pointed by OMNIWATCH_CONFIG (if defined)
+     2. File pointed by OMNISTAT_CONFIG (if defined)
      3. Default configuration file in the package
 
     Args:
@@ -151,11 +151,11 @@ def findConfigFile(configFileArgument = None):
     # Resolve path to default config file in the current installation.
     # This configuration is only meant to provide sane defaults to run
     # locally, but most installations will need a custom file.
-    packageDir = importlib.resources.files("omniwatch")
-    configFile = packageDir.joinpath("config/omniwatch.default")
+    packageDir = importlib.resources.files("omnistat")
+    configFile = packageDir.joinpath("config/omnistat.default")
 
-    if "OMNIWATCH_CONFIG" in os.environ:
-        configFile = os.environ["OMNIWATCH_CONFIG"]
+    if "OMNISTAT_CONFIG" in os.environ:
+        configFile = os.environ["OMNISTAT_CONFIG"]
 
     if configFileArgument != None:
         configFile = configFileArgument
@@ -262,12 +262,12 @@ def removeQuotes(input):
 
 
 def getVersion():
-    """Return omniwatch version info"""
-    return version('omniwatch')
+    """Return omnistat version info"""
+    return version('omnistat')
 
 
 def displayVersion(version):
     """Pretty print versioning info"""
     print("-" * 40)
-    print("Omniwatch version: %s" % version)
+    print("Omnistat version: %s" % version)
     print("-" * 40)

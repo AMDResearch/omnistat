@@ -47,10 +47,10 @@ from reportlab.lib.units import inch
 
 # Ensure current directory is part of Python's path; allows direct execution
 # from the top directory of the project when package is not installed.
-if os.path.isdir("omniwatch") and sys.path[0]:
+if os.path.isdir("omnistat") and sys.path[0]:
     sys.path.insert(0, "")
 
-from omniwatch.utils import displayVersion, getVersion, error
+from omnistat.utils import displayVersion, getVersion, error
 
 class queryMetrics:
 
@@ -73,7 +73,7 @@ class queryMetrics:
 
     def read_config(self, configFileArgument):
         runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
-        section = 'omniwatch.query'
+        section = 'omnistat.query'
         self.config = {}
         self.config["system_name"] = runtimeConfig[section].get('system_name','My Snazzy Cluster')
         self.config["prometheus_url"] = runtimeConfig[section].get('prometheus_url','unknown')
@@ -343,7 +343,7 @@ class queryMetrics:
 
         print("")
         print("-" * 40)
-        print("Omniwatch Report Card for Job # %i" % self.jobID)
+        print("Omnistat Report Card for Job # %i" % self.jobID)
         print("-" * 40)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))

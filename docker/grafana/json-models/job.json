@@ -2275,7 +2275,7 @@
    "refresh" : false,
    "schemaVersion" : 39,
    "tags" : [
-      "omniwatch"
+      "omnistat"
    ],
    "templating" : {
       "list" : [
@@ -2354,7 +2354,7 @@
       "hidden" : false
    },
    "timezone" : "",
-   "title" : "omniwatch-job",
+   "title" : "omnistat-job",
    "uid" : "bccbab2a-b53a-4d32-90e7-b7613b67403c",
    "version" : 1,
    "weekStart" : ""

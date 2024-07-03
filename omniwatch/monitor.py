@@ -39,7 +39,7 @@ import sys
 from pathlib import Path
 from prometheus_client import generate_latest, CollectorRegistry
 
-from omniwatch import utils
+from omnistat import utils
 
 class Monitor():
     def __init__(self,config):
@@ -49,16 +49,16 @@ class Monitor():
 
         self.runtimeConfig = {}
 
-        self.runtimeConfig['collector_enable_rocm_smi'] = config['omniwatch.collectors'].getboolean('enable_rocm_smi',True)
-        self.runtimeConfig['collector_enable_slurm'] = config['omniwatch.collectors'].getboolean('enable_slurm',False)
-        self.runtimeConfig['collector_enable_amd_smi'] = config['omniwatch.collectors'].getboolean('enable_amd_smi', False)
-        self.runtimeConfig['collector_enable_amd_smi_process'] = config['omniwatch.collectors'].getboolean('enable_amd_smi_process',
+        self.runtimeConfig['collector_enable_rocm_smi'] = config['omnistat.collectors'].getboolean('enable_rocm_smi',True)
+        self.runtimeConfig['collector_enable_slurm'] = config['omnistat.collectors'].getboolean('enable_slurm',False)
+        self.runtimeConfig['collector_enable_amd_smi'] = config['omnistat.collectors'].getboolean('enable_amd_smi', False)
+        self.runtimeConfig['collector_enable_amd_smi_process'] = config['omnistat.collectors'].getboolean('enable_amd_smi_process',
                                                                                                             False)
-        self.runtimeConfig['collector_port'] = config['omniwatch.collectors'].get('port',8000)
-        self.runtimeConfig['collector_usermode'] = config['omniwatch.collectors'].getboolean('usermode',False)
-        self.runtimeConfig['collector_rocm_path'] = config['omniwatch.collectors'].get('rocm_path','/opt/rocm')
+        self.runtimeConfig['collector_port'] = config['omnistat.collectors'].get('port',8000)
+        self.runtimeConfig['collector_usermode'] = config['omnistat.collectors'].getboolean('usermode',False)
+        self.runtimeConfig['collector_rocm_path'] = config['omnistat.collectors'].get('rocm_path','/opt/rocm')
 
-        allowed_ips = config['omniwatch.collectors'].get('allowed_ips','127.0.0.1')
+        allowed_ips = config['omnistat.collectors'].get('allowed_ips','127.0.0.1')
         # convert comma-separated string into list
         self.runtimeConfig['collector_allowed_ips'] = re.split(r',\s*',allowed_ips)
         logging.info("Allowed query IPs = %s" % self.runtimeConfig['collector_allowed_ips'])
@@ -66,11 +66,11 @@ class Monitor():
         # additional slurm collector controls
         if self.runtimeConfig['collector_enable_slurm'] == True:
             self.jobDetection = {}
-            self.runtimeConfig['slurm_collector_annotations'] = config['omniwatch.collectors.slurm'].getboolean('enable_annotations',False)
-            self.jobDetection['mode'] = config['omniwatch.collectors.slurm'].get('job_detection_mode','file-based')
-            self.jobDetection['file']= config['omniwatch.collectors.slurm'].get('job_detection_file','/tmp/omni_slurmjobinfo')
-            if config.has_option('omniwatch.collectors.slurm','host_skip'):
-                self.runtimeConfig['slurm_collector_host_skip'] = config['omniwatch.collectors.slurm']['host_skip']
+            self.runtimeConfig['slurm_collector_annotations'] = config['omnistat.collectors.slurm'].getboolean('enable_annotations',False)
+            self.jobDetection['mode'] = config['omnistat.collectors.slurm'].get('job_detection_mode','file-based')
+            self.jobDetection['file']= config['omnistat.collectors.slurm'].get('job_detection_file','/tmp/omni_slurmjobinfo')
+            if config.has_option('omnistat.collectors.slurm','host_skip'):
+                self.runtimeConfig['slurm_collector_host_skip'] = config['omnistat.collectors.slurm']['host_skip']
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
@@ -81,8 +81,8 @@ class Monitor():
 
         # allow for disablement of slurm collector via regex match
         if self.runtimeConfig['collector_enable_slurm']:
-            if config.has_option('omniwatch.collectors.slurm','host_skip'):
-                host_skip = utils.removeQuotes(config['omniwatch.collectors.slurm']['host_skip'])
+            if config.has_option('omnistat.collectors.slurm','host_skip'):
+                host_skip = utils.removeQuotes(config['omnistat.collectors.slurm']['host_skip'])
                 hostname = platform.node().split('.', 1)[0]
                 p = re.compile(host_skip)
                 if p.match(hostname):
@@ -95,16 +95,16 @@ class Monitor():
     def initMetrics(self):
 
         if self.runtimeConfig['collector_enable_rocm_smi']:
-            from omniwatch.collector_smi import ROCMSMI
+            from omnistat.collector_smi import ROCMSMI
             self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig['collector_rocm_path']))
         if self.runtimeConfig['collector_enable_amd_smi']:
-            from omniwatch.collector_smi_v2 import AMDSMI
+            from omnistat.collector_smi_v2 import AMDSMI
             self.__collectors.append(AMDSMI())
         if self.runtimeConfig['collector_enable_amd_smi_process']:
-            from omniwatch.collector_smi_process import AMDSMIProcess
+            from omnistat.collector_smi_process import AMDSMIProcess
             self.__collectors.append(AMDSMIProcess())
         if self.runtimeConfig['collector_enable_slurm']:
-            from omniwatch.collector_slurm import SlurmJob
+            from omnistat.collector_slurm import SlurmJob
             self.__collectors.append(SlurmJob(userMode=self.runtimeConfig['collector_usermode'],
                                               annotations=self.runtimeConfig['slurm_collector_annotations'],
                                               jobDetection=self.jobDetection))
