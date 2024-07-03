@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/opt/omniwatch/bin/python -m omniwatch.slurm_env
+/opt/omnistat/bin/python -m omnistat.slurm_env

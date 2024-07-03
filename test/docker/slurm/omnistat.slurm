@@ -1,4 +1,4 @@
-[omniwatch.collectors]
+[omnistat.collectors]
 port = 8000
 usermode = False
 usermode_port = 8000
@@ -17,15 +17,15 @@ allowed_ips = 127.0.0.1
 # corebinding = 31
 
 
-[omniwatch.collectors.slurm]
+[omnistat.collectors.slurm]
 host_skip = "login.*"
 enable_annotations = False
 job_detection_mode = file-based
 job_detection_file = /tmp/omni_slurmjobinfo
 
-[omniwatch.report]
+[omnistat.report]
 
-[omniwatch.query]
+[omnistat.query]
 prometheus_url = http://localhost:9090
 system_name = SLURM in Docker Cluster
 
@@ -34,7 +34,7 @@ system_name = SLURM in Docker Cluster
 #--
 
 # --user-spawned promserver
-[omniwatch.promserver]
+[omnistat.promserver]
 logfile = prom_server.log
 binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
 datadir = data_prom

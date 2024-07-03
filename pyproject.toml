@@ -33,7 +33,7 @@ dirty_template = "{tag}+git.{sha}.uncommitted"
 [tool.pytest.ini_options]
 filterwarnings = [
     "ignore::DeprecationWarning::", # ignore third-party deprecation warnings
-    "default::DeprecationWarning:omniwatch.*:",
+    "default::DeprecationWarning:omnistat.*:",
 ]
 
 [tool.black]
