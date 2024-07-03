@@ -38,9 +38,9 @@ class TestIntegration:
     @pytest.mark.skipif(not rocm_host, reason="requires ROCm")
     def test_query_rocm(self):
         prometheus = PrometheusConnect(url=self.url)
-        query = f"card0_rocm_avg_pwr{{instance='{self.node}'}}"
+        query = f"rocm_average_socket_power_watts{{instance='{self.node}'}}"
         results = prometheus.custom_query(query)
-        assert len(results) >= 1, "Metric card0_rocm_avg_pwr not available"
+        assert len(results) >= 1, "Metric rocm_average_socket_power_watts not available"
 
         results = prometheus.custom_query(query)
         _, value = results[0]["value"]
