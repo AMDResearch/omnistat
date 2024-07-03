@@ -29,7 +29,7 @@ Standalone utility for creating user annotation labels in json format. Intended
 for use in conjunction with companion Slurm data collector that looks for files of the
 following form:
 
-/tmp/omniwatch_${USER}_annotate.json
+/tmp/omnistat_${USER}_annotate.json
 
 File can also be imported for direct Python usage.
 """
@@ -39,9 +39,9 @@ import time
 import json
 import os
 
-class omniwatch_annotate():
+class omnistat_annotate():
     def __init__(self):
-        self.filename="/tmp/omniwatch_" + os.environ.get('USER') + "_annotate.json"
+        self.filename="/tmp/omnistat_" + os.environ.get('USER') + "_annotate.json"
 
     def start(self,label):
         data = {}
@@ -67,7 +67,7 @@ def main():
     if args.mode == 'start' and args.text is None:
         parser.error("The --text option is required for \"start\" mode.")
 
-    annotate = omniwatch_annotate()
+    annotate = omnistat_annotate()
 
     if args.mode == "start":
         annotate.start(args.text)

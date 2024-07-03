@@ -1,22 +1,22 @@
-## Environment to view local Omniwatch data
+## Environment to view local Omnistat data
 
 This Docker Compose environment is meant to be used as a tool to visualize
-data collected with usermode Omniwatch without the need to use external resources.
+data collected with usermode Omnistat without the need to use external resources.
 
-Two different services are required to view Omniwatch data:
+Two different services are required to view Omnistat data:
  - **Prometheus**: used to read and query data.
  - **Grafana**: used as visualization platform to display time series and
    other metrics.
 
 This environment will automatically launch containers, configure both services,
 connect Grafana and Prometheus, and pre-load a couple of dashboards:
- - `omniwatch-index`: List all jobs in the stored database.
- - `omniwatch-job`: View details for a single job.
+ - `omnistat-index`: List all jobs in the stored database.
+ - `omnistat-job`: View details for a single job.
 
 ### Deploy
 
-1. Copy Prometheus data collected with Omniwatch to `./prometheus-data`. The
-   entire `datadir` defined in the Omniwatch configuration needs to be copied
+1. Copy Prometheus data collected with Omnistat to `./prometheus-data`. The
+   entire `datadir` defined in the Omnistat configuration needs to be copied
    (e.g. a `data` directory should be present under `./prometheus-data`).
 2. Start services:
    ```

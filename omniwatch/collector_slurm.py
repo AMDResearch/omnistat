@@ -38,8 +38,8 @@ import platform
 
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
-import omniwatch.utils as utils
-from omniwatch.collector_base import Collector
+import omnistat.utils as utils
+from omnistat.collector_base import Collector
 
 class SlurmJob(Collector):
     def __init__(self,userMode=False,annotations=False,jobDetection=None):
@@ -159,7 +159,7 @@ class SlurmJob(Collector):
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
-                userFile = "/tmp/omniwatch_%s_annotate.json" % results["SLURM_JOB_USER"]
+                userFile = "/tmp/omnistat_%s_annotate.json" % results["SLURM_JOB_USER"]
 
                 userFileExists = os.path.isfile(userFile)
                 if userFileExists:

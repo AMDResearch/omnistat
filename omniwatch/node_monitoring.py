@@ -46,11 +46,11 @@ from flask_prometheus_metrics import register_metrics
 
 # Ensure current directory is part of Python's path; allows direct execution
 # from the top directory of the project when package is not installed.
-if os.path.isdir("omniwatch") and sys.path[0]:
+if os.path.isdir("omnistat") and sys.path[0]:
     sys.path.insert(0, "")
 
-from omniwatch import utils
-from omniwatch.monitor import Monitor
+from omnistat import utils
+from omnistat.monitor import Monitor
 
 def shutdown():
     os.kill(os.getppid(), signal.SIGTERM)
@@ -99,7 +99,7 @@ def main():
     def forbidden(e):
         return jsonify(error="Access denied"), 403
 
-    listenPort = config['omniwatch.collectors'].get('port',8000)
+    listenPort = config['omnistat.collectors'].get('port',8000)
     options = {
         'bind': '%s:%s' % ('0.0.0.0', listenPort),
         'workers': 1,

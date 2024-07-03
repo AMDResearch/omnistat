@@ -43,9 +43,9 @@ import packaging.version
 import statistics
 import sys
 import amdsmi as smi
-from omniwatch.collector_base import Collector
+from omnistat.collector_base import Collector
 from prometheus_client import Gauge
-from omniwatch.utils import convert_bdf_to_gpuid, gpu_index_mapping
+from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping
 
 def get_gpu_metrics(device):
     result = smi.amdsmi_get_gpu_metrics_info(device)

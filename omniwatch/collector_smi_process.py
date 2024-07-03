@@ -37,9 +37,9 @@ amdsmi_process_vram (card=0, pid=123, name=torchrun) 3784658734
 """
 
 import logging
-from omniwatch.collector_base import Collector
+from omnistat.collector_base import Collector
 from prometheus_client import Gauge
-from omniwatch.utils import GPU_MAPPING_ORDER
+from omnistat.utils import GPU_MAPPING_ORDER
 from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info
 
 

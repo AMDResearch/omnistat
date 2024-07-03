@@ -1,27 +1,27 @@
 [project]
-name = "omniwatch"
+name = "omnistat"
 dynamic = ["version", "dependencies", "optional-dependencies"]
 readme = "README.md"
 requires-python = ">=3.8,<3.11"
 
 [project.scripts]
-omniwatch-util = "omniwatch.omni_util:main"
-omniwatch-annotate = "omniwatch.annotate:main"
-omniwatch-query = "omniwatch.query:main"
+omnistat-util = "omnistat.omni_util:main"
+omnistat-annotate = "omnistat.annotate:main"
+omnistat-query = "omnistat.query:main"
 
 [build-system]
 requires = ["setuptools>=61", "wheel", "setuptools-git-versioning>=2.0,<3"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["omniwatch"]
+packages = ["omnistat"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
 optional-dependencies = { query = { file = ["requirements-query.txt"] } }
 
 [tool.setuptools.package-data]
-"omniwatch" = ["config/omniwatch.default"]
+"omnistat" = ["config/omnistat.default"]
 
 [tool.setuptools-git-versioning]
 enabled = true

@@ -6,10 +6,10 @@ After=network-online.target
 
 [Service]
 Restart=on-failure
-Environment="OMNIWATCH_DIR=/opt/omniwatch"
-Environment="OMNIWATCH_CONFIG=/etc/omniwatch/config"
-Environment="OMNIWATCH_PORT=8000"
-ExecStart=/opt/omniwatch/bin/gunicorn -b 0.0.0.0:${OMNIWATCH_PORT} omniwatch.node_monitoring:app
+Environment="omnistat_DIR=/opt/omnistat"
+Environment="omnistat_CONFIG=/etc/omnistat/config"
+Environment="omnistat_PORT=8000"
+ExecStart=/opt/omnistat/bin/gunicorn -b 0.0.0.0:${omnistat_PORT} omnistat.node_monitoring:app
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no

@@ -41,10 +41,10 @@ from pssh.clients import ParallelSSHClient
 
 # Ensure current directory is part of Python's path; allows direct execution
 # from the top directory of the project when package is not installed.
-if os.path.isdir("omniwatch") and sys.path[0]:
+if os.path.isdir("omnistat") and sys.path[0]:
     sys.path.insert(0, "")
 
-from omniwatch import utils
+from omnistat import utils
 
 class UserBasedMonitoring:
     def __init__(self):
@@ -87,13 +87,13 @@ class UserBasedMonitoring:
         else:
             scrape_timeout = scrape_interval
 
-        section = "omniwatch.promserver"
+        section = "omnistat.promserver"
         ps_binary = self.runtimeConfig[section].get("binary")
         ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
 
         # datadir can be overridden by separate env variable
-        if "OMNIWATCH_PROMSERVER_DATADIR" in os.environ:
-            ps_datadir = os.getenv("OMNIWATCH_PROMSERVER_DATADIR")
+        if "OMNISTAT_PROMSERVER_DATADIR" in os.environ:
+            ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
 
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].get("corebinding", "0")
@@ -121,7 +121,7 @@ class UserBasedMonitoring:
             prom_config["scrape_configs"] = []
             prom_config["scrape_configs"].append(
                 {
-                    "job_name": "omniwatch",
+                    "job_name": "omnistat",
                     "scrape_interval": scrape_interval,
                     "scrape_timeout": scrape_timeout,
                     "static_configs": [computes],
@@ -161,13 +161,13 @@ class UserBasedMonitoring:
         return
 
     def startExporters(self):
-        port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
-        corebinding = self.runtimeConfig["omniwatch.collectors"].get("corebinding", "1")
+        port = self.runtimeConfig["omnistat.collectors"].get("usermode_port", "8001")
+        corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
 
         cwd = os.getcwd()
         cmd = (
             f"nice -n 20 {sys.executable} -m"
-            f" omniwatch.node_monitoring --configfile={self.configFile}"
+            f" omnistat.node_monitoring --configfile={self.configFile}"
         )
 
         # Assume environment is the same across nodes; if numactl is present
@@ -185,8 +185,8 @@ class UserBasedMonitoring:
                     "-N %s" % numNodes,
                     "--ntasks-per-node=1",
                     "%s" % sys.executable,
-                    "-m", "omniwatch.slurm_env",
-                    "%s" % self.runtimeConfig["omniwatch.collectors.slurm"].get("job_detection_file")
+                    "-m", "omnistat.slurm_env",
+                    "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file")
                 ]
                 utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 
@@ -245,7 +245,7 @@ class UserBasedMonitoring:
         return
 
     def stopExporters(self):
-        port = self.runtimeConfig["omniwatch.collectors"].get("usermode_port", "8001")
+        port = self.runtimeConfig["omnistat.collectors"].get("usermode_port", "8001")
 
         for host in self.slurmHosts:
             logging.info("Stopping exporter for host -> %s" % host)

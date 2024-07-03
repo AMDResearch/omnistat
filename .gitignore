@@ -8,5 +8,5 @@ data_prom
 *~
 docker/prometheus-data
 build
-omniwatch.egg-info/
-omniwatch.config
+omnistat.egg-info/
+omnistat.config

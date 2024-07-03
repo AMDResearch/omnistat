@@ -45,8 +45,8 @@ import os
 import sys
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
-from omniwatch.collector_base import Collector
-from omniwatch.utils import gpu_index_mapping
+from omnistat.collector_base import Collector
+from omnistat.utils import gpu_index_mapping
 
 rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
                        'socclk': 0x3, 'mclk': 0x4}
