@@ -31,7 +31,7 @@ def install(package):
 
 # -- Project information -----------------------------------------------------
 
-project = "Omniwatch"
+project = "Omnistat"
 copyright = "2023-2024, Advanced Micro Devices, Inc. All Rights Reserved"
 author = "AMD Research"
 
