@@ -102,7 +102,7 @@ def main():
     listenPort = config['omniwatch.collectors'].get('port',8000)
     options = {
         'bind': '%s:%s' % ('0.0.0.0', listenPort),
-        'workers': 2,
+        'workers': 1,
     }
 
     # Launch gunicorn
