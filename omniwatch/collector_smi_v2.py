@@ -96,7 +96,6 @@ class AMDSMI(Collector):
         self.__devices = []
         self.__GPUMetrics = {}
         self.__metricMapping = {}
-        self.__bdfMapping = {}
         self.__dumpMappedMetricsOnly = True
         # verify minimum version met
         check_min_version("24.5.2")
@@ -118,11 +117,12 @@ class AMDSMI(Collector):
         numGPUs_metric.set(self.__num_gpus)
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
+        bdfMapping = {}
         for index, device in enumerate(self.__devices):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
             bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
-            self.__bdfMapping[index] = convert_bdf_to_gpuid(bdf)
-        self.__indexMapping = gpu_index_mapping(self.__bdfMapping, self.__num_gpus)
+            bdfMapping[index] = convert_bdf_to_gpuid(bdf)
+        self.__indexMapping = gpu_index_mapping(bdfMapping, self.__num_gpus)
 
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
