@@ -3,7 +3,7 @@
 Test environment based on a containerized SLURM cluster.
 
 The provided Docker Compose environment creates a containerized SLURM cluster,
-and installs the working copy of omniwatch in the container at run time. It is
+and installs the working copy of Omnistat in the container at run time. It is
 meant to help make development easier, and enables testing without relying on
 access to real clusters.
 
