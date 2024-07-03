@@ -63,8 +63,7 @@ def findConfigFile(configFileArgument = None):
     Try to find one of the following locations in the filesystem:
      1. File pointed by configFileArgument (if defined)
      2. File pointed by OMNIWATCH_CONFIG (if defined)
-     3. "omniwatch.config" in the current directory
-     4. Default configuration file in the package
+     3. Default configuration file in the package
 
     Args:
         configFileArgument (string, optional): optional path to config file
@@ -78,9 +77,6 @@ def findConfigFile(configFileArgument = None):
     # locally, but most installations will need a custom file.
     packageDir = importlib.resources.files("omniwatch")
     configFile = packageDir.joinpath("config/omniwatch.default")
-
-    if os.path.isfile("./omniwatch.config"):
-        configFile = "./omniwatch.config"
 
     if "OMNIWATCH_CONFIG" in os.environ:
         configFile = os.environ["OMNIWATCH_CONFIG"]
