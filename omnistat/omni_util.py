@@ -53,7 +53,6 @@ class UserBasedMonitoring:
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
         self.timeout = 5           # default scrape timeout in seconds
-        self.use_pdsh = False      # whether to use pdsh for parallel exporter launch
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
@@ -62,10 +61,6 @@ class UserBasedMonitoring:
 
     def setMonitoringInterval(self, interval):
         self.scrape_interval = int(interval)
-        return
-
-    def enable_pdsh(self):
-        self.use_pdsh = True
         return
 
     def getSlurmHosts(self):
@@ -179,70 +174,54 @@ class UserBasedMonitoring:
             cmd = f"numactl --physcpubind={corebinding} {cmd}"
 
         if self.slurmHosts:
-            if self.use_pdsh:
-                logging.info("Saving SLURM job state locally to compute hosts...")
-                numNodes = os.getenv("SLURM_JOB_NUM_NODES")
-                srun_cmd = [
-                    "srun",
-                    "-N %s" % numNodes,
-                    "--ntasks-per-node=1",
-                    "%s" % sys.executable,
-                    "-m", "omnistat.slurm_env",
-                    "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file")
-                ]
-                utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
+            logging.info("Saving SLURM job state locally to compute hosts...")
+            numNodes = os.getenv("SLURM_JOB_NUM_NODES")
+            srun_cmd = [
+                "srun",
+                "-N %s" % numNodes,
+                "--ntasks-per-node=1",
+                "%s" % sys.executable,
+                "-m", "omnistat.slurm_env",
+                "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file")
+            ]
+            utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 
-                logging.info("Launching exporters in parallel using pdsh")
+            logging.info("Launching exporters in parallel using pdsh")
 
-                client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-                output = client.run_command(f"sh -c 'cd {cwd} && {cmd}'")
+            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
+            output = client.run_command(f"sh -c 'cd {cwd} && {cmd}'")
 
-                # verify exporter available on all nodes...
-                psecs = 6
-                logging.info("Exporters launched, pausing for %i secs" % psecs)
-                time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
-                numHosts = len(self.slurmHosts)
-                numAvail = 0
+            # verify exporter available on all nodes...
+            psecs = 6
+            logging.info("Exporters launched, pausing for %i secs" % psecs)
+            time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
+            numHosts = len(self.slurmHosts)
+            numAvail = 0
 
-                logging.info("Testing exporter availability")
-                delay_start = 0.05
-                for host in self.slurmHosts:
-                    host_ok = False
-                    for iter in range(1, 25):
-                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            result = s.connect_ex((host, int(port)))
-                            if result == 0:
-                                numAvail = numAvail + 1
-                                logging.debug("Exporter on %s ok" % host)
-                                host_ok = True
-                                break
-                            else:
-                                delay = delay_start * iter
-                                logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
-                                time.sleep(delay)
-                            s.close()
+            logging.info("Testing exporter availability")
+            delay_start = 0.05
+            for host in self.slurmHosts:
+                host_ok = False
+                for iter in range(1, 25):
+                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                        result = s.connect_ex((host, int(port)))
+                        if result == 0:
+                            numAvail = numAvail + 1
+                            logging.debug("Exporter on %s ok" % host)
+                            host_ok = True
+                            break
+                        else:
+                            delay = delay_start * iter
+                            logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
+                            time.sleep(delay)
+                        s.close()
 
-                    if not host_ok:
-                        logging.error("Missing exporter on %s (%s)" % (host, result))
+                if not host_ok:
+                    logging.error("Missing exporter on %s (%s)" % (host, result))
 
-                logging.info("%i of %i exporters available" % (numAvail, numHosts))
-                if numAvail == numHosts:
-                    logging.info("User mode data collectors: SUCCESS")
-
-            else:
-                # Launch with serialized ssh
-                for host in self.slurmHosts:
-                    logging.info("Launching exporter on host -> %s" % host)
-
-                    logfile = f"exporter.{host}.log"
-                    # Overwrite previous log file
-                    if os.path.exists(logfile):
-                        os.remove(logfile)
-
-                    host_cmd = f"{cmd} --capture-output --log-file {logfile}"
-                    ssh_cmd = ["ssh", host, f"sh -c 'cd {cwd} && {host_cmd} {app}'"]
-                    logging.debug("-> running command: %s" % (ssh_cmd))
-                    utils.runShellCommand(ssh_cmd, timeout=25, exit_on_error=False)
+            logging.info("%i of %i exporters available" % (numAvail, numHosts))
+            if numAvail == numHosts:
+                logging.info("User mode data collectors: SUCCESS")
 
         return
 
@@ -271,7 +250,6 @@ def main():
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", help="Monitoring sampling interval in secs (default=60)")
-    parser.add_argument("--use_pdsh", help="Use pdsh utility to launch exporters in parallel (default mode)", default=True,action="store_true")
 
     args = parser.parse_args()
 
@@ -285,8 +263,6 @@ def main():
     userUtils.setup(args.configfile)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
-    if args.use_pdsh:
-        userUtils.enable_pdsh()
 
     if args.startserver:
         userUtils.startPromServer()
