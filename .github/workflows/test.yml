@@ -1,8 +1,12 @@
 name: ubuntu/slurm
-on: [push]
+on:
+  push:
+    branches:  [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
 jobs:
   test:
-    name: Test Omnistat integration
+    name: Test Omnistat client
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository code
