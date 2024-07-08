@@ -263,7 +263,14 @@ def removeQuotes(input):
 
 def getVersion():
     """Return omnistat version info"""
-    return version('omnistat')
+    try:
+        return version('omnistat')
+    except importlib.metadata.PackageNotFoundError:
+        # When package is not installed, rely on setuptools-git-versioning
+        # to figure out the version; use the executable because the internal
+        # API is not guaranteed to remain compatible.
+        result = runShellCommand("setuptools-git-versioning")
+        return result.stdout.strip()
 
 
 def displayVersion(version):
