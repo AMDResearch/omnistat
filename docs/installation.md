@@ -112,14 +112,15 @@ In the same node, confirm the client is responding to requests with non-zero
 values for GPU metrics:
 ```
 $ curl localhost:8000/metrics | grep rocm | grep -v "^#"
-rocm_num_gpus 8.0
-card0_rocm_temp_die_edge 32.0
-card0_rocm_avg_pwr 93.0
-card0_rocm_sclk_clock_mhz 1700.0
-card0_rocm_mclk_clock_mhz 1600.0
-card0_rocm_vram_total 6.870269952e+010
-card0_rocm_vram_used 1.0993664e+07
-card0_rocm_utilization 0.0
+rocm_num_gpus 4.0
+rocm_temperature_edge_celsius{card="3"} 40.0
+rocm_temperature_edge_celsius{card="2"} 43.0
+rocm_temperature_edge_celsius{card="1"} 43.0
+rocm_temperature_edge_celsius{card="0"} 42.0
+rocm_average_socket_power_watts{card="3"} 35.0
+rocm_average_socket_power_watts{card="2"} 33.0
+rocm_average_socket_power_watts{card="1"} 35.0
+rocm_average_socket_power_watts{card="0"} 35.0
 ...
 ```
 
