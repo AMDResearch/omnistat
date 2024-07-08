@@ -12,6 +12,7 @@ from prometheus_api_client import PrometheusConnect
 # ROCm is installed if we can find `rocminfo' in the host.
 rocm_host = True if shutil.which("rocminfo") else False
 
+
 class TestIntegration:
     url = "http://localhost:9090/"
     node = "node:8000"
@@ -66,11 +67,12 @@ class TestIntegration:
         assert jobid == last_jobid + 1, "One job should have been executed"
 
         num_samples = len(job["values"])
-        assert num_samples == job_seconds or num_samples == job_seconds + 1, \
-               "Expected approximately one sample per second"
+        assert (
+            num_samples == job_seconds or num_samples == job_seconds + 1
+        ), "Expected approximately one sample per second"
 
     # Execute an empty job lasting a given amount of seconds
     def run_job(self, seconds):
-        sbatch_cmd = f"sbatch --wrap=\"sleep {seconds}\""
+        sbatch_cmd = f'sbatch --wrap="sleep {seconds}"'
         exec_cmd = f"docker exec slurm-controller-1 bash -c 'cd /jobs; {sbatch_cmd}'"
         os.system(exec_cmd)

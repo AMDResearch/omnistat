@@ -48,11 +48,12 @@ if os.path.isdir("omnistat") and sys.path[0]:
 
 from omnistat import utils
 
+
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
-        self.timeout = 5           # default scrape timeout in seconds
+        self.timeout = 5  # default scrape timeout in seconds
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
@@ -162,10 +163,7 @@ class UserBasedMonitoring:
         corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
 
         cwd = os.getcwd()
-        cmd = (
-            f"nice -n 20 {sys.executable} -m"
-            f" omnistat.node_monitoring --configfile={self.configFile}"
-        )
+        cmd = f"nice -n 20 {sys.executable} -m" f" omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
@@ -181,8 +179,9 @@ class UserBasedMonitoring:
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
                 "%s" % sys.executable,
-                "-m", "omnistat.slurm_env",
-                "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file")
+                "-m",
+                "omnistat.slurm_env",
+                "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file"),
             ]
             utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 

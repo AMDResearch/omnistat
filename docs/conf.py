@@ -136,7 +136,7 @@ latex_elements = {
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-#htmlhelp_basename = "Omniper"
+# htmlhelp_basename = "Omniper"
 
 html_logo = "images/amd-header-logo.svg"
 html_theme_options = {

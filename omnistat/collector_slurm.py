@@ -41,8 +41,9 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 import omnistat.utils as utils
 from omnistat.collector_base import Collector
 
+
 class SlurmJob(Collector):
-    def __init__(self,userMode=False,annotations=False,jobDetection=None):
+    def __init__(self, userMode=False, annotations=False, jobDetection=None):
         logging.debug("Initializing SlurmJob data collector")
         self.__prefix = "slurmjob_"
         self.__userMode = userMode
@@ -50,18 +51,14 @@ class SlurmJob(Collector):
         self.__SLURMmetrics = {}
         self.__slurmJobInfo = []
         self.__lastAnnotationLabel = None
-        self.__slurmJobMode = jobDetection['mode']
-        self.__slurmJobFile = jobDetection['file']
+        self.__slurmJobMode = jobDetection["mode"]
+        self.__slurmJobFile = jobDetection["file"]
 
         # setup squeue binary path to query slurm to determine node ownership
         command = utils.resolvePath("squeue", "SLURM_PATH")
         # command-line flags for use with squeue to obtained desired metrics
         hostname = platform.node().split(".", 1)[0]
-        flags = (
-            "-w "
-            + hostname
-            + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
-        )
+        flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
         # cache query command with options
         self.__squeue_query = [command] + flags.split()
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
@@ -71,7 +68,7 @@ class SlurmJob(Collector):
             # read from file if available
             jobFile = self.__slurmJobFile
             if os.path.isfile(jobFile):
-                with open(jobFile,'r') as f:
+                with open(jobFile, "r") as f:
                     self.__slurmJobInfo = json.load(f)
                 logging.info("--> usermode jobinfo (from file): %s" % self.__slurmJobInfo)
 
@@ -80,18 +77,21 @@ class SlurmJob(Collector):
                 # note: a longer timeout is provided since we only query once and some systems have slow
                 # slurm response times
                 logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
-                self.__slurmJobInfo = self.querySlurmJob(timeout=15,exit_on_error=True,mode='squeue')
+                self.__slurmJobInfo = self.querySlurmJob(timeout=15, exit_on_error=True, mode="squeue")
                 logging.info("--> usermode jobinfo (from slurm query): %s" % self.__slurmJobInfo)
 
         else:
-            if self.__slurmJobMode == 'file-based':
-                logging.info("collector_slurm: reading job information from prolog/epilog derived file (%s)" % self.__slurmJobFile)
-            elif self.__slurmJobMode == 'squeue':
+            if self.__slurmJobMode == "file-based":
+                logging.info(
+                    "collector_slurm: reading job information from prolog/epilog derived file (%s)"
+                    % self.__slurmJobFile
+                )
+            elif self.__slurmJobMode == "squeue":
                 logging.info("collector_slurm: will poll slurm periodicaly with squeue")
             else:
                 logging.error("Unsupported slurm job data collection mode")
 
-    def querySlurmJob(self,timeout=1,exit_on_error=False,mode='squeue'):
+    def querySlurmJob(self, timeout=1, exit_on_error=False, mode="squeue"):
         """
         Query SLURM and return job info for local host.
         Supports two query modes: squeue call and read from file.
@@ -100,19 +100,25 @@ class SlurmJob(Collector):
         """
 
         results = {}
-        if mode == 'squeue':
-            data = utils.runShellCommand(self.__squeue_query,timeout=timeout,exit_on_error=exit_on_error)
+        if mode == "squeue":
+            data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
             if data.stdout.strip():
                 data = data.stdout.strip().split(":")
-                keys = ["SLURM_JOB_ID","SLURM_JOB_USER","SLURM_JOB_PARTITION","SLURM_JOB_NUM_NODES","SLURM_JOB_BATCHMODE"]
-                results = dict(zip(keys,data))
-        elif mode == 'file-based':
+                keys = [
+                    "SLURM_JOB_ID",
+                    "SLURM_JOB_USER",
+                    "SLURM_JOB_PARTITION",
+                    "SLURM_JOB_NUM_NODES",
+                    "SLURM_JOB_BATCHMODE",
+                ]
+                results = dict(zip(keys, data))
+        elif mode == "file-based":
             jobFileExists = os.path.isfile(self.__slurmJobFile)
             if jobFileExists:
                 with open(self.__slurmJobFile, "r") as file:
                     results = json.load(file)
-        return(results)
+        return results
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -120,9 +126,7 @@ class SlurmJob(Collector):
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid", "user", "partition", "nodes", "batchflag"]
-        self.__SLURMmetrics["info"] = Gauge(
-            self.__prefix + "info", "SLURM job id", labels
-        )
+        self.__SLURMmetrics["info"] = Gauge(self.__prefix + "info", "SLURM job id", labels)
 
         # metric to support user annotations
         self.__SLURMmetrics["annotations"] = Gauge(
@@ -170,8 +174,7 @@ class SlurmJob(Collector):
                 #  1. Previous annotation stopped (file no longer present)
                 #  2. There is a new annotation (label has changed)
                 if self.__lastAnnotationLabel != None and (
-                    not userFileExists
-                    or self.__lastAnnotationLabel != data["annotation"]
+                    not userFileExists or self.__lastAnnotationLabel != data["annotation"]
                 ):
                     self.__SLURMmetrics["annotations"].labels(
                         marker=self.__lastAnnotationLabel,
@@ -188,8 +191,6 @@ class SlurmJob(Collector):
 
         # Case when no job detected
         else:
-            self.__SLURMmetrics["info"].labels(
-                jobid="", user="", partition="", nodes="", batchflag=""
-            ).set(1)
+            self.__SLURMmetrics["info"].labels(jobid="", user="", partition="", nodes="", batchflag="").set(1)
 
         return

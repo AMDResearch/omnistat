@@ -1,18 +1,18 @@
 # -------------------------------------------------------------------------------
 # MIT License
-# 
+#
 # Copyright (c) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,8 +48,8 @@ from prometheus_client import Gauge, generate_latest, CollectorRegistry
 from omnistat.collector_base import Collector
 from omnistat.utils import gpu_index_mapping
 
-rsmi_clk_names_dict = {'sclk': 0x0, 'fclk': 0x1, 'dcefclk': 0x2,\
-                       'socclk': 0x3, 'mclk': 0x4}
+rsmi_clk_names_dict = {"sclk": 0x0, "fclk": 0x1, "dcefclk": 0x2, "socclk": 0x3, "mclk": 0x4}
+
 
 def get_rsmi_frequencies_type(rsmiVersion):
     """
@@ -68,35 +68,48 @@ def get_rsmi_frequencies_type(rsmiVersion):
         RSMI_MAX_NUM_FREQUENCIES = 32
 
         class rsmi_frequencies_t(ctypes.Structure):
-            _fields_ = [('num_supported', ctypes.c_int32),
-                        ('current', ctypes.c_uint32),
-                        ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
+            _fields_ = [
+                ("num_supported", ctypes.c_int32),
+                ("current", ctypes.c_uint32),
+                ("frequency", ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES),
+            ]
+
         return rsmi_frequencies_t()
     else:
         logging.info("SMI version >= 6")
         RSMI_MAX_NUM_FREQUENCIES = 33
+
         class rsmi_frequencies_t(ctypes.Structure):
-            _fields_ = [('has_deep_sleep', ctypes.c_bool),
-                        ('num_supported', ctypes.c_int32),
-                        ('current', ctypes.c_uint32),
-                        ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)]
+            _fields_ = [
+                ("has_deep_sleep", ctypes.c_bool),
+                ("num_supported", ctypes.c_int32),
+                ("current", ctypes.c_uint32),
+                ("frequency", ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES),
+            ]
+
         return rsmi_frequencies_t()
 
+
 class rsmi_power_type_t(ctypes.c_int):
-            RSMI_AVERAGE_POWER = 0,
-            RSMI_CURRENT_POWER = 1,
-            RSMI_INVALID_POWER = 0xFFFFFFFF
+    RSMI_AVERAGE_POWER = (0,)
+    RSMI_CURRENT_POWER = (1,)
+    RSMI_INVALID_POWER = 0xFFFFFFFF
+
 
 class rsmi_version_t(ctypes.Structure):
-     _fields_ = [('major', ctypes.c_uint32),
-                 ('minor', ctypes.c_uint32),
-                 ('patch', ctypes.c_uint32),
-                 ('build', ctypes.c_char_p)]
+    _fields_ = [
+        ("major", ctypes.c_uint32),
+        ("minor", ctypes.c_uint32),
+        ("patch", ctypes.c_uint32),
+        ("build", ctypes.c_char_p),
+    ]
 
-#--
+
+# --
+
 
 class ROCMSMI(Collector):
-    def __init__(self,rocm_path="/opt/rocm"):
+    def __init__(self, rocm_path="/opt/rocm"):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
 
@@ -108,13 +121,13 @@ class ROCMSMI(Collector):
 
             # initialize smi library
             ret_init = self.__libsmi.rsmi_init(0)
-            assert(ret_init == 0)
+            assert ret_init == 0
             logging.info("SMI library API initialized")
 
             # cache smi library version
             verInfo = rsmi_version_t()
             ret = self.__libsmi.rsmi_version_get(ctypes.byref(verInfo))
-            self.__smiVersion = {"major":verInfo.major,"minor":verInfo.minor,"patch":verInfo.patch}
+            self.__smiVersion = {"major": verInfo.major, "minor": verInfo.minor, "patch": verInfo.patch}
 
             self.__rsmi_frequencies_type = get_rsmi_frequencies_type(self.__smiVersion)
 
@@ -122,7 +135,7 @@ class ROCMSMI(Collector):
             logging.error("")
             logging.error("ERROR: Unable to load SMI library.")
             logging.error("--> looking for %s" % smi_lib)
-            logging.error("--> please verify path and set \"rocm_path\" in runtime config file if necesssary.")
+            logging.error('--> please verify path and set "rocm_path" in runtime config file if necesssary.')
             logging.error("")
             sys.exit(4)
 
@@ -141,24 +154,21 @@ class ROCMSMI(Collector):
 
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
-        assert(ret == 0)
+        assert ret == 0
         logging.info("Number of GPU devices = %i" % numDevices.value)
 
         # register number of GPUs
-        numGPUs_metric = Gauge(
-            self.__prefix + "num_gpus", "# of GPUS available on host"
-        )
+        numGPUs_metric = Gauge(self.__prefix + "num_gpus", "# of GPUS available on host")
         numGPUs_metric.set(numDevices.value)
         self.__num_gpus = numDevices.value
-
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         bdfid = ctypes.c_int64(0)
         bdfMapping = {}
         for i in range(self.__num_gpus):
             device = ctypes.c_uint32(i)
-            ret = self.__libsmi.rsmi_dev_pci_id_get(device,ctypes.byref(bdfid))
-            assert(ret == 0)
+            ret = self.__libsmi.rsmi_dev_pci_id_get(device, ctypes.byref(bdfid))
+            assert ret == 0
             bdfMapping[i] = bdfid.value
         self.__indexMapping = gpu_index_mapping(bdfMapping, self.__num_gpus)
 
@@ -168,7 +178,9 @@ class ROCMSMI(Collector):
         # temperature
         self.registerGPUMetric(self.__prefix + "temperature_edge_celsius", "gauge", "Temperature (Sensor edge) (C)")
         # power
-        self.registerGPUMetric(self.__prefix + "average_socket_power_watts", "gauge", "Average Graphics Package Power (W)")
+        self.registerGPUMetric(
+            self.__prefix + "average_socket_power_watts", "gauge", "Average Graphics Package Power (W)"
+        )
         # clock speeds
         self.registerGPUMetric(self.__prefix + "sclk_clock_mhz", "gauge", "current sclk clock speed (Mhz)")
         self.registerGPUMetric(self.__prefix + "mclk_clock_mhz", "gauge", "current mclk clock speed (Mhz)")
@@ -176,8 +188,8 @@ class ROCMSMI(Collector):
         self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
         self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
         # utilization
-        self.registerGPUMetric(self.__prefix + "utilization_percentage","gauge","GPU use (%)")
-        
+        self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
+
         return
 
     def updateMetrics(self):
@@ -189,16 +201,12 @@ class ROCMSMI(Collector):
 
     def registerGPUMetric(self, metricName, type, description):
         if metricName in self.__GPUmetrics:
-            logging.error(
-                "Ignoring duplicate metric name addition: %s" % (name)
-            )
+            logging.error("Ignoring duplicate metric name addition: %s" % (name))
             return
         if type == "gauge":
-            self.__GPUmetrics[metricName] = Gauge(metricName, description,labelnames=["card"])
+            self.__GPUmetrics[metricName] = Gauge(metricName, description, labelnames=["card"])
 
-            logging.info(
-                "--> [registered] %s -> %s (gauge)" % (metricName, description)
-            )
+            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
         else:
             logging.error("Ignoring unknown metric type -> %s" % type)
         return
@@ -209,69 +217,66 @@ class ROCMSMI(Collector):
         # ---
 
         temperature = ctypes.c_int64(0)
-        temp_metric = ctypes.c_int32(0)    # 0=RSMI_TEMP_CURRENT
+        temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         power_type = rsmi_power_type_t()
         # freq = rsmi_frequencies_t()
         freq = self.__rsmi_frequencies_type
-        freq_system_clock = 0     # 0=RSMI_CLK_TYPE_SYS
-        freq_mem_clock = 4        # 4=RSMI_CLK_TYPE_MEM
+        freq_system_clock = 0  # 0=RSMI_CLK_TYPE_SYS
+        freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
-        vram_used  = ctypes.c_uint64(0)
+        vram_used = ctypes.c_uint64(0)
         utilization = ctypes.c_uint32(0)
 
         for i in range(self.__num_gpus):
-            
+
             device = ctypes.c_uint32(i)
             gpuLabel = self.__indexMapping[i]
 
-            #--
+            # --
             # temperature [millidegrees Celcius, converted to degrees Celcius]
             metric = self.__prefix + "temperature_edge_celsius"
-            ret = self.__libsmi.rsmi_dev_temp_metric_get(device,
-                                                         temp_location,
-                                                         temp_metric,
-                                                         ctypes.byref(temperature))
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
 
-            #--
+            # --
             # average socket power [micro Watts, converted to Watts]
             metric = self.__prefix + "average_socket_power_watts"
             if self.__smiVersion["major"] < 6:
                 ret = self.__libsmi.rsmi_dev_power_ave_get(device, 0, ctypes.byref(power))
             else:
-                ret = self.__libsmi.rsmi_dev_power_get(device,ctypes.byref(power),ctypes.byref(power_type))
+                ret = self.__libsmi.rsmi_dev_power_get(device, ctypes.byref(power), ctypes.byref(power_type))
             if ret == 0:
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
             else:
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(0.0)
 
-            #--
+            # --
             # clock speeds [Hz, converted to megaHz]
             metric = self.__prefix + "sclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_system_clock, ctypes.byref(freq))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
-            
-            metric = self.__prefix + "mclk_clock_mhz"
-            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device,freq_mem_clock, ctypes.byref(freq))
+            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_system_clock, ctypes.byref(freq))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
 
-            #--
+            metric = self.__prefix + "mclk_clock_mhz"
+            ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_mem_clock, ctypes.byref(freq))
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
+
+            # --
             # gpu memory [total_vram in bytes]
             metric = self.__prefix + "vram_total_bytes"
-            ret = self.__libsmi.rsmi_dev_memory_total_get(device,0x0,ctypes.byref(vram_total))
+            ret = self.__libsmi.rsmi_dev_memory_total_get(device, 0x0, ctypes.byref(vram_total))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_total.value)
 
             metric = self.__prefix + "vram_used_percentage"
-            ret = self.__libsmi.rsmi_dev_memory_usage_get(device,0x0,ctypes.byref(vram_used))
+            ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_used))
             percentage = round(100.0 * vram_used.value / vram_total.value, 4)
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(percentage)
 
-            #--
+            # --
             # utilization
             metric = self.__prefix + "utilization_percentage"
-            ret = self.__libsmi.rsmi_dev_busy_percent_get(device,ctypes.byref(utilization))
+            ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
 
         return

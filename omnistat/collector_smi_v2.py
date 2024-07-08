@@ -1,18 +1,18 @@
 # -------------------------------------------------------------------------------
 # MIT License
-# 
+#
 # Copyright (c) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,6 +47,7 @@ from omnistat.collector_base import Collector
 from prometheus_client import Gauge
 from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping
 
+
 def get_gpu_metrics(device):
     result = smi.amdsmi_get_gpu_metrics_info(device)
     for k, v in result.items():
@@ -72,19 +73,21 @@ def get_gpu_metrics(device):
             result[k] = 0
     return result
 
+
 def check_min_version(minVersion):
     localVer = smi.amdsmi_get_lib_version()
-    localVerString = '.'.join([str(localVer["year"]),str(localVer["major"]),str(localVer["minor"])])
+    localVerString = ".".join([str(localVer["year"]), str(localVer["major"]), str(localVer["minor"])])
     vmin = packaging.version.Version(minVersion)
     vloc = packaging.version.Version(localVerString)
     if vloc < vmin:
         logging.error("")
         logging.error("ERROR: Minimum amdsmi version not met.")
-        logging.error("--> Detected version = %s (>= %s required)" % (vloc,vmin))
+        logging.error("--> Detected version = %s (>= %s required)" % (vloc, vmin))
         logging.error("")
         sys.exit(4)
     else:
         logging.info("--> library version = %s" % vloc)
+
 
 class AMDSMI(Collector):
     def __init__(self):
@@ -112,7 +115,8 @@ class AMDSMI(Collector):
 
         # number of GPUs
         numGPUs_metric = Gauge(
-            self.__prefix + "num_gpus", "# of GPUS available on host",
+            self.__prefix + "num_gpus",
+            "# of GPUS available on host",
         )
         numGPUs_metric.set(self.__num_gpus)
 
@@ -127,17 +131,21 @@ class AMDSMI(Collector):
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
             # core GPU metric definitions
-            "average_gfx_activity" : "utilization_percentage",
+            "average_gfx_activity": "utilization_percentage",
             "vram_total": "vram_total_bytes",
-            "average_socket_power" : "average_socket_power_watts",
+            "average_socket_power": "average_socket_power_watts",
             "temperature_edge": "temperature_edge_celsius",
             "current_gfxclks": "sclk_clock_mhz",
-            "average_uclk_frequency": "mclk_clock_mhz"
+            "average_uclk_frequency": "mclk_clock_mhz",
         }
 
         # Register memory related metrics
-        self.__GPUMetrics["vram_total_bytes"] = Gauge(self.__prefix + "vram_total_bytes","VRAM Memory in Use (%)",labelnames=["card"])
-        self.__GPUMetrics["vram_used_percentage"] = Gauge(self.__prefix + "vram_used_percentage","VRAM Memory in Use (%)",labelnames=["card"])
+        self.__GPUMetrics["vram_total_bytes"] = Gauge(
+            self.__prefix + "vram_total_bytes", "VRAM Memory in Use (%)", labelnames=["card"]
+        )
+        self.__GPUMetrics["vram_used_percentage"] = Gauge(
+            self.__prefix + "vram_used_percentage", "VRAM Memory in Use (%)", labelnames=["card"]
+        )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
         for idx, device in enumerate(self.__devices):
@@ -153,7 +161,7 @@ class AMDSMI(Collector):
 
                 # add Gauge metric only once
                 if metric_name not in self.__GPUMetrics.keys():
-                    self.__GPUMetrics[metric_name] = Gauge(metric_name,f"{metric}",labelnames=["card"])
+                    self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
 
         return
 
@@ -185,4 +193,3 @@ class AMDSMI(Collector):
                 # Set metric
                 metric.labels(card=cardId).set(value)
         return
-

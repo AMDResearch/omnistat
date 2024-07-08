@@ -1,18 +1,18 @@
 # -------------------------------------------------------------------------------
 # MIT License
-# 
+#
 # Copyright (c) 2023 - 2024 Advanced Micro Devices, Inc. All Rights Reserved.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,6 +34,7 @@ from importlib.metadata import version
 
 from pathlib import Path
 
+
 def convert_bdf_to_gpuid(bdf_string):
     """
     Converts BDF text string in hex format to a GPU location id in the form written by kfd driver
@@ -46,26 +47,28 @@ def convert_bdf_to_gpuid(bdf_string):
         int: location_id
     """
 
-    domain = int(bdf_string.split(':')[0],16)
+    domain = int(bdf_string.split(":")[0], 16)
     # strip leading domain
-    bdf = bdf_string .split(':')[1:]
+    bdf = bdf_string.split(":")[1:]
     # cull out bus, device, and function as ints
-    bus = int(bdf[0],16)
-    dev_func = bdf[1].split('.')
-    device = int(dev_func[0],16)
-    function = int(dev_func[1],16)
+    bus = int(bdf[0], 16)
+    dev_func = bdf[1].split(".")
+    device = int(dev_func[0], 16)
+    function = int(dev_func[1], 16)
     # assemble id per kfd driver
-    location_id = ((bus << 8) | function)
+    location_id = (bus << 8) | function
     return location_id
+
 
 def pass_through_indexing(numGpus):
     """returns a pass through GPU indexingwith 0:0, 1:1, etc.  Intended for use in cases where
-       exact mapping cannot be ascertained by reading sysfs topology files.
+    exact mapping cannot be ascertained by reading sysfs topology files.
     """
     gpu_index_mapping = {}
     for i in range(numGpus):
         gpu_index_mapping[i] = str(i)
     return gpu_index_mapping
+
 
 def gpu_index_mapping(bdfMapping, expectedNumGPUs):
     """Generate a mapping between kfd gpu indexing (SMI lib) to those of HIP_VISIBLE_DEVICES. Intended for
@@ -79,7 +82,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
         dict: maps kfd indices to HIP_VISIBLE_DEVICES indices
     """
     kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
-    logging.info("GPU topology indexing: Scanning devices from %s"% kfd_nodes)
+    logging.info("GPU topology indexing: Scanning devices from %s" % kfd_nodes)
     if not os.path.isdir(kfd_nodes):
         logging.warn("--> directory not found")
         return pass_through_indexing(expectedNumGPUs)
@@ -95,8 +98,8 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
             properties = {}
             with open(file) as f:
                 for line in f:
-                    key, value = line.strip().split(' ')
-                    if key == 'location_id':
+                    key, value = line.strip().split(" ")
+                    if key == "location_id":
                         location_id = int(value)
             if location_id == 0:
                 numNonGPUs += 1
@@ -109,7 +112,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
             return pass_through_indexing(expectedNumGPUs)
 
     if numGPUs != expectedNumGPUs:
-        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs,expectedNumGPUs))
+        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
         return pass_through_indexing(expectedNumGPUs)
 
     gpuMappingOrder = {}
@@ -123,6 +126,7 @@ def gpu_index_mapping(bdfMapping, expectedNumGPUs):
     logging.info("--> Mapping: %s" % gpuMappingOrder)
     return gpuMappingOrder
 
+
 def error(message):
     """Log an error message and exit
 
@@ -133,7 +137,7 @@ def error(message):
     sys.exit(1)
 
 
-def findConfigFile(configFileArgument = None):
+def findConfigFile(configFileArgument=None):
     """Identify configuration file location
 
     Try to find one of the following locations in the filesystem:
@@ -209,9 +213,9 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
     return results
 
 
-def runBGProcess(command, outputFile=".bgcommand.output", mode='w'):
+def runBGProcess(command, outputFile=".bgcommand.output", mode="w"):
     logging.debug("Command to run in background = %s" % command)
-    #results = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=open(outputFile,"w"))
+    # results = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=open(outputFile,"w"))
 
     outfile = open(outputFile, mode)
     results = subprocess.Popen(command, stdout=outfile, stderr=outfile)
@@ -264,7 +268,7 @@ def removeQuotes(input):
 def getVersion():
     """Return omnistat version info"""
     try:
-        return version('omnistat')
+        return version("omnistat")
     except importlib.metadata.PackageNotFoundError:
         # When package is not installed, rely on setuptools-git-versioning
         # to figure out the version; use the executable because the internal
