@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/opt/omnistat/bin/python -m omnistat.slurm_env
+/opt/omnistat/bin/omnistat-slurm-env
