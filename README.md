@@ -1,3 +1,5 @@
+[![CI](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml)
+
 # Omnistat
 
 ## General
