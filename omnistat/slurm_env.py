@@ -35,11 +35,11 @@ import json
 import os
 import sys
 
-jobData = {}
-jobFile = "/tmp/omni_slurmjobinfo"
-
 
 def main():
+    jobData = {}
+    jobFile = "/tmp/omni_slurmjobinfo"
+
     if len(sys.argv) > 1:
         jobFile = sys.argv[1]
 
