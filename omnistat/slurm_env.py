@@ -38,22 +38,25 @@ import sys
 jobData = {}
 jobFile = "/tmp/omni_slurmjobinfo"
 
-if len(sys.argv) > 1:
-    jobFile = sys.argv[1]
+def main():
+    if len(sys.argv) > 1:
+        jobFile = sys.argv[1]
 
-if "SLURM_JOB_ID" in os.environ:
-    jobData["SLURM_JOB_ID"] = os.getenv("SLURM_JOB_ID")
-    jobData["SLURM_JOB_USER"] = os.getenv("SLURM_JOB_USER")
-    jobData["SLURM_JOB_PARTITION"] = os.getenv("SLURM_JOB_PARTITION")
-    jobData["SLURM_JOB_NUM_NODES"] = os.getenv("SLURM_JOB_NUM_NODES")
-    if "SLURM_PTY_PORT" in os.environ:
-        jobData["SLURM_JOB_BATCHMODE"] = 0
+    if "SLURM_JOB_ID" in os.environ:
+        jobData["SLURM_JOB_ID"] = os.getenv("SLURM_JOB_ID")
+        jobData["SLURM_JOB_USER"] = os.getenv("SLURM_JOB_USER")
+        jobData["SLURM_JOB_PARTITION"] = os.getenv("SLURM_JOB_PARTITION")
+        jobData["SLURM_JOB_NUM_NODES"] = os.getenv("SLURM_JOB_NUM_NODES")
+        if "SLURM_PTY_PORT" in os.environ:
+            jobData["SLURM_JOB_BATCHMODE"] = 0
+        else:
+            jobData["SLURM_JOB_BATCHMODE"] = 1
+
+        json.dump(jobData,open(jobFile,"w"),indent=4)
+
     else:
-        jobData["SLURM_JOB_BATCHMODE"] = 1
-
-    json.dump(jobData,open(jobFile,"w"),indent=4)
-
-else:
-    print("ERROR: SLURM settings not visible in current environment. Verify running in active job")
-    sys.exit(1)
+        print("ERROR: SLURM settings not visible in current environment. Verify running in active job")
+        sys.exit(1)
     
+if __name__ == '__main__':
+    main()
