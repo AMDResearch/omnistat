@@ -1,4 +1,4 @@
-name: Test Omnistat
+name: ubuntu/slurm
 on: [push]
 jobs:
   test:
