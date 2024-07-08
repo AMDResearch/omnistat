@@ -34,6 +34,7 @@ Omnistat utilities can be deployed with two primary use-cases in mind that diffe
 To demonstrate the overall data collection architecture employed by Omnistat in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
 
 ![System Mode](images/architecture_system-mode.png)
+
 ![User Mode](images/architecture_user-mode.png)
 
 In the __system-wide monitoring__ case, a system administrator enables data collectors permanently on all relevant hosts within the cluster and configures a Prometheus server to periodically poll these nodes (e.g. at 1 minute or 5 minute intervals). The Prometheus server typically runs on the cluster head node (or separate administrative host) and does not require GPU resources locally. For real-time and historical queries, the system administrator also enables a Grafana instance that queries the Prometheus datastore to provide a variety of visualizations with collected data. Example visualization panels using this approach are highlighted in the [Grafana](./grafana.md) section.
