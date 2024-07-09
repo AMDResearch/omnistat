@@ -9,7 +9,7 @@
 There are different ways to deploy and install Omnistat in a data center, and
 each system will generally require a certain level of customization. Here, we
 provide the basic manual steps to install the Omnistat client
-and server, and then provides an example of how to deploy Omnistat in a data
+and server, and then provide an example of how to deploy Omnistat in a data
 center using Ansible. Finally, an approach for integrating with the SLURM workload manager to track user jobs is discussed.
 
 For system-wide installation, we recommend creation and usage of a dedicated Linux user that will be used to run the data collector daemon of Omnistat (`omnistat-monitor`).  In addition, per the architecture highlighted in {numref}`fig-system-mode`, a separate server (or VM/container) is needed to support installations of a Prometheus server and Grafana instance.  These services can be hosted on your cluster head-node, or via a separate administrative host. Note that if the host chosen to support the Prometheus server can route out externally, you can also leverage public Grafana cloud infrastructure and [forward](https://grafana.com/docs/agent/latest/flow/tasks/collect-prometheus-metrics/) system telemetry data to an external Grafana instance.
