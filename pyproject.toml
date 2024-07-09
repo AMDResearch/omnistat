@@ -5,7 +5,7 @@ readme = "README.md"
 requires-python = ">=3.8,<3.11"
 
 [project.scripts]
-omnistat-monitor = "oministat.node_monitoring:main"
+omnistat-monitor = "omnistat.node_monitoring:main"
 omnistat-usermode = "omnistat.omni_util:main"
 omnistat-annotate = "omnistat.annotate:main"
 omnistat-query = "omnistat.query:main"
