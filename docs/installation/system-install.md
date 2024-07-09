@@ -7,37 +7,55 @@
 ```
 
 There are different ways to deploy and install Omnistat in a data center, and
-each system will generally require a certain level of customization. This
-section first describes the basic manual steps to install the Omnistat client
+each system will generally require a certain level of customization. Here, we
+provide the basic manual steps to install the Omnistat client
 and server, and then provides an example of how to deploy Omnistat in a data
-center using Ansible.
+center using Ansible. Finally, an approach for integrating with the SLURM workload manager to track user jobs is discussed.
 
-## Node-level deployment (client)
+For system-wide installation, we recommend creation and usage of a dedicated Linux user that will be used to run the data collector daemon of Omnistat (`omnistat-monitor`).  In addition, per the architecture highlighted in {numref}`fig-system-mode`, a separate server (or VM/container) is needed to support installations of a Prometheus server and Grafana instance.  These services can be hosted on your cluster head-node, or via a separate administrative host. Note that if the host chosen to support the Prometheus server can route out externally, you can also leverage public Grafana cloud infrastructure and [forward](https://grafana.com/docs/agent/latest/flow/tasks/collect-prometheus-metrics/) system telemetry data to an external Grafana instance.
 
-The following two subsections describe two different ways of running the
+To reiterate, the following assumptions are made throughout the rest of this system-wide installation discussion:
+
+__Assumptions__:
+* Installer has `sudo` or elevated credentials to install software system-wide, enable systemd services, and optionally modify the local SLURM configuration
+* [ROCm](https://rocm.docs.amd.com/en/latest/) v5.7 or newer is installed on all GPU hosts
+* Installer has provisioned a dedicated user (eg. `omnidc`) across all desired compute nodes of their system
+* Installer has identified a location to host a Prometheus server (if not present already) that has network access to all compute nodes.
+
+## Software installation
+
+To begin, we download the Omnistat software and install necessary Python dependencies. Per the assumptions above, we leverage a dedicated user to house the software install.
+
+<!-- The following two subsections describe two different ways of running the
 Omniwach client: executing directly from a local directory, or installing it
-as a package.
+as a package. -->
 
-### Option A. Run client from local directory
+<!-- ### Option A. Run client from local directory -->
 
 1. Clone repository.
    ```
-   $ git clone https://github.com/AMDResearch/omnistat.git
+   [omnidc@login]$ git clone https://github.com/AMDResearch/omnistat.git
    ```
 
 2. Install dependencies.
    ```
-   $ cd omnistat
-   $ pip install --user -r requirements.txt
+   [omnidc@login]$ cd omnistat
+   [omnidc@login]$ pip install --user -r requirements.txt
    ```
 
-3. Launch client with `gunicorn`. Needs to be executed from the root
-   directory of the Omnistat project.
+```{note}
+Omnistat can also be installed as a Python package. How cool is that? Add more snazzy text here to get folks pointed in the 
+right direction.
+```
+
+At this point, we can verify basic functionality of the data collector and launch the client by hand.
+
+3. Launch data collector (`omnistat-monitor`) interactively.
    ```
-   $ gunicorn -b 0.0.0.0:8000 "omnistat.node_monitoring:app"
+   [omnidc@login]$ ./omnistat-monitor
    ```
 
-### Option B. Install package
+<!-- ### Option B. Install package
 
 1. Clone repository.
    ```
@@ -69,47 +87,44 @@ as a package.
    of the project.
    ```
    $ /opt/omnistat/bin/gunicorn -b 0.0.0.0:8000 "omnistat.node_monitoring:app"
-   ```
+   ``` -->
 
-### Configure client
+<!-- ### Configure client -->
 
-Launching the Omnistat client as described above will load the default
-configuration options. To use a different configuration file, use the
-`OMNISTAT_CONFIG` environment variable.
-```
-$ OMNISTAT_CONFIG=/path/to/config/file gunicorn -b 0.0.0.0:8000 "omnistat.node_monitoring:app"
-```
+Launching the data collector client as described above will use a set of default
+configuration options housed within a [omnistat/config/omnistat.default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default) file including use of port `8001` for the Prometheus client. If all went well, example output from running `omnistat-monitor` is highlighted below:
 
-A [sample configuration
-file](https://github.com/AMDResearch/omnistat/blob/main/omnistat.default) is
-available in the respository.
-
-### Check installation
-
-As a sanity check, this is the expected output you should see when launching
-the Omnistat client:
-```
-[2024-06-08 18:50:56 -0400] [5834] [INFO] Starting gunicorn 21.2.0
-[2024-06-08 18:50:56 -0400] [5834] [INFO] Listening at: http://0.0.0.0:8000 (5834)
-...
-Runtime library loaded
+```text
+Reading configuration from /home1/omnidc/omnistat/omnistat/config/omnistat.default
+Allowed query IPs = ['127.0.0.1']
+Disabling SLURM collector via host_skip match (login.*)
+Runtime library loaded from /opt/rocm-6.0.2/lib/librocm_smi64.so
 SMI library API initialized
-collector_slurm: reading job information from prolog/epilog derived file (/tmp/omni_slurmjobinfo)
---> [registered] card0_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
---> [registered] card0_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
---> [registered] card0_rocm_sclk_clock_mhz -> sclk clock speed (Mhz) (gauge)
---> [registered] card0_rocm_mclk_clock_mhz -> mclk clock speed (Mhz) (gauge)
---> [registered] card0_rocm_vram_total -> VRAM Total Memory (B) (gauge)
---> [registered] card0_rocm_vram_used -> VRAM Total Used Memory (B) (gauge)
---> [registered] card0_rocm_utilization -> GPU use (%) (gauge)
---> [registered] card1_rocm_temp_die_edge -> Temperature (Sensor edge) (C) (gauge)
---> [registered] card1_rocm_avg_pwr -> Average Graphics Package Power (W) (gauge)
-...
+SMI version >= 6
+Number of GPU devices = 4
+GPU topology indexing: Scanning devices from /sys/class/kfd/kfd/topology/nodes
+--> Mapping: {0: '3', 1: '2', 2: '1', 3: '0'}
+--> [registered] rocm_temperature_edge_celsius -> Temperature (Sensor edge) (C) (gauge)
+--> [registered] rocm_average_socket_power_watts -> Average Graphics Package Power (W) (gauge)
+--> [registered] rocm_sclk_clock_mhz -> current sclk clock speed (Mhz) (gauge)
+--> [registered] rocm_mclk_clock_mhz -> current mclk clock speed (Mhz) (gauge)
+--> [registered] rocm_vram_total_bytes -> VRAM Total Memory (B) (gauge)
+--> [registered] rocm_vram_used_percentage -> VRAM Memory in Use (%) (gauge)
+--> [registered] rocm_utilization_percentage -> GPU use (%) (gauge)
+[2024-07-09 13:19:33 -0500] [2995880] [INFO] Starting gunicorn 21.2.0
+[2024-07-09 13:19:33 -0500] [2995880] [INFO] Listening at: http://0.0.0.0:8001 (2995880)
+[2024-07-09 13:19:33 -0500] [2995880] [INFO] Using worker: sync
+[2024-07-09 13:19:33 -0500] [2995881] [INFO] Booting worker with pid: 2995881
 ```
-In the same node, confirm the client is responding to requests with non-zero
-values for GPU metrics:
+
+```{note}
+You can override the default runtime configuration file above by setting an `OMNISTAT_CONFIG` environment variable or by using the `./omnistat-monitor --configfile` option.
 ```
-$ curl localhost:8000/metrics | grep rocm | grep -v "^#"
+
+While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. On a system with four GPUS installed, expect responses like the following where metrics are organized with unique card labels:
+
+```text
+[omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
 rocm_num_gpus 4.0
 rocm_temperature_edge_celsius{card="3"} 40.0
 rocm_temperature_edge_celsius{card="2"} 43.0
