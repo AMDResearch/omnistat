@@ -1,4 +1,4 @@
-FROM rocm/dev-ubuntu-22.04
+FROM --platform=linux/amd64 rocm/dev-ubuntu-22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
