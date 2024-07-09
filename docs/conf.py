@@ -61,7 +61,7 @@ myst_heading_anchors = 4
 myst_enable_extensions = ["replacements", "dollarmath"]
 
 numfig = True
-numfig_format = {'figure':'Figure %s'}
+numfig_format = {"figure": "Figure %s"}
 
 
 # Add any paths that contain templates here, relative to this directory.
