@@ -8,6 +8,9 @@ jobs:
   test:
     name: Test Omnistat client
     runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        execution: [ source, package ]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -19,6 +22,8 @@ jobs:
         run: >
           sed -i "s/enable_rocm_smi = True/enable_rocm_smi = False/" \
             test/docker/slurm/omnistat.slurm
+      - name: Set execution type: ${{ matrix.execution }}
+        run: export TEST_OMNISTAT_EXECUTION=${{ matrix.execution }}
       - name: Start containerized environment
         run: docker compose -f test/docker/slurm/compose.yaml up -d
       - name: Wait for Prometheus
