@@ -60,6 +60,9 @@ myst_heading_anchors = 4
 # enable replacement of (tm) & friends
 myst_enable_extensions = ["replacements", "dollarmath"]
 
+numfig = True
+numfig_format = {'figure':'Figure %s'}
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
