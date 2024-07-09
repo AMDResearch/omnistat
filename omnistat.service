@@ -1,18 +1,20 @@
 [Unit]
 Description=Prometheus exporter for HPC/GPU oriented metrics
-Documentation=tbd
+Documentation=https://amdresearch.github.io/omnistat/
 Requires=network-online.target
 After=network-online.target
 
 [Service]
-Restart=on-failure
-Environment="omnistat_DIR=/opt/omnistat"
-Environment="omnistat_CONFIG=/etc/omnistat/config"
-Environment="omnistat_PORT=8000"
-ExecStart=/opt/omnistat/bin/gunicorn -b 0.0.0.0:${omnistat_PORT} omnistat.node_monitoring:app
+User=omnidc
+Environment="OMNISTAT_DIR=/home/omnidc/omnistat"
+CPUAffinity=0
+SyslogIdentifier=omnistat
+ExecStart=${OMNISTAT_DIR}/omnistat-monitor
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
+Nice=19
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
