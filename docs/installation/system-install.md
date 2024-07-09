@@ -18,7 +18,7 @@ To reiterate, the following assumptions are made throughout the rest of this sys
 
 __Assumptions__:
 * Installer has `sudo` or elevated credentials to install software system-wide, enable systemd services, and optionally modify the local SLURM configuration
-* [ROCm](https://rocm.docs.amd.com/en/latest/) v5.7 or newer is installed on all GPU hosts
+* [ROCm](https://rocm.docs.amd.com/en/latest/) v5.7 or newer is pre-installed on all GPU hosts
 * Installer has provisioned a dedicated user (eg. `omnidc`) across all desired compute nodes of their system
 * Installer has identified a location to host a Prometheus server (if not present already) that has network access to all compute nodes.
 
@@ -92,7 +92,7 @@ At this point, we can verify basic functionality of the data collector and launc
 <!-- ### Configure client -->
 
 Launching the data collector client as described above will use a set of default
-configuration options housed within a [omnistat/config/omnistat.default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default) file including use of port `8001` for the Prometheus client. If all went well, example output from running `omnistat-monitor` is highlighted below:
+configuration options housed within an [omnistat/config/omnistat.default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default) file including use of port `8001` for the Prometheus client. If all went well, example output from running `omnistat-monitor` is highlighted below:
 
 ```text
 Reading configuration from /home1/omnidc/omnistat/omnistat/config/omnistat.default
@@ -139,6 +139,8 @@ rocm_average_socket_power_watts{card="0"} 35.0
 
 ### Enable systemd service
 
+Now that the software is installed under a dedicated user and basic functionality is confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage systemd and an example service file is included in the distribution at [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service).
+
 To run the Omnistat client permanently on a host, configure the service via
 systemd. An [example service
 file](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is
@@ -150,6 +152,9 @@ ExecStart=/opt/omnistat/bin/gunicorn -b 0.0.0.0:${OMNISTAT_PORT} "omnistat.node_
 ```
 Please set `OMNISTAT_CONFIG` and `OMNISTAT_PORT` as needed depending on how
 Omnistat is installed.
+
+
+---
 
 ## Prometheus installation and configuration (server)
 
