@@ -7,6 +7,6 @@
    :caption: Table of Contents
 
    introduction
-   installation
+   installation/index
    grafana
 ```
