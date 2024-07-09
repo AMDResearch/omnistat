@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 User=omnidc
 Environment="OMNISTAT_DIR=/home/omnidc/omnistat"
-Environment="OMNIWATCH_CONFIG=/home/omnidc/omnistat/omnistat/config/omniwatch.default"
+Environment="OMNISTAT_CONFIG=/home/omnidc/omnistat/omnistat/config/omniwatch.default"
 CPUAffinity=0
 SyslogIdentifier=omnistat
 ExecStart=${OMNISTAT_DIR}/omnistat-monitor
