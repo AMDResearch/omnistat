@@ -17,7 +17,7 @@ clusters with SLURM:
 
 ### Import dashboards
 
-After [installing and configuring Omnistat](installation/system-install.html),
+After [installing and configuring Omnistat](installation/system-install),
 ensure the Prometheus data source has been added to Grafana, and then import
 the sample dashboards.
 
