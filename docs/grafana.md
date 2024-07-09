@@ -15,7 +15,7 @@ clusters with SLURM:
   includes detailed time-series data, load distribution, and other metrics for
   a single job.
 
-### Import dashboards
+## Import dashboards
 
 After [installing and configuring Omnistat](installation/system-install),
 ensure the Prometheus data source has been added to Grafana, and then import
@@ -34,7 +34,7 @@ To import a dashboard:
 3. On the dashboard, click + Add visualization.
 4. Upload the dashboard JSON file.
 
-### Example screenshots
+## Example screenshots
 
 ![Global dashboard screenshot](images/dashboard-global.png)
 
