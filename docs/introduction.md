@@ -1,4 +1,4 @@
-# Introduction
+# Overview
 
 ```eval_rst
 .. toctree::
@@ -24,6 +24,7 @@ Omnistat provides a set of utilities to aid cluster administrators or individual
 
 To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
 
+(user-vs-system)=
 ## User-mode vs System-level monitoring 
 
 Omnistat utilities can be deployed with two primary use-cases in mind that differ based on the end-consumer and whether the user has administrative rights or not.  The use cases are denoted as follows:
@@ -78,6 +79,6 @@ System administrators wishing to deploy a system-wide GPU monitoring capability 
 * [Prometheus server](https://prometheus.io/docs/prometheus/latest/getting_started/) - used to periodically poll and aggregate data from multiple compute nodes
 
 
-## Additional Features
+<!-- ## Additional Features
 
-TODO: discuss SLURM integration
+TODO: discuss SLURM integration -->
