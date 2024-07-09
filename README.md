@@ -22,7 +22,9 @@ basis). Relevant target metrics include:
 
 The data can be scraped for detailed visualization and analysis via
 a combination of [Prometheus](https://prometheus.io/) and
-[Grafana](https://github.com/grafana/grafana).
+[Grafana](https://github.com/grafana/grafana). Users can also generate
+PDF reports summarizing resource utilization on a per job basis with SLURM
+entirely in user-space.
 
 
 For more information on available features and installation steps
