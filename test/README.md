@@ -15,6 +15,13 @@ From the root directory of the project:
    ```
    docker compose -f test/docker/slurm/compose.yaml up -d
    ```
+   By default the containers will be launched with an uninstalled deployment,
+   executing directly from a working copy of the Omnistat repository. In order
+   to test the Omnistat package and its installation, set the
+   `TEST_OMNISTAT_EXECUTION` variable as follows:
+   ```
+   TEST_OMNISTAT_EXECUTION=package docker compose -f test/docker/slurm/compose.yaml up -d
+   ```
 
 2. Submit a SLURM job.
    ```

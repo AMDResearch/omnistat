@@ -36,6 +36,8 @@ services:
       - controller
     links:
       - controller
+    environment:
+      - TEST_OMNISTAT_EXECUTION
 
 volumes:
   jobs_dir:
