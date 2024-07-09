@@ -22,7 +22,7 @@ __Assumptions__:
 * Installer has provisioned a dedicated user (eg. `omnidc`) across all desired compute nodes of their system
 * Installer has identified a location to host a Prometheus server (if not present already) that has network access to all compute nodes.
 
-## Software installation
+## Omnistat software installation
 
 To begin, we download the Omnistat software and install necessary Python dependencies. Per the assumptions above, we leverage a dedicated user to house the software install.
 
@@ -33,12 +33,12 @@ as a package. -->
 <!-- ### Option A. Run client from local directory -->
 
 1. Clone repository.
-   ```
+   ```shell-session
    [omnidc@login]$ git clone https://github.com/AMDResearch/omnistat.git
    ```
 
 2. Install dependencies.
-   ```
+   ```shell-session
    [omnidc@login]$ cd omnistat
    [omnidc@login]$ pip install --user -r requirements.txt
    ```
@@ -51,7 +51,7 @@ right direction.
 At this point, we can verify basic functionality of the data collector and launch the client by hand.
 
 3. Launch data collector (`omnistat-monitor`) interactively.
-   ```
+   ```shell-session
    [omnidc@login]$ ./omnistat-monitor
    ```
 
@@ -94,7 +94,7 @@ At this point, we can verify basic functionality of the data collector and launc
 Launching the data collector client as described above will use a set of default
 configuration options housed within an [omnistat/config/omnistat.default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default) file including use of port `8001` for the Prometheus client. If all went well, example output from running `omnistat-monitor` is highlighted below:
 
-```text
+```shell-session
 Reading configuration from /home1/omnidc/omnistat/omnistat/config/omnistat.default
 Allowed query IPs = ['127.0.0.1']
 Disabling SLURM collector via host_skip match (login.*)
@@ -123,7 +123,7 @@ You can override the default runtime configuration file above by setting an `OMN
 
 While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUS installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
 
-```text
+```shell-session
 [omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
 rocm_num_gpus 4.0
 rocm_temperature_edge_celsius{card="3"} 40.0
@@ -158,26 +158,30 @@ Using elevated credentials, install the omnistat.service file across all desired
 
 ---
 
-## Prometheus installation and configuration (server)
+## Prometheus server
 
-On a separate server with access to compute nodes, install and configure
-[Prometheus](https://prometheus.io/).
+Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlights installation via package manager followed by a simple scrape configuration.
 
-1. Install Prometheus from a package manager, downloading a [precompiled
-   binary](https://prometheus.io/download/), or using a [Docker
-   image](https://hub.docker.com/u/prom).
+<!-- On a separate server with access to compute nodes, install and configure
+[Prometheus](https://prometheus.io/). -->
+
+1. Install: Prometheus server (via package manager)
 
    For Debian-based systems:
-   ```
-   $ apt-get install prometheus
+   ```shell-session
+   # apt-get install prometheus
    ```
    For RHEL:
+   ```shell-session
+   # rpm -ivh golang-github-prometheus
    ```
-   $ rpm -ivh golang-github-prometheus
+   For SUSE:
+   ```shell-session
+   #  zypper install golang-github-prometheus-prometheus
    ```
 
-2. Create a scrape configuration for Prometheus. This configuration controls
-   which nodes to poll and at what frequency. For example:
+2. Configuration: add a scrape configuration to Prometheus to enable telemetry collection. This configuration stanza typically resides in the `/etc/prometheus/prometheus.yml` runtime config file and controls which nodes to poll and at what frequency. The example below highlights addition of an omnistat job that polls for data at 30 second intervals from four separate compute nodes.  We recommend keeping the `scrape_interval` setting at 5 seconds or larger.
+
    ```
    scrape_configs:
      - job_name: "omnistat"
@@ -185,22 +189,37 @@ On a separate server with access to compute nodes, install and configure
        scrape_timeout: 5s
        static_configs:
          - targets:
-           - compute-00:8000
-           - compute-01:8000
-           - compute-02:8000
-           - compute-03:8000
+           - compute-00:8001
+           - compute-01:8001
+           - compute-02:8001
+           - compute-03:8001
    ```
+
+Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection.
+
+```{note}
+You may want to adjust the Prometheus server default storage retention policy in order to retain telemetry data longer than the default (which is typically 15 days). Assuming you are using a distro-provided version of Prometheus, you can modify the systemd launch process to include a `--storage.tsdb.retention.time` option as shown in the snippet below:
+
+```text
+[Service]
+Restart=on-failure
+User=prometheus
+EnvironmentFile=/etc/default/prometheus
+ExecStart=/usr/bin/prometheus $ARGS --storage.tsdb.retention.time=3y
+ExecReload=/bin/kill -HUP $MAINPID
+TimeoutStopSec=20s
+SendSIGKILL=no
+
+```
 
 ## Ansible example
 
-For a cluster or data center deployment, management tools like Ansible may be
-used to install Omnistat.
+For a cluster or data center deployment, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat.
 
-The following Ansible playbook will fetch the Omnistat repository in each
+To aid in this process, the following Ansible playbook will fetch the Omnistat repository on each
 node, create a virtual environment for Omnistat under `/opt/omnistat`,
 install a configuration file under `/etc/omnistat`, and enable Omnistat as a
-systemd service. This is only an example and will likely need to be adapted
-depending on the characteristics and scale of the system.
+systemd service. This example is provided as a starting reference for system administrators and can be adjusted to suit per local conventions.
 
 ```
 - hosts: all
