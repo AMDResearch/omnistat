@@ -121,7 +121,7 @@ GPU topology indexing: Scanning devices from /sys/class/kfd/kfd/topology/nodes
 You can override the default runtime configuration file above by setting an `OMNISTAT_CONFIG` environment variable or by using the `./omnistat-monitor --configfile` option.
 ```
 
-While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. On a system with four GPUS installed, expect responses like the following where metrics are organized with unique card labels:
+While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUS installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
 
 ```text
 [omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
@@ -137,22 +137,24 @@ rocm_average_socket_power_watts{card="0"} 35.0
 ...
 ```
 
+
+
 ### Enable systemd service
 
-Now that the software is installed under a dedicated user and basic functionality is confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage systemd and an example service file is included in the distribution at [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service).
+Now that the software is installed under a dedicated user and basic functionality has been confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage `systemd` and an example service file named [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is included in the distribution. This contents of the file are shown below with four lines highlighted in yellow that are most likely to require local customization.
 
-To run the Omnistat client permanently on a host, configure the service via
-systemd. An [example service
-file](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is
-available in the repository, including the following key lines:
-```
-Environment="OMNISTAT_CONFIG=/etc/omnistat/config"
-Environment="OMNISTAT_PORT=8000"
-ExecStart=/opt/omnistat/bin/gunicorn -b 0.0.0.0:${OMNISTAT_PORT} "omnistat.node_monitoring:app"
-```
-Please set `OMNISTAT_CONFIG` and `OMNISTAT_PORT` as needed depending on how
-Omnistat is installed.
+<!-- * `User` set to the local Linux user created to run Omnistat
+* `OMNISTAT_DIR` set to the local path where you downloaded the source tree
+* `OMNISTAT_CONFIG` set to the path of desired runtime config file
+* `CPUAffinity` set to the CPU core index where omnistat-monitor will be pinned -->
 
+
+```eval_rst
+.. literalinclude:: omnistat.service
+   :emphasize-lines: 8-11
+```
+
+Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl  enable omnistat`).
 
 ---
 
