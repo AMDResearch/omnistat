@@ -5,7 +5,7 @@ import sys
 from prometheus_client import Gauge, generate_latest
 from pyrocprofiler import DeviceSession
 
-from collector_base import Collector
+from omnistat.collector_base import Collector
 
 
 class rocprofiler(Collector):
