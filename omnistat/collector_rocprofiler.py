@@ -7,6 +7,7 @@ from pyrocprofiler import DeviceSession
 
 from collector_base import Collector
 
+
 class rocprofiler(Collector):
     def __init__(self, names):
         logging.debug("Initializing rocprofiler data collector")
