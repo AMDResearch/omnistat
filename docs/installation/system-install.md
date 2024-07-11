@@ -26,12 +26,6 @@ __Assumptions__:
 
 To begin, we download the Omnistat software and install necessary Python dependencies. Per the assumptions above, we leverage a dedicated user to house the software install.
 
-<!-- The following two subsections describe two different ways of running the
-Omniwach client: executing directly from a local directory, or installing it
-as a package. -->
-
-<!-- ### Option A. Run client from local directory -->
-
 1. Clone repository.
    ```shell-session
    [omnidc@login]$ git clone https://github.com/AMDResearch/omnistat.git
@@ -43,10 +37,10 @@ as a package. -->
    [omnidc@login]$ pip install --user -r requirements.txt
    ```
 
-```{note}
+<!-- ```{note}
 Omnistat can also be installed as a Python package. How cool is that? Add more snazzy text here to get folks pointed in the 
 right direction.
-```
+``` -->
 
 At this point, we can verify basic functionality of the data collector and launch the client by hand.
 
