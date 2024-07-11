@@ -13,22 +13,25 @@ class rocprofiler(Collector):
         logging.debug("Initializing rocprofiler data collector")
         self.__names = names
         self.__session = DeviceSession()
-        num_gpus = self.__session.create(self.__names)
-        self.__metrics = [[]] * num_gpus
-        logging.info("pyrocprofiler initialized")
+        self.__num_gpus = self.__session.create(self.__names)
+        logging.info("--> pyrocprofiler: number of GPUs detected = %i" % self.__num_gpus)
+        self.__metrics = []
+        logging.info("--> pyrocprofiler initialized")
 
     def registerMetrics(self):
-        for gpu_id, gpu_metrics in enumerate(self.__metrics):
-            prefix = f"card{gpu_id}_rocprofiler_"
-            for name in self.__names:
-                metric_name = prefix + name
-                gpu_metrics.append(Gauge(metric_name, ""))
-                logging.info("  --> [registered] %s (gauge)" % (metric_name))
+        prefix = f"rocm_rocprofiler_"
+        for metric in self.__names:
+            metric_name = prefix + metric
+            self.__metrics.append(Gauge(metric_name, "", labelnames=["card"]))
+            logging.info("  --> [registered] %s (gauge)" % (metric_name))
         self.__session.start()
 
     def updateMetrics(self):
         values = self.__session.poll()
-        for i, _ in enumerate(self.__metrics):
-            for j, _ in enumerate(self.__names):
-                self.__metrics[i][j].set(values[i][j])
+        for gpu in range(self.__num_gpus):
+            for i, _ in enumerate(values[gpu]):
+                self.__metrics[i].labels(card=gpu).set(values[gpu][i])
+        # Reset session to address issues with values (SWDEV-468600)
+        self.__session.stop()
+        self.__session.start()
         return generate_latest()
