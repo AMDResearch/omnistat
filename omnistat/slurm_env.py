@@ -33,7 +33,10 @@
 
 import json
 import os
+import subprocess
 import sys
+
+
 
 
 def main():
@@ -53,11 +56,27 @@ def main():
         else:
             jobData["SLURM_JOB_BATCHMODE"] = 1
 
-        json.dump(jobData, open(jobFile, "w"), indent=4)
+    elif "FLUX_URI" in os.environ:
+        command = ["flux","-p","jobs","-n","--format={id.f58},{username},{queue},{nnodes}"]
+        try:
+            results = subprocess.run(command, capture_output=True, text=True, timeout=5.0)
+        except:
+            print("ERROR: Unable to query flux for job information")
+            sys.exit(0)
+
+        fluxdata = results.stdout.strip().split(",")
+        jobData["SLURM_JOB_ID"] = fluxdata[0]
+        jobData["SLURM_JOB_USER"] = fluxdata[1]
+        jobData["SLURM_JOB_PARTITION"] = fluxdata[2]
+        jobData["SLURM_JOB_NUM_NODES"] = fluxdata[3]
+        jobData["SLURM_JOB_BATCHMODE"] = 1  # marking all jobs as batch jobs to start
 
     else:
         print("ERROR: SLURM settings not visible in current environment. Verify running in active job")
         sys.exit(1)
+
+    # save to file
+    json.dump(jobData, open(jobFile, "w"), indent=4)
 
 
 if __name__ == "__main__":
