@@ -163,7 +163,7 @@ class UserBasedMonitoring:
         corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
 
         cwd = os.getcwd()
-        cmd = f"nice -n 20 {sys.executable} -m" f" omnistat.node_monitoring --configfile={self.configFile}"
+        cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
