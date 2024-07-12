@@ -54,26 +54,58 @@ class UserBasedMonitoring:
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 60  # default scrape interval in seconds
         self.timeout = 5  # default scrape timeout in seconds
+        self.__jobId = None
+        self.__hosts = None
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
         self.runtimeConfig = utils.readConfig(self.configFile)
-        self.slurmHosts = self.getSlurmHosts()
+        self.rmsDetection()
+        self.getRMSHosts()
+
 
     def setMonitoringInterval(self, interval):
         self.scrape_interval = int(interval)
         return
 
-    def getSlurmHosts(self):
-        hostlist = os.getenv("SLURM_JOB_NODELIST", None)
-        if hostlist:
-            results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist], timeout=10)
-            if results.stdout.strip():
-                return results.stdout.splitlines()
-            else:
-                utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
+    def rmsDetection(self):
+        """Query environment to infer resource manager"""
+        if "SLURM_JOB_NODELIST" in os.environ:
+            self.__rms = "slurm"
+        elif "FLUX_URI" in os.environ:
+            self.__rms = "flux"
         else:
-            logging.warning("\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+            utils.error("Unknown/unsupported resource manager")
+        logging.info("RMS detected = %s" % self.__rms)
+        return
+
+    def setJobId(self, id):
+        self.__jobId = id
+        return
+
+    def getRMSHosts(self):
+        if self.__rms == "slurm":
+            hostlist = os.getenv("SLURM_JOB_NODELIST", None)
+            if hostlist:
+                results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist], timeout=10)
+                if results.stdout.strip():
+                    self.__hosts = results.stdout.splitlines()
+                    # return results.stdout.splitlines()
+                    return
+                else:
+                    utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
+            else:
+                logging.warning("\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+        elif self.__rms == "flux":
+            results = utils.runShellCommand(["flux","hostlist","-e","-d",","])
+            if results.stdout.strip():
+                self.__hosts = results.stdout.strip().split(",")
+                return
+            else:
+                utils.error("Unable to detect assigned Flux hosts.")
+        else:
+            utils.error("Unsupported RMS.")
+
 
     def startPromServer(self):
         logging.info("Starting prometheus server on localhost")
@@ -246,6 +278,7 @@ def main():
     parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
     parser.add_argument("--startexporters", help="Start data expporters", action="store_true")
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
+    parser.add_argument("--job",help="Job id to associate with data collection", default=None)
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", help="Monitoring sampling interval in secs (default=60)")
@@ -259,9 +292,12 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    userUtils.setup(args.configfile)
+    if args.job:
+        userUtils.setJobId(args.job)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
+
+    userUtils.setup(args.configfile)
 
     if args.startserver:
         userUtils.startPromServer()
