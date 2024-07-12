@@ -108,9 +108,6 @@ class UserBasedMonitoring:
 
 
     def startPromServer(self):
-        logging.info("Starting prometheus server on localhost")
-        scrape_interval = "%ss" % self.scrape_interval
-        logging.info("--> sampling interval = %s" % scrape_interval)
 
         if self.timeout < self.scrape_interval:
             scrape_timeout = "5s"
@@ -120,6 +117,18 @@ class UserBasedMonitoring:
         section = "omnistat.promserver"
         ps_binary = self.runtimeConfig[section].get("binary")
         ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
+
+        if not os.path.isfile(ps_binary):
+            logging.error("")
+            logging.error("Error: Cannot resolve path to server binary: %s" % ps_binary)
+            logging.error("Please verify settings in runtime configuration file.")
+            logging.error("")
+            sys.exit(1)
+
+        logging.info("Starting prometheus server on localhost")
+        scrape_interval = "%ss" % self.scrape_interval
+        logging.info("--> sampling interval = %s" % scrape_interval)
+
 
         # datadir can be overridden by separate env variable
         if "OMNISTAT_PROMSERVER_DATADIR" in os.environ:
@@ -143,8 +152,8 @@ class UserBasedMonitoring:
         # generate prometheus config file to scrape local exporters
         computes = {}
         computes["targets"] = []
-        if self.slurmHosts:
-            for host in self.slurmHosts:
+        if self.__hosts:
+            for host in self.__hosts:
                 computes["targets"].append("%s:%s" % (host, 8001))
 
             prom_config = {}
