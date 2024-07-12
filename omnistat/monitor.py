@@ -88,6 +88,10 @@ class Monitor:
             "enable_power_cap", False
         )
 
+        self.runtimeConfig["collector_enable_rocprofiler"] = config["omnistat.collectors"].getboolean(
+            "enable_rocprofiler", False
+        )
+
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
         # convert comma-separated string into list
         self.runtimeConfig["collector_allowed_ips"] = re.split(r",\s*", allowed_ips)
@@ -108,6 +112,9 @@ class Monitor:
             )
             if config.has_option("omnistat.collectors.rms", "host_skip"):
                 self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
+
+        if config.has_option("omniwatch.collectors.rocprofiler", "metrics"):
+            self.runtimeConfig["rocprofiler_metrics"] = config["omniwatch.collectors.rocprofiler"]["metrics"].split(",")
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
