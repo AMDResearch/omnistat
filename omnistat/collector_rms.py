@@ -42,9 +42,9 @@ import omnistat.utils as utils
 from omnistat.collector_base import Collector
 
 
-class SlurmJob(Collector):
+class RMSJob(Collector):
     def __init__(self, userMode=False, annotations=False, jobDetection=None):
-        logging.debug("Initializing SlurmJob data collector")
+        logging.debug("Initializing resource manager job data collector")
         self.__prefix = "rmsjob_"
         self.__userMode = userMode
         self.__annotationsEnabled = annotations
@@ -83,11 +83,11 @@ class SlurmJob(Collector):
         else:
             if self.__rmsJobMode == "file-based":
                 logging.info(
-                    "collector_slurm: reading job information from prolog/epilog derived file (%s)"
+                    "collector_rms: reading job information from prolog/epilog derived file (%s)"
                     % self.__rmsJobFile
                 )
             elif self.__rmsJobMode == "squeue":
-                logging.info("collector_slurm: will poll slurm periodicaly with squeue")
+                logging.info("collector_rms: will poll slurm periodicaly with squeue")
             else:
                 logging.error("Unsupported slurm job data collection mode")
 
@@ -134,7 +134,7 @@ class SlurmJob(Collector):
         )
 
         for metric in self.__RMSMetrics:
-            logging.debug("--> Registered SLURM metric = %s" % metric)
+            logging.debug("--> Registered RMS metric = %s" % metric)
 
     def updateMetrics(self):
         self.__RMSMetrics["info"].clear()
