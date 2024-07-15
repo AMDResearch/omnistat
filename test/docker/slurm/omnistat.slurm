@@ -4,7 +4,7 @@ usermode = False
 usermode_port = 8000
 enable_rocm_smi = True
 enable_amd_smi = False
-enable_slurm = True
+enable_rms = True
 
 # Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm
@@ -17,11 +17,11 @@ allowed_ips = 127.0.0.1
 # corebinding = 31
 
 
-[omnistat.collectors.slurm]
+[omnistat.collectors.rms]
 host_skip = "login.*"
 enable_annotations = False
 job_detection_mode = file-based
-job_detection_file = /tmp/omni_slurmjobinfo
+job_detection_file = /tmp/omni_rmsjobinfo
 
 [omnistat.report]
 
