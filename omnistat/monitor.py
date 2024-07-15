@@ -94,7 +94,7 @@ class Monitor:
                 hostname = platform.node().split(".", 1)[0]
                 p = re.compile(host_skip)
                 if p.match(hostname):
-                    self.runtimeConfig["collector_enable_rms] = False
+                    self.runtimeConfig["collector_enable_rms"] = False
                     logging.info("Disabling RMS collector via host_skip match (%s)" % host_skip)
 
         logging.debug("Completed collector initialization (base class)")
