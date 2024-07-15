@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # -------------------------------------------------------------------------------
-# Omnistat CLI tool to log relevant SLURM environment variables to file.
+# Omnistat CLI tool to log relevant resource manager job details to JSON file.
 
 import os
 import sys
@@ -31,9 +31,9 @@ if os.path.isdir("omnistat") and sys.path[0]:
     sys.path.insert(0, "")
 
 try:
-    from omnistat.slurm_env import main
+    from omnistat.rms_env import main
 except:
-    print("Unable to load omnistat.slurm_env. Please verify installation.")
+    print("Unable to load omnistat.rms_env. Please verify installation.")
     sys.exit(1)
 
 if __name__ == "__main__":
