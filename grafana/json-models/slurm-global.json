@@ -96,7 +96,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(slurmjob_info{jobid=~\"^\\\\d+\"})",
+          "expr": "count(rmsjob_info{jobid=~\"^\\\\d+\"})",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -166,7 +166,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(slurmjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"})",
+          "expr": "count(rmsjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"})",
           "instant": true,
           "legendFormat": "__auto",
           "range": false,
@@ -235,7 +235,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(count by (jobid) (slurmjob_info{jobid=~\"^\\\\d.+\"}))",
+          "expr": "count(count by (jobid) (rmsjob_info{jobid=~\"^\\\\d.+\"}))",
           "hide": false,
           "instant": false,
           "legendFormat": "__auto",
@@ -369,7 +369,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (slurmjob_info{jobid=~\"^\\\\d+\"}))",
+          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (rmsjob_info{jobid=~\"^\\\\d+\"}))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -637,7 +637,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -807,7 +807,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -975,7 +975,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -987,7 +987,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -1180,7 +1180,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -1192,7 +1192,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})))",
+              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -1366,7 +1366,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (user,jobid) (node_load1 * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "avg by (user,jobid) (node_load1 * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -1617,7 +1617,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "timestamp(group by (jobid,user,batchflag,partition,nodes) (slurmjob_info{jobid=~\"^\\\\d+\"}))",
+              "expr": "timestamp(group by (jobid,user,batchflag,partition,nodes) (rmsjob_info{jobid=~\"^\\\\d+\"}))",
               "format": "table",
               "hide": false,
               "instant": false,
@@ -1940,7 +1940,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "rocm_utilization_percentage * on (instance) group_left(jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})",
+              "expr": "rocm_utilization_percentage * on (instance) group_left(jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})",
               "format": "table",
               "hide": false,
               "instant": false,
@@ -1954,7 +1954,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "rocm_vram_used_percentage * on (instance) group_left(jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\"})",
+              "expr": "rocm_vram_used_percentage * on (instance) group_left(jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})",
               "format": "table",
               "hide": false,
               "instant": false,
@@ -1968,7 +1968,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "timestamp(group by (jobid,user) (slurmjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"}))",
+              "expr": "timestamp(group by (jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"}))",
               "format": "table",
               "hide": false,
               "instant": false,
@@ -2181,7 +2181,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "timestamp(group by (jobid) (slurmjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"}))",
+              "expr": "timestamp(group by (jobid) (rmsjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"}))",
               "format": "table",
               "instant": false,
               "legendFormat": "{{label_name}}",
@@ -2656,7 +2656,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (slurmjob_info{jobid=~\"^\\\\d+\"})",
+              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (rmsjob_info{jobid=~\"^\\\\d+\"})",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -2771,7 +2771,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (slurmjob_info{jobid=\"\"})",
+              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (rmsjob_info{jobid=\"\"})",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3116,7 +3116,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(node_load1 * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(node_load1 * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3221,7 +3221,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(node_load1 * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(node_load1 * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3341,7 +3341,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
+              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,
@@ -3353,7 +3353,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
+              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted",
@@ -3460,7 +3460,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3566,7 +3566,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3672,7 +3672,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -3778,7 +3778,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(slurmjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "(sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=\"\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
