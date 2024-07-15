@@ -22,14 +22,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # -------------------------------------------------------------------------------
+# Query resource manager environment and save job data to local file. Output
+# intended for use by collector_rms.py collector to demarcate user jobs.
 #
-# Query relevant SLURM env variables and save to local file. Intended
-# for use with SLURM data collector on systems where direct API query
-# is slow/problematic.
+# Usage:rms_env.py [output_file]
 #
-# Usage: slurm_env.py [output_file]
-#
-# Default path for output_file: /tmp/omni_slurmjobinfo
+# Default path for output_file: /tmp/omni_rmsjobinfo
+# -------------------------------------------------------------------------------
 
 import json
 import os
@@ -37,11 +36,9 @@ import subprocess
 import sys
 
 
-
-
 def main():
     jobData = {}
-    jobFile = "/tmp/omni_slurmjobinfo"
+    jobFile = "/tmp/omni_rmsjobinfo"
 
     if len(sys.argv) > 1:
         jobFile = sys.argv[1]
@@ -57,7 +54,7 @@ def main():
             jobData["SLURM_JOB_BATCHMODE"] = 1
 
     elif "FLUX_URI" in os.environ:
-        command = ["flux","-p","jobs","-n","--format={id.f58},{username},{queue},{nnodes}"]
+        command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}"]
         try:
             results = subprocess.run(command, capture_output=True, text=True, timeout=5.0)
         except:
