@@ -75,7 +75,7 @@ class Monitor:
             )
             self.jobDetection["mode"] = config["omnistat.collectors.slurm"].get("job_detection_mode", "file-based")
             self.jobDetection["file"] = config["omnistat.collectors.slurm"].get(
-                "job_detection_file", "/tmp/omni_slurmjobinfo"
+                "job_detection_file", "/tmp/omni_rmsjobinfo"
             )
             if config.has_option("omnistat.collectors.slurm", "host_skip"):
                 self.runtimeConfig["slurm_collector_host_skip"] = config["omnistat.collectors.slurm"]["host_skip"]
