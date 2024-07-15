@@ -164,7 +164,7 @@
                   "uid" : "prometheus"
                },
                "editorMode" : "code",
-               "expr" : "timestamp(group by (jobid,user,batchflag,partition,nodes) (slurmjob_info{jobid=~\"^\\\\d+\"}))",
+               "expr" : "timestamp(group by (jobid,user,batchflag,partition,nodes) (slurmjob_info{jobid=~\"^\\\\w+\"}))",
                "format" : "table",
                "hide" : false,
                "instant" : false,
