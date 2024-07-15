@@ -64,8 +64,7 @@
                         "value" : null
                      }
                   ]
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -85,7 +84,7 @@
                "calcs" : [
                   "lastNotNull"
                ],
-               "fields" : "",
+               "fields" : "/^jobid$/",
                "values" : false
             },
             "showPercentChange" : false,
@@ -95,20 +94,25 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
                   "type" : "prometheus",
                   "uid" : "$source"
                },
+               "disableTextWrap" : false,
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "$jobid",
+               "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "format" : "table",
+               "fullMetaSearch" : false,
+               "includeNullMetadata" : true,
                "instant" : true,
                "legendFormat" : "__auto",
                "range" : false,
-               "refId" : "A"
+               "refId" : "A",
+               "useBackend" : false
             }
          ],
          "title" : "Job ID",
@@ -147,8 +151,7 @@
                         "value" : null
                      }
                   ]
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -178,7 +181,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -188,28 +191,14 @@
                "editorMode" : "code",
                "exemplar" : false,
                "expr" : "(slurmjob_info{jobid=\"$jobid\"})",
+               "format" : "table",
                "instant" : false,
-               "legendFormat" : "{{batchflag}}",
+               "legendFormat" : "__auto",
                "range" : true,
                "refId" : "A"
             }
          ],
          "title" : "Job Type",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {
-                  "keepLabels" : [
-                     "batchflag"
-                  ],
-                  "valueLabel" : "__name__"
-               }
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            }
-         ],
          "type" : "stat"
       },
       {
@@ -231,8 +220,7 @@
                         "value" : null
                      }
                   ]
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -262,7 +250,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -271,6 +259,7 @@
                },
                "editorMode" : "code",
                "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "format" : "table",
                "instant" : false,
                "legendFormat" : "__auto",
                "range" : true,
@@ -278,24 +267,6 @@
             }
          ],
          "title" : "# Nodes",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {
-                  "keepLabels" : [
-                     "__name__",
-                     "jobid",
-                     "nodes",
-                     "partition",
-                     "user"
-                  ]
-               }
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            }
-         ],
          "type" : "stat"
       },
       {
@@ -327,8 +298,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : []
          },
@@ -354,7 +324,7 @@
             "showThresholdMarkers" : false,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -362,7 +332,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card))",
+               "expr" : "avg(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "GPU Core",
                "range" : true,
@@ -374,7 +344,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(100 * avg(label_replace({__name__=~\"card(.*)_rocm_vram_used\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_used\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / avg(label_replace({__name__=~\"card(.*)_rocm_vram_total\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_total\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card))",
+               "expr" : "avg(rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "GPU Memory",
@@ -404,8 +374,7 @@
                         "value" : null
                      }
                   ]
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -435,7 +404,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -443,9 +412,10 @@
                   "uid" : "$source"
                },
                "disableTextWrap" : false,
-               "editorMode" : "builder",
+               "editorMode" : "code",
                "exemplar" : false,
                "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "format" : "table",
                "fullMetaSearch" : false,
                "includeNullMetadata" : true,
                "instant" : false,
@@ -456,23 +426,6 @@
             }
          ],
          "title" : "User",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {}
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            },
-            {
-               "disabled" : true,
-               "id" : "joinByField",
-               "options" : {
-                  "mode" : "inner"
-               }
-            }
-         ],
          "type" : "stat"
       },
       {
@@ -494,8 +447,7 @@
                         "value" : null
                      }
                   ]
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -525,7 +477,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -535,6 +487,7 @@
                "editorMode" : "code",
                "exemplar" : false,
                "expr" : "slurmjob_info{jobid=\"$jobid\"}",
+               "format" : "table",
                "instant" : false,
                "legendFormat" : "__auto",
                "range" : true,
@@ -542,23 +495,6 @@
             }
          ],
          "title" : "Partition",
-         "transformations" : [
-            {
-               "id" : "labelsToFields",
-               "options" : {
-                  "keepLabels" : [
-                     "__name__",
-                     "jobid",
-                     "partition",
-                     "user"
-                  ]
-               }
-            },
-            {
-               "id" : "merge",
-               "options" : {}
-            }
-         ],
          "type" : "stat"
       },
       {
@@ -581,8 +517,7 @@
                      }
                   ]
                },
-               "unit" : "dthms",
-               "unitScale" : true
+               "unit" : "dthms"
             },
             "overrides" : []
          },
@@ -612,7 +547,7 @@
             "textMode" : "auto",
             "wideLayout" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -674,8 +609,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : []
          },
@@ -702,7 +636,7 @@
             "showThresholdMarkers" : true,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -711,7 +645,7 @@
                },
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -737,8 +671,7 @@
                   "scaleDistribution" : {
                      "type" : "linear"
                   }
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -791,6 +724,7 @@
                "layout" : "auto"
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "showColorScale" : false,
                "yHistogram" : false
@@ -801,7 +735,7 @@
                "reverse" : false
             }
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -810,7 +744,7 @@
                },
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "format" : "time_series",
                "instant" : false,
                "interval" : "",
@@ -851,8 +785,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : []
          },
@@ -879,7 +812,7 @@
             "showThresholdMarkers" : true,
             "sizing" : "auto"
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -888,7 +821,7 @@
                },
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "100 * max(label_replace({__name__=~\"card(.*)_rocm_vram_used\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_used\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / max(label_replace({__name__=~\"card(.*)_rocm_vram_total\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_total\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "max by (card) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -914,8 +847,7 @@
                   "scaleDistribution" : {
                      "type" : "linear"
                   }
-               },
-               "unitScale" : true
+               }
             },
             "overrides" : []
          },
@@ -968,6 +900,7 @@
                "layout" : "auto"
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "showColorScale" : false,
                "yHistogram" : false
@@ -978,7 +911,7 @@
                "reverse" : false
             }
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -987,7 +920,7 @@
                },
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "100 * avg(label_replace({__name__=~\"card(.*)_rocm_vram_used\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_used\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card) / max(label_replace({__name__=~\"card(.*)_rocm_vram_total\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_vram_total\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "max by (card) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "format" : "time_series",
                "instant" : false,
                "interval" : "",
@@ -1068,8 +1001,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : []
          },
@@ -1089,6 +1021,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1100,7 +1033,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1166,8 +1099,7 @@
                      }
                   ]
                },
-               "unit" : "celsius",
-               "unitScale" : true
+               "unit" : "celsius"
             },
             "overrides" : []
          },
@@ -1177,7 +1109,7 @@
             "x" : 0,
             "y" : 31
          },
-          "id" : 33,
+         "id" : 33,
          "interval" : "$interval",
          "options" : {
             "legend" : {
@@ -1187,6 +1119,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1198,7 +1131,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_temp_die_edge\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_temp_die_edge\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_temperature_edge_celsius * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1264,8 +1197,7 @@
                      }
                   ]
                },
-               "unit" : "watt",
-               "unitScale" : true
+               "unit" : "watt"
             },
             "overrides" : []
          },
@@ -1285,6 +1217,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1296,7 +1229,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_avg_pwr\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_avg_pwr\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_average_socket_power_watts * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1362,8 +1295,7 @@
                      }
                   ]
                },
-               "unit" : "rotmhz",
-               "unitScale" : true
+               "unit" : "rotmhz"
             },
             "overrides" : []
          },
@@ -1383,6 +1315,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1394,7 +1327,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_sclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_sclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_sclk_clock_mhz * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1460,8 +1393,7 @@
                      }
                   ]
                },
-               "unit" : "rotmhz",
-               "unitScale" : true
+               "unit" : "rotmhz"
             },
             "overrides" : []
          },
@@ -1481,6 +1413,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1492,7 +1425,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_mclk_clock_mhz\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_mclk_clock_mhz\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (card)",
+               "expr" : "avg by (card) (rocm_mclk_clock_mhz * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
@@ -1567,8 +1500,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : [
                {
@@ -1700,6 +1632,7 @@
                "showLegend" : true
             },
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "multi",
                "sort" : "none"
             }
@@ -1711,7 +1644,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "quantile(0.20, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "expr" : "quantile(0.20, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
                "instant" : false,
                "legendFormat" : "Quantile 0.2 ",
                "range" : true,
@@ -1723,7 +1656,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "quantile(0.5, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "expr" : "quantile(0.5, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "Median",
@@ -1736,7 +1669,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "quantile(0.8, (label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+               "expr" : "quantile(0.8, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "Quantile 0.8",
@@ -1749,7 +1682,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}))",
+               "expr" : "avg(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "Average",
@@ -1806,8 +1739,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : [
                {
@@ -1851,6 +1783,7 @@
             ],
             "seriesMapping" : "manual",
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -1862,7 +1795,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg(label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}) by (instance)",
+               "expr" : "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "__auto",
                "range" : true,
@@ -1961,8 +1894,7 @@
                      }
                   ]
                },
-               "unit" : "percent",
-               "unitScale" : true
+               "unit" : "percent"
             },
             "overrides" : [
                {
@@ -2006,6 +1938,7 @@
             ],
             "seriesMapping" : "manual",
             "tooltip" : {
+               "maxHeight" : 600,
                "mode" : "single",
                "sort" : "none"
             }
@@ -2017,7 +1950,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\") * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}",
+               "expr" : "(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "__auto",
                "range" : true,
@@ -2071,7 +2004,7 @@
          "type" : "xychart"
       },
       {
-         "collapsed" : true,
+         "collapsed" : false,
          "gridPos" : {
             "h" : 1,
             "w" : 24,
@@ -2114,8 +2047,7 @@
                      }
                   ]
                },
-               "unit" : "s",
-               "unitScale" : true
+               "unit" : "s"
             },
             "overrides" : [
                {
@@ -2205,7 +2137,7 @@
             "frameIndex" : 1,
             "showHeader" : true
          },
-         "pluginVersion" : "10.3.1",
+         "pluginVersion" : "11.0.0",
          "targets" : [
             {
                "datasource" : {
@@ -2225,7 +2157,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr": "avg by (marker) ((label_replace({__name__=~\"card(.*)_rocm_utilization\"}, \"card\", \"$1\", \"__name__\", \"card(.*)_rocm_utilization\")) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+               "expr" : "avg by (marker) ((rocm_utilization_percentage) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
                "hide" : false,
                "instant" : false,
                "legendFormat" : "__auto",
@@ -2272,7 +2204,6 @@
          "type" : "table"
       }
    ],
-   "refresh" : false,
    "schemaVersion" : 39,
    "tags" : [
       "omnistat"
