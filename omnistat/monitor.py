@@ -160,7 +160,9 @@ class Monitor:
         if self.runtimeConfig["collector_enable_rocprofiler"]:
             from omnistat.collector_rocprofiler import rocprofiler
 
-            self.__collectors.append(rocprofiler(self.runtimeConfig["collector_rocm_path"], self.runtimeConfig["rocprofiler_metrics"]))
+            self.__collectors.append(
+                rocprofiler(self.runtimeConfig["collector_rocm_path"], self.runtimeConfig["rocprofiler_metrics"])
+            )
 
         # Initialize all metrics
         for collector in self.__collectors:
