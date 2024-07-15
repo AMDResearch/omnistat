@@ -177,7 +177,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "(rmsjob_info{jobid=\"$jobid\"})",
           "format": "table",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
@@ -250,7 +250,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "slurmjob_info{jobid=\"$jobid\"}",
+          "expr": "rmsjob_info{jobid=\"$jobid\"}",
           "format": "table",
           "instant": false,
           "legendFormat": "__auto",
@@ -338,7 +338,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "(rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
           "legendFormat": "{{batchflag}}",
           "range": true,
@@ -421,7 +421,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(count by (instance) (slurmjob_info{jobid=\"$jobid\"}))",
+          "expr": "count(count by (instance) (rmsjob_info{jobid=\"$jobid\"}))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -489,7 +489,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(count by (instance,card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}))",
+          "expr": "count(count by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -558,7 +558,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "max(timestamp(slurmjob_info{jobid=\"$jobid\"}))",
+          "expr": "max(timestamp(rmsjob_info{jobid=\"$jobid\"}))",
           "hide": false,
           "instant": false,
           "interval": "",
@@ -649,7 +649,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "avg(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
           "legendFormat": "Core",
           "range": true,
@@ -791,7 +791,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "avg(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
           "legendFormat": "Average",
           "range": true,
@@ -803,7 +803,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "max(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "max(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Max",
@@ -879,7 +879,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "avg(rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
           "legendFormat": "Core",
           "range": true,
@@ -1024,7 +1024,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "avg(rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
           "legendFormat": "Average",
           "range": true,
@@ -1036,7 +1036,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "max(rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+          "expr": "max(rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Max",
@@ -1112,7 +1112,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(node_load1 * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "avg(node_load1 * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1230,7 +1230,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(node_load1 * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "avg(node_load1 * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "Average",
           "range": true,
@@ -1305,7 +1305,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(100 * ((node_memory_MemTotal_bytes  -node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "avg(100 * ((node_memory_MemTotal_bytes  -node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "Core",
           "range": true,
@@ -1426,7 +1426,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "avg(100 * ((node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "avg(100 * ((node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "Average",
           "range": true,
@@ -1501,7 +1501,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))) + sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))) + sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1634,7 +1634,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
           "legendFormat": "Received",
           "range": true,
@@ -1646,7 +1646,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+          "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "hide": false,
           "instant": false,
           "legendFormat": "Transmitted",
@@ -1755,7 +1755,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -1865,7 +1865,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (instance,card) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance,card) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -1973,7 +1973,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
@@ -2095,7 +2095,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -2205,7 +2205,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (instance) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -2313,7 +2313,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "{{instance}}",
               "range": true,
@@ -2410,7 +2410,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -2509,7 +2509,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -2585,7 +2585,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "max by (card) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "max by (card) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -2684,7 +2684,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (card) (rocm_vram_used_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -2783,7 +2783,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -3002,7 +3002,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "quantile(0.20, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+              "expr": "quantile(0.20, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
               "instant": false,
               "legendFormat": "Quantile 0.2 ",
               "range": true,
@@ -3014,7 +3014,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "quantile(0.5, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+              "expr": "quantile(0.5, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
               "hide": false,
               "instant": false,
               "legendFormat": "Median",
@@ -3027,7 +3027,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "quantile(0.8, (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})) ",
+              "expr": "quantile(0.8, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
               "hide": false,
               "instant": false,
               "legendFormat": "Quantile 0.8",
@@ -3040,7 +3040,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg(rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average",
@@ -3226,7 +3226,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -3448,7 +3448,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -3619,7 +3619,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"}",
+              "expr": "rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}",
               "format": "time_series",
               "instant": false,
               "legendFormat": "__auto",
@@ -3864,7 +3864,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -4054,7 +4054,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -4209,7 +4209,7 @@
                 "uid": "$source"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "format": "time_series",
               "instant": false,
               "legendFormat": "__auto",
@@ -4383,7 +4383,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (card) (rocm_temperature_edge_celsius * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_temperature_edge_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -4480,7 +4480,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (card) (rocm_average_socket_power_watts * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_average_socket_power_watts * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -4577,7 +4577,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (card) (rocm_sclk_clock_mhz * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_sclk_clock_mhz * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -4674,7 +4674,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (card) (rocm_mclk_clock_mhz * on (instance) group_left() slurmjob_info{jobid=\"$jobid\"})",
+              "expr": "avg by (card) (rocm_mclk_clock_mhz * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "Card: {{card}}",
               "range": true,
@@ -4785,7 +4785,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(node_load1) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
+              "expr": "(node_load1) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -4891,7 +4891,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "100 * ((node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
+              "expr": "100 * ((node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5011,7 +5011,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg(node_load1 * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "avg(node_load1 * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Average",
               "range": true,
@@ -5108,7 +5108,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg(100 * ((node_memory_MemTotal_bytes  -node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
+              "expr": "avg(100 * ((node_memory_MemTotal_bytes  -node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
               "instant": false,
               "legendFormat": "Average",
               "range": true,
@@ -5219,7 +5219,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
+              "expr": "sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5325,7 +5325,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
+              "expr": "sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5445,7 +5445,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(node_disk_read_bytes_total[$__rate_interval])) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
+              "expr": "sum by (instance) (rate(node_disk_read_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5551,7 +5551,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(node_disk_written_bytes_total[$__rate_interval])) * on (instance) (label_replace(slurmjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))\r\n",
+              "expr": "sum by (instance) (rate(node_disk_written_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))\r\n",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5724,7 +5724,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (marker) (avg by (instance) (rocm_utilization_percentage) * on (instance) group_left(jobid,marker) slurmjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+              "expr": "avg by (marker) (avg by (instance) (rocm_utilization_percentage) * on (instance) group_left(jobid,marker) rmsjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -5803,7 +5803,7 @@
           "type": "prometheus",
           "uid": "${source}"
         },
-        "definition": "label_values(slurmjob_info,jobid)",
+        "definition": "label_values(rmsjob_info,jobid)",
         "hide": 0,
         "includeAll": false,
         "label": "Job ID",
@@ -5812,7 +5812,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(slurmjob_info,jobid)",
+          "query": "label_values(rmsjob_info,jobid)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
