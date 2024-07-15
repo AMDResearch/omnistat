@@ -1,5 +1,5 @@
 #!/bin/bash
 
-if [[ -e /tmp/omni_slurmjobinfo ]]; then
-    rm -f /tmp/omni_slurmjobinfo
+if [[ -e /tmp/omni_rmsjobinfo ]]; then
+    rm -f /tmp/omni_rmsjobinfo
 fi
