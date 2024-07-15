@@ -83,8 +83,7 @@ class RMSJob(Collector):
         else:
             if self.__rmsJobMode == "file-based":
                 logging.info(
-                    "collector_rms: reading job information from prolog/epilog derived file (%s)"
-                    % self.__rmsJobFile
+                    "collector_rms: reading job information from prolog/epilog derived file (%s)" % self.__rmsJobFile
                 )
             elif self.__rmsJobMode == "squeue":
                 logging.info("collector_rms: will poll slurm periodicaly with squeue")
