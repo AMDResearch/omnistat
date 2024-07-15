@@ -33,8 +33,8 @@ class TestIntegration:
 
     def test_query_slurm(self):
         prometheus = PrometheusConnect(url=self.url)
-        results = prometheus.custom_query("slurmjob_info")
-        assert len(results) >= 1, "Metric slurmjob_info not available"
+        results = prometheus.custom_query("rmsjob_info")
+        assert len(results) >= 1, "Metric rmsjob_info not available"
 
     @pytest.mark.skipif(not rocm_host, reason="requires ROCm")
     def test_query_rocm(self):
@@ -49,7 +49,7 @@ class TestIntegration:
 
     def test_job(self):
         prometheus = PrometheusConnect(url=self.url)
-        query = f"slurmjob_info{{jobid=~'.+'}}[{self.time_range}]"
+        query = f"rmsjob_info{{jobid=~'.+'}}[{self.time_range}]"
         results = prometheus.custom_query(query)
 
         last_jobid = 0
