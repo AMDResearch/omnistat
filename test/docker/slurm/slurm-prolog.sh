@@ -1,3 +1,3 @@
 #!/bin/bash
 
-/opt/omnistat/bin/omnistat-slurm-env
+/opt/omnistat/bin/omnistat-rms-env
