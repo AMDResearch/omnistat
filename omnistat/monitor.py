@@ -51,7 +51,7 @@ class Monitor:
         self.runtimeConfig["collector_enable_rocm_smi"] = config["omnistat.collectors"].getboolean(
             "enable_rocm_smi", True
         )
-        self.runtimeConfig["collector_enable_slurm"] = config["omnistat.collectors"].getboolean("enable_slurm", False)
+        self.runtimeConfig["collector_enable_rms"] = config["omnistat.collectors"].getboolean("enable_rms", False)
         self.runtimeConfig["collector_enable_amd_smi"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi", False
         )
@@ -67,18 +67,18 @@ class Monitor:
         self.runtimeConfig["collector_allowed_ips"] = re.split(r",\s*", allowed_ips)
         logging.info("Allowed query IPs = %s" % self.runtimeConfig["collector_allowed_ips"])
 
-        # additional slurm collector controls
-        if self.runtimeConfig["collector_enable_slurm"] == True:
+        # additional RMS collector controls
+        if self.runtimeConfig["collector_enable_rms"] == True:
             self.jobDetection = {}
-            self.runtimeConfig["slurm_collector_annotations"] = config["omnistat.collectors.slurm"].getboolean(
+            self.runtimeConfig["rms_collector_annotations"] = config["omnistat.collectors.rms"].getboolean(
                 "enable_annotations", False
             )
-            self.jobDetection["mode"] = config["omnistat.collectors.slurm"].get("job_detection_mode", "file-based")
-            self.jobDetection["file"] = config["omnistat.collectors.slurm"].get(
+            self.jobDetection["mode"] = config["omnistat.collectors.rms"].get("job_detection_mode", "file-based")
+            self.jobDetection["file"] = config["omnistat.collectors.rms"].get(
                 "job_detection_file", "/tmp/omni_rmsjobinfo"
             )
-            if config.has_option("omnistat.collectors.slurm", "host_skip"):
-                self.runtimeConfig["slurm_collector_host_skip"] = config["omnistat.collectors.slurm"]["host_skip"]
+            if config.has_option("omnistat.collectors.rms", "host_skip"):
+                self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
@@ -87,15 +87,15 @@ class Monitor:
         # define desired collectors
         self.__collectors = []
 
-        # allow for disablement of slurm collector via regex match
-        if self.runtimeConfig["collector_enable_slurm"]:
-            if config.has_option("omnistat.collectors.slurm", "host_skip"):
-                host_skip = utils.removeQuotes(config["omnistat.collectors.slurm"]["host_skip"])
+        # allow for disablement of resource manager data collector via regex match
+        if self.runtimeConfig["collector_enable_rms"]:
+            if config.has_option("omnistat.collectors.rms", "host_skip"):
+                host_skip = utils.removeQuotes(config["omnistat.collectors.rms"]["host_skip"])
                 hostname = platform.node().split(".", 1)[0]
                 p = re.compile(host_skip)
                 if p.match(hostname):
-                    self.runtimeConfig["collector_enable_slurm"] = False
-                    logging.info("Disabling SLURM collector via host_skip match (%s)" % host_skip)
+                    self.runtimeConfig["collector_enable_rms] = False
+                    logging.info("Disabling RMS collector via host_skip match (%s)" % host_skip)
 
         logging.debug("Completed collector initialization (base class)")
         return
@@ -114,13 +114,13 @@ class Monitor:
             from omnistat.collector_smi_process import AMDSMIProcess
 
             self.__collectors.append(AMDSMIProcess())
-        if self.runtimeConfig["collector_enable_slurm"]:
-            from omnistat.collector_slurm import SlurmJob
+        if self.runtimeConfig["collector_enable_rms"]:
+            from omnistat.collector_rms import RMSJob
 
             self.__collectors.append(
-                SlurmJob(
+                RMSJob(
                     userMode=self.runtimeConfig["collector_usermode"],
-                    annotations=self.runtimeConfig["slurm_collector_annotations"],
+                    annotations=self.runtimeConfig["rms_collector_annotations"],
                     jobDetection=self.jobDetection,
                 )
             )
