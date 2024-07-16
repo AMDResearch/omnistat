@@ -7,13 +7,17 @@
 ```
 
 Dashboards allow showing real-time cluster telemetry data in a visual form.
-Omnistat provides two sample dashboards for system-wide deployments in
-clusters with SLURM:
-- [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/slurm-global.json):
-  includes an overview of the system, job indices, and cluster-level telemetry.
-- [Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/slurm-job.json):
-  includes detailed time-series data, load distribution, and other metrics for
-  a single job.
+Omnistat provides a few sample dashboards for system-wide deployments in
+clusters:
+- [Standalone Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone.json):
+  includes an overview of the system, with telemetry for each one of the
+  GPUs; works without a resource manager.
+- [Resource Manager Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-global.json):
+  provides an overview of the system with a resource manager, includes job
+  indices, and cluster-level telemetry.
+- [Resource Manager Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-job.json):
+  provides detailed time-series data, load distribution, and other metrics for
+  a single job in a system with a resource manager.
 
 ## Import dashboards
 
