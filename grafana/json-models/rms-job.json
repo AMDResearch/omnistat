@@ -19,7 +19,7 @@
           "uid": "${source}"
         },
         "enable": true,
-        "expr": "slurmjob_annotations{jobid=\"$jobid\"}",
+        "expr": "rmsjob_annotations{jobid=\"$jobid\"}",
         "hide": false,
         "iconColor": "text",
         "name": "User Annotations",
@@ -5712,7 +5712,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "timestamp(count by (marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+              "expr": "timestamp(count by (marker) (rmsjob_annotations{jobid=\"$jobid\"} > 0))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5724,7 +5724,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (marker) (avg by (instance) (rocm_utilization_percentage) * on (instance) group_left(jobid,marker) rmsjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (slurmjob_annotations{jobid=\"$jobid\"} > 0))",
+              "expr": "avg by (marker) (avg by (instance) (rocm_utilization_percentage) * on (instance) group_left(jobid,marker) rmsjob_info{jobid=\"$jobid\"} * on (jobid) group_left(marker) count by (jobid,marker) (rmsjob_annotations{jobid=\"$jobid\"} > 0))",
               "hide": false,
               "instant": false,
               "legendFormat": "__auto",
@@ -5884,7 +5884,7 @@
     ]
   },
   "timezone": "",
-  "title": "slurm-job",
+  "title": "rms-job",
   "uid": "fdqo0h2s2drswe",
   "version": 1,
   "weekStart": ""

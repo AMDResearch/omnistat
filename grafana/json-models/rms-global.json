@@ -602,7 +602,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.numeric} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -772,7 +772,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -927,7 +927,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -1132,7 +1132,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -1319,7 +1319,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.numeric} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -1493,7 +1493,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -1623,7 +1623,7 @@
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
-              "refId": "SLURM info and duration"
+              "refId": "Resource Manager info and duration"
             }
           ],
           "title": "Job Index",
@@ -1824,7 +1824,7 @@
               "links": [
                 {
                   "title": "Job ${__data.fields[\"Job ID\"]} Dashboard",
-                  "url": "/d/fdqo0h2s2drswe/slurm-job?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&${__url_time_range}"
+                  "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&${__url_time_range}"
                 }
               ],
               "mappings": [],
@@ -3847,7 +3847,7 @@
     ]
   },
   "timezone": "",
-  "title": "slurm-global",
+  "title": "rms-global",
   "uid": "edqnz7pce7togc",
   "version": 1,
   "weekStart": ""
