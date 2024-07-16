@@ -156,7 +156,7 @@ class queryMetrics:
             step = "1m"
 
         # Cull job info
-        results = self.prometheus.custom_query_range('(slurmjob_info{jobid="%s"})' % self.jobID, start, end, step=step)
+        results = self.prometheus.custom_query_range('(rmsjob_info{jobid="%s"})' % self.jobID, start, end, step=step)
 
         assert len(results) > 0
         num_nodes = int(results[0]["metric"]["nodes"])
@@ -170,7 +170,7 @@ class queryMetrics:
 
         # Cull number of gpus
         results = self.prometheus.custom_query_range(
-            '(rocm_num_gpus * on (instance) slurmjob_info{jobid="%s"})' % self.jobID, start, end, step=step
+            '(rocm_num_gpus * on (instance) rmsjob_info{jobid="%s"})' % self.jobID, start, end, step=step
         )
         assert len(results) == num_nodes
         num_gpus = int(results[0]["values"][0][1])
@@ -200,7 +200,7 @@ class queryMetrics:
             astart = aend - timedelta(days=1)
 
             results = self.prometheus.custom_query_range(
-                'max(slurmjob_info{jobid="%s"})' % self.jobID, astart, aend, step="1m"
+                'max(rmsjob_info{jobid="%s"})' % self.jobID, astart, aend, step="1m"
             )
             if not lastTimestamp and len(results) > 0:
                 lastTimestamp = datetime.fromtimestamp(results[0]["values"][-1][0])
@@ -269,7 +269,7 @@ class queryMetrics:
     def get_hosts(self):
         self.hosts = []
         results = self.prometheus.custom_query_range(
-            'card0_rocm_utilization * on (instance) slurmjob_info{jobid="%s"}' % self.jobID,
+            'card0_rocm_utilization * on (instance) rmsjob_info{jobid="%s"}' % self.jobID,
             self.start_time,
             self.end_time,
             step=60,
@@ -388,14 +388,14 @@ class queryMetrics:
 
         if reducer is None:
             results = self.prometheus.custom_query_range(
-                '(%s * on (instance) slurmjob_info{jobid="%s"})' % (metric_name, self.jobID),
+                '(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric_name, self.jobID),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
             )
         else:
             results = self.prometheus.custom_query_range(
-                '%s(%s * on (instance) group_left() slurmjob_info{jobid="%s"})' % (reducer, metric_name, self.jobID),
+                '%s(%s * on (instance) group_left() rmsjob_info{jobid="%s"})' % (reducer, metric_name, self.jobID),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
@@ -425,7 +425,7 @@ class queryMetrics:
             # --
             # Mean results
             results = self.prometheus.custom_query_range(
-                'avg(%s * on (instance) slurmjob_info{jobid="%s"})' % (metric, self.jobID),
+                'avg(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
                 self.start_time,
                 self.end_time,
                 step=60,
@@ -439,7 +439,7 @@ class queryMetrics:
             # --
             # Max results
             results = self.prometheus.custom_query_range(
-                'max(%s * on (instance) slurmjob_info{jobid="%s"})' % (metric, self.jobID),
+                'max(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
                 self.start_time,
                 self.end_time,
                 step=60,
