@@ -28,6 +28,7 @@
 
 import argparse
 import ctypes
+import getpass
 import logging
 import os
 import pandas as pd
@@ -47,11 +48,11 @@ from omnistat.monitor import Monitor
 
 class Standalone:
     def __init__(self):
-        logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
+        logging.basicConfig(format="%(message)s", level=logging.ERROR, stream=sys.stdout)
         self.__data = {}
 
         # Create a die file - process terminates cleanly if this file is removed
-        user = os.getlogin()
+        user = getpass.getuser()
         self.__dieFile = "/tmp/.omnistat_standalone_%s" % user
         try:
             with open(self.__dieFile, "w") as file:
@@ -105,12 +106,18 @@ class Standalone:
             print(self.__data)
         elif mode == "pandas":
             output = {}
+            hostname = platform.node().split(".", 1)[0]
             if os.path.exists(filename):
                 os.remove(filename)
             for metric in self.__data:
                 data = self.__data[metric]
                 df = pd.DataFrame(data, columns=["Timestamp", "Value"])
-                df.to_hdf(filename, key=metric, mode="a")
+                if metric.startswith('card'):
+                    card, delim, name = metric.partition("_")
+                    hdfPath = "%s/%s/%s" % (hostname,card,name)
+                else:
+                    hdfPath = "%s/%s" % (hostname,metric)
+                df.to_hdf(filename, key=hdfPath, mode="a", format='fixed')
         else:
             logging.error("Unsupported dumpCache mode -> %s" % mode)
             sys.exit(1)
