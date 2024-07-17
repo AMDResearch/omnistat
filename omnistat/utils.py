@@ -26,6 +26,7 @@ import configparser
 import importlib.resources
 import logging
 import os
+import resource
 import shutil
 import subprocess
 import sys
@@ -264,6 +265,9 @@ def removeQuotes(input):
         input = input.strip("'")
     return input
 
+def getMemoryUsageMB():
+    """Get current process memory usage in MB"""
+    return(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024)
 
 def getVersion():
     """Return omnistat version info"""
