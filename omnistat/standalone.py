@@ -34,7 +34,9 @@ import os
 import pandas as pd
 import platform
 import sys
+import tables
 import time
+import warnings
 from prometheus_client import Gauge, REGISTRY
 
 # Ensure current directory is part of Python's path; allows direct execution
@@ -82,7 +84,7 @@ class Standalone:
                     continue
                 for sample in metric.samples:
                     token = self.tokenizeMetricName(sample.name, sample.labels)
-                    logging.info("Enabling caching for metric -> %s" % token)
+                    logging.debug("Enabling caching for metric -> %s" % token)
                     self.__data[token] = []
 
     def getMetrics(self, timestamp, prefix=None):
@@ -102,6 +104,7 @@ class Standalone:
             return True
 
     def dumpCache(self, mode="raw", filename="/tmp/omnistat.h5"):
+        warnings.filterwarnings("ignore", category=tables.exceptions.NaturalNameWarning)
         if mode == "raw":
             print(self.__data)
         elif mode == "pandas":
@@ -112,12 +115,12 @@ class Standalone:
             for metric in self.__data:
                 data = self.__data[metric]
                 df = pd.DataFrame(data, columns=["Timestamp", "Value"])
-                if metric.startswith('card'):
+                if metric.startswith("card"):
                     card, delim, name = metric.partition("_")
-                    hdfPath = "%s/%s/%s" % (hostname,card,name)
+                    hdfPath = "%s/%s/%s" % (hostname, card, name)
                 else:
-                    hdfPath = "%s/%s" % (hostname,metric)
-                df.to_hdf(filename, key=hdfPath, mode="a", format='fixed')
+                    hdfPath = "%s/%s" % (hostname, metric)
+                df.to_hdf(filename, key=hdfPath, mode="a", format="fixed")
         else:
             logging.error("Unsupported dumpCache mode -> %s" % mode)
             sys.exit(1)
@@ -149,31 +152,46 @@ def main():
     num_samples = 0
     sample_duration = 0
     exit_check_duration = 0
+    mem_mb_base = utils.getMemoryUsageMB()
 
-    while True:
-        start_time = time.perf_counter()
-        timestamp = pd.Timestamp("now")
-        monitor.updateAllMetrics()
-        caching.getMetrics(timestamp, prefix="rocm")
-        sample_duration += time.perf_counter() - start_time
+    try:
+        while True:
+            start_time = time.perf_counter()
+            timestamp = pd.Timestamp("now")
+            monitor.updateAllMetrics()
+            caching.getMetrics(timestamp, prefix="rocm")
+            sample_duration += time.perf_counter() - start_time
 
-        num_samples += 1
+            num_samples += 1
 
-        if exit_check_duration > exit_check_interval_secs:
-            logging.debug("Check if received request to terminate")
-            exit_check_duration = 0.0
-            if caching.checkForTermination():
-                logging.info("Terminating per request...")
+            if exit_check_duration > exit_check_interval_secs:
+                logging.debug("Check if received request to terminate")
+                exit_check_duration = 0.0
+                if caching.checkForTermination():
+                    logging.info("Terminating per request...")
 
-                break
+                    break
 
-        caching.sleep_microsecs(interval_microsecs)
-        exit_check_duration += time.perf_counter() - start_time
+            caching.sleep_microsecs(interval_microsecs)
+            exit_check_duration += time.perf_counter() - start_time
+    except KeyboardInterrupt:
+        logging.info("\nTerminating data collection from keyboard interrupt.")
+
     # end polling loop
     # ---
 
-    logging.info("--> Total # of samples  = %i" % num_samples)
-    logging.info("--> Average time/sample = %.5f (secs)" % (sample_duration / num_samples))
+    logging.info("--> Sampling interval          = %f (secs)" % interval_secs)
+    logging.info("--> Total # of samples         = %i" % num_samples)
+    logging.info("--> Average time/sample        = %.5f (secs)" % (sample_duration / num_samples))
+
+    mem_mb = utils.getMemoryUsageMB()
+    logging.info("--> Base memory in use         = %.3f MB" % mem_mb_base)
+    logging.info("--> Memory growth from caching = %.3f MB" % (mem_mb - mem_mb_base))
+
+    duration_secs = num_samples * interval_secs
+    mem_per_hour = 3600.0 * ((mem_mb - mem_mb_base) / duration_secs)
+    logging.info("--> Data collection duration   = %.2f (secs)" % duration_secs)
+    logging.info("--> Approx. mem growth/hour    = %.3f (MB)" % mem_per_hour)
 
     hostname = platform.node().split(".", 1)[0]
     caching.dumpCache(mode="pandas", filename="/tmp/omnistat.%s.h5" % hostname)
