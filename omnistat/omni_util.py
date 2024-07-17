@@ -112,7 +112,7 @@ class UserBasedMonitoring:
         if self.timeout < self.scrape_interval:
             scrape_timeout = "5s"
         else:
-            scrape_timeout = scrape_interval
+            scrape_timeout = str(self.scrape_interval) + 's'
 
         section = "omnistat.promserver"
         ps_binary = self.runtimeConfig[section].get("binary")
