@@ -238,7 +238,7 @@ class ROCMSMI(Collector):
 
         temperature = ctypes.c_int64(0)
         temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
-        temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
+        temp_location = ctypes.c_int32(1)  # 0=RSMI_TEMP_TYPE_EDGE, 1=RSMI_TEMP_TYPE_JUNCTION
         power = ctypes.c_uint64(0)
         power_type = rsmi_power_type_t()
         # freq = rsmi_frequencies_t()
