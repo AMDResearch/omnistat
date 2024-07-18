@@ -175,7 +175,7 @@ class ROCMSMI(Collector):
         # register desired metric names
         self.__GPUmetrics = {}
 
-        # temperature: note that temperature queries require a location index to be supplited that can
+        # temperature: note that temperature queries require a location index to be supplied that can
         # vary depending on hardware (e.g. RSMI_TEMP_TYPE_EDGE vs RSMI_TEMP_TYPE_JUNCTION). During init,
         # check which is available cache index of first non-zero response.
 
