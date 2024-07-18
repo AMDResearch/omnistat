@@ -780,7 +780,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_temperature_edge_celsius) ",
+              "expr": "avg by (instance,card) (rocm_temperature_celsius) ",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,

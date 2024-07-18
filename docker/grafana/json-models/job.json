@@ -1131,7 +1131,7 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg by (card) (rocm_temperature_edge_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+               "expr" : "avg by (card) (rocm_temperature_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
                "instant" : false,
                "legendFormat" : "Card: {{card}}",
                "range" : true,
