@@ -33,6 +33,7 @@ import logging
 import os
 import pandas as pd
 import platform
+import sqlite3
 import sys
 import tables
 import time
@@ -103,13 +104,37 @@ class Standalone:
         else:
             return True
 
-    def dumpCache(self, mode="raw", filename="/tmp/omnistat.h5"):
-        warnings.filterwarnings("ignore", category=tables.exceptions.NaturalNameWarning)
+    def dumpCache(self, mode="raw", filename="/tmp/omnistat_data"):
+
+        hostname = platform.node().split(".", 1)[0]
+
         if mode == "raw":
             print(self.__data)
-        elif mode == "pandas":
+        elif mode == "pandas-sqlite":
+            filename += ".db"
+            logging.info("Save local node telemetry in pandas/sqlite format -> %s" % filename)
             output = {}
-            hostname = platform.node().split(".", 1)[0]
+            if os.path.exists(filename):
+                os.remove(filename)
+
+            # Save to sql DB
+            with sqlite3.connect(filename) as conn:
+                for metric in self.__data:
+                    data = self.__data[metric]
+                    df = pd.DataFrame(data, columns=["Timestamp", "Value"])
+
+                    if metric.startswith("card"):
+                        card, delim, name = metric.partition("_")
+                        table_name = "%s__%s__%s" % (hostname, card, name)
+                    else:
+                        table_name = "%s__%s" % (hostname, metric)
+                    df.to_sql(table_name, conn, if_exists="append", index=False)
+
+        elif mode == "pandas-hdf5":
+            filename += ".h5"
+            warnings.filterwarnings("ignore", category=tables.exceptions.NaturalNameWarning)
+            output = {}
+
             if os.path.exists(filename):
                 os.remove(filename)
             for metric in self.__data:
@@ -194,7 +219,7 @@ def main():
     logging.info("--> Approx. mem growth/hour    = %.3f (MB)" % mem_per_hour)
 
     hostname = platform.node().split(".", 1)[0]
-    caching.dumpCache(mode="pandas", filename="/tmp/omnistat.%s.h5" % hostname)
+    caching.dumpCache(mode="pandas-sqlite", filename="/tmp/omnistat.%s" % hostname)
 
 
 if __name__ == "__main__":
