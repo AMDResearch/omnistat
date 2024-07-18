@@ -2541,7 +2541,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_temperature_edge_celsius) ",
+              "expr": "avg by (instance,card) (rocm_temperature_celsius) ",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
@@ -2656,7 +2656,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (rmsjob_info{jobid=~\"^\\\\d+\"})",
+              "expr": "avg by (instance) (rocm_temperature_celsius) * on (instance) (rmsjob_info{jobid=~\"^\\\\d+\"})",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
@@ -2771,7 +2771,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance) (rocm_temperature_edge_celsius) * on (instance) (rmsjob_info{jobid=\"\"})",
+              "expr": "avg by (instance) (rocm_temperature_celsius) * on (instance) (rmsjob_info{jobid=\"\"})",
               "instant": false,
               "legendFormat": "Node: {{instance}}",
               "range": true,
