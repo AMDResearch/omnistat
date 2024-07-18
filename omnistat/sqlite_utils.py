@@ -77,7 +77,7 @@ def main():
                 if host in existingHosts:
                     logging.error("Error: cowardly refusing to add data for %s when host data already exists", host)
                     sys.exit(1)
-                logging.info("Reading metric %s..." % metric)
+                logging.debug("Reading metric %s..." % metric)
                 data = pd.read_sql_query("SELECT * FROM %s" % metric, dbIn)
                 host = hostFromTableName(metric)
                 data.to_sql(metric, dbOut, if_exists="append", index=False)
