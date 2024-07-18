@@ -49,8 +49,7 @@ def main():
         logging.error("Error: Cannot access infile -> %s" % args.infile)
         sys.exit(1)
 
-    infile = "/tmp/omnistat.login1.db"
-    with sqlite3.connect(infile) as dbIn:
+    with sqlite3.connect(args.infile) as dbIn:
         cursor = dbIn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
@@ -78,6 +77,7 @@ def main():
                 if host in existingHosts:
                     logging.error("Error: cowardly refusing to add data for %s when host data already exists", host)
                     sys.exit(1)
+                logging.info("Reading metric %s..." % metric)
                 data = pd.read_sql_query("SELECT * FROM %s" % metric, dbIn)
                 host = hostFromTableName(metric)
                 data.to_sql(metric, dbOut, if_exists="append", index=False)
