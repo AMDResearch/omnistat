@@ -113,6 +113,8 @@ class Standalone:
         elif mode == "pandas-sqlite":
             filename += ".db"
             logging.info("Save local node telemetry in pandas/sqlite format -> %s" % filename)
+            # no hyphens for sql
+            hostname = hostname.replace("-","_")
             output = {}
             if os.path.exists(filename):
                 os.remove(filename)
