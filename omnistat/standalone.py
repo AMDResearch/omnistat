@@ -35,7 +35,7 @@ import pandas as pd
 import platform
 import sqlite3
 import sys
-import tables
+#import tables
 import time
 import warnings
 from prometheus_client import Gauge, REGISTRY
