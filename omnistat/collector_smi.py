@@ -30,7 +30,7 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with a "rocm" prefix with individual cards denotes by labels. The
 following example highlights example metrics for card 0:
 
-rocm_temperature_edge_celsius{card="0"} 41.0
+rocm_temperature_celsius{card="0"} 41.0
 rocm_average_socket_power_watts{card="0"} 35.0
 rocm_sclk_clock_mhz{card="0"} 1502.0
 rocm_mclk_clock_mhz{card="0"} 1200.0
@@ -175,8 +175,28 @@ class ROCMSMI(Collector):
         # register desired metric names
         self.__GPUmetrics = {}
 
-        # temperature
-        self.registerGPUMetric(self.__prefix + "temperature_edge_celsius", "gauge", "Temperature (Sensor edge) (C)")
+        # temperature: note that temperature queries require a location index to be supplited that can
+        # vary depending on hardware (e.g. RSMI_TEMP_TYPE_EDGE vs RSMI_TEMP_TYPE_JUNCTION). During init,
+        # check which is available cache index of first non-zero response.
+
+        maxTempLocations = 4
+        temperature = ctypes.c_int64(0)
+        temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
+        device = ctypes.c_uint32(0)
+
+        for index in range(maxTempLocations):
+            temp_location = ctypes.c_int32(index)
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
+            if ret == 0 and temperature.value > 0:
+                self.__temp_location_index = temp_location
+                break
+
+        self.registerGPUMetric(
+            self.__prefix + "temperature_celsius",
+            "gauge",
+            "Temperature(C), RSMI Index = %i" % self.__temp_location_index.value,
+        )
+
         # power
         self.registerGPUMetric(
             self.__prefix + "average_socket_power_watts", "gauge", "Average Graphics Package Power (W)"
@@ -236,8 +256,10 @@ class ROCMSMI(Collector):
 
             # --
             # temperature [millidegrees Celcius, converted to degrees Celcius]
-            metric = self.__prefix + "temperature_edge_celsius"
-            ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
+            metric = self.__prefix + "temperature_celsius"
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(
+                device, self.__temp_location_index, temp_metric, ctypes.byref(temperature)
+            )
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
 
             # --

@@ -30,7 +30,7 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
 
 amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
-amdsmi_temperature_edge_celsius{card="0"} 42.0
+amdsmi_temperature_celsius{card="0"} 42.0
 amdsmi_utilization_percentage{card="0"} 0.0
 amdsmi_vram_used_percentage{card="0"} 0.0
 amdsmi_average_socket_power_watts{card="0"} 35.0
@@ -134,7 +134,7 @@ class AMDSMI(Collector):
             "average_gfx_activity": "utilization_percentage",
             "vram_total": "vram_total_bytes",
             "average_socket_power": "average_socket_power_watts",
-            "temperature_edge": "temperature_edge_celsius",
+            "temperature_edge": "temperature_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz",
         }
