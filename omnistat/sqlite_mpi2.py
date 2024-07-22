@@ -93,7 +93,9 @@ def main():
                     for metric in namesIn:
                         data = pd.read_sql_query("SELECT * FROM %s" % metric, dbIn)
                         data.to_sql(metric, dbOut, if_exists="append", index=False)
+        comm.Barrier()
 
+    # all done
     if localRank == 0:
         duration_secs = time.perf_counter() - start_time
         logging.info("")
