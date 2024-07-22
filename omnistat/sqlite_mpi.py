@@ -31,6 +31,7 @@ import pandas as pd
 import platform
 import sqlite3
 import sys
+import time
 from mpi4py import MPI
 
 
@@ -76,6 +77,7 @@ def main():
     # --
 
     comm.Barrier()
+    start_time = time.perf_counter()
 
     if localRank == 0:
         names = getSQLTableNames(infile)
@@ -129,8 +131,10 @@ def main():
 
 
     if(localRank == 0):
+        duration_secs = time.perf_counter() - start_time
         logging.info("")
         logging.info("Data aggregation complete -> %s" % (args.outfile))
+        logging.info("--> wallclock time = %.3f (secs)" % duration_secs)
 
 
 if __name__ == "__main__":
