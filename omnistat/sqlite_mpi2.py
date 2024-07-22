@@ -72,27 +72,31 @@ def main():
 
     # --
     # Simple data aggration variant: each rank reads local telmetry data file and appends to
-    # sqlite file in shared file system (serialized).
+    # sqlite file in shared file system (write is serialized).
     # --
 
     start_time = time.perf_counter()
     comm.Barrier()
 
-    # simple variant: serialize read of data from all ranks and append to desired output file
+    # each rank reads in parallel
+    logging.info("[%5i] Reading %s on host %s" % (localRank, infile, hostname))
+    with sqlite3.connect(infile) as dbIn:
+        cursor = dbIn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        namesIn = [table[0] for table in tables]
+
+        data_local = {}
+        for metric in namesIn:
+            data_local[metric] = pd.read_sql_query("SELECT * FROM %s" % metric, dbIn)
+
+    # append to global file (sequentially)
+    comm.Barrier()
     for rank in range(0, numRanks):
-
         if rank == localRank:
-            logging.info("[%5i] Reading %s on host %s" % (localRank, infile, hostname))
-            with sqlite3.connect(infile) as dbIn:
-                cursor = dbIn.cursor()
-                cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-                tables = cursor.fetchall()
-                namesIn = [table[0] for table in tables]
-
-                with sqlite3.connect(args.outfile) as dbOut:
-                    for metric in namesIn:
-                        data = pd.read_sql_query("SELECT * FROM %s" % metric, dbIn)
-                        data.to_sql(metric, dbOut, if_exists="append", index=False)
+            with sqlite3.connect(args.outfile) as dbOut:
+                for metric in namesIn:
+                    data_local[metric].to_sql(metric, dbOut, if_exists="append", index=False)
         comm.Barrier()
 
     # all done
