@@ -55,11 +55,14 @@ def main():
             jobData["RMS_JOB_BATCHMODE"] = 1
 
         # slurm stores large unsigned int if not in a job step, convert that to -1
-        step = int(os.getenv("SLURM_STEP_ID"))
-        if step > 4000000000:
-            step = -1
-        jobData["RMS_STEP_ID"] = step
-        jobData["RMS_JOB_NAME"] = os.getenv("SLURM_JOB_NAME")
+        step = -1
+        if "SLURM_STEP_ID" in os.environ:
+            step = int(os.getenv("SLURM_STEP_ID"))
+            if step > 4000000000:
+                step = jobData["RMS_STEP_ID"]
+
+        if "SLURM_JOB_NAME" in os.environ:
+            jobData["RMS_JOB_NAME"] = os.getenv("SLURM_JOB_NAME")
 
     elif "FLUX_URI" in os.environ:
         command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}"]
