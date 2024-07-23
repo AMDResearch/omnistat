@@ -44,21 +44,22 @@ def main():
         jobFile = sys.argv[1]
 
     if "SLURM_JOB_ID" in os.environ:
-        jobData["SLURM_JOB_ID"] = os.getenv("SLURM_JOB_ID")
-        jobData["SLURM_JOB_USER"] = os.getenv("SLURM_JOB_USER")
-        jobData["SLURM_JOB_PARTITION"] = os.getenv("SLURM_JOB_PARTITION")
-        jobData["SLURM_JOB_NUM_NODES"] = int(os.getenv("SLURM_JOB_NUM_NODES"))
+        jobData["RMS_TYPE"] = "slurm"
+        jobData["RMS_JOB_ID"] = os.getenv("SLURM_JOB_ID")
+        jobData["RMS_JOB_USER"] = os.getenv("SLURM_JOB_USER")
+        jobData["RMS_JOB_PARTITION"] = os.getenv("SLURM_JOB_PARTITION")
+        jobData["RMS_JOB_NUM_NODES"] = os.getenv("SLURM_JOB_NUM_NODES")
         if "SLURM_PTY_PORT" in os.environ:
-            jobData["SLURM_JOB_BATCHMODE"] = 0
+            jobData["RMS_JOB_BATCHMODE"] = 0
         else:
-            jobData["SLURM_JOB_BATCHMODE"] = 1
+            jobData["RMS_JOB_BATCHMODE"] = 1
 
         # slurm stores large unsigned int if not in a job step, convert that to -1
         step = int(os.getenv("SLURM_STEP_ID"))
         if step > 4000000000:
             step = -1
-        jobData["SLURM_STEP_ID"] = step
-        jobData["SLURM_JOB_NAME"] = os.getenv("SLURM_JOB_NAME")
+        jobData["RMS_STEP_ID"] = step
+        jobData["RMS_JOB_NAME"] = os.getenv("SLURM_JOB_NAME")
 
     elif "FLUX_URI" in os.environ:
         command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}"]
@@ -69,14 +70,16 @@ def main():
             sys.exit(0)
 
         fluxdata = results.stdout.strip().split(",")
-        jobData["SLURM_JOB_ID"] = fluxdata[0]
-        jobData["SLURM_JOB_USER"] = fluxdata[1]
-        jobData["SLURM_JOB_PARTITION"] = fluxdata[2]
-        jobData["SLURM_JOB_NUM_NODES"] = fluxdata[3]
-        jobData["SLURM_JOB_BATCHMODE"] = 1  # marking all jobs as batch jobs to start
+        jobData["RMS_TYPE"] = "flux"
+        jobData["RMS_JOB_ID"] = fluxdata[0]
+        jobData["RMS_JOB_USER"] = fluxdata[1]
+        jobData["RMS_JOB_PARTITION"] = fluxdata[2]
+        jobData["RMS_JOB_NUM_NODES"] = fluxdata[3]
+        jobData["RMS_JOB_BATCHMODE"] = 1  # marking all jobs as batch jobs to start
+        jobData["RMS_STEP_ID"] = -1  # marking steps as -1
 
     else:
-        print("ERROR: SLURM settings not visible in current environment. Verify running in active job")
+        print("ERROR: Unknown or undetected resource manager. Verify running in active job")
         sys.exit(1)
 
     # save to file

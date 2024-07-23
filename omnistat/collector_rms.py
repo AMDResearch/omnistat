@@ -108,16 +108,16 @@ class RMSJob(Collector):
             if data.stdout.strip():
                 data = data.stdout.strip().split(":")
                 keys = [
-                    "SLURM_JOB_ID",
-                    "SLURM_JOB_USER",
-                    "SLURM_JOB_PARTITION",
-                    "SLURM_JOB_NUM_NODES",
-                    "SLURM_JOB_BATCHMODE",
+                    "RMS_JOB_ID",
+                    "RMS_JOB_USER",
+                    "RMS_JOB_PARTITION",
+                    "RMS_JOB_NUM_NODES",
+                    "RMS_JOB_BATCHMODE",
                 ]
                 results = dict(zip(keys, data))
-            # 2nd query to ascertain job steps
+            # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
             data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
-            results["SLURM_STEP_ID"] = -1
+            results["RMS_STEP_ID"] = -1
             if data.stdout.strip():
                 numsteps = data.stdout.count("\n")
                 # Response will have 2 jobs if in an active job step. Example output from squeue -s query
@@ -126,7 +126,7 @@ class RMSJob(Collector):
                 # 57735.interactive
                 if numsteps == 2:
                     jobstep = (data.stdout.splitlines()[0]).strip()
-                    results["SLURM_STEP_ID"] = jobstep.split(".")[1]
+                    results["RMS_STEP_ID"] = jobstep.split(".")[1]
 
         elif mode == "file-based":
             jobFileExists = os.path.isfile(self.__rmsJobFile)
@@ -141,7 +141,7 @@ class RMSJob(Collector):
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep"]
-        self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "SLURM job id", labels)
+        self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "RMS job details", labels)
 
         # metric to support user annotations
         self.__RMSMetrics["annotations"] = Gauge(
@@ -169,12 +169,12 @@ class RMSJob(Collector):
         # Case when SLURM job is allocated
         if jobEnabled:
             self.__RMSMetrics["info"].labels(
-                jobid=results["SLURM_JOB_ID"],
-                user=results["SLURM_JOB_USER"],
-                partition=results["SLURM_JOB_PARTITION"],
-                nodes=results["SLURM_JOB_NUM_NODES"],
-                batchflag=results["SLURM_JOB_BATCHMODE"],
-                jobstep=results["SLURM_STEP_ID"],
+                jobid=results["RMS_JOB_ID"],
+                user=results["RMS_JOB_USER"],
+                partition=results["RMS_JOB_PARTITION"],
+                nodes=results["RMS_JOB_NUM_NODES"],
+                batchflag=results["RMSJOB_BATCHMODE"],
+                jobstep=results["RMS_STEP_ID"],
             ).set(1)
 
             # Check for user supplied annotations
@@ -194,14 +194,14 @@ class RMSJob(Collector):
                 ):
                     self.__RMSMetrics["annotations"].labels(
                         marker=self.__lastAnnotationLabel,
-                        jobid=results["SLURM_JOB_ID"],
+                        jobid=results["RMS_JOB_ID"],
                     ).set(0)
                     self.__lastAnnotationLabel = None
 
                 if userFileExists:
                     self.__RMSMetrics["annotations"].labels(
                         marker=data["annotation"],
-                        jobid=results["SLURM_JOB_ID"],
+                        jobid=results["RMS_JOB_ID"],
                     ).set(data["timestamp_secs"])
                     self.__lastAnnotationLabel = data["annotation"]
 
