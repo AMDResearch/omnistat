@@ -102,6 +102,7 @@ class RMSJob(Collector):
         """
 
         results = {}
+
         if mode == "squeue":
             data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
@@ -115,24 +116,27 @@ class RMSJob(Collector):
                     "RMS_JOB_BATCHMODE",
                 ]
                 results = dict(zip(keys, data))
-            # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
-            data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
-            results["RMS_STEP_ID"] = -1
-            if data.stdout.strip():
-                numsteps = data.stdout.count("\n")
-                # Response will have 2 jobs if in an active job step. Example output from squeue -s query
-                # with active job step:
-                # 57735.10
-                # 57735.interactive
-                if numsteps == 2:
-                    jobstep = (data.stdout.splitlines()[0]).strip()
-                    results["RMS_STEP_ID"] = jobstep.split(".")[1]
+                results["RMS_TYPE"] = "slurm"
+
+                # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
+                data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
+                results["RMS_STEP_ID"] = -1
+                if data.stdout.strip():
+                    numsteps = data.stdout.count("\n")
+                    # Response will have 2 jobs if in an active job step. Example output from squeue -s query
+                    # with active job step:
+                    # 57735.10
+                    # 57735.interactive
+                    if numsteps == 2:
+                        jobstep = (data.stdout.splitlines()[0]).strip()
+                        results["RMS_STEP_ID"] = jobstep.split(".")[1]
 
         elif mode == "file-based":
             jobFileExists = os.path.isfile(self.__rmsJobFile)
             if jobFileExists:
                 with open(self.__rmsJobFile, "r") as file:
                     results = json.load(file)
+
         return results
 
     def registerMetrics(self):
@@ -140,7 +144,7 @@ class RMSJob(Collector):
 
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep"]
+        labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep","type"]
         self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "RMS job details", labels)
 
         # metric to support user annotations
@@ -173,13 +177,14 @@ class RMSJob(Collector):
                 user=results["RMS_JOB_USER"],
                 partition=results["RMS_JOB_PARTITION"],
                 nodes=results["RMS_JOB_NUM_NODES"],
-                batchflag=results["RMSJOB_BATCHMODE"],
+                batchflag=results["RMS_JOB_BATCHMODE"],
                 jobstep=results["RMS_STEP_ID"],
+                type=results["RMS_TYPE"],
             ).set(1)
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
-                userFile = "/tmp/omnistat_%s_annotate.json" % results["SLURM_JOB_USER"]
+                userFile = "/tmp/omnistat_%s_annotate.json" % results["RMS_JOB_USER"]
 
                 userFileExists = os.path.isfile(userFile)
                 if userFileExists:
@@ -207,6 +212,6 @@ class RMSJob(Collector):
 
         # Case when no job detected
         else:
-            self.__RMSMetrics["info"].labels(jobid="", user="", partition="", nodes="", batchflag="").set(1)
+            self.__RMSMetrics["info"].labels(jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type="").set(1)
 
         return
