@@ -61,6 +61,9 @@ class RMSJob(Collector):
         flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
         # cache query command with options
         self.__squeue_query = [command] + flags.split()
+        # job step query command
+        flags = "-s -w " + hostname + " -h --Format=StepID"
+        self.__squeue_steps = [command] + flags.split()
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
         # cache current slurm job in user mode profiling - assumption is that it does not change
@@ -112,6 +115,19 @@ class RMSJob(Collector):
                     "SLURM_JOB_BATCHMODE",
                 ]
                 results = dict(zip(keys, data))
+            # 2nd query to ascertain job steps
+            data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
+            results["SLURM_STEP_ID"] = -1
+            if data.stdout.strip():
+                numsteps = data.stdout.count("\n")
+                # Response will have 2 jobs if in an active job step. Example output from squeue -s query
+                # with active job step:
+                # 57735.10
+                # 57735.interactive
+                if numsteps == 2:
+                    jobstep = (data.stdout.splitlines()[0]).strip()
+                    results["SLURM_STEP_ID"] = jobstep.split(".")[1]
+
         elif mode == "file-based":
             jobFileExists = os.path.isfile(self.__rmsJobFile)
             if jobFileExists:
@@ -124,7 +140,7 @@ class RMSJob(Collector):
 
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid", "user", "partition", "nodes", "batchflag"]
+        labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep"]
         self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "SLURM job id", labels)
 
         # metric to support user annotations
@@ -158,6 +174,7 @@ class RMSJob(Collector):
                 partition=results["SLURM_JOB_PARTITION"],
                 nodes=results["SLURM_JOB_NUM_NODES"],
                 batchflag=results["SLURM_JOB_BATCHMODE"],
+                jobstep=results["SLURM_STEP_ID"],
             ).set(1)
 
             # Check for user supplied annotations
