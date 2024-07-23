@@ -47,11 +47,18 @@ def main():
         jobData["SLURM_JOB_ID"] = os.getenv("SLURM_JOB_ID")
         jobData["SLURM_JOB_USER"] = os.getenv("SLURM_JOB_USER")
         jobData["SLURM_JOB_PARTITION"] = os.getenv("SLURM_JOB_PARTITION")
-        jobData["SLURM_JOB_NUM_NODES"] = os.getenv("SLURM_JOB_NUM_NODES")
+        jobData["SLURM_JOB_NUM_NODES"] = int(os.getenv("SLURM_JOB_NUM_NODES"))
         if "SLURM_PTY_PORT" in os.environ:
             jobData["SLURM_JOB_BATCHMODE"] = 0
         else:
             jobData["SLURM_JOB_BATCHMODE"] = 1
+
+        # slurm stores large unsigned int if not in a job step, convert that to -1
+        step = int(os.getenv("SLURM_STEP_ID"))
+        if step > 4000000000:
+            step = -1
+        jobData["SLURM_STEP_ID"] = step
+        jobData["SLURM_JOB_NAME"] = os.getenv("SLURM_JOB_NAME")
 
     elif "FLUX_URI" in os.environ:
         command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}"]
