@@ -122,14 +122,13 @@ class RMSJob(Collector):
                 data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
                 results["RMS_STEP_ID"] = -1
                 if data.stdout.strip():
-                    numsteps = data.stdout.count("\n")
-                    # Response will have 2 jobs if in an active job step. Example output from squeue -s query
-                    # with active job step:
+                    # If we are in an active job step, the STEPID will have an integer index appended, e.g.
                     # 57735.10
                     # 57735.interactive
-                    if numsteps == 2:
-                        jobstep = (data.stdout.splitlines()[0]).strip()
-                        results["RMS_STEP_ID"] = jobstep.split(".")[1]
+                    stepField = (data.stdout.splitlines()[0]).strip()
+                    jobstep = stepField.split(".")[1]
+                    if jobstep.isdigit():
+                        results["RMS_STEP_ID"] = jobstep
 
         elif mode == "file-based":
             jobFileExists = os.path.isfile(self.__rmsJobFile)
