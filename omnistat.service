@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 Restart=on-failure
 EnvironmentFile=
-ExecStart=/opt/omniwatch/venv/bin/python3 /opt/omniwatch/node_monitoring.py /opt/omniwatch/omniwatch.config
+ExecStart=/opt/omnistat/venv/bin/python3 /opt/omnistat/node_monitoring.py /opt/omnistat/omnistat.config
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no

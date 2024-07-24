@@ -177,9 +177,9 @@ def getConfigPath():
     if os.path.isfile(f"{directory}/omniwatch.config"):
         return f"{directory}/omniwatch.config"
 
-    # 3 - look in /etc/omniwatch
-    if os.path.isfile("/etc/omniwatch/omniwatch.config"):
-        return "/etc/omniwatch/omniwatch.config"
+    # 3 - look in /opt/omniwatch
+    if os.path.isfile("/opt/omnistat/omnistat.config"):
+        return "/opt/omnistat/omnistat.config"
 
     # raise error if config file not found
     error(f"Config file not found in expected locations")
