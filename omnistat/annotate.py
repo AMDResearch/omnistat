@@ -40,6 +40,7 @@ import os
 
 from omnistat import trace
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["start", "stop"], help="annotation mode", required=True)
