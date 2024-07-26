@@ -8,6 +8,7 @@ port = 8001
 usermode = False
 usermode_port = 8001
 enable_rocm_smi = True
+enable_amd_smi = False
 enable_rms = True
 
 # Path to local ROCM install to access SMI library
@@ -18,7 +19,7 @@ rocm_path = /opt/rocm-default
 # Set this value to IP of companion Prometheus server.
 allowed_ips = 127.0.0.1, 10.129.7.250
 
-[omnistat.collectors.slurm]
+[omnistat.collectors.rms]
 
 host_skip = "login.*"
 enable_annotations = True
