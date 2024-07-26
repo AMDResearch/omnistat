@@ -53,6 +53,7 @@ class RMSJob(Collector):
         self.__lastAnnotationLabel = None
         self.__rmsJobMode = jobDetection["mode"]
         self.__rmsJobFile = jobDetection["file"]
+        self.__rmsJobStepFile = jobDetection["stepfile"]
 
         # setup squeue binary path to query slurm to determine node ownership
         command = utils.resolvePath("squeue", "SLURM_PATH")
@@ -131,8 +132,11 @@ class RMSJob(Collector):
                         results["RMS_STEP_ID"] = jobstep
 
         elif mode == "file-based":
-            jobFileExists = os.path.isfile(self.__rmsJobFile)
-            if jobFileExists:
+            # preference is given to job step file if it exists
+            if os.path.isfile(self.__rmsJobStepFile):
+                with open(self.__rmsJobStepFile, "r") as file:
+                    results = json.load(file)
+            elif os.path.isfile(self.__rmsJobFile):
                 with open(self.__rmsJobFile, "r") as file:
                     results = json.load(file)
 
