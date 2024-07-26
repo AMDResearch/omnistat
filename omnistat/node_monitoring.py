@@ -83,11 +83,6 @@ def main():
     # Setup Flask app for data collection
     app = Flask("omnistat")
     monitor = Monitor(config)
-    monitor.initMetrics()
-
-    register_metrics(app, app_version="v0.1.0", app_config="production")
-    app.route("/metrics")(monitor.updateAllMetrics)
-    app.route("/shutdown")(shutdown)
 
     # Enforce network restrictions
     @app.before_request
@@ -101,10 +96,19 @@ def main():
     def forbidden(e):
         return jsonify(error="Access denied"), 403
 
+    # Initialize application in the worker after it has been forked to
+    # preserve the state of the collectors.
+    def post_fork(server, worker):
+        monitor.initMetrics()
+        register_metrics(app, app_version="v0.1.0", app_config="production")
+        app.route("/metrics")(monitor.updateAllMetrics)
+        app.route("/shutdown")(shutdown)
+
     listenPort = config["omnistat.collectors"].get("port", 8000)
     options = {
         "bind": "%s:%s" % ("0.0.0.0", listenPort),
         "workers": 1,
+        "post_fork": post_fork,
     }
 
     # Launch gunicorn
