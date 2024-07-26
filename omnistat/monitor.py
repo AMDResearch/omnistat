@@ -77,6 +77,9 @@ class Monitor:
             self.jobDetection["file"] = config["omnistat.collectors.rms"].get(
                 "job_detection_file", "/tmp/omni_rmsjobinfo"
             )
+            self.jobDetection["stepfile"] = config["omnistat.collectors.rms"].get(
+                "step_detection_file", "/tmp/omni_rmsjobinfo_step"
+            )
             if config.has_option("omnistat.collectors.rms", "host_skip"):
                 self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
 
