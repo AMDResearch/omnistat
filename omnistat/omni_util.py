@@ -180,8 +180,8 @@ class UserBasedMonitoring:
                 "--ntasks-per-node=1",
                 "%s" % sys.executable,
                 "-m",
-                "omnistat.slurm_env",
-                "%s" % self.runtimeConfig["omnistat.collectors.slurm"].get("job_detection_file"),
+                "omnistat.rms_env",
+                "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file"),
             ]
             utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 
