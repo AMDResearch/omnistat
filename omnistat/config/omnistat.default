@@ -17,6 +17,7 @@ allowed_ips = 127.0.0.1
 
 host_skip = "login.*"
 enable_annotations = False
+annotations_path = /tmp/omnistat_trace
 job_detection_mode = file-based
 job_detection_file = /tmp/omni_rmsjobinfo
 

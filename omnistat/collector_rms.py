@@ -30,11 +30,13 @@ optional "rmsjob_annotations{}" metric can be published to provide
 user-provided annotation timestamps.
 """
 
-import sys
 import json
 import logging
 import os
 import platform
+import sys
+import time
+import zmq
 
 from prometheus_client import Gauge
 
@@ -43,16 +45,20 @@ from omnistat.collector_base import Collector
 
 
 class RMSJob(Collector):
-    def __init__(self, annotations=False, jobDetection=None):
+    def __init__(self, annotations=False, annotationsPath="/tmp/omnistat_trace", jobDetection=None):
         logging.debug("Initializing resource manager job data collector")
         self.__prefix = "rmsjob_"
-        self.__annotationsEnabled = annotations
         self.__RMSMetrics = {}
         self.__rmsJobInfo = []
-        self.__lastAnnotationLabel = None
         self.__rmsJobMode = jobDetection["mode"]
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
+
+        self.__annotationsEnabled = annotations
+        self.__annotationsJobID = None
+        self.__spans = {}
+        self.__context = None
+        self.__socket = None
 
         # jobMode
         if self.__rmsJobMode == "file-based":
@@ -80,6 +86,13 @@ class RMSJob(Collector):
             logging.debug("sqeueue_exec = %s" % self.__squeue_query)
         else:
             logging.error("Unsupported slurm job data collection mode")
+
+        if self.__annotationsEnabled:
+            if os.path.exists(annotationsPath):
+                os.remove(annotationsPath)
+            self.__context = zmq.Context()
+            self.__socket = self.__context.socket(zmq.PULL)
+            self.__socket.bind(f"ipc://{annotationsPath}")
 
     def querySlurmJob(self, timeout=1, exit_on_error=False, mode="squeue"):
         """
@@ -139,7 +152,7 @@ class RMSJob(Collector):
 
         # metric to support user annotations
         self.__RMSMetrics["annotations"] = Gauge(
-            self.__prefix + "annotations", "User job annotations", ["marker", "jobid"]
+            self.__prefix + "annotations", "User job annotations", ["marker", "jobid", "traceid"]
         )
 
         for metric in self.__RMSMetrics:
@@ -170,31 +183,7 @@ class RMSJob(Collector):
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
-                userFile = "/tmp/omnistat_%s_annotate.json" % results["RMS_JOB_USER"]
-
-                userFileExists = os.path.isfile(userFile)
-                if userFileExists:
-                    with open(userFile, "r") as file:
-                        data = json.load(file)
-
-                # Reset existing annotation in two scenarios:
-                #  1. Previous annotation stopped (file no longer present)
-                #  2. There is a new annotation (label has changed)
-                if self.__lastAnnotationLabel != None and (
-                    not userFileExists or self.__lastAnnotationLabel != data["annotation"]
-                ):
-                    self.__RMSMetrics["annotations"].labels(
-                        marker=self.__lastAnnotationLabel,
-                        jobid=results["RMS_JOB_ID"],
-                    ).set(0)
-                    self.__lastAnnotationLabel = None
-
-                if userFileExists:
-                    self.__RMSMetrics["annotations"].labels(
-                        marker=data["annotation"],
-                        jobid=results["RMS_JOB_ID"],
-                    ).set(data["timestamp_secs"])
-                    self.__lastAnnotationLabel = data["annotation"]
+                updateAnnotations(jobid=results["RMS_JOB_ID"])
 
         # Case when no job detected
         else:
@@ -203,3 +192,62 @@ class RMSJob(Collector):
             ).set(1)
 
         return
+
+    def updateAnnotations(jobid):
+        # Reset annotations when a new job is running
+        if jobid != self.__annotationsJobID:
+            self.__spans = {}
+            self.__annotationsJobID = jobid
+
+        # Read all annotation messages until work queue is empty
+        messages = []
+        while True:
+            try:
+                msg = self.__socket.recv_json(flags=zmq.NOBLOCK)
+                messages.append(msg)
+            except zmq.ZMQError as e:
+                break
+
+        # Process start/end messages
+        for kind, time_ms, trace_id, label in messages:
+            if trace_id not in self.__spans:
+                self.__spans[trace_id] = {"started": {}, "ended": {}}
+
+            if kind == "start":
+                if label in self.__spans[trace_id]["ended"]:
+                    self.__spans[trace_id]["ended"].pop(label)
+                self.__spans[trace_id]["started"][label] = time_ms
+            elif kind == "end":
+                if label in self.__spans[trace_id]["started"]:
+                    self.__spans[trace_id]["started"].pop(label)
+                self.__spans[trace_id]["ended"][label] = time_ms
+
+        # Completed spans need to remain visible for a while to make
+        # sure Prometheus can identify the completion
+        time_ms = time.time_ns() // 1_000_000
+        cutoff_ms = 15_000
+
+        # Remove old spans that are no longer needed
+        for trace_id, spans in self.__spans.items():
+            remove = []
+            for label, end_ms in spans["ended"].items():
+                if end_ms < time_ms - cutoff_ms:
+                    remove.append(label)
+            for label in remove:
+                self.__spans[trace_id]["ended"].pop(label)
+
+        # Set annotation metrics in Prometheus
+        for trace_id, spans in self.__spans.items():
+            for label in spans["started"].keys():
+                self.__RMSMetrics["annotations"].labels(
+                    marker=label,
+                    jobid=jobid,
+                    traceid=trace_id,
+                ).set(1)
+
+            for label in spans["ended"].keys():
+                self.__RMSMetrics["annotations"].labels(
+                    marker=label,
+                    jobid=str(jobid),
+                    traceid=str(trace_id),
+                ).set(0)
