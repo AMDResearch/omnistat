@@ -6,11 +6,10 @@ After=network-online.target
 
 [Service]
 User=omnidc
-Environment="OMNISTAT_DIR=/home/omnidc/omnistat"
 Environment="OMNISTAT_CONFIG=/home/omnidc/omnistat/omnistat/config/omniwatch.default"
 CPUAffinity=0
+ExecStart=/home/omnidc/omnistat/omnistat-monitor
 SyslogIdentifier=omnistat
-ExecStart=${OMNISTAT_DIR}/omnistat-monitor
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
