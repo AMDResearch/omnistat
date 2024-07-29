@@ -183,7 +183,7 @@ class RMSJob(Collector):
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
-                updateAnnotations(jobid=results["RMS_JOB_ID"])
+                self.updateAnnotations(results["RMS_JOB_ID"])
 
         # Case when no job detected
         else:
@@ -193,7 +193,7 @@ class RMSJob(Collector):
 
         return
 
-    def updateAnnotations(jobid):
+    def updateAnnotations(self, jobid):
         # Reset annotations when a new job is running
         if jobid != self.__annotationsJobID:
             self.__spans = {}
