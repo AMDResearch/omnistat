@@ -30,6 +30,7 @@
 # Default path for output_file: /tmp/omni_rmsjobinfo
 # -------------------------------------------------------------------------------
 
+import fcntl
 import json
 import os
 import subprocess
@@ -85,8 +86,13 @@ def main():
         print("ERROR: Unknown or undetected resource manager. Verify running in active job")
         sys.exit(1)
 
-    # save to file
-    json.dump(jobData, open(jobFile, "w"), indent=4)
+    # save to file - file lock is used to avoid contention from multiple processes on same node
+    with open(jobFile, "w") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            json.dump(jobData, f, indent=4)
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
 
 
 if __name__ == "__main__":
