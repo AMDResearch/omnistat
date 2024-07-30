@@ -41,11 +41,6 @@ from pathlib import Path
 # and newer versions of SSH.
 from pssh.clients.ssh.parallel import ParallelSSHClient
 
-# Ensure current directory is part of Python's path; allows direct execution
-# from the top directory of the project when package is not installed.
-if os.path.isdir("omnistat") and sys.path[0]:
-    sys.path.insert(0, "")
-
 from omnistat import utils
 
 

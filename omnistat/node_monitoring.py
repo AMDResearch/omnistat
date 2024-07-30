@@ -44,11 +44,6 @@ import gunicorn.app.base
 from flask import Flask, request, abort, jsonify
 from flask_prometheus_metrics import register_metrics
 
-# Ensure current directory is part of Python's path; allows direct execution
-# from the top directory of the project when package is not installed.
-if os.path.isdir("omnistat") and sys.path[0]:
-    sys.path.insert(0, "")
-
 from omnistat import utils
 from omnistat.monitor import Monitor
 
