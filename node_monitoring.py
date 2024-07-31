@@ -51,7 +51,7 @@ def shutdown():
 
 
 # Register metrics with Flask app
-register_metrics(app, app_version="v0.1.0", app_config="production")
+#register_metrics(app, app_version="v0.1.0", app_config="production")
 
 # Setup endpoint(s)
 app.route("/metrics")(monitor.updateAllMetrics)
