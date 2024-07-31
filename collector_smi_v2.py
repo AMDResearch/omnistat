@@ -49,11 +49,6 @@ from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_me
 
 def get_gpu_metrics(device):
     result = amdsmi_get_gpu_metrics_info(device)
-    # Fix for mi300x/250x
-    current_power = result.get('current_socket_power', "N/A")
-    average_power = result.get('average_socket_power', "N/A")
-    result['current_socket_power'] = current_power if current_power is not "N/A" else average_power
-    result['average_socket_power'] = average_power if average_power is not "N/A" else current_power
     for k, v in result.items():
         if type(v) is str:
             # Filter 'N/A' values introduced by rocm 6.1
