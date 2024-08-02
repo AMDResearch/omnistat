@@ -173,7 +173,7 @@ class UserBasedMonitoring:
                 "srun",
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
-                "--export PYTHONPATH=%s" % ":".join(sys.path),
+                "--export=PYTHONPATH=%s" % ":".join(sys.path),
                 "%s" % sys.executable,
                 "-m",
                 "omnistat.rms_env",
