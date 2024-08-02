@@ -173,10 +173,8 @@ class UserBasedMonitoring:
                 "srun",
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
-                "--export=PYTHONPATH=%s" % ":".join(sys.path),
                 "%s" % sys.executable,
-                "-m",
-                "omnistat.rms_env",
+                "%s/omnistat-rms-env" % os.path.abspath(os.path.dirname(sys.argv[0])),
                 "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file"),
             ]
             utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
