@@ -174,8 +174,10 @@ class UserBasedMonitoring:
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
                 "%s" % sys.executable,
-                "%s/omnistat-rms-env" % os.path.abspath(os.path.dirname(sys.argv[0])),
-                "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file"),
+                "-m",
+                "omnistat.rms_env",
+                "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file","/tmp/omni_rmsjobinfo"),
+
             ]
             utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
 
