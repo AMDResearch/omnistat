@@ -58,6 +58,9 @@ class Monitor:
         self.runtimeConfig["collector_enable_amd_smi_process"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi_process", False
         )
+        self.runtimeConfig["collector_enable_rocprofiler"] = config["omnistat.collectors"].getboolean(
+            "enable_rocprofiler", False
+        )
         self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8000)
         self.runtimeConfig["collector_usermode"] = config["omnistat.collectors"].getboolean("usermode", False)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
@@ -82,6 +85,9 @@ class Monitor:
             )
             if config.has_option("omnistat.collectors.rms", "host_skip"):
                 self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
+
+        if config.has_option("omniwatch.collectors.rocprofiler", "metrics"):
+            self.runtimeConfig["rocprofiler_metrics"] = config["omniwatch.collectors.rocprofiler"]["metrics"].split(",")
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
@@ -126,6 +132,13 @@ class Monitor:
                     annotations=self.runtimeConfig["rms_collector_annotations"],
                     jobDetection=self.jobDetection,
                 )
+            )
+
+        if self.runtimeConfig["collector_enable_rocprofiler"]:
+            from omnistat.collector_rocprofiler import rocprofiler
+
+            self.__collectors.append(
+                rocprofiler(self.runtimeConfig["collector_rocm_path"], self.runtimeConfig["rocprofiler_metrics"])
             )
 
         # Initialize all metrics
