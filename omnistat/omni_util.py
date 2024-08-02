@@ -173,6 +173,7 @@ class UserBasedMonitoring:
                 "srun",
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
+                "--export PYTHONPATH=%s" % ":".join(sys.path),
                 "%s" % sys.executable,
                 "-m",
                 "omnistat.rms_env",
@@ -183,7 +184,7 @@ class UserBasedMonitoring:
             logging.info("Launching exporters in parallel using pdsh")
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-            output = client.run_command(f"sh -c 'cd {cwd} && {cmd}'")
+            output = client.run_command(f"sh -c 'cd {cwd} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
 
             # verify exporter available on all nodes...
             psecs = 6
