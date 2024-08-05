@@ -159,7 +159,6 @@ class UserBasedMonitoring:
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
 
-        cwd = os.getcwd()
         cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
@@ -171,15 +170,6 @@ class UserBasedMonitoring:
         if self.slurmHosts:
             logging.info("Saving SLURM job state locally to compute hosts...")
             numNodes = os.getenv("SLURM_JOB_NUM_NODES")
-##             srun_cmd = [
-##                 "srun",
-##                 "-N %s" % numNodes,
-##                 "--ntasks-per-node=1",
-##                 "%s" % sys.executable,
-##                 "-m",
-##                 "omnistat.rms_env",
-##                 "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file","/tmp/omni_rmsjobinfo"),
-##             ]
             srun_cmd = [
                 "srun",
                 "-N %s" % numNodes,
@@ -194,7 +184,6 @@ class UserBasedMonitoring:
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
             output = client.run_command(f"sh -c 'cd {self.topDir} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
-
 
             # verify exporter available on all nodes...
             psecs = 6
