@@ -37,11 +37,18 @@ import subprocess
 import sys
 import argparse
 
+
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--nostep", help="do not cache job step information", action="store_true")
-    parser.add_argument("output_file",type=str,nargs="?",help="path for output file (default=/tmp/omni_rmsjobinfo)",default="/tmp/omni_rmsjobinfo")
+    parser.add_argument(
+        "output_file",
+        type=str,
+        nargs="?",
+        help="path for output file (default=/tmp/omni_rmsjobinfo)",
+        default="/tmp/omni_rmsjobinfo",
+    )
     args = parser.parse_args()
 
     jobFile = args.output_file
