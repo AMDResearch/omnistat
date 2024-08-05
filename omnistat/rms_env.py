@@ -35,14 +35,17 @@ import json
 import os
 import subprocess
 import sys
-
+import argparse
 
 def main():
-    jobData = {}
-    jobFile = "/tmp/omni_rmsjobinfo"
 
-    if len(sys.argv) > 1:
-        jobFile = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--nostep", help="do not cache job step information", action="store_true")
+    parser.add_argument("output_file",type=str,nargs="?",help="path for output file (default=/tmp/omni_rmsjobinfo)",default="/tmp/omni_rmsjobinfo")
+    args = parser.parse_args()
+
+    jobFile = args.output_file
+    jobData = {}
 
     if "SLURM_JOB_ID" in os.environ:
         jobData["RMS_TYPE"] = "slurm"
@@ -59,10 +62,11 @@ def main():
 
         # slurm stores large unsigned int if not in a job step, convert that to -1
         step = -1
-        if "SLURM_STEP_ID" in os.environ:
-            envstep = int(os.getenv("SLURM_STEP_ID"))
-            if envstep < 4000000000:
-                step = envstep
+        if not args.nostep:
+            if "SLURM_STEP_ID" in os.environ:
+                envstep = int(os.getenv("SLURM_STEP_ID"))
+                if envstep < 4000000000:
+                    step = envstep
         jobData["RMS_STEP_ID"] = step
 
     elif "FLUX_URI" in os.environ:
