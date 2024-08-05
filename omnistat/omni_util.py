@@ -107,9 +107,10 @@ class UserBasedMonitoring:
         # generate prometheus config file to scrape local exporters
         computes = {}
         computes["targets"] = []
+        port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         if self.slurmHosts:
             for host in self.slurmHosts:
-                computes["targets"].append("%s:%s" % (host, 8001))
+                computes["targets"].append("%s:%s" % (host, port))
 
             prom_config = {}
             prom_config["scrape_configs"] = []
