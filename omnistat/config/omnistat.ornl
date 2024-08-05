@@ -4,9 +4,9 @@
 
 [omnistat.collectors]
 
-port = 8001
+port = 8000
 usermode = False
-usermode_port = 8001
+#usermode_port = 8002
 enable_rocm_smi = True
 enable_amd_smi = False
 enable_rms = True
@@ -17,7 +17,7 @@ rocm_path = /opt/rocm-default
 # List of IPs allowed to query the collector (comma separated). By
 # default, access will be restricted to the localhost (127.0.0.1).
 # Set this value to IP of companion Prometheus server.
-allowed_ips = 127.0.0.1, 10.129.7.250
+allowed_ips = 127.0.0.1, 0.0.0.0
 
 [omnistat.collectors.rms]
 
