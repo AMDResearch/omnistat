@@ -54,6 +54,7 @@ class UserBasedMonitoring:
         self.configFile = utils.findConfigFile(configFileArgument)
         self.runtimeConfig = utils.readConfig(self.configFile)
         self.slurmHosts = self.getSlurmHosts()
+        self.topDir = Path(__file__).resolve().parent.parent
 
     def setMonitoringInterval(self, interval):
         self.scrape_interval = int(interval)
@@ -154,7 +155,7 @@ class UserBasedMonitoring:
         return
 
     def startExporters(self):
-        port = self.runtimeConfig["omnistat.collectors"].get("usermode_port", "8001")
+        port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
 
         cwd = os.getcwd()
@@ -169,13 +170,20 @@ class UserBasedMonitoring:
         if self.slurmHosts:
             logging.info("Saving SLURM job state locally to compute hosts...")
             numNodes = os.getenv("SLURM_JOB_NUM_NODES")
+##             srun_cmd = [
+##                 "srun",
+##                 "-N %s" % numNodes,
+##                 "--ntasks-per-node=1",
+##                 "%s" % sys.executable,
+##                 "-m",
+##                 "omnistat.rms_env",
+##                 "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file","/tmp/omni_rmsjobinfo"),
+##             ]
             srun_cmd = [
                 "srun",
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
-                "%s" % sys.executable,
-                "-m",
-                "omnistat.rms_env",
+                "%s/omnistat-rms-env" % self.topDir,
                 "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file","/tmp/omni_rmsjobinfo"),
 
             ]
@@ -184,7 +192,8 @@ class UserBasedMonitoring:
             logging.info("Launching exporters in parallel using pdsh")
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-            output = client.run_command(f"sh -c 'cd {cwd} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+            output = client.run_command(f"sh -c 'cd {self.topDir} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+
 
             # verify exporter available on all nodes...
             psecs = 6
@@ -221,7 +230,7 @@ class UserBasedMonitoring:
         return
 
     def stopExporters(self):
-        port = self.runtimeConfig["omnistat.collectors"].get("usermode_port", "8001")
+        port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
 
         for host in self.slurmHosts:
             logging.info("Stopping exporter for host -> %s" % host)
