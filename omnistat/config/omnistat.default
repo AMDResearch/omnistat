@@ -2,7 +2,6 @@
 
 port = 8001
 usermode = False
-usermode_port = 8001
 enable_rocm_smi = True
 enable_amd_smi = False
 enable_rms = True
