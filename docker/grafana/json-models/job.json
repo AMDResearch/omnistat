@@ -2279,6 +2279,30 @@
             "query" : "",
             "skipUrlSync" : false,
             "type" : "textbox"
+         },
+         {
+            "current" : {
+               "selected" : true,
+               "text" : [],
+               "value" : []
+            },
+            "definition" : "label_values(rmsjob_info{jobid=\"$jobid\", jobstep!=\"-1\"},jobstep)",
+            "hide" : 0,
+            "includeAll" : false,
+            "label" : "Job Step",
+            "multi" : true,
+            "name" : "jobstep",
+            "options" : [],
+            "query" : {
+               "qryType" : 1,
+               "query" : "label_values(rmsjob_info{jobid=\"$jobid\", jobstep!=\"-1\"},jobstep)",
+               "refId" : "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh" : 1,
+            "regex" : "",
+            "skipUrlSync" : false,
+            "sort" : 0,
+            "type" : "query"
          }
       ]
    },
