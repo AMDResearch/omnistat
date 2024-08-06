@@ -2252,9 +2252,14 @@
                   "selected" : true,
                   "text" : "5s",
                   "value" : "5s"
+               },
+               {
+                  "selected" : false,
+                  "text" : "1s",
+                  "value" : "1s"
                }
             ],
-            "query" : "60s,30s,5s",
+            "query" : "60s,30s,5s,1s",
             "queryValue" : "",
             "skipUrlSync" : false,
             "type" : "custom"
