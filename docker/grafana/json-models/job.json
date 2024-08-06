@@ -2707,6 +2707,119 @@
             }
          ],
          "type" : "table"
+      },
+      {
+         "collapsed" : false,
+         "gridPos" : {
+            "h" : 1,
+            "w" : 24,
+            "x" : 0,
+            "y" : 92
+         },
+         "id" : 50,
+         "panels" : [],
+         "title" : "Job Steps Time Series",
+         "type" : "row"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "$source"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "palette-classic"
+               },
+               "custom" : {
+                  "axisBorderShow" : false,
+                  "axisCenteredZero" : false,
+                  "axisColorMode" : "text",
+                  "axisLabel" : "",
+                  "axisPlacement" : "auto",
+                  "barAlignment" : 0,
+                  "drawStyle" : "line",
+                  "fillOpacity" : 0,
+                  "gradientMode" : "none",
+                  "hideFrom" : {
+                     "legend" : false,
+                     "tooltip" : false,
+                     "viz" : false
+                  },
+                  "insertNulls" : false,
+                  "lineInterpolation" : "linear",
+                  "lineWidth" : 1,
+                  "pointSize" : 5,
+                  "scaleDistribution" : {
+                     "type" : "linear"
+                  },
+                  "showPoints" : "auto",
+                  "spanNulls" : false,
+                  "stacking" : {
+                     "group" : "A",
+                     "mode" : "none"
+                  },
+                  "thresholdsStyle" : {
+                     "mode" : "off"
+                  }
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               },
+               "unit" : "percent"
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 24,
+            "x" : 0,
+            "y" : 93
+         },
+         "id" : 51,
+         "interval" : "$interval",
+         "options" : {
+            "legend" : {
+               "calcs" : [],
+               "displayMode" : "list",
+               "placement" : "bottom",
+               "showLegend" : true
+            },
+            "tooltip" : {
+               "maxHeight" : 600,
+               "mode" : "single",
+               "sort" : "none"
+            }
+         },
+         "repeat" : "jobstep",
+         "repeatDirection" : "v",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "editorMode" : "code",
+               "expr" : "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\",jobstep=\"$jobstep\"})",
+               "instant" : false,
+               "legendFormat" : "Card: {{card}}",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "GPU Utilization (%) - Job Step $jobstep",
+         "type" : "timeseries"
       }
    ],
    "refresh" : "",
