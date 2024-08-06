@@ -62,9 +62,6 @@ class queryMetrics:
         # self.sha = versionData["sha"]
         # self.version = versionData["version"]
         self.version = versionData
-        # temporary hack to deal with socket-measurements reported twice
-        # Frontier
-        self.mi250 = True
 
     def __del__(self):
         if hasattr(self, "enable_redirect"):
@@ -268,11 +265,12 @@ class queryMetrics:
     def get_hosts(self):
         self.hosts = []
         results = self.prometheus.custom_query_range(
-            'card0_rocm_utilization * on (instance) rmsjob_info{jobid="%s"}' % self.jobID,
+            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % self.jobID,
             self.start_time,
             self.end_time,
             step=60,
         )
+
         for result in results:
             self.hosts.append(result["metric"]["instance"])
 
@@ -353,10 +351,10 @@ class queryMetrics:
                     self.gpu_energy_total_kwh += energyTotal
                     self.energyStats_kwh[gpu] = energy_per_host
 
-                # Track hosts with min/max area under the curve (across all GPUs)
-                if len(self.hosts) > 1:
-                    minId, sum_min = self.metric_host_min_sum(values_raw)
-                    maxId, sum_max = self.metric_host_max_sum(values_raw)
+                # # Track hosts with min/max area under the curve (across all GPUs)
+                # if len(self.hosts) > 1:
+                #     minId, sum_min = self.metric_host_min_sum(values_raw)
+                #     maxId, sum_max = self.metric_host_max_sum(values_raw)
 
                 # if gpu == 0:
                 #     for i in range(len(times)):
@@ -571,14 +569,6 @@ class queryMetrics:
         Story.append(Spacer(1,0.2*inch))
         #Story.append(HRFlowable(width="100%",thickness=1))
 
-        #             <strong>JobID</strong>: %s<br/>
-        # generate Utilization Table
-        Story.append(Spacer(1, 0.2 * inch))
-        ptext = """<strong>GPU Statistics</strong>"""
-        Story.append(Paragraph(ptext, normal))
-        Story.append(Spacer(1, 0.2 * inch))
-        # Story.append(HRFlowable(width="100%",thickness=1))
-
         # --
         # Display general GPU Statistics
         # --
@@ -588,29 +578,11 @@ class queryMetrics:
         data.append(['GPU','Max','Mean','Max','Mean','Max','Mean','Max','Mean','Total'])
 
         for gpu in range(self.numGPUs):
-            # total hack koomie FIXME
-            if self.mi250 == True:
-                if (gpu % 2) == 0:
-                    power_max = self.stats['rocm_avg_pwr_max'][gpu]
-                    power_mean = self.stats['rocm_avg_pwr_mean'][gpu]
-                    energy = np.sum(self.energyStats_kwh[gpu])
-                else:
-                    power_max = 0
-                    power_mean = 0
-                    energy = 0
-                data.append([gpu,
-                            "%.2f" % self.stats['rocm_utilization_max'][gpu],   "%.2f" % self.stats['rocm_utilization_mean'][gpu],
-                            "%.2f" % self.stats['rocm_vram_used_max'][gpu],     "%.2f" % self.stats['rocm_vram_used_mean'][gpu],
-                            "%.2f" % self.stats['rocm_temp_die_edge_max'][gpu], "%.2f" % self.stats['rocm_temp_die_edge_mean'][gpu],
-                            "%.2f" % power_max,       "%.2f" % power_mean,
-                            "%.2f" % energy
-                ])
-            else:
-                data.append([gpu,
-                            "%.2f" % self.stats['rocm_utilization_max'][gpu],   "%.2f" % self.stats['rocm_utilization_mean'][gpu],
-                            "%.2f" % self.stats['rocm_vram_used_max'][gpu],     "%.2f" % self.stats['rocm_vram_used_mean'][gpu],
-                            "%.2f" % self.stats['rocm_temp_die_edge_max'][gpu], "%.2f" % self.stats['rocm_temp_die_edge_mean'][gpu],
-                            "%.2f" % self.stats['rocm_avg_pwr_max'][gpu],       "%.2f" % self.stats['rocm_avg_pwr_mean'][gpu],
+            data.append([gpu,
+                            "%.2f" % self.stats['rocm_utilization_percentage_max'][gpu],   "%.2f" % self.stats['rocm_utilization_percentage_mean'][gpu],
+                            "%.2f" % self.stats['rocm_vram_used_percentage_max'][gpu],     "%.2f" % self.stats['rocm_vram_used_percentage_mean'][gpu],
+                            "%.2f" % self.stats['rocm_temperature_celsius_max'][gpu], "%.2f" % self.stats['rocm_temperature_celsius_mean'][gpu],
+                            "%.2f" % self.stats['rocm_average_socket_power_watts_max'][gpu],       "%.2f" % self.stats['rocm_average_socket_power_watts_mean'][gpu],
                             "%.2f" % np.sum(self.energyStats_kwh[gpu])
                 ])
 
@@ -644,11 +616,7 @@ class queryMetrics:
 
         Story.append(Spacer(1,0.2*inch))
 
-        # total hack koomie FIXME
-        if self.mi250 == True:
-            ptext='''Total GPU Energy Consumed = %.2f kWh''' % (self.gpu_energy_total_kwh / 2)
-        else:
-            ptext='''Total GPU Energy Consumed = %.2f kWh''' % (self.gpu_energy_total_kwh)
+        ptext='''Total GPU Energy Consumed = %.2f kWh''' % (self.gpu_energy_total_kwh)
         Story.append(Paragraph(ptext,normal))
 
         #--
@@ -735,7 +703,7 @@ class queryMetrics:
         Story.append(HRFlowable(width="100%",thickness=1))
 
         # Multi-node distributions
-        if True:
+        if False:
             Story.append(Spacer(1,0.2*inch))
             ptext='''<strong>Multi-node Distribution</strong>'''
             Story.append(Paragraph(ptext,normal))
@@ -774,10 +742,10 @@ class queryMetrics:
         Story.append(Paragraph(ptext,footerStyle))
         ptext='''Query execution time = %.1f secs''' % (timeit.default_timer() - self.timer_start)
         Story.append(Paragraph(ptext,footerStyle))
-        version = self.version
-        if self.sha != "Unknown":
-            version += " (%s)" % self.sha
-        ptext = """Version = %s""" % version
+        # version = self.version
+        # if self.sha != "Unknown":
+        #     version += " (%s)" % self.sha
+        ptext = """Version = %s""" % self.version
         Story.append(Paragraph(ptext, footerStyle))
         Story.append(HRFlowable(width="100%", thickness=1))
 
