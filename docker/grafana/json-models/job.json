@@ -2793,7 +2793,7 @@
             "legend" : {
                "calcs" : [],
                "displayMode" : "list",
-               "placement" : "bottom",
+               "placement" : "right",
                "showLegend" : true
             },
             "tooltip" : {
@@ -2811,14 +2811,23 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\",jobstep=\"$jobstep\"})",
+               "expr" : "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\",jobstep=\"$jobstep\"})",
                "instant" : false,
-               "legendFormat" : "Card: {{card}}",
+               "legendFormat" : "{{instance}}",
                "range" : true,
                "refId" : "A"
             }
          ],
          "title" : "GPU Utilization (%) - Job Step $jobstep",
+         "transformations" : [
+            {
+               "id" : "renameByRegex",
+               "options" : {
+                  "regex" : "(.*):(.*)",
+                  "renamePattern" : "$1"
+               }
+            }
+         ],
          "type" : "timeseries"
       }
    ],
