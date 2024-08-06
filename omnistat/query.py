@@ -59,6 +59,7 @@ class queryMetrics:
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
+        self.jobStep = None
         # self.sha = versionData["sha"]
         # self.version = versionData["version"]
         self.version = versionData
@@ -79,13 +80,22 @@ class queryMetrics:
         if self.enable_redirect:
             self.output.close()
 
-    def set_options(self, jobID=None, output_file=None, pdf=None, interval=None):
+    def set_options(self, jobID=None, output_file=None, pdf=None, interval=None, step=None):
         if jobID:
             self.jobID = int(jobID)
         if output_file:
             self.output_file = output_file
         if pdf:
             self.pdf = pdf
+
+        # define jobstep label query (either given by user or matches all job steps)
+        if step:
+            self.jobStep = step
+            self.jobstepQuery = f'jobstep="{step}"'
+        else:
+            self.jobstepQuery = 'jobstep=~".*"'
+        logging.debug("Job step query set to -> %s" % self.jobstepQuery)
+
         self.interval = interval
         return
 
@@ -120,8 +130,8 @@ class queryMetrics:
         if runtime < 61:
             sys.exit()
 
+        # cache hosts assigned to job
         self.get_hosts()
-        # self.get_num_gpus()
 
         # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
         self.metrics = [
@@ -153,15 +163,17 @@ class queryMetrics:
         elif duration_mins > 5:
             step = "5m"
         else:
-            step = "1m"
+            step = "15s"
 
         # Cull job info
-        results = self.prometheus.custom_query_range('(rmsjob_info{jobid="%s"})' % self.jobID, start, end, step=step)
-
+        results = self.prometheus.custom_query_range(
+            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), start, end, step=step
+        )
         assert len(results) > 0
+
         num_nodes = int(results[0]["metric"]["nodes"])
         partition = results[0]["metric"]["partition"]
-        assert num_nodes > 0
+
         jobdata = {}
         jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
         jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
@@ -170,9 +182,12 @@ class queryMetrics:
 
         # Cull number of gpus
         results = self.prometheus.custom_query_range(
-            '(rocm_num_gpus * on (instance) rmsjob_info{jobid="%s"})' % self.jobID, start, end, step=step
+            '(rocm_num_gpus * on (instance) rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery),
+            start,
+            end,
+            step=step,
         )
-        assert len(results) == num_nodes
+
         num_gpus = int(results[0]["values"][0][1])
 
         # warn if nodes do not have same gpu counts
@@ -200,7 +215,7 @@ class queryMetrics:
             astart = aend - timedelta(days=1)
 
             results = self.prometheus.custom_query_range(
-                'max(rmsjob_info{jobid="%s"})' % self.jobID, astart, aend, step="1m"
+                'max(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), astart, aend, step="1m"
             )
             if not lastTimestamp and len(results) > 0:
                 lastTimestamp = datetime.fromtimestamp(results[0]["values"][-1][0])
@@ -269,14 +284,32 @@ class queryMetrics:
     def get_hosts(self):
         self.hosts = []
         results = self.prometheus.custom_query_range(
-            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % self.jobID,
+            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % (self.jobID),
             self.start_time,
             self.end_time,
             step=60,
         )
+        self.totalNodes = len(results)
 
-        for result in results:
-            self.hosts.append(result["metric"]["instance"])
+        if self.jobStep:
+            results = self.prometheus.custom_query_range(
+                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s",%s}'
+                % (self.jobID, self.jobstepQuery),
+                self.start_time,
+                self.end_time,
+                step=60,
+            )
+            for result in results:
+                self.hosts.append(result["metric"]["instance"])
+            self.stepNodes = len(self.hosts)
+        else:
+            for result in results:
+                self.hosts.append(result["metric"]["instance"])
+            self.stepNodes = self.totalNodes
+
+        assert self.stepNodes > 0
+        assert self.totalNodes > 0
+        assert self.totalNodes == self.jobinfo["num_nodes"]
 
     def metric_host_max_sum(self, values):
         """Determine host with <maximum> sum of all provided samples"""
@@ -343,11 +376,12 @@ class queryMetrics:
 
                     energyTotal = 0.0
                     for i in range(len(times_raw)):
-                        x = np.array(times_raw[i], dtype=np.float32)
+                        startDate = times_raw[i][0]
+                        x = (times_raw[i] - startDate).astype("timedelta64[s]").astype(float)
                         # Integrate time series to get energy used on this host/gpu index
                         # Units: W x [sec] = Joules -> Convert to kWH
-                        energy = np.trapz(values_raw[i], x=x) / (1000 * 3600)
-                        # accumulate to get total energy used by alls host with this gpu index
+                        energy = np.trapezoid(values_raw[i], x=x) / (1000 * 3600)
+                        # accumulate to get total energy used by all hosts with this gpu index
                         energyTotal += energy
                         energy_per_host.append(energy)
 
@@ -404,9 +438,14 @@ class queryMetrics:
         system = self.config["system_name"]
 
         print("")
-        print("-" * 40)
+        print("-" * 70)
         print("Omnistat Report Card for Job # %i" % self.jobID)
-        print("-" * 40)
+        if self.jobStep:
+            print(
+                "** Report confined to job step=%s (%i of %i nodes used)"
+                % (self.jobStep, self.stepNodes, self.totalNodes)
+            )
+        print("-" * 70)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
         print(" --> Start time = %s" % self.start_time)
@@ -456,14 +495,15 @@ class queryMetrics:
 
         if reducer is None:
             results = self.prometheus.custom_query_range(
-                '(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric_name, self.jobID),
+                '(%s * on (instance) rmsjob_info{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
             )
         else:
             results = self.prometheus.custom_query_range(
-                '%s(%s * on (instance) group_left() rmsjob_info{jobid="%s"})' % (reducer, metric_name, self.jobID),
+                '%s(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
+                % (reducer, metric_name, self.jobID, self.jobstepQuery),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
@@ -500,43 +540,43 @@ class queryMetrics:
                 values = results[:, 1].astype(float)
             return time, values
 
-    def query_gpu_metric(self, metricName):
-        stats = {}
-        stats["mean"] = []
-        stats["max"] = []
+    # def query_gpu_metric(self, metricName):
+    #     stats = {}
+    #     stats["mean"] = []
+    #     stats["max"] = []
 
-        for gpu in range(self.numGPUs):
-            metric = "card" + str(gpu) + "_" + metricName
+    #     for gpu in range(self.numGPUs):
+    #         metric = "card" + str(gpu) + "_" + metricName
 
-            # --
-            # Mean results
-            results = self.prometheus.custom_query_range(
-                'avg(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
-                self.start_time,
-                self.end_time,
-                step=60,
-            )
+    #         # --
+    #         # Mean results
+    #         results = self.prometheus.custom_query_range(
+    #             'avg(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
+    #             self.start_time,
+    #             self.end_time,
+    #             step=60,
+    #         )
 
-            assert len(results) == 1
-            data = results[0]["values"]
-            data2 = np.asarray(data, dtype=float)
-            stats["mean"].append(np.mean(data2[:, 1]))
+    #         assert len(results) == 1
+    #         data = results[0]["values"]
+    #         data2 = np.asarray(data, dtype=float)
+    #         stats["mean"].append(np.mean(data2[:, 1]))
 
-            # --
-            # Max results
-            results = self.prometheus.custom_query_range(
-                'max(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
-                self.start_time,
-                self.end_time,
-                step=60,
-            )
+    #         # --
+    #         # Max results
+    #         results = self.prometheus.custom_query_range(
+    #             'max(%s * on (instance) rmsjob_info{jobid="%s"})' % (metric, self.jobID),
+    #             self.start_time,
+    #             self.end_time,
+    #             step=60,
+    #         )
 
-            assert len(results) == 1
-            data = results[0]["values"]
-            data2 = np.asarray(data, dtype=float)
-            stats["max"].append(np.max(data2[:, 1]))
+    #         assert len(results) == 1
+    #         data = results[0]["values"]
+    #         data2 = np.asarray(data, dtype=float)
+    #         stats["max"].append(np.max(data2[:, 1]))
 
-        return stats
+    #     return stats
 
     def dumpFile(self, outputFile):
         doc = SimpleDocTemplate(
@@ -555,7 +595,7 @@ class queryMetrics:
         Story.append(Spacer(1, 0.1 * inch))
         Story.append(HRFlowable(width="100%", thickness=2))
         ptext = """
-        <strong>HPC Report Card</strong>: JobID = %s<br/>
+        <strong>Omnistat Report Card</strong>: JobID = %s<br/>
         <strong>Start Time</strong>: %s<br/>
         <strong>End Time</strong>: %s<br/>
         """ % (
@@ -565,6 +605,10 @@ class queryMetrics:
         )
         Story.append(Paragraph(ptext, styles["Bullet"]))
         Story.append(HRFlowable(width="100%", thickness=2))
+        if self.jobStep:
+            ptext = """<strong>Job Step Mode</strong>: Report confined to job step = %s""" % (self.jobStep)
+            Story.append(Paragraph(ptext))
+            Story.append(HRFlowable(width="100%", thickness=2))
 
         # generate Utilization Table
         Story.append(Spacer(1, 0.2 * inch))
@@ -790,11 +834,12 @@ def main():
 
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
-    parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
+    parser.add_argument("-v", "--version", help="print version info and exit", action="store_true")
     parser.add_argument("--job", help="jobId to query")
+    parser.add_argument("--step", help="SLURM job step to restrict query interval")
     parser.add_argument("--interval", type=int, help="sampling interval in secs (default=60)", default=60)
     parser.add_argument("--output", help="location for stdout report")
-    parser.add_argument("-v", "--version", help="print version info and exit", action="store_true")
+    parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--pdf", help="generate PDF report")
     args = parser.parse_args()
 
@@ -810,7 +855,7 @@ def main():
         utils.error("The following arguments are required: --job")
 
     query = queryMetrics(versionData)
-    query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)
+    query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval, step=args.step)
     query.read_config(args.configfile)
     query.setup()
     query.gather_data(saveTimeSeries=True)
