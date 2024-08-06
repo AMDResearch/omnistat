@@ -2215,6 +2215,111 @@
          "panels" : [],
          "title" : "Steps Summary",
          "type" : "row"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "$source"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "thresholds"
+               },
+               "custom" : {
+                  "align" : "auto",
+                  "cellOptions" : {
+                     "type" : "auto"
+                  },
+                  "inspect" : false
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               }
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 12,
+            "x" : 0,
+            "y" : 84
+         },
+         "id" : 47,
+         "options" : {
+            "cellHeight" : "sm",
+            "footer" : {
+               "countRows" : false,
+               "fields" : "",
+               "reducer" : [
+                  "sum"
+               ],
+               "show" : false
+            },
+            "showHeader" : true
+         },
+         "pluginVersion" : "11.0.0",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "editorMode" : "code",
+               "expr" : "group by (instance,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"})",
+               "format" : "table",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "Nodes per Job Steps",
+         "transformations" : [
+            {
+               "id" : "groupBy",
+               "options" : {
+                  "fields" : {
+                     "instance" : {
+                        "aggregations" : [
+                           "distinctCount"
+                        ],
+                        "operation" : "aggregate"
+                     },
+                     "jobstep" : {
+                        "aggregations" : [
+                           "count"
+                        ],
+                        "operation" : "groupby"
+                     }
+                  }
+               }
+            },
+            {
+               "id" : "organize",
+               "options" : {
+                  "excludeByName" : {},
+                  "includeByName" : {},
+                  "indexByName" : {},
+                  "renameByName" : {
+                     "instance (distinctCount)" : "Number of nodes",
+                     "jobstep" : "Step"
+                  }
+               }
+            }
+         ],
+         "type" : "table"
       }
    ],
    "schemaVersion" : 39,
