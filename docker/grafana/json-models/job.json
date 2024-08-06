@@ -108,9 +108,9 @@
                "format" : "table",
                "fullMetaSearch" : false,
                "includeNullMetadata" : true,
-               "instant" : true,
+               "instant" : false,
                "legendFormat" : "__auto",
-               "range" : false,
+               "range" : true,
                "refId" : "A",
                "useBackend" : false
             }
