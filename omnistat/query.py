@@ -45,7 +45,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.units import inch
 
-from omnistat.utils import displayVersion, getVersion, error
+from omnistat import utils
 
 
 class queryMetrics:
@@ -59,8 +59,9 @@ class queryMetrics:
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
-        self.sha = versionData["sha"]
-        self.version = versionData["version"]
+        # self.sha = versionData["sha"]
+        # self.version = versionData["version"]
+        self.version = versionData
         # temporary hack to deal with socket-measurements reported twice
         # Frontier
         self.mi250 = True
@@ -127,15 +128,15 @@ class queryMetrics:
 
         # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
         self.metrics = [
-            {"metric": "rocm_utilization", "title": "GPU Core Utilization", "title_short": "Utilization (%)"},
-            {"metric": "rocm_vram_used", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
+            {"metric": "rocm_utilization_percentage", "title": "GPU Core Utilization", "title_short": "Utilization (%)"},
+            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
             {
-                "metric": "rocm_temp_die_edge",
-                "title": "GPU Temperature - Die Edge (C)",
+                "metric": "rocm_temperature_celsius",
+                "title": "GPU Temperature (C)",
                 "title_short": "Temperature (C)",
             },
             {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
-            {"metric": "rocm_avg_pwr", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
+            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
         ]
 
     # Query job data info given start/stop time window
@@ -321,17 +322,21 @@ class queryMetrics:
 
             for gpu in range(self.numGPUs):
 
-                # (1) capture time series that assembles [mean] value at each timestamp across all assigned nodes
-                times, values_mean = self.query_time_series_data("card" + str(gpu) + "_" + metric, "avg")
+                query_metric = f"{metric}{{card=\"{gpu}\"}}"
+                try:
+                    # (1) capture time series that assembles [mean] value at each timestamp across all assigned nodes
+                    times, values_mean = self.query_time_series_data(query_metric, "avg")
 
-                # (2) capture time series that assembles [max] value at each timestamp across all assigned nodes
-                times, values_max = self.query_time_series_data("card" + str(gpu) + "_" + metric, "max")
+                    # (2) capture time series that assembles [max] value at each timestamp across all assigned nodes
+                    times, values_max = self.query_time_series_data(query_metric, "max")
 
-                # (3) capture raw time series
-                times_raw,values_raw, hosts = self.query_time_series_data("card" + str(gpu) + "_" + metric)
+                    # (3) capture raw time series
+                    times_raw,values_raw, hosts = self.query_time_series_data(query_metric)
+                except:
+                    utils.error("Unable to query prometheus data for metric -> %s" % query_metric)
                 
                 # Sum total energy across all hosts and gpus
-                if metric == 'rocm_avg_pwr':
+                if metric == 'rocm_average_socket_power_watts':
                     energy_per_host = []
 
                     energyTotal = 0.0
@@ -380,7 +385,6 @@ class queryMetrics:
                     values_max = 100.0 * values_max / memoryAvail
 
                 # save mean utilization per individual gpu
-                #self.mean_util_per_gpu = []
                 values = []
                 if metric == 'rocm_utilization':
                     for i in range(len(times_raw)):
@@ -390,8 +394,8 @@ class queryMetrics:
 
                 if saveTimeSeries:
                     self.time_series[metric].append({'time':times,'values':values_mean})
-                    self.time_series[metric + '_hostmax_raw'].append({'time':times_raw[maxId],'values':values_raw[maxId],'host':hosts[maxId]})
-                    self.time_series[metric + '_hostmin_raw'].append({'time':times_raw[minId],'values':values_raw[minId],'host':hosts[minId]})
+                    # self.time_series[metric + '_hostmax_raw'].append({'time':times_raw[maxId],'values':values_raw[maxId],'host':hosts[maxId]})
+                    # self.time_series[metric + '_hostmin_raw'].append({'time':times_raw[minId],'values':values_raw[minId],'host':hosts[minId]})
         return
 
     def generate_report_card(self):
@@ -441,8 +445,8 @@ class queryMetrics:
         print("Query interval = %i secs" % self.interval)
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
         version = self.version
-        if self.sha != "Unknown":
-            version += " (%s)" % self.sha
+        # if self.sha != "Unknown":
+        #     version += " (%s)" % self.sha
         print("Version = %s" % version)
         return
 
@@ -798,13 +802,13 @@ def main():
     # logger config
     logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
-    versionData = getVersion()
+    versionData = utils.getVersion()
     if args.version:
-        displayVersion(versionData)
+        utils.displayVersion(versionData)
         sys.exit(0)
 
     if not args.job:
-        error("The following arguments are required: --job")
+        utils.error("The following arguments are required: --job")
 
     query = queryMetrics(versionData)
     query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval)
