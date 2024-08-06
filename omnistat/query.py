@@ -125,7 +125,11 @@ class queryMetrics:
 
         # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
         self.metrics = [
-            {"metric": "rocm_utilization_percentage", "title": "GPU Core Utilization", "title_short": "Utilization (%)"},
+            {
+                "metric": "rocm_utilization_percentage",
+                "title": "GPU Core Utilization",
+                "title_short": "Utilization (%)",
+            },
             {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
             {
                 "metric": "rocm_temperature_celsius",
@@ -175,7 +179,7 @@ class queryMetrics:
         for node in range(len(results)):
             value = int(results[node]["values"][0][1])
             if value != num_gpus:
-                print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus,value))
+                print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus, value))
                 break
 
         assert num_gpus > 0
@@ -274,7 +278,7 @@ class queryMetrics:
         for result in results:
             self.hosts.append(result["metric"]["instance"])
 
-    def metric_host_max_sum(self,values):
+    def metric_host_max_sum(self, values):
         """Determine host with <maximum> sum of all provided samples"""
         maxvalue = 0.0
         for i in range(len(values)):
@@ -284,7 +288,7 @@ class queryMetrics:
                 maxindex = i
         return maxindex, sum
 
-    def metric_host_min_sum(self,values):
+    def metric_host_min_sum(self, values):
         """Determine host with <minimum> sum of all provided samples"""
         minvalue = sys.float_info.max
         for i in range(len(values)):
@@ -294,7 +298,7 @@ class queryMetrics:
                 minindex = i
         return minindex, sum
 
-    def gather_data(self,saveTimeSeries=False):
+    def gather_data(self, saveTimeSeries=False):
         self.stats = {}
         self.time_series = {}
         self.max_GPU_memory_avail = []
@@ -311,8 +315,8 @@ class queryMetrics:
 
             if saveTimeSeries:
                 self.time_series[metric] = []
-                self.time_series[metric + '_hostmax_raw'] = []
-                self.time_series[metric + '_hostmin_raw'] = []
+                self.time_series[metric + "_hostmax_raw"] = []
+                self.time_series[metric + "_hostmin_raw"] = []
 
             # # init tracking of min/max
             # minValue =  sys.float_info.max
@@ -320,7 +324,7 @@ class queryMetrics:
 
             for gpu in range(self.numGPUs):
 
-                query_metric = f"{metric}{{card=\"{gpu}\"}}"
+                query_metric = f'{metric}{{card="{gpu}"}}'
                 try:
                     # (1) capture time series that assembles [mean] value at each timestamp across all assigned nodes
                     times, values_mean = self.query_time_series_data(query_metric, "avg")
@@ -329,20 +333,20 @@ class queryMetrics:
                     times, values_max = self.query_time_series_data(query_metric, "max")
 
                     # (3) capture raw time series
-                    times_raw,values_raw, hosts = self.query_time_series_data(query_metric)
+                    times_raw, values_raw, hosts = self.query_time_series_data(query_metric)
                 except:
                     utils.error("Unable to query prometheus data for metric -> %s" % query_metric)
-                
+
                 # Sum total energy across all hosts and gpus
-                if metric == 'rocm_average_socket_power_watts':
+                if metric == "rocm_average_socket_power_watts":
                     energy_per_host = []
 
                     energyTotal = 0.0
                     for i in range(len(times_raw)):
-                        x = np.array(times_raw[i],dtype=np.float32)
+                        x = np.array(times_raw[i], dtype=np.float32)
                         # Integrate time series to get energy used on this host/gpu index
                         # Units: W x [sec] = Joules -> Convert to kWH
-                        energy = np.trapz(values_raw[i],x=x) / (1000*3600)
+                        energy = np.trapz(values_raw[i], x=x) / (1000 * 3600)
                         # accumulate to get total energy used by alls host with this gpu index
                         energyTotal += energy
                         energy_per_host.append(energy)
@@ -384,14 +388,14 @@ class queryMetrics:
 
                 # save mean utilization per individual gpu
                 values = []
-                if metric == 'rocm_utilization':
+                if metric == "rocm_utilization":
                     for i in range(len(times_raw)):
                         mean = np.mean(values_raw[i])
                         values.append(mean)
                     self.mean_util_per_gpu[gpu] = values
 
                 if saveTimeSeries:
-                    self.time_series[metric].append({'time':times,'values':values_mean})
+                    self.time_series[metric].append({"time": times, "values": values_mean})
                     # self.time_series[metric + '_hostmax_raw'].append({'time':times_raw[maxId],'values':values_raw[maxId],'host':hosts[maxId]})
                     # self.time_series[metric + '_hostmin_raw'].append({'time':times_raw[minId],'values':values_raw[minId],'host':hosts[minId]})
         return
@@ -467,34 +471,34 @@ class queryMetrics:
 
         if reducer is None:
             # return lists with raw time series data from all hosts for given metric
-            times  = []
+            times = []
             values = []
-            hosts  = []
+            hosts = []
 
             for i in range(len(results)):
-                tmpresult = np.asarray(results[i]['values'])
+                tmpresult = np.asarray(results[i]["values"])
                 # convert to time format
-                tmptime = tmpresult[:,0].astype(int).astype('datetime64[s]')
+                tmptime = tmpresult[:, 0].astype(int).astype("datetime64[s]")
                 if dataType == int:
-                    tmpvalues = tmpresult[:,1].astype(int)
+                    tmpvalues = tmpresult[:, 1].astype(int)
                 elif dataType == float:
-                    tmpvalues = tmpresult[:,1].astype(float)
+                    tmpvalues = tmpresult[:, 1].astype(float)
                 times.append(tmptime)
                 values.append(tmpvalues)
-                hosts.append(results[i]['metric']['instance'])
+                hosts.append(results[i]["metric"]["instance"])
             return times, values, hosts
         else:
             # only have a single time series when reduction operator applied
-            results = np.asarray(results[0]['values'])
+            results = np.asarray(results[0]["values"])
 
             # convert to time format
-            time = results[:,0].astype(int).astype('datetime64[s]')
+            time = results[:, 0].astype(int).astype("datetime64[s]")
             # let user decide on conversion type for gauge metric
             if dataType == int:
-                values = results[:,1].astype(int)
+                values = results[:, 1].astype(int)
             elif dataType == float:
-                values = results[:,1].astype(float)
-            return time,values
+                values = results[:, 1].astype(float)
+            return time, values
 
     def query_gpu_metric(self, metricName):
         stats = {}
@@ -560,50 +564,63 @@ class queryMetrics:
             self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
         )
         Story.append(Paragraph(ptext, styles["Bullet"]))
-        Story.append(HRFlowable(width="100%",thickness=2))
-        
+        Story.append(HRFlowable(width="100%", thickness=2))
+
         # generate Utilization Table
-        Story.append(Spacer(1,0.2*inch))
-        ptext='''<strong>GPU Statistics</strong>'''
-        Story.append(Paragraph(ptext,normal))
-        Story.append(Spacer(1,0.2*inch))
-        #Story.append(HRFlowable(width="100%",thickness=1))
+        Story.append(Spacer(1, 0.2 * inch))
+        ptext = """<strong>GPU Statistics</strong>"""
+        Story.append(Paragraph(ptext, normal))
+        Story.append(Spacer(1, 0.2 * inch))
+        # Story.append(HRFlowable(width="100%",thickness=1))
 
         # --
         # Display general GPU Statistics
         # --
 
         data = []
-        data.append(['','Utilization (%)','','Memory Use (%)','','Temperature (C)','','Power (W)','','Energy (kWh)'])
-        data.append(['GPU','Max','Mean','Max','Mean','Max','Mean','Max','Mean','Total'])
+        data.append(
+            ["", "Utilization (%)", "", "Memory Use (%)", "", "Temperature (C)", "", "Power (W)", "", "Energy (kWh)"]
+        )
+        data.append(["GPU", "Max", "Mean", "Max", "Mean", "Max", "Mean", "Max", "Mean", "Total"])
 
         for gpu in range(self.numGPUs):
-            data.append([gpu,
-                            "%.2f" % self.stats['rocm_utilization_percentage_max'][gpu],   "%.2f" % self.stats['rocm_utilization_percentage_mean'][gpu],
-                            "%.2f" % self.stats['rocm_vram_used_percentage_max'][gpu],     "%.2f" % self.stats['rocm_vram_used_percentage_mean'][gpu],
-                            "%.2f" % self.stats['rocm_temperature_celsius_max'][gpu], "%.2f" % self.stats['rocm_temperature_celsius_mean'][gpu],
-                            "%.2f" % self.stats['rocm_average_socket_power_watts_max'][gpu],       "%.2f" % self.stats['rocm_average_socket_power_watts_mean'][gpu],
-                            "%.2f" % np.sum(self.energyStats_kwh[gpu])
-                ])
+            data.append(
+                [
+                    gpu,
+                    "%.2f" % self.stats["rocm_utilization_percentage_max"][gpu],
+                    "%.2f" % self.stats["rocm_utilization_percentage_mean"][gpu],
+                    "%.2f" % self.stats["rocm_vram_used_percentage_max"][gpu],
+                    "%.2f" % self.stats["rocm_vram_used_percentage_mean"][gpu],
+                    "%.2f" % self.stats["rocm_temperature_celsius_max"][gpu],
+                    "%.2f" % self.stats["rocm_temperature_celsius_mean"][gpu],
+                    "%.2f" % self.stats["rocm_average_socket_power_watts_max"][gpu],
+                    "%.2f" % self.stats["rocm_average_socket_power_watts_mean"][gpu],
+                    "%.2f" % np.sum(self.energyStats_kwh[gpu]),
+                ]
+            )
 
-        t=Table(data,rowHeights=[.21*inch] * len(data),
-                colWidths=[0.4*inch] + [0.62*inch] * 8 + [1*inch])
-        t.hAlign='LEFT'
-        t.setStyle(TableStyle([('LINEBELOW',(0,1),(-1,1),1.5,colors.black),
-                              ('ALIGN',(0,0),(-1,-1),'CENTER')]))
-        t.setStyle(TableStyle([('LINEBEFORE',(1,0),(1,-1),1.25,colors.darkgrey),
-                               ('LINEAFTER', (2,0),(2,-1),1.25,colors.darkgrey),
-                               ('LINEAFTER', (4,0),(4,-1),1.25,colors.darkgrey),
-                               ('LINEAFTER', (6,0),(6,-1),1.25,colors.darkgrey),
-                               ('LINEAFTER', (8,0),(8,-1),1.25,colors.darkgrey)
-                               ]))
-        t.setStyle(TableStyle([('SPAN',(1,0),(2,0)),
-                               ('SPAN',(3,0),(4,0)),
-                               ('SPAN',(5,0),(6,0)),
-                               ('SPAN',(7,0),(8,0))
-                               ]))
-        t.setStyle(TableStyle([('FONTSIZE',(1,0),(-1,-1),10)
-        ]))
+        t = Table(data, rowHeights=[0.21 * inch] * len(data), colWidths=[0.4 * inch] + [0.62 * inch] * 8 + [1 * inch])
+        t.hAlign = "LEFT"
+        t.setStyle(
+            TableStyle([("LINEBELOW", (0, 1), (-1, 1), 1.5, colors.black), ("ALIGN", (0, 0), (-1, -1), "CENTER")])
+        )
+        t.setStyle(
+            TableStyle(
+                [
+                    ("LINEBEFORE", (1, 0), (1, -1), 1.25, colors.darkgrey),
+                    ("LINEAFTER", (2, 0), (2, -1), 1.25, colors.darkgrey),
+                    ("LINEAFTER", (4, 0), (4, -1), 1.25, colors.darkgrey),
+                    ("LINEAFTER", (6, 0), (6, -1), 1.25, colors.darkgrey),
+                    ("LINEAFTER", (8, 0), (8, -1), 1.25, colors.darkgrey),
+                ]
+            )
+        )
+        t.setStyle(
+            TableStyle(
+                [("SPAN", (1, 0), (2, 0)), ("SPAN", (3, 0), (4, 0)), ("SPAN", (5, 0), (6, 0)), ("SPAN", (7, 0), (8, 0))]
+            )
+        )
+        t.setStyle(TableStyle([("FONTSIZE", (1, 0), (-1, -1), 10)]))
 
         for each in range(2, len(data)):
             if each % 2 == 0:
@@ -614,12 +631,12 @@ class queryMetrics:
             t.setStyle(TableStyle([("BACKGROUND", (0, each), (-1, each), bg_color)]))
         Story.append(t)
 
-        Story.append(Spacer(1,0.2*inch))
+        Story.append(Spacer(1, 0.2 * inch))
 
-        ptext='''Total GPU Energy Consumed = %.2f kWh''' % (self.gpu_energy_total_kwh)
-        Story.append(Paragraph(ptext,normal))
+        ptext = """Total GPU Energy Consumed = %.2f kWh""" % (self.gpu_energy_total_kwh)
+        Story.append(Paragraph(ptext, normal))
 
-        #--
+        # --
         # Display time-series plots
         # --
 
@@ -635,17 +652,21 @@ class queryMetrics:
             plt.figure(figsize=(9, 2.5))
 
             for gpu in range(self.numGPUs):
-                plt.plot(self.time_series[metric][gpu]['time'],
-                         self.time_series[metric][gpu]['values'],linewidth=0.4,label='Card %i' % gpu)
-#                         self.time_series[metric][gpu]['values'],marker='o',markersize=1,linewidth=0.4,label='Card %i' % gpu)
-                # plt.plot(self.time_series[metric+'_hostmax_raw'][gpu]['time'],
-                #          self.time_series[metric+'_hostmax_raw'][gpu]['values'],'--',linewidth=0.4,label=None)
-                # wip - show high/low usage
-                # plt.plot(self.time_series[metric+'_hostmin_raw'][gpu]['time'],
-                #          self.time_series[metric+'_hostmin_raw'][gpu]['values'],'--',linewidth=0.4,label=None)
-                
-            plt.title(entry['title'])
-            plt.legend(bbox_to_anchor=(1.,0.5),loc='center left', ncol=1,frameon=True)
+                plt.plot(
+                    self.time_series[metric][gpu]["time"],
+                    self.time_series[metric][gpu]["values"],
+                    linewidth=0.4,
+                    label="Card %i" % gpu,
+                )
+            #                         self.time_series[metric][gpu]['values'],marker='o',markersize=1,linewidth=0.4,label='Card %i' % gpu)
+            # plt.plot(self.time_series[metric+'_hostmax_raw'][gpu]['time'],
+            #          self.time_series[metric+'_hostmax_raw'][gpu]['values'],'--',linewidth=0.4,label=None)
+            # wip - show high/low usage
+            # plt.plot(self.time_series[metric+'_hostmin_raw'][gpu]['time'],
+            #          self.time_series[metric+'_hostmin_raw'][gpu]['values'],'--',linewidth=0.4,label=None)
+
+            plt.title(entry["title"])
+            plt.legend(bbox_to_anchor=(1.0, 0.5), loc="center left", ncol=1, frameon=True)
             plt.grid()
             ax = plt.gca()
 
@@ -680,68 +701,78 @@ class queryMetrics:
                 emin.append(mean_energy[gpu] - min_energy[gpu])
                 emax.append(max_energy[gpu] - mean_energy[gpu])
 
-#            plt.figure(figsize=(6.,2))
-            plt.figure(figsize=(9,2.5))
-            plt.barh(labels,mean_energy, align='center', height=0.75,edgecolor='black',
-                    color='grey',alpha=0.6,xerr=[emin,emax],capsize=5,
-                    error_kw=dict(lw=1,capthick=2))
+            #            plt.figure(figsize=(6.,2))
+            plt.figure(figsize=(9, 2.5))
+            plt.barh(
+                labels,
+                mean_energy,
+                align="center",
+                height=0.75,
+                edgecolor="black",
+                color="grey",
+                alpha=0.6,
+                xerr=[emin, emax],
+                capsize=5,
+                error_kw=dict(lw=1, capthick=2),
+            )
             plt.title("GPU Energy Consumed - Average (min/max) across All %i Hosts" % len(self.hosts))
-            #,fontsize=8)
+            # ,fontsize=8)
             plt.xlabel("Energy (kWH)")
             plt.grid()
-            #plt.gca().tick_params(axis='both',labelsize=8)
-            plt.savefig('.energy.png',dpi=150,bbox_inches='tight')
+            # plt.gca().tick_params(axis='both',labelsize=8)
+            plt.savefig(".energy.png", dpi=150, bbox_inches="tight")
             plt.close()
 
-            aplot = Image('.energy.png')
-            aplot.hAlign='LEFT'
+            aplot = Image(".energy.png")
+            aplot.hAlign = "LEFT"
             aplot._restrictSize(6.5 * inch, 3 * inch)
             Story.append(aplot)
-            os.remove('.energy.png')
+            os.remove(".energy.png")
 
-        Story.append(Spacer(1,0.2*inch))
-        Story.append(HRFlowable(width="100%",thickness=1))
+        Story.append(Spacer(1, 0.2 * inch))
+        Story.append(HRFlowable(width="100%", thickness=1))
 
         # Multi-node distributions
         if False:
-            Story.append(Spacer(1,0.2*inch))
-            ptext='''<strong>Multi-node Distribution</strong>'''
-            Story.append(Paragraph(ptext,normal))
-            Story.append(Spacer(1,0.2*inch))
+            Story.append(Spacer(1, 0.2 * inch))
+            ptext = """<strong>Multi-node Distribution</strong>"""
+            Story.append(Paragraph(ptext, normal))
+            Story.append(Spacer(1, 0.2 * inch))
 
             # mean gpu utilization
             allgpus = []
             for gpu in range(self.numGPUs):
                 allgpus += self.mean_util_per_gpu[gpu]
             allgpus.sort(reverse=True)
-            plt.figure(figsize=(9,2.5))
-            plt.plot(allgpus,'o',markersize=2,fillstyle='none')
-                     #linewidth=0.8)
+            plt.figure(figsize=(9, 2.5))
+            plt.plot(allgpus, "o", markersize=2, fillstyle="none")
+            # linewidth=0.8)
             plt.grid()
-            plt.xlabel('GPU #')
-            plt.ylabel('GPU Utilization (%)')
-            plt.ylim(0,100)
-            plt.title('Individual GPU Utilizations Averaged over Job Duration')
-            plt.savefig('.distribution.png',dpi=150,bbox_inches='tight')
+            plt.xlabel("GPU #")
+            plt.ylabel("GPU Utilization (%)")
+            plt.ylim(0, 100)
+            plt.title("Individual GPU Utilizations Averaged over Job Duration")
+            plt.savefig(".distribution.png", dpi=150, bbox_inches="tight")
             plt.close()
-            aplot = Image('.distribution.png')
-            aplot.hAlign='LEFT'
+            aplot = Image(".distribution.png")
+            aplot.hAlign = "LEFT"
             aplot._restrictSize(6.5 * inch, 4 * inch)
             Story.append(aplot)
-            os.remove('.distribution.png')
+            os.remove(".distribution.png")
 
-            Story.append(Spacer(1,0.2*inch))
-            Story.append(HRFlowable(width="100%",thickness=1))
+            Story.append(Spacer(1, 0.2 * inch))
+            Story.append(HRFlowable(width="100%", thickness=1))
 
-        footerStyle = ParagraphStyle('footer',
-                           fontSize=8,
-                           parent=styles['Normal'],
+        footerStyle = ParagraphStyle(
+            "footer",
+            fontSize=8,
+            parent=styles["Normal"],
         )
 
-        ptext='''Query interval = %i secs''' % self.interval
-        Story.append(Paragraph(ptext,footerStyle))
-        ptext='''Query execution time = %.1f secs''' % (timeit.default_timer() - self.timer_start)
-        Story.append(Paragraph(ptext,footerStyle))
+        ptext = """Query interval = %i secs""" % self.interval
+        Story.append(Paragraph(ptext, footerStyle))
+        ptext = """Query execution time = %.1f secs""" % (timeit.default_timer() - self.timer_start)
+        Story.append(Paragraph(ptext, footerStyle))
         # version = self.version
         # if self.sha != "Unknown":
         #     version += " (%s)" % self.sha
