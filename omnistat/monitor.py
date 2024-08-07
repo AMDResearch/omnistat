@@ -59,7 +59,6 @@ class Monitor:
             "enable_amd_smi_process", False
         )
         self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8000)
-        self.runtimeConfig["collector_usermode"] = config["omnistat.collectors"].getboolean("usermode", False)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
 
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
@@ -122,7 +121,6 @@ class Monitor:
 
             self.__collectors.append(
                 RMSJob(
-                    userMode=self.runtimeConfig["collector_usermode"],
                     annotations=self.runtimeConfig["rms_collector_annotations"],
                     jobDetection=self.jobDetection,
                 )

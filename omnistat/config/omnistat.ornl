@@ -1,11 +1,10 @@
 #--
-# Configuration for ORNL Crusher/Frontier
+# Configuration for ORNL Crusher/Frontier/Borg
 #--
 
 [omnistat.collectors]
 
 port = 8001
-usermode = False
 enable_rocm_smi = True
 enable_amd_smi = False
 enable_rms = True
