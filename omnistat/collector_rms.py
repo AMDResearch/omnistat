@@ -43,10 +43,9 @@ from omnistat.collector_base import Collector
 
 
 class RMSJob(Collector):
-    def __init__(self, userMode=False, annotations=False, jobDetection=None):
+    def __init__(self, annotations=False, jobDetection=None):
         logging.debug("Initializing resource manager job data collector")
         self.__prefix = "rmsjob_"
-        self.__userMode = userMode
         self.__annotationsEnabled = annotations
         self.__RMSMetrics = {}
         self.__rmsJobInfo = []
@@ -67,32 +66,15 @@ class RMSJob(Collector):
         self.__squeue_steps = [command] + flags.split()
         logging.debug("sqeueue_exec = %s" % self.__squeue_query)
 
-        # cache current slurm job in user mode profiling - assumption is that it does not change
-        if self.__userMode is True:
-            # read from file if available
-            jobFile = self.__rmsJobFile
-            if os.path.isfile(jobFile):
-                with open(jobFile, "r") as f:
-                    self.__rmsJobInfo = json.load(f)
-                logging.info("--> usermode jobinfo (from file): %s" % self.__rmsJobInfo)
-
-            else:
-                # no job file data available: query slurm directly
-                # note: a longer timeout is provided since we only query once and some systems have slow
-                # slurm response times
-                logging.info("User mode collector enabled for SLURM, querying job info once at startup...")
-                self.__rmsJobInfo = self.querySlurmJob(timeout=15, exit_on_error=True, mode="squeue")
-                logging.info("--> usermode jobinfo (from slurm query): %s" % self.__rmsJobInfo)
-
+        # jobMode
+        if self.__rmsJobMode == "file-based":
+            logging.info(
+                "collector_rms: reading job information from prolog/epilog derived file (%s)" % self.__rmsJobFile
+            )
+        elif self.__rmsJobMode == "squeue":
+            logging.info("collector_rms: will poll slurm periodicaly with squeue")
         else:
-            if self.__rmsJobMode == "file-based":
-                logging.info(
-                    "collector_rms: reading job information from prolog/epilog derived file (%s)" % self.__rmsJobFile
-                )
-            elif self.__rmsJobMode == "squeue":
-                logging.info("collector_rms: will poll slurm periodicaly with squeue")
-            else:
-                logging.error("Unsupported slurm job data collection mode")
+            logging.error("Unsupported slurm job data collection mode")
 
     def querySlurmJob(self, timeout=1, exit_on_error=False, mode="squeue"):
         """
@@ -165,13 +147,9 @@ class RMSJob(Collector):
 
         results = None
 
-        if self.__userMode is True:
-            results = self.__rmsJobInfo
+        results = self.querySlurmJob(mode=self.__rmsJobMode)
+        if results:
             jobEnabled = True
-        else:
-            results = self.querySlurmJob(mode=self.__rmsJobMode)
-            if results:
-                jobEnabled = True
 
         # Case when SLURM job is allocated
         if jobEnabled:
