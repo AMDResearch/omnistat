@@ -71,7 +71,7 @@ class RMSJob(Collector):
                 sys.exit(4)
             # command-line flags for use with squeue to obtained desired metrics
             hostname = platform.node().split(".", 1)[0]
-            flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
+            flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag::,Name"            
             # cache query command with options
             self.__squeue_query = [command] + flags.split()
             # job step query command
@@ -93,7 +93,7 @@ class RMSJob(Collector):
 
         if mode == "squeue":
             data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
-            # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
+            # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG:NAME
             if data.stdout.strip():
                 data = data.stdout.strip().split(":")
                 keys = [
