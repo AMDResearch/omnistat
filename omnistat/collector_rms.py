@@ -102,6 +102,7 @@ class RMSJob(Collector):
                     "RMS_JOB_PARTITION",
                     "RMS_JOB_NUM_NODES",
                     "RMS_JOB_BATCHMODE",
+                    "RMS_JOB_NAME",
                 ]
                 results = dict(zip(keys, data))
                 results["RMS_TYPE"] = "slurm"
@@ -134,7 +135,7 @@ class RMSJob(Collector):
 
         # alternate approach - define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
-        labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep", "type"]
+        labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep", "type", "name"]
         self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "RMS job details", labels)
 
         # metric to support user annotations
@@ -165,6 +166,7 @@ class RMSJob(Collector):
                 nodes=results["RMS_JOB_NUM_NODES"],
                 batchflag=results["RMS_JOB_BATCHMODE"],
                 jobstep=results["RMS_STEP_ID"],
+                name=results["RMS_JOB_NAME"],
                 type=results["RMS_TYPE"],
             ).set(1)
 
@@ -199,7 +201,7 @@ class RMSJob(Collector):
         # Case when no job detected
         else:
             self.__RMSMetrics["info"].labels(
-                jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type=""
+                jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type="", name=""
             ).set(1)
 
         return
