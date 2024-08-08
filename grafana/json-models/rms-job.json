@@ -403,7 +403,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^nodes$/",
           "values": false
         },
         "showPercentChange": false,
@@ -421,7 +421,8 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(count by (instance) (rmsjob_info{jobid=\"$jobid\"}))",
+          "expr": "rmsjob_info{jobid=\"$jobid\"}",
+          "format": "table",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
