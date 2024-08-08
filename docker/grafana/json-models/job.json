@@ -2280,7 +2280,7 @@
                      {
                         "matcher" : {
                            "id" : "byName",
-                           "options" : "Last *"
+                           "options" : "Max"
                         },
                         "properties" : [
                            {
@@ -2323,7 +2323,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 0,
-                  "y" : 76
+                  "y" : 84
                },
                "id" : 48,
                "interval" : "$interval",
@@ -2397,7 +2397,7 @@
                      "options" : {
                         "labelsToFields" : false,
                         "reducers" : [
-                           "lastNotNull"
+                           "max"
                         ]
                      }
                   },
@@ -2494,7 +2494,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 12,
-                  "y" : 76
+                  "y" : 84
                },
                "id" : 54,
                "interval" : "$interval",
@@ -2542,6 +2542,7 @@
                            "First" : true,
                            "Last" : true,
                            "Last *" : true,
+                           "Max" : true,
                            "Range" : false
                         },
                         "includeByName" : {},
@@ -2636,7 +2637,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 0,
-                  "y" : 84
+                  "y" : 92
                },
                "id" : 52,
                "interval" : "$interval",
@@ -2815,7 +2816,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 12,
-                  "y" : 84
+                  "y" : 92
                },
                "id" : 55,
                "interval" : "$interval",
@@ -2940,7 +2941,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 0,
-                  "y" : 92
+                  "y" : 100
                },
                "id" : 53,
                "interval" : "$interval",
@@ -3119,7 +3120,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 12,
-                  "y" : 92
+                  "y" : 100
                },
                "id" : 56,
                "interval" : "$interval",
@@ -3245,7 +3246,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 0,
-                  "y" : 100
+                  "y" : 108
                },
                "id" : 58,
                "interval" : "$interval",
@@ -3420,7 +3421,7 @@
                   "h" : 8,
                   "w" : 12,
                   "x" : 12,
-                  "y" : 100
+                  "y" : 108
                },
                "id" : 57,
                "interval" : "$interval",
@@ -3537,7 +3538,7 @@
                },
                "gridPos" : {
                   "h" : 8,
-                  "w" : 23,
+                  "w" : 24,
                   "x" : 0,
                   "y" : 77
                },
@@ -3701,8 +3702,8 @@
       ]
    },
    "time" : {
-      "from" : "2024-08-05T22:40:51.689Z",
-      "to" : "2024-08-05T23:02:52.185Z"
+      "from" : "2024-08-08T05:56:17.617Z",
+      "to" : "2024-08-08T06:18:57.363Z"
    },
    "timeRangeUpdatedDuringEditOrView" : false,
    "timepicker" : {
