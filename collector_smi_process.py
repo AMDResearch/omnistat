@@ -44,9 +44,15 @@ from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_pro
 
 
 def get_gpu_processes(device):
-    processes = amdsmi_get_gpu_process_list(device)
 
     result = []
+    try:
+        processes = amdsmi_get_gpu_process_list(device)
+    except Exception as e:
+        # ROCM 6.1 sudo issues. should be fixed in 6.2
+        logging.error(f"Failed to get GPU process list for device {device}: {e}")
+        return result
+
     for p in processes:
         try:
             p = amdsmi_get_gpu_process_info(device, p)
