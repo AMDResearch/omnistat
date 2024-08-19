@@ -31,7 +31,6 @@ import subprocess
 import sys
 
 from importlib.metadata import version
-
 from pathlib import Path
 
 
@@ -270,11 +269,35 @@ def getVersion():
     try:
         return version("omnistat")
     except importlib.metadata.PackageNotFoundError:
-        # When package is not installed, rely on setuptools-git-versioning
-        # to figure out the version; use the executable because the internal
-        # API is not guaranteed to remain compatible.
-        result = runShellCommand("setuptools-git-versioning")
-        return result.stdout.strip()
+        # When package is not installed, rely on top-level VERSION file and local git tools to assemble version info
+
+        omniwatch_home = Path(__file__).resolve().parent.parent
+        versionFile = os.path.join(omniwatch_home, "VERSION")
+        try:
+            with open(versionFile, "r") as file:
+                VER = file.read().replace("\n", "")
+        except EnvironmentError:
+            error("Cannot find VERSION file at {}".format(versionFile))
+
+        # git version query
+        SHA = None
+        gitDir = os.path.join(omniwatch_home, ".git")
+        if (shutil.which("git") is not None) and os.path.exists(gitDir):
+            gitQuery = subprocess.run(
+                ["git", "log", "--pretty=format:%h", "-n", "1"],
+                cwd=gitDir,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            print(gitQuery)
+            if gitQuery.returncode == 0:
+                SHA = gitQuery.stdout.decode("utf-8")
+
+        versionInfo = VER
+        if SHA:
+            versionInfo += " (%s)" % SHA
+
+        return versionInfo
 
 
 def displayVersion(version):
