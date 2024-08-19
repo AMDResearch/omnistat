@@ -44,11 +44,13 @@ from prometheus_client import Gauge
 import statistics
 from utils import GPU_MAPPING_ORDER
 from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_metrics_info, amdsmi_get_gpu_memory_total,
-                    AmdSmiMemoryType)
+                    AmdSmiMemoryType, amdsmi_get_gpu_memory_usage)
 
 
 def get_gpu_metrics(device):
     result = amdsmi_get_gpu_metrics_info(device)
+    device_vram_usage = amdsmi_get_gpu_memory_usage(device, AmdSmiMemoryType.VRAM)
+    result['vram_usage'] = device_vram_usage
     for k, v in result.items():
         if type(v) is str:
             # Filter 'N/A' values introduced by rocm 6.1
@@ -105,7 +107,6 @@ class AMDSMI(Collector):
 
             device_total_vram = amdsmi_get_gpu_memory_total(device, AmdSmiMemoryType.VRAM)
             total_vram_metric.labels(card=str(idx)).set(device_total_vram)
-
             metrics = get_gpu_metrics(device)
             for k, v in metrics.items():
                 metric_name = self.__prefix + k
