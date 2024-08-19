@@ -289,7 +289,6 @@ def getVersion():
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
             )
-            print(gitQuery)
             if gitQuery.returncode == 0:
                 SHA = gitQuery.stdout.decode("utf-8")
 
