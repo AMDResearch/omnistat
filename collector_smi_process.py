@@ -40,8 +40,12 @@ import logging
 from collector_base import Collector
 from prometheus_client import Gauge
 from utils import GPU_MAPPING_ORDER
-from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info
-
+from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list
+try:
+    from amdsmi import amdsmi_get_gpu_process_info
+except:
+    # removed in rocm 6.2
+    pass
 
 def get_gpu_processes(device):
 
@@ -55,7 +59,13 @@ def get_gpu_processes(device):
 
     for p in processes:
         try:
-            p = amdsmi_get_gpu_process_info(device, p)
+            if type(p) is dict:
+                # rocm 6.2
+                pass
+            else:
+                # rocm 6.1 and lower
+                p = amdsmi_get_gpu_process_info(device, p)
+
         except:
             # Catch all for unsupported rocm version for process info
             return result
