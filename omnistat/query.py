@@ -479,7 +479,7 @@ class queryMetrics:
             print("")
 
         print("")
-        print("Total GPU Energy Consumed = %.2f kWh" % self.gpu_energy_total_kwh)
+        print("Approximate Total GPU Energy Consumed = %.2f kWh" % self.gpu_energy_total_kwh)
         print("")
 
         print("--")
@@ -677,7 +677,7 @@ class queryMetrics:
 
         Story.append(Spacer(1, 0.2 * inch))
 
-        ptext = """Total GPU Energy Consumed = %.2f kWh""" % (self.gpu_energy_total_kwh)
+        ptext = """Approximate Total GPU Energy Consumed = %.2f kWh""" % (self.gpu_energy_total_kwh)
         Story.append(Paragraph(ptext, normal))
 
         # --
