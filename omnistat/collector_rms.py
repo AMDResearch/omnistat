@@ -36,7 +36,7 @@ import logging
 import os
 import platform
 
-from prometheus_client import Gauge, CollectorRegistry
+from prometheus_client import Gauge
 
 import omnistat.utils as utils
 from omnistat.collector_base import Collector
