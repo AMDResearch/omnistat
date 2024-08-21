@@ -69,7 +69,7 @@ class UserBasedMonitoring:
             else:
                 utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
         else:
-            logging.warning("\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+            utils.error("No SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
 
     def startPromServer(self):
         logging.info("Starting prometheus server on localhost")
