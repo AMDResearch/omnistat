@@ -43,14 +43,28 @@ usage() {
     echo ""
     echo "Options:"
     echo "  -h, --help           Show usage info and exit"
+    echo "  -interval <value>    Set query interval (in secs)"
+    echo "  -pdf <file.pdf>      Dump PDF report to named file"
     echo ""
 }
+
+# command-line args
+interval=60
+pdf=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
 	-h|--help)
 	    usage
 	    exit 0
+	    ;;
+	-interval)
+	    interval="$2"
+	    shift 2
+	    ;;
+	-pdf)
+	    pdf="$2"
+	    shift 2
 	    ;;
 	-*)
 	    echo "Unknown option: $1"
@@ -64,8 +78,15 @@ done
 
 setup_env
 
+[ -x "${OMNISTAT_DIR}/omnistat-query" ] || { echo "Error: unable to access ${OMNISTAT_DIR}/omnistat-query."; exit 1; }
 [ -x "${OMNISTAT_DIR}/omnistat-usermode" ] || { echo "Error: unable to access ${OMNISTAT_DIR}/omnistat-usermode."; exit 1; }
 [ -f "${OMNISTAT_CONFIG}" ] || { echo "Error: unable to access runtime config -> ${OMNISTAT_CONFIG}."; exit 1; }
+
+if [ -n "${pdf}" ];then
+   ${OMNISTAT_DIR}/omnistat-query --job ${SLURM_JOB_ID} --interval ${interval} --config ${OMNISTAT_CONFIG} --pdf ${pdf}
+else
+    ${OMNISTAT_DIR}/omnistat-query --job ${SLURM_JOB_ID} --interval ${interval} --config ${OMNISTAT_CONFIG}
+fi
 
 ${OMNISTAT_DIR}/omnistat-usermode --stop --config ${OMNISTAT_CONFIG}
 
