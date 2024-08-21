@@ -25,13 +25,12 @@
 
 # Convenience launch wrapper tool for user-mode on ORNL
 
-export OMNISTAT_DIR=/path
-export OMNISTAT_CONFIG=${OMNISTAT_DIR}/omnistat/config/omnistat.ornl
-
 setup_env() {
     # setup local env
-    echo "Setting up"
-
+    module try-load cray-python/3.11.5
+    module use /autofs/nccs-svm1_sw/crusher/amdsw/modules
+    module try-load omnistat
+    export OMNISTAT_CONFIG=${OMNISTAT_DIR}/omnistat/config/omnistat.ornl
 }
 
 
@@ -68,10 +67,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+setup_env
+
 [ -x "${OMNISTAT_DIR}/omnistat-usermode" ] || { echo "Error: unable to access ${OMNISTAT_DIR}/omnistat-usermode."; exit 1; }
 [ -f "${OMNISTAT_CONFIG}" ] || { echo "Error: unable to access runtime config -> ${OMNISTAT_CONFIG}."; exit 1; }
 
-setup_env
 ${OMNISTAT_DIR}/omnistat-usermode --start --interval ${interval} --config ${OMNISTAT_CONFIG}
 
 
