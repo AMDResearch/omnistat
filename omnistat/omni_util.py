@@ -239,7 +239,7 @@ def main():
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
     parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
-    parser.add_argument("--startexporters", help="Start data expporters", action="store_true")
+    parser.add_argument("--startexporters", help="Start data exporters", action="store_true")
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
