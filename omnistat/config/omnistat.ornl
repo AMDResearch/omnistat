@@ -10,7 +10,7 @@ enable_amd_smi = False
 enable_rms = True
 
 # Path to local ROCM install to access SMI library
-rocm_path = /opt/rocm-default
+rocm_path = /opt/rocm-6.2.0
 
 # List of IPs allowed to query the collector (comma separated). By
 # default, access will be restricted to the localhost (127.0.0.1).
