@@ -8,6 +8,7 @@ services:
     hostname: controller
     volumes:
       - jobs_dir:/jobs
+      - ssh_dir:/root/.ssh
       - ../../../:/host-source
     expose:
       - 6817
@@ -23,6 +24,7 @@ services:
     hostname: node
     volumes:
       - jobs_dir:/jobs
+      - ssh_dir:/root/.ssh
       - ../../../:/host-source
     expose:
       - 6818
@@ -41,3 +43,4 @@ services:
 
 volumes:
   jobs_dir:
+  ssh_dir:
