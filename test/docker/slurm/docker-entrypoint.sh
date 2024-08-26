@@ -10,11 +10,20 @@ if [ "$1" = "controller" ]; then
 
     cp /host-source/test/docker/slurm/prometheus.yml /etc/prometheus/
     service prometheus start
+
+    # Configure SSH for compute nodes
+    if [ ! -f $HOME/.ssh/id_rsa ]; then
+        ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -N ""
+    fi
+    cp $HOME/.ssh/id_rsa.pub $HOME/.ssh/authorized_keys
+    echo "Host node*" > $HOME/.ssh/config
+    echo "StrictHostKeyChecking no" >> $HOME/.ssh/config
 fi
 
 if [ "$1" = "node" ]; then
     service munge start
     service slurmd start
+    service ssh start
 
     # Install omnistat based on the current working copy of the repository;
     # this docker compose environment is meant to be used for development and
