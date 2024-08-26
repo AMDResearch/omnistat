@@ -8,6 +8,7 @@ RUN apt-get update -y && \
         git \
         bind9-dnsutils \
         munge \
+        numactl \
         openssh-server \
         prometheus \
         python3-venv \
