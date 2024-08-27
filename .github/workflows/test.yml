@@ -36,7 +36,7 @@ jobs:
       - name: Wait for Omnistat
         run: >
           timeout 15m bash -c \
-            'until [[ $(curl -s -g "localhost:9090/api/v1/series?match[]={instance=\"node:8000\"}" | jq ".data|length") != 0 ]]; do \
+            'until [[ $(curl -s -g "localhost:9090/api/v1/series?match[]={instance=\"node1:8000\"}" | jq ".data|length") != 0 ]]; do \
                echo "Waiting for Omnistat..."; \
                sleep 15; \
              done'
