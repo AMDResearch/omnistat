@@ -1,0 +1,9 @@
+services:
+  node1:
+    command: node-user
+
+  node2:
+    command: node-user
+
+  controller:
+    command: controller-user
