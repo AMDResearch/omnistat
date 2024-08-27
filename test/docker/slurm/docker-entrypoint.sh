@@ -35,7 +35,8 @@ if [ "$1" = "node" ]; then
     # prometheus scraper.
     ip=$(dig +short controller)
     sed "s/127.0.0.1/127.0.0.1, $ip/" \
-        /host-source/test/docker/slurm/omnistat.slurm > /etc/omnistat.config
+        /host-source/test/docker/slurm/omnistat-system.config \
+        > /etc/omnistat.config
 
     # Create a Python virtual environment to install Omnistat and/or its
     # dependencies.
