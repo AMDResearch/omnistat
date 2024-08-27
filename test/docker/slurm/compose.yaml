@@ -1,45 +1,62 @@
-services:
-  controller:
-    build:
-      context: ../../../
-      dockerfile: test/docker/slurm/Dockerfile
-    command: controller
-    image: slurm
-    hostname: controller
-    volumes:
-      - jobs_dir:/jobs
-      - ssh_dir:/root/.ssh
-      - ../../../:/host-source
-    expose:
-      - 6817
-    ports:
-      - 9090:9090
+# Use compose extension fields to keep the common definition of services.
+# Meant to be used to instantiate multiple node containers with pre-defined
+# hostnames. Deploy replicas are avoided due to issues with container name
+# resolution and SLURM.
+x-node: &node
+  build:
+    context: ../../../
+    dockerfile: test/docker/slurm/Dockerfile
+  command: node
+  image: slurm
+  volumes:
+    - jobs_dir:/jobs
+    - ssh_dir:/root/.ssh
+    - ../../../:/host-source
+  expose:
+    - 6818
+    - 8000
+  devices:
+    - /dev/kfd
+    - /dev/dri
+  security_opt:
+    - seccomp=unconfined
+  depends_on:
+    - controller
+  links:
+    - controller
+  environment:
+    - TEST_OMNISTAT_EXECUTION
 
-  node:
-    build:
-      context: ../../../
-      dockerfile: test/docker/slurm/Dockerfile
-    command: node
-    image: slurm
-    hostname: node
-    volumes:
-      - jobs_dir:/jobs
-      - ssh_dir:/root/.ssh
-      - ../../../:/host-source
-    expose:
-      - 6818
-      - 8000
-    devices:
-      - /dev/kfd
-      - /dev/dri
-    security_opt:
-      - seccomp=unconfined
-    depends_on:
-      - controller
-    links:
-      - controller
-    environment:
-      - TEST_OMNISTAT_EXECUTION
+x-controller: &controller
+  build:
+    context: ../../../
+    dockerfile: test/docker/slurm/Dockerfile
+  command: controller
+  image: slurm
+  volumes:
+    - jobs_dir:/jobs
+    - ssh_dir:/root/.ssh
+    - ../../../:/host-source
+  expose:
+    - 6817
+  ports:
+    - 9090:9090
+
+services:
+  node1:
+    <<: *node
+    hostname: node1
+    container_name: slurm-node1
+
+  node2:
+    <<: *node
+    hostname: node2
+    container_name: slurm-node2
+
+  controller:
+    <<: *controller
+    hostname: controller
+    container_name: slurm-controller
 
 volumes:
   jobs_dir:
