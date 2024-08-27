@@ -1,18 +1,26 @@
 #!/bin/bash
+#
+# This entrypoint script performs the final installation of Omnistat and
+# executes all the appropriate daemons. Valid commands for this script are:
+#  - controller-system
+#  - node-system
+#  - controller-user
+#  - node-user
+#
+# Installation is the same both modes: system and user. However, some
+# daemons like the Prometheus Server and Omnistat Monitor are only configured
+# and started when running in system mode.
 
 set -e
 
 TEST_OMNISTAT_EXECUTION=${TEST_OMNISTAT_EXECUTION:-source}
 
-if [ "$1" = "controller" ]; then
+if [[ "$1" =~ ^controller ]]; then
     service munge start
     service slurmctld start
 
-    cp /host-source/test/docker/slurm/prometheus.yml /etc/prometheus/
-    service prometheus start
-
     # Configure SSH for compute nodes
-    if [ ! -f $HOME/.ssh/id_rsa ]; then
+    if [[ ! -f $HOME/.ssh/id_rsa ]]; then
         ssh-keygen -t rsa -f $HOME/.ssh/id_rsa -N ""
     fi
     cp $HOME/.ssh/id_rsa.pub $HOME/.ssh/authorized_keys
@@ -20,7 +28,12 @@ if [ "$1" = "controller" ]; then
     echo "StrictHostKeyChecking no" >> $HOME/.ssh/config
 fi
 
-if [ "$1" = "node" ]; then
+if [[ "$1" == controller-system ]]; then
+    cp /host-source/test/docker/slurm/prometheus.yml /etc/prometheus/
+    service prometheus start
+fi
+
+if [[ "$1" =~ ^node ]]; then
     service munge start
     service slurmd start
     service ssh start
@@ -30,13 +43,6 @@ if [ "$1" = "node" ]; then
     # testing. Copy entire directory to avoid polluting the host with files
     # generated in the container.
     cp -R /host-source /source
-
-    # Enable access from the controller container, which is running the
-    # prometheus scraper.
-    ip=$(dig +short controller)
-    sed "s/127.0.0.1/127.0.0.1, $ip/" \
-        /host-source/test/docker/slurm/omnistat-system.config \
-        > /etc/omnistat.config
 
     # Create a Python virtual environment to install Omnistat and/or its
     # dependencies.
@@ -48,21 +54,38 @@ if [ "$1" = "node" ]; then
     case "$TEST_OMNISTAT_EXECUTION" in
         "source")
             echo "Executing Omnistat from uninstalled source"
-            path=.
             pip install -r requirements.txt
             pip install -r requirements-query.txt
             ;;
         "package")
             echo "Executing Omnistat from installed package"
-            path=/opt/omnistat/bin
             pip install .[query]
-            cd # Change directory to avoid loading uninstalled module
+            cd && rm -rf /source
             ;;
         *)
             echo "Unknown TEST_OMNISTAT_EXECUTION value"
             exit 1
             ;;
     esac
+fi
+
+if [[ "$1" == node-system ]]; then
+    # Enable access from the controller container, which is running the
+    # prometheus scraper.
+    ip=$(dig +short controller)
+    sed "s/127.0.0.1/127.0.0.1, $ip/" \
+        /host-source/test/docker/slurm/omnistat-system.config \
+        > /etc/omnistat.config
+
+    path=/source
+    if [[ ! -d /source ]]; then
+        path=/opt/omnistat/bin
+    fi
+
+    if [[ ! -f $path/omnistat-monitor ]]; then
+        echo "Failed to locate omnistat-monitor"
+        exit 1
+    fi
 
     OMNISTAT_CONFIG=/etc/omnistat.config $path/omnistat-monitor
 fi
