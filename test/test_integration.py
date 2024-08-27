@@ -12,22 +12,24 @@ from prometheus_api_client import PrometheusConnect
 # ROCm is installed if we can find `rocminfo' in the host.
 rocm_host = True if shutil.which("rocminfo") else False
 
+nodes = ["node1", "node2"]
 
 class TestIntegration:
     url = "http://localhost:9090/"
-    node = "node:8000"
     time_range = "30m"
 
     def test_request(self):
         response = requests.get(self.url)
         assert response.status_code == 200, "Unable to connect to Prometheus"
 
-    def test_query_up(self):
+    @pytest.mark.parametrize('node', nodes)
+    def test_query_up(self, node):
         prometheus = PrometheusConnect(url=self.url)
         results = prometheus.custom_query("up")
         assert len(results) >= 1, "Metric up not available"
 
-        results = prometheus.custom_query(f"up{{instance='{self.node}'}}")
+        instance = f"{node}:8000"
+        results = prometheus.custom_query(f"up{{instance='{instance}'}}")
         _, value = results[0]["value"]
         assert int(value) == 1, "Node exporter not running"
 
@@ -37,9 +39,11 @@ class TestIntegration:
         assert len(results) >= 1, "Metric rmsjob_info not available"
 
     @pytest.mark.skipif(not rocm_host, reason="requires ROCm")
-    def test_query_rocm(self):
+    @pytest.mark.parametrize('node', nodes)
+    def test_query_rocm(self, node):
         prometheus = PrometheusConnect(url=self.url)
-        query = f"rocm_average_socket_power_watts{{instance='{self.node}'}}"
+        instance = f"{node}:8000"
+        query = f"rocm_average_socket_power_watts{{instance='{instance}'}}"
         results = prometheus.custom_query(query)
         assert len(results) >= 1, "Metric rocm_average_socket_power_watts not available"
 
@@ -47,7 +51,8 @@ class TestIntegration:
         _, value = results[0]["value"]
         assert int(value) >= 0, "Reported power is too low"
 
-    def test_job(self):
+    @pytest.mark.parametrize('node', nodes)
+    def test_job(self, node):
         prometheus = PrometheusConnect(url=self.url)
         query = f"rmsjob_info{{jobid=~'.+'}}[{self.time_range}]"
         results = prometheus.custom_query(query)
@@ -58,7 +63,7 @@ class TestIntegration:
             last_jobid = int(last_job["metric"]["jobid"])
 
         job_seconds = 2
-        self.run_job(job_seconds)
+        self.run_job(node, job_seconds)
         time.sleep(job_seconds + 1)
 
         results = prometheus.custom_query(query)
@@ -72,7 +77,7 @@ class TestIntegration:
         ), "Expected approximately one sample per second"
 
     # Execute an empty job lasting a given amount of seconds
-    def run_job(self, seconds):
-        sbatch_cmd = f'sbatch --wrap="sleep {seconds}"'
-        exec_cmd = f"docker exec slurm-controller-1 bash -c 'cd /jobs; {sbatch_cmd}'"
+    def run_job(self, node, seconds):
+        sbatch_cmd = f'sbatch --nodelist={node} --wrap="sleep {seconds}"'
+        exec_cmd = f"docker exec slurm-controller bash -c 'cd /jobs; {sbatch_cmd}'"
         os.system(exec_cmd)

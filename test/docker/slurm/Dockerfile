@@ -4,9 +4,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends \
+        bind9-dnsutils \
         build-essential \
         git \
-        bind9-dnsutils \
         munge \
         numactl \
         openssh-server \
