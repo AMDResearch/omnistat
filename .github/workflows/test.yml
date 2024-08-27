@@ -21,7 +21,7 @@ jobs:
       - name: Disable SMI collector (won't work in GitHub)
         run: >
           sed -i "s/enable_rocm_smi = True/enable_rocm_smi = False/" \
-            test/docker/slurm/omnistat.slurm
+            test/docker/slurm/omnistat-system.config
       - name: Set execution type
         run: export TEST_OMNISTAT_EXECUTION=${{ matrix.execution }}
       - name: Start containerized environment
