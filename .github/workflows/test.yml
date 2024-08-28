@@ -43,4 +43,4 @@ jobs:
       - name: Install test dependencies
         run: pip3 install prometheus_api_client
       - name: Run tests
-        run: pytest-3 -v test
+        run: pytest-3 -v test/test_integration.py
