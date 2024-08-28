@@ -15,6 +15,7 @@ x-node: &node
   expose:
     - 6818
     - 8000
+    - 8001
   devices:
     - /dev/kfd
     - /dev/dri
