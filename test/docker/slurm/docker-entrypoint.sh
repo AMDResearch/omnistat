@@ -42,7 +42,8 @@ if [[ "$1" =~ ^node ]]; then
     # this docker compose environment is meant to be used for development and
     # testing. Copy entire directory to avoid polluting the host with files
     # generated in the container.
-    cp -R /host-source /source
+    mkdir -p /source
+    cp -R /host-source/. /source
 
     # Create a Python virtual environment to install Omnistat and/or its
     # dependencies.
@@ -88,6 +89,13 @@ if [[ "$1" == node-system ]]; then
     fi
 
     OMNISTAT_CONFIG=/etc/omnistat.config $path/omnistat-monitor
+fi
+
+if [[ "$1" == node-user ]]; then
+    # Enable access from all nodes.
+    sed "s/127.0.0.1/127.0.0.1, $(dig +short node1), $(dig +short node2)/" \
+        /host-source/test/docker/slurm/omnistat-user.config \
+        > /etc/omnistat-user.config
 fi
 
 sleep infinity
