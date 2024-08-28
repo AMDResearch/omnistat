@@ -26,6 +26,7 @@ $cmd
 $OMNISTAT_DIR/omnistat-usermode --stop
 """
 
+
 class TestJobUser:
     job_file = "slurm-job-user.sh"
 
