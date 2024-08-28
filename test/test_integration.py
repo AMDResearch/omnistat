@@ -18,6 +18,7 @@ nodes = ["node1", "node2"]
 
 class TestIntegration:
     url = "http://localhost:9090/"
+    port = "8000"
     time_range = "30m"
 
     def test_request(self):
@@ -30,7 +31,7 @@ class TestIntegration:
         results = prometheus.custom_query("up")
         assert len(results) >= 1, "Metric up not available"
 
-        instance = f"{node}:8000"
+        instance = f"{node}:{self.port}"
         results = prometheus.custom_query(f"up{{instance='{instance}'}}")
         _, value = results[0]["value"]
         assert int(value) == 1, "Node exporter not running"
@@ -44,7 +45,7 @@ class TestIntegration:
     @pytest.mark.parametrize("node", nodes)
     def test_query_rocm(self, node):
         prometheus = PrometheusConnect(url=self.url)
-        instance = f"{node}:8000"
+        instance = f"{node}:{self.port}"
         query = f"rocm_average_socket_power_watts{{instance='{instance}'}}"
         results = prometheus.custom_query(query)
         assert len(results) >= 1, "Metric rocm_average_socket_power_watts not available"
