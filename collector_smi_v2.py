@@ -49,6 +49,8 @@ from amdsmi import (amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_me
 
 def get_gpu_metrics(device):
     result = amdsmi_get_gpu_metrics_info(device)
+    if result.get("average_socket_power", None):
+        result["current_socket_power"] = result["average_socket_power"]
     device_vram_usage = amdsmi_get_gpu_memory_usage(device, AmdSmiMemoryType.VRAM)
     result['vram_usage'] = device_vram_usage
     for k, v in result.items():
