@@ -1,51 +1,39 @@
 import os
 import pytest
 import requests
-import shutil
 import time
-
-import pytest
 
 from prometheus_api_client import PrometheusConnect
 
-# Variable used to skip tests that depend on a ROCm installation; assume
-# ROCm is installed if we can find `rocminfo' in the host.
-rocm_host = True if shutil.which("rocminfo") else False
-
-# List of available nodes in the test environment.
-nodes = ["node1", "node2"]
+import config
 
 
 class TestIntegration:
-    url = "http://localhost:9090/"
-    port = "8000"
-    time_range = "30m"
-
     def test_request(self):
-        response = requests.get(self.url)
+        response = requests.get(config.prometheus_url)
         assert response.status_code == 200, "Unable to connect to Prometheus"
 
-    @pytest.mark.parametrize("node", nodes)
+    @pytest.mark.parametrize("node", config.nodes)
     def test_query_up(self, node):
-        prometheus = PrometheusConnect(url=self.url)
+        prometheus = PrometheusConnect(url=config.prometheus_url)
         results = prometheus.custom_query("up")
         assert len(results) >= 1, "Metric up not available"
 
-        instance = f"{node}:{self.port}"
+        instance = f"{node}:{config.port}"
         results = prometheus.custom_query(f"up{{instance='{instance}'}}")
         _, value = results[0]["value"]
         assert int(value) == 1, "Node exporter not running"
 
     def test_query_slurm(self):
-        prometheus = PrometheusConnect(url=self.url)
+        prometheus = PrometheusConnect(url=config.prometheus_url)
         results = prometheus.custom_query("rmsjob_info")
         assert len(results) >= 1, "Metric rmsjob_info not available"
 
-    @pytest.mark.skipif(not rocm_host, reason="requires ROCm")
-    @pytest.mark.parametrize("node", nodes)
+    @pytest.mark.skipif(not config.rocm_host, reason="requires ROCm")
+    @pytest.mark.parametrize("node", config.nodes)
     def test_query_rocm(self, node):
-        prometheus = PrometheusConnect(url=self.url)
-        instance = f"{node}:{self.port}"
+        prometheus = PrometheusConnect(url=config.prometheus_url)
+        instance = f"{node}:{config.port}"
         query = f"rocm_average_socket_power_watts{{instance='{instance}'}}"
         results = prometheus.custom_query(query)
         assert len(results) >= 1, "Metric rocm_average_socket_power_watts not available"
@@ -54,9 +42,9 @@ class TestIntegration:
         _, value = results[0]["value"]
         assert int(value) >= 0, "Reported power is too low"
 
-    @pytest.mark.parametrize("node", nodes)
+    @pytest.mark.parametrize("node", config.nodes)
     def test_job(self, node):
-        prometheus = PrometheusConnect(url=self.url)
+        prometheus = PrometheusConnect(url=config.prometheus_url)
         last_jobid, _ = self.query_last_job(prometheus)
 
         job_seconds = 2
@@ -73,16 +61,16 @@ class TestIntegration:
         ), "Expected approximately one sample per second"
 
     def test_job_multinode(self):
-        prometheus = PrometheusConnect(url=self.url)
+        prometheus = PrometheusConnect(url=config.prometheus_url)
         last_jobid, _ = self.query_last_job(prometheus)
 
         job_seconds = 2
-        self.run_job(nodes, job_seconds)
+        self.run_job(config.nodes, job_seconds)
         time.sleep(job_seconds + 1)
 
         jobid, series = self.query_last_job(prometheus)
         assert jobid == last_jobid + 1, "One job should have been executed"
-        assert len(series) == len(nodes), "Expected a different number of series"
+        assert len(series) == len(config.nodes), "Expected a different number of series"
 
         for instance in series:
             num_samples = len(instance["values"])
@@ -95,12 +83,12 @@ class TestIntegration:
         jobid = 0
         series = None
 
-        query = f"rmsjob_info{{jobid=~'.+'}}[{self.time_range}]"
+        query = f"rmsjob_info{{jobid=~'.+'}}[{config.time_range}]"
         results = prometheus.custom_query(query)
         if len(results) != 0:
             last_job_metric = max(results, key=lambda x: int(x["metric"]["jobid"]))
             jobid = int(last_job_metric["metric"]["jobid"])
-            query = f"rmsjob_info{{jobid='{jobid}'}}[{self.time_range}]"
+            query = f"rmsjob_info{{jobid='{jobid}'}}[{config.time_range}]"
             series = prometheus.custom_query(query)
 
         return (jobid, series)
