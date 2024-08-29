@@ -13,3 +13,7 @@ time_range = "30m"
 
 # Omnistat monitor port; same port is used for system and user tests.
 port = "8000"
+
+# Path to prometheus data for user-level executions; needs to match datadir
+# as defined in docker/slurm/omnistat-user.config.
+prometheus_data_user = "/jobs/prometheus-data"

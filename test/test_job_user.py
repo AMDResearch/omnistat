@@ -6,6 +6,8 @@ import time
 
 from string import Template
 
+from prometheus_api_client import PrometheusConnect
+
 import config
 
 slurm_job_template = """\
@@ -31,7 +33,24 @@ class TestJobUser:
     job_file = "slurm-job-user.sh"
 
     def test_job_multinode(self):
-        self.run_job(config.nodes, 10)
+        job_seconds = 10
+        jobid = self.run_job(config.nodes, job_seconds)
+
+        self.start_prometheus_proxy()
+
+        prometheus = PrometheusConnect(url=config.prometheus_url)
+        results = prometheus.custom_query("rmsjob_info")
+        assert len(results) >= 1, "Metric rmsjob_info not available"
+
+        query = f"rmsjob_info{{jobid='{jobid}'}}[{config.time_range}]"
+        results = prometheus.custom_query(query)
+        assert len(results) == len(config.nodes), "Expected a different number of series"
+
+        for result in results:
+            num_samples = len(result["values"])
+            assert num_samples > 1, "Expected at least one sample"
+
+        self.stop_prometheus_proxy()
 
     def generate_job_file(self, nodes, cmd):
         num_nodes = len(nodes)
@@ -51,6 +70,20 @@ class TestJobUser:
 
     def remove_job_file(self):
         os.remove(self.job_file)
+
+    # Launch a Prometheus server to read user-level data using the controller.
+    def start_prometheus_proxy(self, data_path=config.prometheus_data_user):
+        self.stop_prometheus_proxy(ignore_errors=True)
+
+        start_cmd = ["docker", "exec", "-d", "slurm-controller", "prometheus", f"--storage.tsdb.path={data_path}"]
+        p = subprocess.run(start_cmd)
+        assert p.returncode == 0
+
+    def stop_prometheus_proxy(self, ignore_errors=False):
+        stop_cmd = ["docker", "exec", "slurm-controller", "pkill", "prometheus"]
+        p = subprocess.run(stop_cmd)
+        if not ignore_errors:
+            assert p.returncode == 0
 
     def run_job(self, nodes, seconds):
         self.generate_job_file(nodes, f"srun sleep {seconds}")
@@ -82,3 +115,4 @@ class TestJobUser:
             assert re.search(pattern, p.stdout) != None, f"Missing expected pattern\n{p.stdout}"
 
         self.remove_job_file()
+        return jobid
