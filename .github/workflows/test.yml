@@ -14,8 +14,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Install pytest
-        run: sudo apt-get install -y python3-pytest
       - name: Comment out GPU devices (not available in GitHub)
         run: sed -i "/devices:/,+2 s/^/#/" test/docker/slurm/compose.yaml
       - name: Disable SMI collector (won't work in GitHub)
@@ -41,6 +39,6 @@ jobs:
                sleep 15; \
              done'
       - name: Install test dependencies
-        run: pip3 install prometheus_api_client
+        run: pip3 install -r test/requirements.txt
       - name: Run tests
-        run: pytest-3 -v test/test_integration.py
+        run: pytest -v test/test_integration.py
