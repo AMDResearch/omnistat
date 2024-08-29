@@ -33,7 +33,7 @@ class TestJobUser:
     job_file = "slurm-job-user.sh"
 
     def test_job_multinode(self):
-        job_seconds = 10
+        job_seconds = 2
         jobid = self.run_job(config.nodes, job_seconds)
 
         self.start_prometheus_proxy()
@@ -48,7 +48,7 @@ class TestJobUser:
 
         for result in results:
             num_samples = len(result["values"])
-            assert num_samples > 1, "Expected at least one sample"
+            assert num_samples >= job_seconds, "Expected at least one sample per second"
 
         self.stop_prometheus_proxy()
 
