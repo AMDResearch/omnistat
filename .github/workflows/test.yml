@@ -41,4 +41,5 @@ jobs:
       - name: Install test dependencies
         run: pip3 install -r test/requirements.txt
       - name: Run tests
-        run: pytest -v test/test_integration.py
+        working-directory: ./test
+        run: pytest -v test_integration.py test_job_system.py
