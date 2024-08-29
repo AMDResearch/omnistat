@@ -272,8 +272,8 @@ def main():
     elif args.stopexporters:
         userUtils.stopExporters()
     elif args.start:
-        userUtils.startExporters()
         userUtils.startPromServer()
+        userUtils.startExporters()
     elif args.stop:
         userUtils.stopPromServer()
         userUtils.stopExporters()
