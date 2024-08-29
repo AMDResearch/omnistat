@@ -135,12 +135,17 @@ class UserBasedMonitoring:
                 yaml.dump(prom_config, yaml_file, sort_keys=False)
 
             command = [
-                "numactl",
-                "--physcpubind=%s" % ps_corebinding,
                 ps_binary,
                 "--config.file=%s" % "prometheus.yml",
                 "--storage.tsdb.path=%s" % ps_datadir,
             ]
+
+            numactl = shutil.which("numactl")
+            if numactl:
+                command = ["numactl", f"--physcpubind={ps_corebinding}"] + command
+            else:
+                logging.info("Ignoring Prometheus corebinding; unable to find numactl")
+
             logging.debug("Server start command: %s" % command)
             utils.runBGProcess(command, outputFile=ps_logfile)
         else:
