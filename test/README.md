@@ -90,5 +90,6 @@ docker exec slurm-controller bash -c "cd /jobs; sbatch --wrap='sleep 10'"
 Compute nodes are reachable using SSH from any of the containers in the
 network; the controller is not reachable using SSH.
 
-Prometheus data is exposed to the host and can be accessed at
-[http://localhost:9090](http://localhost:9090).
+In system-level deployments, Prometheus data is exposed to the host and can be
+accessed at [http://localhost:9090](http://localhost:9090). Omnistat monitor is
+only exposed to the internal network.
