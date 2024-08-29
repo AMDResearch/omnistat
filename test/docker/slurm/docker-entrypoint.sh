@@ -98,4 +98,9 @@ if [[ "$1" == node-user ]]; then
         > /etc/omnistat-user.config
 fi
 
+# When there is no service available for health checks, e.g. user-level
+# execution, the following log message can be used to make sure the
+# installation has completed.
+echo "READY"
+
 sleep infinity

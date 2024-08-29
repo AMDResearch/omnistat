@@ -1,4 +1,4 @@
-name: ubuntu/slurm
+name: Test
 on:
   push:
     branches:  [ main, dev ]
@@ -6,7 +6,7 @@ on:
     branches: [ main, dev ]
 jobs:
   test:
-    name: Test Omnistat client
+    name: System-level Omnistat
     runs-on: ubuntu-22.04
     strategy:
       matrix:

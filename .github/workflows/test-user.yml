@@ -1,0 +1,40 @@
+name: Test
+on:
+  push:
+    branches:  [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+jobs:
+  test:
+    name: User-level Omnistat
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        execution: [ source ]
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install pytest
+        run: sudo apt-get install -y python3-pytest
+      - name: Comment out GPU devices (not available in GitHub)
+        run: sed -i "/devices:/,+2 s/^/#/" test/docker/slurm/compose.yaml
+      - name: Disable SMI collector (won't work in GitHub)
+        run: >
+          sed -i "s/enable_rocm_smi = True/enable_rocm_smi = False/" \
+            test/docker/slurm/omnistat-user.config
+      - name: Set execution type
+        run: export TEST_OMNISTAT_EXECUTION=${{ matrix.execution }}
+      - name: Start containerized environment
+        run: docker compose -f test/docker/slurm/compose.yaml -f test/docker/slurm/compose-user.yaml up -d
+      - name: Wait for user-level Omnistat
+        run: >
+          timeout 5m bash -c \
+            'for i in controller node1 node2; do \
+               until [[ $(docker logs -n 1 slurm-$i) == READY ]]; do \
+                 echo "Waiting for $i..."; \
+                 sleep 5; \
+               done \
+             done'
+      - name: Run tests
+        working-directory: ./test
+        run: pytest-3 -v test_job_user.py
