@@ -35,6 +35,8 @@ jobs:
                  sleep 5; \
                done \
              done'
+      - name: Install test dependencies
+        run: pip3 install prometheus_api_client
       - name: Run tests
         working-directory: ./test
         run: pytest-3 -v test_job_user.py
