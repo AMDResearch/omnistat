@@ -79,6 +79,6 @@ class TestJobUser:
         ]
 
         for pattern in patterns:
-            assert re.search(pattern, p.stdout) != None
+            assert re.search(pattern, p.stdout) != None, f"Missing expected pattern\n{p.stdout}"
 
         self.remove_job_file()
