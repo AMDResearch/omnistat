@@ -1,3 +1,20 @@
+# User-level Omnistat job execution tests
+#
+# Job submissions with user-level Omnistat are created by generating
+# temporary job files in the host, and then executing them in the containerized
+# environment. Communication between the local test environment in the host and
+# the containerized SLURM environment happens primarily in three ways:
+#
+# 1. Temporary job files are located under the local working copy of the
+#    Omnistat repository, which is exposed to the containers as `/host-source`.
+#
+# 2. Commands to manage the execution of jobs, like `sbatch` and `squeue`, are
+#    executed in the controller container with `docker exec`.
+#
+# 3. Once a job has been executed, Prometheus data is temporarily exposed to
+#    the host testing environment using the controller container as a Prometheus
+#    server, allowing further validation of the trace.
+
 import os
 import pytest
 import re
@@ -105,6 +122,8 @@ class TestJobUser:
         p = subprocess.run(bash + [cat_cmd], capture_output=True, text=True)
         assert p.returncode == 0
 
+        # Make sure executions seem successful by looking for certain
+        # Omnistat-generated lines in the log file.
         num_nodes = len(nodes)
         patterns = [
             f"{num_nodes} of {num_nodes} exporters available",
