@@ -127,7 +127,9 @@ class TestJobUser:
         num_nodes = len(nodes)
         patterns = [
             f"{num_nodes} of {num_nodes} exporters available",
-            f"User mode data collectors: SUCCESS",
+            "User mode data collectors: SUCCESS",
+            "Stopping prometheus server on localhost",
+            "Stopping exporter for host -> node",
         ]
 
         for pattern in patterns:
