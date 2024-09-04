@@ -2540,7 +2540,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                  "xField" : "Field",
+                   "xField" : "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 100
                },
@@ -2885,7 +2885,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-		   "xField": "Field",
+                  "xField": "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
@@ -3213,7 +3213,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                  "xField" : "Field",
+                  "xField": "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
@@ -3390,7 +3390,30 @@
                   {
                      "id" : "merge",
                      "options" : {}
-                  }
+                  },
+		   {
+		     "id": "convertFieldType",
+		       "options":  {
+			   "conversions": [
+			       {
+				   "destinationType": "number",
+				   "targetField": "Field"
+			       }
+			   ],
+			   "fields": {}
+		       }
+		   },
+		   {
+		       "id": "sortBy",
+		       "options": {
+			   "fields": {},
+			   "sort": [
+			       {
+				   "field": "Field"
+			       }
+			   ]
+		       }
+		   }
                ],
                "type" : "table"
             },
@@ -3515,6 +3538,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
+                  "xField": "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
