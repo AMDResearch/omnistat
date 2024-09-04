@@ -2403,8 +2403,31 @@
                   },
                   {
                      "id" : "merge",
-                     "options" : {}
-                  }
+                      "options" : {}
+                  },
+		   {
+		     "id": "convertFieldType",
+		       "options":  {
+			   "conversions": [
+			       {
+				   "destinationType": "number",
+				   "targetField": "Field"
+			       }
+			   ],
+			   "fields": {}
+		       }
+		   },
+		   {
+		       "id": "sortBy",
+		       "options": {
+			   "fields": {},
+			   "sort": [
+			       {
+				   "field": "Field"
+			       }
+			   ]
+		       }
+		   }
                ],
                "type" : "table"
             },
