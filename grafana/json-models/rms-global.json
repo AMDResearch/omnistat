@@ -1345,7 +1345,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 206
+            "y": 278
           },
           "id": 37,
           "options": {
@@ -1594,7 +1594,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 472
+            "y": 544
           },
           "id": 99,
           "interval": "5s",
@@ -1876,7 +1876,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 482
+            "y": 554
           },
           "id": 28,
           "options": {
@@ -2160,7 +2160,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 492
+            "y": 564
           },
           "id": 23,
           "options": {
@@ -2742,7 +2742,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 114
           },
           "id": 102,
           "options": {
@@ -2859,7 +2859,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 51
+            "y": 123
           },
           "id": 38,
           "options": {
@@ -2976,7 +2976,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 51
+            "y": 123
           },
           "id": 39,
           "options": {
@@ -3099,7 +3099,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 106
+            "y": 43
           },
           "id": 101,
           "options": {
@@ -3139,6 +3139,224 @@
               "options": {
                 "regex": "(.*):(.*), (.*)",
                 "renamePattern": "Node: $1 (card $3)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "watt"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 52
+          },
+          "id": 104,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75623",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rocm_average_socket_power_watts)  * on (instance) (rmsjob_info{jobid=~\"^\\\\d+\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Power in Allocated Nodes",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "watt"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 52
+          },
+          "id": 105,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75623",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rocm_average_socket_power_watts)  * on (instance) (rmsjob_info{jobid=\"\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Power in Unallocated Nodes",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
               }
             }
           ],
@@ -3223,7 +3441,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 629
+            "y": 701
           },
           "id": 35,
           "options": {
@@ -3331,7 +3549,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 637
+            "y": 709
           },
           "id": 65,
           "options": {
@@ -3439,7 +3657,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 637
+            "y": 709
           },
           "id": 66,
           "options": {
@@ -3562,7 +3780,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 178
+            "y": 250
           },
           "id": 92,
           "options": {
@@ -3684,7 +3902,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 186
+            "y": 258
           },
           "id": 96,
           "options": {
@@ -3793,7 +4011,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 186
+            "y": 258
           },
           "id": 94,
           "options": {
@@ -3902,7 +4120,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 194
+            "y": 266
           },
           "id": 93,
           "options": {
@@ -4011,7 +4229,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 194
+            "y": 266
           },
           "id": 95,
           "options": {
