@@ -155,8 +155,7 @@
               "Metric": true,
               "Value": true,
               "instance": true,
-              "job": true,
-              "t004-006": true
+              "job": true
             },
             "includeByName": {},
             "indexByName": {},
@@ -1101,9 +1100,7 @@
         "name": "instance",
         "options": [
           {
-            "selected": true,
-            "text": "t004-005:8000",
-            "value": "t004-005:8000"
+            "selected": true
           }
         ],
         "query": "$node:$omnistat_exporter_port",
