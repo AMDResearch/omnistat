@@ -31,9 +31,21 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 76,
-  "links": [],
-  "liveNow": false,
+  "id": 87,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "Global",
+      "tooltip": "",
+      "type": "link",
+      "url": "/d/edqnz7pce7togc/rms-global"
+    }
+  ],
   "panels": [
     {
       "collapsed": false,
@@ -98,7 +110,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -167,7 +179,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -241,7 +253,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -329,7 +341,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -413,7 +425,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -482,7 +494,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -551,7 +563,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -642,7 +654,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -681,6 +693,7 @@
             "axisSoftMax": 100,
             "axisSoftMin": 0,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -785,6 +798,7 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -812,6 +826,7 @@
           "refId": "B"
         }
       ],
+      "title": "",
       "type": "timeseries"
     },
     {
@@ -872,7 +887,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -911,6 +926,7 @@
             "axisSoftMax": 100,
             "axisSoftMin": 0,
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1017,7 +1033,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.0.0-67746",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -1045,6 +1061,7 @@
           "refId": "B"
         }
       ],
+      "title": "",
       "type": "timeseries"
     },
     {
@@ -1105,7 +1122,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.2.0-72576",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -1142,6 +1159,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1223,7 +1241,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.0.0-67746",
+      "pluginVersion": "11.3.0-75623.patch2-75793",
       "targets": [
         {
           "datasource": {
@@ -1238,6 +1256,7 @@
           "refId": "A"
         }
       ],
+      "title": "",
       "type": "timeseries"
     },
     {
@@ -1257,8 +1276,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "#EAB839",
@@ -1369,8 +1387,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1434,6 +1451,7 @@
           "refId": "A"
         }
       ],
+      "title": "",
       "type": "timeseries"
     },
     {
@@ -1453,8 +1471,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "#EAB839",
@@ -1562,8 +1579,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1655,6 +1671,7 @@
           "refId": "B"
         }
       ],
+      "title": "",
       "type": "timeseries"
     },
     {
@@ -5776,6 +5793,7 @@
       "type": "row"
     }
   ],
+  "preload": false,
   "schemaVersion": 39,
   "tags": [
     "omnistat"
@@ -5785,30 +5803,21 @@
       {
         "hide": 2,
         "includeAll": false,
-        "multi": false,
         "name": "source",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "53577",
-          "value": "53577"
-        },
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
         "definition": "label_values(rmsjob_info,jobid)",
-        "hide": 0,
         "includeAll": false,
         "label": "Job ID",
-        "multi": false,
         "name": "jobid",
         "options": [],
         "query": {
@@ -5818,7 +5827,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 4,
         "type": "query"
       },
@@ -5827,11 +5835,9 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": false,
           "text": "5s",
           "value": "5s"
         },
-        "hide": 0,
         "label": "Resolution",
         "name": "interval",
         "options": [
@@ -5852,16 +5858,14 @@
           }
         ],
         "query": "5s,30s,60s",
-        "queryValue": "",
         "refresh": 2,
-        "skipUrlSync": false,
         "type": "interval"
       },
       {
         "hide": 2,
         "name": "node_exporter_port",
         "query": "9100",
-        "skipUrlSync": false,
+        "skipUrlSync": true,
         "type": "constant"
       }
     ]
