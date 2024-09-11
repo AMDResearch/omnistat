@@ -1618,7 +1618,6 @@
           },
           "id": 99,
           "interval": "5s",
-          "maxDataPoints": 100000,
           "options": {
             "cellHeight": "sm",
             "footer": {
