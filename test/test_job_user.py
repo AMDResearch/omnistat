@@ -37,6 +37,11 @@ slurm_job_template = """\
 export OMNISTAT_CONFIG=/etc/omnistat-user.config
 export OMNISTAT_DIR=/source
 
+# If source directory is not present, switch to package execution.
+if [[ ! -d $OMNISTAT_DIR ]]; then
+    export OMNISTAT_DIR=/opt/omnistat/bin
+fi
+
 . /opt/omnistat/bin/activate
 cd /jobs
 
