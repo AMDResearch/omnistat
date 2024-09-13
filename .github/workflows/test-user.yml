@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        execution: [ source ]
+        execution: [ source, package ]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
