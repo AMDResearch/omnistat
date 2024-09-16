@@ -45,7 +45,7 @@ import sys
 import amdsmi as smi
 from omnistat.collector_base import Collector
 from prometheus_client import Gauge
-from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping
+from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
 
 
 def get_gpu_metrics(device):
@@ -126,7 +126,7 @@ class AMDSMI(Collector):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
             bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
-        self.__indexMapping = gpu_index_mapping(bdfMapping, self.__num_gpus)
+        self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
 
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
