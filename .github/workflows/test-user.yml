@@ -20,9 +20,9 @@ jobs:
         run: >
           sed -i "s/enable_rocm_smi = True/enable_rocm_smi = False/" \
             test/docker/slurm/omnistat-user.config
-      - name: Set execution type
-        run: export TEST_OMNISTAT_EXECUTION=${{ matrix.execution }}
       - name: Start containerized environment
+        env:
+          TEST_OMNISTAT_EXECUTION: ${{ matrix.execution }}
         run: docker compose -f test/docker/slurm/compose.yaml -f test/docker/slurm/compose-user.yaml up -d
       - name: Wait for user-level Omnistat
         run: >
