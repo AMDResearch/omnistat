@@ -44,6 +44,7 @@ if [[ "$1" =~ ^node ]]; then
     # generated in the container.
     mkdir -p /source
     cp -R /host-source/. /source
+    rm -rf /source/build /source/omnistat.egg-info
 
     # Create a Python virtual environment to install Omnistat and/or its
     # dependencies.
