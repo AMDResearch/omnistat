@@ -54,7 +54,14 @@ class UserBasedMonitoring:
         self.configFile = utils.findConfigFile(configFileArgument)
         self.runtimeConfig = utils.readConfig(self.configFile)
         self.slurmHosts = self.getSlurmHosts()
-        self.topDir = Path(__file__).resolve().parent.parent
+
+        # Path to Omnistat's executable scripts. For source deployments, this
+        # is the top directory of a working copy of Omnistat. For package
+        # deployments, it's the `bin` directory of the Python environment. By
+        # resolving the path to `sys.argv[0]`, we ensure commands executed in
+        # other nodes/environments use the same deployment and path as the
+        # current local execution.
+        self.binDir = Path(sys.argv[0]).resolve().parent
 
     def setMonitoringInterval(self, interval):
         self.scrape_interval = int(interval)
@@ -179,7 +186,8 @@ class UserBasedMonitoring:
                 "srun",
                 "-N %s" % numNodes,
                 "--ntasks-per-node=1",
-                "%s/omnistat-rms-env" % self.topDir,
+                "%s" % sys.executable,
+                "%s/omnistat-rms-env" % self.binDir,
                 "--nostep",
                 "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
             ]
@@ -188,7 +196,7 @@ class UserBasedMonitoring:
             logging.info("Launching exporters in parallel using pdsh")
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-            output = client.run_command(f"sh -c 'cd {self.topDir} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+            output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
 
             # verify exporter available on all nodes...
             psecs = 6
