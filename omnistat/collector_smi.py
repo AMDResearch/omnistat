@@ -46,7 +46,7 @@ import sys
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 from omnistat.collector_base import Collector
-from omnistat.utils import gpu_index_mapping
+from omnistat.utils import gpu_index_mapping_based_on_guids
 
 rsmi_clk_names_dict = {"sclk": 0x0, "fclk": 0x1, "dcefclk": 0x2, "socclk": 0x3, "mclk": 0x4}
 
@@ -163,14 +163,14 @@ class ROCMSMI(Collector):
         self.__num_gpus = numDevices.value
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
-        bdfid = ctypes.c_int64(0)
-        bdfMapping = {}
+        guidMapping = {}
+        guid = ctypes.c_int64(0)
         for i in range(self.__num_gpus):
             device = ctypes.c_uint32(i)
-            ret = self.__libsmi.rsmi_dev_pci_id_get(device, ctypes.byref(bdfid))
+            ret = self.__libsmi.rsmi_dev_guid_get(device, ctypes.byref(guid))
             assert ret == 0
-            bdfMapping[i] = bdfid.value
-        self.__indexMapping = gpu_index_mapping(bdfMapping, self.__num_gpus)
+            guidMapping[i] = guid.value
+        self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
         # register desired metric names
         self.__GPUmetrics = {}

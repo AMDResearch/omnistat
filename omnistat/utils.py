@@ -69,12 +69,66 @@ def pass_through_indexing(numGpus):
     return gpu_index_mapping
 
 
-def gpu_index_mapping(bdfMapping, expectedNumGPUs):
+def gpu_index_mapping_based_on_guids(guidMapping, expectedNumGPUs):
+    """Generate a mapping between kfd gpu_id  (SMI lib) to those of HIP_VISIBLE_DEVICES. Intended for
+    use with metric labeling to identify devices based on HIP_VISIBLE_DEVICES indexing.
+
+    Args:
+        guidMapping (dict): maps kfd indices to gpu_ids
+        expectedNumGPUs (int): number of GPUs detected locally
+
+    Returns:
+        dict: maps kfd indices to HIP_VISIBLE_DEVICES indices
+    """
+    kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
+    logging.info("GPU topology indexing: Scanning devices from %s" % kfd_nodes)
+    if not os.path.isdir(kfd_nodes):
+        logging.warn("--> directory not found")
+        return pass_through_indexing(expectedNumGPUs)
+
+    devices = os.listdir(kfd_nodes)
+    numNonGPUs = 0
+    numGPUs = 0
+    tmpMapping = {}
+    for id in range(len(devices)):
+        file = os.path.join(kfd_nodes, str(id), "gpu_id")
+        logging.debug("--> reading contents of %s" % file)
+        if os.path.isfile(file):
+            with open(file) as f:
+                guid = int(f.readline().strip())
+            if guid == 0:
+                numNonGPUs += 1
+                logging.debug("--> ...ignoring CPU device")
+            else:
+                tmpMapping[guid] = numGPUs
+                numGPUs += 1
+        else:
+            logging.warn("Unable to access expected file (%s)" % file)
+            return pass_through_indexing(expectedNumGPUs)
+
+    if numGPUs != expectedNumGPUs:
+        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
+        return pass_through_indexing(expectedNumGPUs)
+
+    gpuMappingOrder = {}
+
+    for gpuIndex, id in guidMapping.items():
+        if id in tmpMapping:
+            gpuMappingOrder[gpuIndex] = str(tmpMapping[id])
+        else:
+            logging.warn("--> unable to resolve gpu location_id=%s" % id)
+            return pass_through_indexing(expectedNumGPUs)
+
+    logging.info("--> Mapping: %s" % gpuMappingOrder)
+    return gpuMappingOrder
+
+
+def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
     """Generate a mapping between kfd gpu indexing (SMI lib) to those of HIP_VISIBLE_DEVICES. Intended for
     use with metric labeling to identify devices based on HIP_VISIBLE_DEVICES indexing.
 
     Args:
-        bdfMapping (dict): maps kfd indices to location ids derived from bfd strings
+        bdfMapping (dict): maps kfd indices to location ids derived from bdf strings
         expectedNumGPUs (int): number of GPUs detected locally
 
     Returns:
