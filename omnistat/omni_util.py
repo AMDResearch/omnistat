@@ -195,14 +195,14 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel using pdsh")
 
-            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
+            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300)
             try:
                 output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
             except:
                 logging.info("Exception thrown launching parallell ssh client")
 
             # verify exporter available on all nodes...
-            psecs = 6
+            psecs = 90
             logging.info("Exporters launched, pausing for %i secs" % psecs)
             time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
             numHosts = len(self.slurmHosts)
