@@ -203,11 +203,11 @@ class UserBasedMonitoring:
 
             # verify exporter available on all nodes...
             if len(self.slurmHosts) <= 8:
-                  psecs = 5
+                psecs = 5
             elif len(self.slurmHosts) <= 128:
-                  psecs = 30
+                psecs = 30
             else:
-                  psecs = 90
+                psecs = 90
             logging.info("Exporters launched, pausing for %i secs" % psecs)
             time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
             numHosts = len(self.slurmHosts)
