@@ -196,7 +196,10 @@ class UserBasedMonitoring:
             logging.info("Launching exporters in parallel using pdsh")
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=120)
-            output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+            try:
+                output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+            except:
+                logging.info("Exception thrown launching parallell ssh client")
 
             # verify exporter available on all nodes...
             psecs = 6
