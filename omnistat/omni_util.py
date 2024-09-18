@@ -195,7 +195,7 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel using pdsh")
 
-            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=256)
+            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=300)
             try:
                 output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",stop_on_errors=False)
             except:
