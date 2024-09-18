@@ -217,6 +217,7 @@ class UserBasedMonitoring:
             logging.info("Testing exporter availability")
             delay_start = 0.05
             hosts_ok = []
+            hosts_bad = []
             for host in self.slurmHosts:
                 host_ok = False
                 for iter in range(1, 25):
@@ -236,20 +237,22 @@ class UserBasedMonitoring:
 
                 if not host_ok:
                     logging.error("Missing exporter on %s (%s)" % (host, result))
+                    hosts_bad.append(host)
 
             logging.info("%i of %i exporters available" % (numAvail, numHosts))
             if numAvail == numHosts:
                 logging.info("User mode data collectors: SUCCESS")
 
-            # cache successful hosts to file
+            # cache any failed hosts to file
             jobid = os.getenv("SLURM_JOB_ID", None)
             if jobid:
-                fileout="omnistat_ok_hosts.%s.out" % jobid
-                with open(fileout, "w") as f:
-                    for host in hosts_ok:
-                        f.write(host + "\n")
-                f.close()
-                logging.info("Cached successful startup hosts in %s" % fileout)
+                fileout="omnistat_failed_hosts.%s.out" % jobid
+                if hosts_bad:
+                    with open(fileout, "w") as f:
+                        for host in hosts_bad:
+                            f.write(host + "\n")
+                    f.close()
+                    logging.info("Cached failed startup hosts in %s" % fileout)
 
         return
 
