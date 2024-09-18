@@ -197,7 +197,7 @@ class UserBasedMonitoring:
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=256)
             try:
-                output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'")
+                output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",stop_on_errors=False)
             except:
                 logging.info("Exception thrown launching parallell ssh client")
 
@@ -208,6 +208,7 @@ class UserBasedMonitoring:
                 psecs = 30
             else:
                 psecs = 90
+
             logging.info("Exporters launched, pausing for %i secs" % psecs)
             time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
             numHosts = len(self.slurmHosts)
@@ -215,6 +216,7 @@ class UserBasedMonitoring:
 
             logging.info("Testing exporter availability")
             delay_start = 0.05
+            hosts_ok = []
             for host in self.slurmHosts:
                 host_ok = False
                 for iter in range(1, 25):
@@ -222,6 +224,7 @@ class UserBasedMonitoring:
                         result = s.connect_ex((host, int(port)))
                         if result == 0:
                             numAvail = numAvail + 1
+                            hosts_ok.append(host)
                             logging.debug("Exporter on %s ok" % host)
                             host_ok = True
                             break
@@ -237,6 +240,16 @@ class UserBasedMonitoring:
             logging.info("%i of %i exporters available" % (numAvail, numHosts))
             if numAvail == numHosts:
                 logging.info("User mode data collectors: SUCCESS")
+
+            # cache successful hosts to file
+            jobid = os.getenv("SLURM_JOB_ID", None)
+            if jobid:
+                fileout="omnistat_ok_hosts.%s.out" % jobid
+                with open(fileout, "w") as f:
+                    for host in hosts_ok:
+                        f.write(host + "\n")
+                f.close()
+                logging.info("Cached successful startup hosts in %s" % fileout)
 
         return
 
