@@ -197,7 +197,9 @@ class UserBasedMonitoring:
 
             client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=300)
             try:
-                output = client.run_command(f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",stop_on_errors=False)
+                output = client.run_command(
+                    f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
+                )
             except:
                 logging.info("Exception thrown launching parallell ssh client")
 
@@ -246,7 +248,7 @@ class UserBasedMonitoring:
             # cache any failed hosts to file
             jobid = os.getenv("SLURM_JOB_ID", None)
             if jobid:
-                fileout="omnistat_failed_hosts.%s.out" % jobid
+                fileout = "omnistat_failed_hosts.%s.out" % jobid
                 if hosts_bad:
                     with open(fileout, "w") as f:
                         for host in hosts_bad:
