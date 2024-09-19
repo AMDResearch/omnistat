@@ -502,7 +502,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"}))",
+          "expr": "sum(rocm_num_gpus * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"}))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
