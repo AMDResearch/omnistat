@@ -29,7 +29,6 @@
    "editable" : true,
    "fiscalYearStartMonth" : 0,
    "graphTooltip" : 0,
-   "id" : 2,
    "links" : [],
    "liveNow" : false,
    "panels" : [
@@ -129,21 +128,7 @@
                "color" : {
                   "mode" : "thresholds"
                },
-               "mappings" : [
-                  {
-                     "options" : {
-                        "0" : {
-                           "index" : 1,
-                           "text" : "Interactive"
-                        },
-                        "1" : {
-                           "index" : 0,
-                           "text" : "Batch"
-                        }
-                     },
-                     "type" : "value"
-                  }
-               ],
+               "mappings" : [],
                "thresholds" : {
                   "mode" : "absolute",
                   "steps" : [
@@ -162,17 +147,17 @@
             "x" : 6,
             "y" : 1
          },
-         "id" : 36,
+         "id" : 10,
          "options" : {
             "colorMode" : "none",
-            "graphMode" : "none",
+            "graphMode" : "area",
             "justifyMode" : "auto",
             "orientation" : "auto",
             "reduceOptions" : {
                "calcs" : [
                   "lastNotNull"
                ],
-               "fields" : "/^batchflag$/",
+               "fields" : "/^user$/",
                "values" : false
             },
             "showPercentChange" : false,
@@ -189,17 +174,21 @@
                   "type" : "prometheus",
                   "uid" : "$source"
                },
+               "disableTextWrap" : false,
                "editorMode" : "code",
                "exemplar" : false,
-               "expr" : "(rmsjob_info{jobid=\"$jobid\"})",
+               "expr" : "rmsjob_info{jobid=\"$jobid\"}",
                "format" : "table",
+               "fullMetaSearch" : false,
+               "includeNullMetadata" : true,
                "instant" : false,
                "legendFormat" : "__auto",
                "range" : true,
-               "refId" : "A"
+               "refId" : "A",
+               "useBackend" : false
             }
          ],
-         "title" : "Job Type",
+         "title" : "User",
          "type" : "stat"
       },
       {
@@ -221,7 +210,8 @@
                         "value" : null
                      }
                   ]
-               }
+               },
+               "unit" : "dthms"
             },
             "overrides" : []
          },
@@ -231,22 +221,22 @@
             "x" : 12,
             "y" : 1
          },
-         "id" : 12,
+         "id" : 39,
          "options" : {
             "colorMode" : "none",
-            "graphMode" : "area",
+            "graphMode" : "none",
             "justifyMode" : "auto",
             "orientation" : "auto",
             "reduceOptions" : {
                "calcs" : [
-                  "lastNotNull"
+                  "range"
                ],
-               "fields" : "/^nodes$/",
+               "fields" : "",
                "values" : false
             },
             "showPercentChange" : false,
             "text" : {
-               "valueSize" : 32
+               "valueSize" : 28
             },
             "textMode" : "auto",
             "wideLayout" : true
@@ -259,15 +249,16 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "rmsjob_info{jobid=\"$jobid\"}",
-               "format" : "table",
+               "expr" : "max(timestamp(rmsjob_info{jobid=\"$jobid\"}))",
+               "hide" : false,
                "instant" : false,
+               "interval" : "",
                "legendFormat" : "__auto",
                "range" : true,
                "refId" : "A"
             }
          ],
-         "title" : "# Nodes",
+         "title" : "Job Duration",
          "type" : "stat"
       },
       {
@@ -385,79 +376,6 @@
             "x" : 0,
             "y" : 3
          },
-         "id" : 10,
-         "options" : {
-            "colorMode" : "none",
-            "graphMode" : "area",
-            "justifyMode" : "auto",
-            "orientation" : "auto",
-            "reduceOptions" : {
-               "calcs" : [
-                  "lastNotNull"
-               ],
-               "fields" : "/^user$/",
-               "values" : false
-            },
-            "showPercentChange" : false,
-            "text" : {
-               "valueSize" : 28
-            },
-            "textMode" : "auto",
-            "wideLayout" : true
-         },
-         "pluginVersion" : "11.0.0",
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "disableTextWrap" : false,
-               "editorMode" : "code",
-               "exemplar" : false,
-               "expr" : "rmsjob_info{jobid=\"$jobid\"}",
-               "format" : "table",
-               "fullMetaSearch" : false,
-               "includeNullMetadata" : true,
-               "instant" : false,
-               "legendFormat" : "__auto",
-               "range" : true,
-               "refId" : "A",
-               "useBackend" : false
-            }
-         ],
-         "title" : "User",
-         "type" : "stat"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "$source"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "thresholds"
-               },
-               "mappings" : [],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green",
-                        "value" : null
-                     }
-                  ]
-               }
-            },
-            "overrides" : []
-         },
-         "gridPos" : {
-            "h" : 2,
-            "w" : 6,
-            "x" : 6,
-            "y" : 3
-         },
          "id" : 11,
          "options" : {
             "colorMode" : "none",
@@ -517,33 +435,32 @@
                         "value" : null
                      }
                   ]
-               },
-               "unit" : "dthms"
+               }
             },
             "overrides" : []
          },
          "gridPos" : {
             "h" : 2,
-            "w" : 5,
-            "x" : 12,
+            "w" : 6,
+            "x" : 6,
             "y" : 3
          },
-         "id" : 39,
+         "id" : 12,
          "options" : {
             "colorMode" : "none",
-            "graphMode" : "none",
+            "graphMode" : "area",
             "justifyMode" : "auto",
             "orientation" : "auto",
             "reduceOptions" : {
                "calcs" : [
-                  "range"
+                  "lastNotNull"
                ],
-               "fields" : "",
+               "fields" : "/^nodes$/",
                "values" : false
             },
             "showPercentChange" : false,
             "text" : {
-               "valueSize" : 28
+               "valueSize" : 32
             },
             "textMode" : "auto",
             "wideLayout" : true
@@ -556,16 +473,84 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "max(timestamp(rmsjob_info{jobid=\"$jobid\"}))",
-               "hide" : false,
+               "expr" : "rmsjob_info{jobid=\"$jobid\"}",
+               "format" : "table",
                "instant" : false,
-               "interval" : "",
                "legendFormat" : "__auto",
                "range" : true,
                "refId" : "A"
             }
          ],
-         "title" : "Job Duration",
+         "title" : "# Nodes",
+         "type" : "stat"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "$source"
+         },
+         "description" : "",
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "thresholds"
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
+                     }
+                  ]
+               }
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 2,
+            "w" : 5,
+            "x" : 12,
+            "y" : 3
+         },
+         "id" : 59,
+         "options" : {
+            "colorMode" : "none",
+            "graphMode" : "area",
+            "justifyMode" : "auto",
+            "orientation" : "auto",
+            "reduceOptions" : {
+               "calcs" : [
+                  "max"
+               ],
+               "fields" : "",
+               "values" : false
+            },
+            "showPercentChange" : false,
+            "text" : {
+               "valueSize" : 32
+            },
+            "textMode" : "auto",
+            "wideLayout" : true
+         },
+         "pluginVersion" : "11.0.0",
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "editorMode" : "code",
+               "expr" : "sum(rocm_num_gpus * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+               "format" : "table",
+               "instant" : false,
+               "legendFormat" : "__auto",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "# GPUs",
          "type" : "stat"
       },
       {
@@ -1091,8 +1076,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -1189,8 +1173,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -1287,8 +1270,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -1385,8 +1367,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -1496,8 +1477,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      }
                   ]
                },
@@ -1731,8 +1711,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -1886,8 +1865,7 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green",
-                        "value" : null
+                        "color" : "green"
                      },
                      {
                         "color" : "red",
@@ -2036,8 +2014,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -2237,8 +2214,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -2403,31 +2379,31 @@
                   },
                   {
                      "id" : "merge",
-                      "options" : {}
+                     "options" : {}
                   },
-		   {
-		     "id": "convertFieldType",
-		       "options":  {
-			   "conversions": [
-			       {
-				   "destinationType": "number",
-				   "targetField": "Field"
-			       }
-			   ],
-			   "fields": {}
-		       }
-		   },
-		   {
-		       "id": "sortBy",
-		       "options": {
-			   "fields": {},
-			   "sort": [
-			       {
-				   "field": "Field"
-			       }
-			   ]
-		       }
-		   }
+                  {
+                     "id" : "convertFieldType",
+                     "options" : {
+                        "conversions" : [
+                           {
+                              "destinationType" : "number",
+                              "targetField" : "Field"
+                           }
+                        ],
+                        "fields" : {}
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "field" : "Field"
+                           }
+                        ]
+                     }
+                  }
                ],
                "type" : "table"
             },
@@ -2467,8 +2443,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -2540,7 +2515,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                   "xField" : "Field",
+                  "xField" : "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 100
                },
@@ -2598,8 +2573,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -2734,29 +2708,29 @@
                      "id" : "merge",
                      "options" : {}
                   },
-		   {
-		     "id": "convertFieldType",
-		       "options":  {
-			   "conversions": [
-			       {
-				   "destinationType": "number",
-				   "targetField": "Field"
-			       }
-			   ],
-			   "fields": {}
-		       }
-		   },
-		   {
-		       "id": "sortBy",
-		       "options": {
-			   "fields": {},
-			   "sort": [
-			       {
-				   "field": "Field"
-			       }
-			   ]
-		       }
-		   }
+                  {
+                     "id" : "convertFieldType",
+                     "options" : {
+                        "conversions" : [
+                           {
+                              "destinationType" : "number",
+                              "targetField" : "Field"
+                           }
+                        ],
+                        "fields" : {}
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "field" : "Field"
+                           }
+                        ]
+                     }
+                  }
                ],
                "type" : "table"
             },
@@ -2796,8 +2770,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -2885,7 +2858,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                  "xField": "Field",
+                  "xField" : "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
@@ -2926,8 +2899,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -3062,29 +3034,29 @@
                      "id" : "merge",
                      "options" : {}
                   },
-		   {
-		     "id": "convertFieldType",
-		       "options":  {
-			   "conversions": [
-			       {
-				   "destinationType": "number",
-				   "targetField": "Field"
-			       }
-			   ],
-			   "fields": {}
-		       }
-		   },
-		   {
-		       "id": "sortBy",
-		       "options": {
-			   "fields": {},
-			   "sort": [
-			       {
-				   "field": "Field"
-			       }
-			   ]
-		       }
-		   }
+                  {
+                     "id" : "convertFieldType",
+                     "options" : {
+                        "conversions" : [
+                           {
+                              "destinationType" : "number",
+                              "targetField" : "Field"
+                           }
+                        ],
+                        "fields" : {}
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "field" : "Field"
+                           }
+                        ]
+                     }
+                  }
                ],
                "type" : "table"
             },
@@ -3124,8 +3096,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -3213,7 +3184,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                  "xField": "Field",
+                  "xField" : "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
@@ -3255,8 +3226,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -3391,29 +3361,29 @@
                      "id" : "merge",
                      "options" : {}
                   },
-		   {
-		     "id": "convertFieldType",
-		       "options":  {
-			   "conversions": [
-			       {
-				   "destinationType": "number",
-				   "targetField": "Field"
-			       }
-			   ],
-			   "fields": {}
-		       }
-		   },
-		   {
-		       "id": "sortBy",
-		       "options": {
-			   "fields": {},
-			   "sort": [
-			       {
-				   "field": "Field"
-			       }
-			   ]
-		       }
-		   }
+                  {
+                     "id" : "convertFieldType",
+                     "options" : {
+                        "conversions" : [
+                           {
+                              "destinationType" : "number",
+                              "targetField" : "Field"
+                           }
+                        ],
+                        "fields" : {}
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "field" : "Field"
+                           }
+                        ]
+                     }
+                  }
                ],
                "type" : "table"
             },
@@ -3453,8 +3423,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -3538,7 +3507,7 @@
                      "mode" : "single",
                      "sort" : "none"
                   },
-                  "xField": "Field",
+                  "xField" : "Field",
                   "xTickLabelRotation" : 0,
                   "xTickLabelSpacing" : 0
                },
@@ -3618,8 +3587,7 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green",
-                              "value" : null
+                              "color" : "green"
                            },
                            {
                               "color" : "red",
@@ -3685,7 +3653,6 @@
          "type" : "row"
       }
    ],
-   "refresh" : "",
    "schemaVersion" : 39,
    "tags" : [
       "omnistat"
@@ -3766,7 +3733,7 @@
             "current" : {
                "selected" : true,
                "text" : [
-                  ""
+                  "None"
                ],
                "value" : [
                   ""
@@ -3797,8 +3764,8 @@
       ]
    },
    "time" : {
-      "from" : "2024-08-08T05:56:17.617Z",
-      "to" : "2024-08-08T06:18:57.363Z"
+      "from" : "2024-09-19T01:40:00.000Z",
+      "to" : "2024-09-19T01:40:00.000Z"
    },
    "timeRangeUpdatedDuringEditOrView" : false,
    "timepicker" : {
