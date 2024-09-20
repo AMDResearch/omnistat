@@ -3,6 +3,7 @@
 port = 9090
 enable_rocm_smi = False
 enable_amd_smi = True
+enable_amd_smi_process = True
 enable_rms = False
 
 # Path to local ROCM install to access SMI library
