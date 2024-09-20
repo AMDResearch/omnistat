@@ -95,7 +95,7 @@ def main():
     # preserve the state of the collectors.
     def post_fork(server, worker):
         monitor.initMetrics()
-        register_metrics(app, app_version="v0.1.0", app_config="production")
+        #register_metrics(app, app_version="v0.1.0", app_config="production")
         app.route("/metrics")(monitor.updateAllMetrics)
         app.route("/shutdown")(shutdown)
 
