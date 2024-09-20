@@ -128,6 +128,10 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.__num_gpus)
 
+        # Register Total VRAM for GPU metric Duplicated for support
+        total_vram_metric = Gauge(
+            self.__prefix + "total_vram", "Total VRAM available on GPU", labelnames=["card"])
+
         # determine GPU index mapping (i.e. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         bdfMapping = {}
         for index, device in enumerate(self.__devices):
@@ -159,6 +163,10 @@ class AMDSMI(Collector):
         for idx, device in enumerate(self.__devices):
 
             metrics = get_gpu_metrics(device)
+
+            # Duplicate vram metric for support, register only once
+            device_total_vram = smi.amdsmi_get_gpu_memory_total(device, smi.AmdSmiMemoryType.VRAM)
+            total_vram_metric.labels(card=str(idx)).set(device_total_vram)
 
             for metric, value in metrics.items():
                 old_metric = ""
