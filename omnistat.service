@@ -6,9 +6,9 @@ After=network-online.target
 
 [Service]
 User=omnidc
-Environment="OMNISTAT_CONFIG=/home/omnidc/omnistat/omnistat/config/omniwatch.default"
+Environment="OMNISTAT_CONFIG=/opt/omnistat_test/omnistat/config/omnistat.m2m"
 CPUAffinity=0
-ExecStart=/opt/omnistat_test/omnistat-monitor --configfile /opt/omnistat_test/omnistat/config/omnistat.m2m
+ExecStart=/opt/omnistat_test/venv/bin/python3 /opt/omnistat_test/omnistat-monitor
 SyslogIdentifier=omnistat
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
