@@ -50,6 +50,9 @@ from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
 
 def get_gpu_metrics(device):
     result = smi.amdsmi_get_gpu_metrics_info(device)
+    # Duplicate vram metrics to not break support
+    device_vram_usage = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
+    result['vram_usage'] = device_vram_usage
     for k, v in result.items():
         if type(v) is str:
             # Filter 'N/A' values introduced by rocm 6.1
@@ -71,6 +74,10 @@ def get_gpu_metrics(device):
         # Bigger than signed 64-bit integer
         if v >= 9223372036854775807 or v <= -9223372036854775808:
             result[k] = 0
+    # MI250X to MI300X compatibility for power reading
+    average_power = result.get("average_socket_power", 0)
+    if average_power:
+        result["current_socket_power"] = average_power
     return result
 
 
@@ -167,9 +174,9 @@ class AMDSMI(Collector):
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
 
                 # temp workaround to allow support for all metric names
-                if old_metric and old_metric not in self.__GPUMetrics.keys():
-                    metric_name = self.__prefix + old_metric
-                    self.__GPUMetrics[metric_name].labels(card=idx).set(value)
+                old_metric_name = self.__prefix + old_metric
+                if old_metric and old_metric_name not in self.__GPUMetrics.keys():
+                    self.__GPUMetrics[old_metric_name] = Gauge(old_metric_name, f"{old_metric}", labelnames=["card"])
 
 
         return
