@@ -5,8 +5,8 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=omnidc
-Environment=""
+User=root
+Environment=
 CPUAffinity=0
 ExecStart=/opt/omnistat_test/venv/bin/python3 /opt/omnistat_test/omnistat-monitor --configfile /opt/omnistat_test/omnistat/config/omnistat.m2m
 SyslogIdentifier=omnistat
