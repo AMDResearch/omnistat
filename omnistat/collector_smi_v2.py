@@ -100,7 +100,7 @@ class AMDSMI(Collector):
         self.__GPUMetrics = {}
         self.__metricMapping = {}
         self.__indexMapping = {}
-        self.__dumpMappedMetricsOnly = True
+        self.__dumpMappedMetricsOnly = False # TODO should be a config option
         # verify minimum version met
         check_min_version("23.4.0") # Rocm 6.0.2
 
@@ -154,7 +154,9 @@ class AMDSMI(Collector):
             metrics = get_gpu_metrics(device)
 
             for metric, value in metrics.items():
+                old_metric = ""
                 if self.__metricMapping.get(metric):
+                    old_metric = metric
                     metric = self.__metricMapping.get(metric)
                 elif self.__dumpMappedMetricsOnly is True:
                     continue
@@ -163,6 +165,11 @@ class AMDSMI(Collector):
                 # add Gauge metric only once
                 if metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
+
+                # temp workaround to allow support for all metric names
+                if old_metric and old_metric not in self.__GPUMetrics.keys():
+                    self.__GPUMetrics[metric_name].labels(card=idx).set(value)
+
 
         return
 
