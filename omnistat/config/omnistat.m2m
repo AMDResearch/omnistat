@@ -11,7 +11,7 @@ rocm_path = /opt/rocm
 # List of IPs allowed to query the collector (comma separated). By
 # default, access will be restricted to the localhost (127.0.0.1).
 # Set this value to IP of companion Prometheus server.
-allowed_ips = 127.0.0.1
+allowed_ips = 0.0.0.0
 
 # corebinding = 31
 
