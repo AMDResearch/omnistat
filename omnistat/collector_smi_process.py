@@ -39,22 +39,34 @@ amdsmi_process_vram (card=0, pid=123, name=torchrun) 3784658734
 import logging
 from omnistat.collector_base import Collector
 from prometheus_client import Gauge
-from omnistat.utils import GPU_MAPPING_ORDER
-from amdsmi import amdsmi_init, amdsmi_get_processor_handles, amdsmi_get_gpu_process_list, amdsmi_get_gpu_process_info
+from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
+import amdsmi as smi
 
 
 def get_gpu_processes(device):
-    processes = amdsmi_get_gpu_process_list(device)
 
     result = []
+    try:
+        processes = smi.amdsmi_get_gpu_process_list(device)
+    except Exception as e:
+        # ROCM 6.1 sudo issues. should be fixed in 6.2
+        logging.error(f"Failed to get GPU process list for device {device}: {e}")
+        return result
+
     for p in processes:
         try:
-            p = amdsmi_get_gpu_process_info(device, p)
+            if type(p) is dict:
+                # rocm 6.2
+                pass
+            else:
+                # rocm 6.1 and lower
+                p = smi.amdsmi_get_gpu_process_info(device, p)
+
         except:
             # Catch all for unsupported rocm version for process info
             return result
-        # Ignore the Python process itself for the reading
-        if p["name"] == "python3" and (p["mem"] == 4096 or p["memory_usage"]["vram_mem"] == 12288):
+        # Ignore the Omnistat process itself for the reading
+        if p['name'] == 'python3' and (p['mem'] == 4096 or p["memory_usage"]["vram_mem"] == 12288) or p['name'] == 'omnistat':
             continue
         result.append(p)
     return result
@@ -64,19 +76,31 @@ class AMDSMIProcess(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI Process data collector")
         self.__prefix = "amdsmi_process_"
-        amdsmi_init()
+        smi.amdsmi_init()
         logging.info("AMD SMI library API initialized for Process information collection")
-        self.metric_vram = None
-        self.metric_compute = None
-        self.devices = []
-        self.process_metrics = {}
+        self.__metric_vram = None
+        self.__metric_compute = None
+        self.__devices = []
+        self.__num_gpus = 0
+        self.__process_metrics = {}
+        self.__indexMapping = {}
         self.c = 0
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
-        devices = amdsmi_get_processor_handles()
-        self.devices = devices
+        devices = smi.amdsmi_get_processor_handles()
+        self.__devices = devices
+        self.__num_gpus = len(self.__devices)
+        # determine GPU index mapping (i.e. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
+        bdfMapping = {}
+        for index, device in enumerate(self.__devices):
+            bdf = smi.amdsmi_get_gpu_device_bdf(device)
+            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
+            bdfMapping[index] = convert_bdf_to_gpuid(bdf)
+        self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
+
+
         metric_vram = Gauge(
             f"{self.__prefix}vram",
             f"{self.__prefix}vram",
@@ -87,24 +111,23 @@ class AMDSMIProcess(Collector):
             f"{self.__prefix}compute",
             labelnames=["card", "name", "pid"],
         )
-        self.metric_vram = metric_vram
-        self.metric_compute = metric_compute
-        self.updateMetrics()
+        self.__metric_vram = metric_vram
+        self.__metric_compute = metric_compute
         return
 
     def updateMetrics(self):
 
         self.collect_data_incremental()
         # Remove old labels for process not currently running
-        for metric, counter in self.process_metrics.items():
+        for metric, counter in self.__process_metrics.items():
             if counter < self.c:
                 # catch edge case for multiple metrics with same name
                 try:
-                    self.metric_vram.remove(metric[0], metric[1], metric[2])
+                    self.__metric_vram.remove(metric[0], metric[1], metric[2])
                 except:
                     pass
                 try:
-                    self.metric_compute.remove(metric[0], metric[1], metric[2])
+                    self.__metric_compute.remove(metric[0], metric[1], metric[2])
                 except:
                     pass
 
@@ -112,21 +135,22 @@ class AMDSMIProcess(Collector):
 
     def collect_data_incremental(self):
         self.c += 1
-        for idx, device in enumerate(self.devices):
-
+        for idx, device in enumerate(self.__devices):
+            # map GPU index
+            cardId = self.__indexMapping[idx]
             processes = get_gpu_processes(device)
 
             for process in processes:
-                metric_tuple = (str(GPU_MAPPING_ORDER[idx]), process["name"], str(process["pid"]))
+                metric_tuple = (cardId, process["name"], str(process["pid"]))
 
-                self.process_metrics[metric_tuple] = self.c
-                self.metric_vram.labels(
-                    card=str(GPU_MAPPING_ORDER[idx]),
+                self.__process_metrics[metric_tuple] = self.c
+                self.__metric_vram.labels(
+                    card=str(cardId),
                     name=str(process["name"]),
                     pid=str(process["pid"]),
                 ).set(process["memory_usage"]["vram_mem"])
-                self.metric_compute.labels(
-                    card=str(GPU_MAPPING_ORDER[idx]),
+                self.__metric_compute.labels(
+                    card=str(cardId),
                     name=str(process["name"]),
                     pid=str(process["pid"]),
                 ).set(process["engine_usage"]["gfx"])
