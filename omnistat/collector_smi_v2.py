@@ -101,7 +101,7 @@ class AMDSMI(Collector):
         self.__metricMapping = {}
         self.__dumpMappedMetricsOnly = True
         # verify minimum version met
-        check_min_version("24.5.2")
+        check_min_version("23.4.0") # Rocm 6.0.2
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
