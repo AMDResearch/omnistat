@@ -168,6 +168,7 @@ class AMDSMI(Collector):
 
                 # temp workaround to allow support for all metric names
                 if old_metric and old_metric not in self.__GPUMetrics.keys():
+                    metric_name = self.__prefix + old_metric
                     self.__GPUMetrics[metric_name].labels(card=idx).set(value)
 
 
@@ -193,11 +194,17 @@ class AMDSMI(Collector):
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
             for metric, value in metrics.items():
+                old_metric = ""
                 if self.__metricMapping.get(metric):
+                    old_metric = metric
                     metric = self.__metricMapping.get(metric)
                 elif self.__dumpMappedMetricsOnly is True:
                     continue
                 metric = self.__GPUMetrics[self.__prefix + metric]
                 # Set metric
                 metric.labels(card=cardId).set(value)
+                # temp workaround to allow support for all metric names
+                if old_metric:
+                    metric = self.__GPUMetrics[self.__prefix + old_metric]
+                    metric.labels(card=cardId).set(value)
         return
