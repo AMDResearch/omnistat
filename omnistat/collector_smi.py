@@ -157,6 +157,10 @@ class ROCMSMI(Collector):
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
+        schema = 1.0
+        schema_version = Gauge(self.__prefix + "schema_version", "metric naming scheme version")
+        schema_version.set(schema)
+
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
         assert ret == 0
@@ -212,7 +216,7 @@ class ROCMSMI(Collector):
         # memory
         self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
         self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
-        self.registerGPUMetric(self.__prefix + "vram_busy_percentage","gauge","Percentage of time any GPU memory is being used.")
+        self.registerGPUMetric(self.__prefix + "vram_busy_percentage","gauge","Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
 
