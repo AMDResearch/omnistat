@@ -212,6 +212,7 @@ class ROCMSMI(Collector):
         # memory
         self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
         self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
+        self.registerGPUMetric(self.__prefix + "vram_busy_percentage","gauge","Percentage of time any GPU memory is being used.")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
 
@@ -252,6 +253,7 @@ class ROCMSMI(Collector):
         freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
         vram_used = ctypes.c_uint64(0)
+        vram_busy = ctypes.c_uint32(0)
         utilization = ctypes.c_uint32(0)
 
         for i in range(self.__num_gpus):
@@ -299,6 +301,10 @@ class ROCMSMI(Collector):
             ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_used))
             percentage = round(100.0 * vram_used.value / vram_total.value, 4)
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(percentage)
+
+            metric = self.__prefix + "vram_busy_percentage"
+            ret = self.__libsmi.rsmi_dev_memory_busy_percent_get(device, ctypes.byref(vram_busy))
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_busy.value)
 
             # --
             # utilization
