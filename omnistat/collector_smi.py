@@ -104,6 +104,10 @@ class rsmi_version_t(ctypes.Structure):
         ("build", ctypes.c_char_p),
     ]
 
+class rsmi_sw_component_t(ctypes.c_int):
+    RSMI_SW_COMP_FIRST = 0x0
+    RSMI_SW_COMP_DRIVER = RSMI_SW_COMP_FIRST
+    RSMI_SW_COMP_LAST = RSMI_SW_COMP_DRIVER
 
 # --
 
@@ -131,6 +135,12 @@ class ROCMSMI(Collector):
 
             self.__rsmi_frequencies_type = get_rsmi_frequencies_type(self.__smiVersion)
 
+            # driver version
+            ver_str = ctypes.create_string_buffer(256)
+            self.__libsmi.rsmi_version_str_get(rsmi_sw_component_t.RSMI_SW_COMP_DRIVER, ver_str, 256)
+            assert ret_init == 0
+            self.__gpuDriverVer = ver_str.value.decode()
+
         else:
             logging.error("")
             logging.error("ERROR: Unable to load SMI library.")
@@ -146,20 +156,15 @@ class ROCMSMI(Collector):
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
-        # proto_devices = self.__libsmi.rsmi_num_monitor_devices
-        # # proto_devices.argtypes = [ctypes.byref(ctypes.c_uint32)]
-        # # proto_devices.argtype = [ctypes.pointer(ctypes.c_uint32)]
-        # # proto_devices.restype = ctypes.c_int
-        # # proto_devices = ctypes.CFUNCTYPE(ctypes.c_int,ctypes.byref(ctypes.c_uint32))
 
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
         assert ret == 0
         logging.info("Number of GPU devices = %i" % numDevices.value)
 
-        # register number of GPUs
-        numGPUs_metric = Gauge(self.__prefix + "num_gpus", "# of GPUS available on host")
-        numGPUs_metric.set(numDevices.value)
+        # register number of GPUs (gpu driver version stored as label)
+        numGPUs_metric = Gauge(self.__prefix + "num_gpus", "# of GPUS available on host",labelnames=["driver_ver"])
+        numGPUs_metric.labels(driver_ver=self.__gpuDriverVer).set(numDevices.value)
         self.__num_gpus = numDevices.value
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
