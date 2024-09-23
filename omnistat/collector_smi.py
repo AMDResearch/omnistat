@@ -219,6 +219,9 @@ class ROCMSMI(Collector):
         self.registerGPUMetric(self.__prefix + "vram_busy_percentage","gauge","Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
+        # pci xfers
+        self.registerGPUMetric(self.__prefix + "pci_throughput_sent_bytes_per_sec", "gauge", "PCI send rate (bytes/s)")
+        self.registerGPUMetric(self.__prefix + "pci_throughput_received_bytes_per_sec", "gauge", "PCI receive rate (bytes/s)")
 
         return
 
@@ -259,6 +262,9 @@ class ROCMSMI(Collector):
         vram_used = ctypes.c_uint64(0)
         vram_busy = ctypes.c_uint32(0)
         utilization = ctypes.c_uint32(0)
+        pcie_sent = ctypes.c_uint64(0)
+        pcie_received = ctypes.c_uint64(0)
+        pcie_max_pkt_sz = ctypes.c_uint64(0)
 
         for i in range(self.__num_gpus):
 
@@ -315,5 +321,14 @@ class ROCMSMI(Collector):
             metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
+
+            # # --
+            # # PCI throughput
+            # metric_send = self.__prefix + "pci_throughput_sent_bytes_per_sec"
+            # metric_receive = self.__prefix + "pci_throughput_received_bytes_per_sec"
+            # ret = self.__libsmi.rsmi_dev_pci_throughput_get(device, ctypes.byref(pcie_sent),
+            #                                                 ctypes.byref(pcie_received),ctypes.byref(pcie_max_pkt_sz))
+            # self.__GPUmetrics[metric_send].labels(card=gpuLabel).set(pcie_sent.value)
+            # self.__GPUmetrics[metric_receive].labels(card=gpuLabel).set(pcie_received.value)
 
         return
