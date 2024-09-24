@@ -1620,7 +1620,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 669
+            "y": 1037
           },
           "id": 99,
           "interval": "5s",
@@ -1860,7 +1860,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1900,7 +1901,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1607
+            "y": 1047
           },
           "id": 28,
           "options": {
@@ -1960,7 +1961,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75623",
+          "pluginVersion": "11.3.0-75826",
           "targets": [
             {
               "datasource": {
@@ -2184,7 +2185,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 680
+            "y": 1057
           },
           "id": 23,
           "options": {
@@ -2320,7 +2321,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 122
+            "y": 1067
           },
           "id": 26,
           "options": {
@@ -2344,7 +2345,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rocm_utilization_percentage) / count(rocm_utilization_percentage)",
+              "expr": "avg(rocm_utilization_percentage)",
               "instant": false,
               "legendFormat": "GPU",
               "range": true,
@@ -2356,12 +2357,25 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rocm_vram_used_percentage) / count(rocm_vram_used_percentage)",
+              "expr": "avg(rocm_vram_used_percentage)",
               "hide": false,
               "instant": false,
-              "legendFormat": "GPU Memory",
+              "legendFormat": "GPU Memory Capacity",
               "range": true,
               "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg(rocm_vram_busy_percentage)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "GPU Memory Controller Activity",
+              "range": true,
+              "refId": "C"
             }
           ],
           "title": "Cluster Utilization (%)",
@@ -2391,7 +2405,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 332
+            "y": 1076
           },
           "id": 6,
           "options": {
@@ -2526,7 +2540,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 341
+            "y": 1085
           },
           "id": 29,
           "options": {
@@ -2635,7 +2649,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 341
+            "y": 1085
           },
           "id": 103,
           "options": {
@@ -2766,7 +2780,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 351
+            "y": 1095
           },
           "id": 102,
           "options": {
@@ -2883,7 +2897,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 360
+            "y": 1104
           },
           "id": 38,
           "options": {
@@ -3000,7 +3014,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 360
+            "y": 1104
           },
           "id": 39,
           "options": {
@@ -3040,6 +3054,123 @@
               "options": {
                 "regex": "(.*):(.*)",
                 "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  },
+                  {
+                    "color": "#56A64B",
+                    "value": 25
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 1113
+          },
+          "id": 109,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance,card) (rocm_temperature_hbm_celsius) ",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU HBM Temperature",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*), (.*)",
+                "renamePattern": "Node: $1 (card $3)"
               }
             }
           ],
@@ -3123,7 +3254,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 370
+            "y": 1123
           },
           "id": 106,
           "options": {
@@ -3232,7 +3363,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 379
+            "y": 1132
           },
           "id": 104,
           "options": {
@@ -3341,7 +3472,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 379
+            "y": 1132
           },
           "id": 105,
           "options": {
@@ -3466,7 +3597,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 1142
           },
           "id": 101,
           "options": {
@@ -3569,7 +3700,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 26
+            "y": 1151
           },
           "id": 108,
           "options": {
@@ -3718,7 +3849,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 568
+            "y": 1160
           },
           "id": 35,
           "options": {
@@ -3826,7 +3957,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 576
+            "y": 1168
           },
           "id": 65,
           "options": {
@@ -3934,7 +4065,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 576
+            "y": 1168
           },
           "id": 66,
           "options": {
@@ -4057,7 +4188,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 304
+            "y": 1177
           },
           "id": 92,
           "options": {
@@ -4179,7 +4310,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 312
+            "y": 1185
           },
           "id": 96,
           "options": {
@@ -4288,7 +4419,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 312
+            "y": 1185
           },
           "id": 94,
           "options": {
@@ -4397,7 +4528,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 320
+            "y": 1193
           },
           "id": 93,
           "options": {
@@ -4506,7 +4637,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 320
+            "y": 1193
           },
           "id": 95,
           "options": {
