@@ -236,7 +236,8 @@ class ROCMSMI(Collector):
                 logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
                 break
 
-        # HBM memory location
+        # HBM memory location (not available on all parts)
+        self.__temp_hbm_location_index = None
         for temp_type in rsmi_temperature_type_t:
             temp_location = ctypes.c_int32(temp_type.value)
             if "HBM" not in temp_type.name:
@@ -255,12 +256,13 @@ class ROCMSMI(Collector):
             labelExtra=["location"],
         )
 
-        self.registerGPUMetric(
-            self.__prefix + "temperature_hbm_celsius",
-            "gauge",
-            "HBM Temperature (C)",
-            labelExtra=["location"],
-        )
+        if self.__temp_hbm_location_index:
+            self.registerGPUMetric(
+                self.__prefix + "temperature_hbm_celsius",
+                "gauge",
+                "HBM Temperature (C)",
+                labelExtra=["location"],
+            )
 
         # power
         self.registerGPUMetric(
@@ -339,13 +341,14 @@ class ROCMSMI(Collector):
 
             # --
             # HBM temperature [millidegrees Celcius, converted to degrees Celcius]
-            metric = self.__prefix + "temperature_hbm_celsius"
-            ret = self.__libsmi.rsmi_dev_temp_metric_get(
-                device, self.__temp_hbm_location_index, temp_metric, ctypes.byref(temperature)
-            )
-            self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_hbm_location_name).set(
-                temperature.value / 1000.0
-            )
+            if self.__temp_hbm_location_index:
+                metric = self.__prefix + "temperature_hbm_celsius"
+                ret = self.__libsmi.rsmi_dev_temp_metric_get(
+                    device, self.__temp_hbm_location_index, temp_metric, ctypes.byref(temperature)
+                )
+                self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_hbm_location_name).set(
+                    temperature.value / 1000.0
+                )
 
             # --
             # average socket power [micro Watts, converted to Watts]
