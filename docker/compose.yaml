@@ -5,6 +5,7 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=1y'
+      - '--query.max-samples=500000000'
     ports:
       - 9090:9090
     restart: unless-stopped
