@@ -30,10 +30,12 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with a "rocm" prefix with individual cards denotes by labels. The
 following example highlights example metrics for card 0:
 
-rocm_temperature_celsius{card="0"} 41.0
+rocm_temperature_celsius{card="0",location="edge"} 41.0
+rocm_temperature_hbm_celsius{card="0",location="hbm_0"} 46.0
 rocm_average_socket_power_watts{card="0"} 35.0
 rocm_sclk_clock_mhz{card="0"} 1502.0
 rocm_mclk_clock_mhz{card="0"} 1200.0
+rocm_vram_busy_percentage{card="0"} 22.0
 rocm_vram_total_bytes{card="0"} 3.4342961152e+010
 rocm_vram_used_percentage{card="0"} 0.0198
 rocm_utilization_percentage{card="0"} 0.0
@@ -224,19 +226,39 @@ class ROCMSMI(Collector):
         temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
         device = ctypes.c_uint32(0)
 
+        # primary temperature location
         for temp_type in rsmi_temperature_type_t:
             temp_location = ctypes.c_int32(temp_type.value)
             ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
             if ret == 0 and temperature.value > 0:
                 self.__temp_location_index = temp_location
                 self.__temp_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
-                logging.info("--> Using temperature location at %s" % self.__temp_location_name)
+                logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
+                break
+
+        # HBM memory location
+        for temp_type in rsmi_temperature_type_t:
+            temp_location = ctypes.c_int32(temp_type.value)
+            if "HBM" not in temp_type.name:
+                continue
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
+            if ret == 0 and temperature.value > 0:
+                self.__temp_hbm_location_index = temp_location
+                self.__temp_hbm_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
+                logging.info("--> Using HBM temperature location at %s" % self.__temp_hbm_location_name)
                 break
 
         self.registerGPUMetric(
             self.__prefix + "temperature_celsius",
             "gauge",
-            "Temperature(C), RSMI Index = %i" % self.__temp_location_index.value,
+            "Temperature (C)",
+            labelExtra=["location"],
+        )
+
+        self.registerGPUMetric(
+            self.__prefix + "temperature_hbm_celsius",
+            "gauge",
+            "HBM Temperature (C)",
             labelExtra=["location"],
         )
 
@@ -312,6 +334,16 @@ class ROCMSMI(Collector):
                 device, self.__temp_location_index, temp_metric, ctypes.byref(temperature)
             )
             self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_location_name).set(
+                temperature.value / 1000.0
+            )
+
+            # --
+            # HBM temperature [millidegrees Celcius, converted to degrees Celcius]
+            metric = self.__prefix + "temperature_hbm_celsius"
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(
+                device, self.__temp_hbm_location_index, temp_metric, ctypes.byref(temperature)
+            )
+            self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_hbm_location_name).set(
                 temperature.value / 1000.0
             )
 
