@@ -43,6 +43,7 @@ import ctypes
 import logging
 import os
 import sys
+from enum import IntEnum
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 from omnistat.collector_base import Collector
@@ -109,6 +110,16 @@ class rsmi_sw_component_t(ctypes.c_int):
     RSMI_SW_COMP_FIRST = 0x0
     RSMI_SW_COMP_DRIVER = RSMI_SW_COMP_FIRST
     RSMI_SW_COMP_LAST = RSMI_SW_COMP_DRIVER
+
+
+class rsmi_temperature_type_t(IntEnum):
+    RSMI_TEMP_TYPE_EDGE = 0
+    RSMI_TEMP_TYPE_JUNCTION = 1
+    RSMI_TEMP_TYPE_MEMORY = 2
+    RSMI_TEMP_TYPE_HBM_0 = 3
+    RSMI_TEMP_TYPE_HBM_1 = 4
+    RSMI_TEMP_TYPE_HBM_2 = 5
+    RSMI_TEMP_TYPE_HBM_3 = 6
 
 
 # --
@@ -206,24 +217,27 @@ class ROCMSMI(Collector):
 
         # temperature: note that temperature queries require a location index to be supplied that can
         # vary depending on hardware (e.g. RSMI_TEMP_TYPE_EDGE vs RSMI_TEMP_TYPE_JUNCTION). During init,
-        # check which is available cache index of first non-zero response.
+        # check which is available and cache index/location of first non-zero response.
 
         maxTempLocations = 4
         temperature = ctypes.c_int64(0)
         temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
         device = ctypes.c_uint32(0)
 
-        for index in range(maxTempLocations):
-            temp_location = ctypes.c_int32(index)
+        for temp_type in rsmi_temperature_type_t:
+            temp_location = ctypes.c_int32(temp_type.value)
             ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
             if ret == 0 and temperature.value > 0:
                 self.__temp_location_index = temp_location
+                self.__temp_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
+                logging.info("--> Using temperature location at %s" % self.__temp_location_name)
                 break
 
         self.registerGPUMetric(
             self.__prefix + "temperature_celsius",
             "gauge",
             "Temperature(C), RSMI Index = %i" % self.__temp_location_index.value,
+            labelExtra=["location"],
         )
 
         # power
@@ -249,12 +263,16 @@ class ROCMSMI(Collector):
     # --------------------------------------------------------------------------------------
     # Additional custom methods unique to this collector
 
-    def registerGPUMetric(self, metricName, type, description):
+    def registerGPUMetric(self, metricName, type, description, labelExtra=None):
         if metricName in self.__GPUmetrics:
             logging.error("Ignoring duplicate metric name addition: %s" % (name))
             return
         if type == "gauge":
-            self.__GPUmetrics[metricName] = Gauge(metricName, description, labelnames=["card"])
+            labelnames = ["card"]
+            if labelExtra:
+                for entry in labelExtra:
+                    labelnames.append(entry)
+            self.__GPUmetrics[metricName] = Gauge(metricName, description, labelnames=labelnames)
 
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
         else:
@@ -271,7 +289,6 @@ class ROCMSMI(Collector):
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         power_type = rsmi_power_type_t()
-        # freq = rsmi_frequencies_t()
         freq = self.__rsmi_frequencies_type
         freq_system_clock = 0  # 0=RSMI_CLK_TYPE_SYS
         freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
@@ -294,7 +311,9 @@ class ROCMSMI(Collector):
             ret = self.__libsmi.rsmi_dev_temp_metric_get(
                 device, self.__temp_location_index, temp_metric, ctypes.byref(temperature)
             )
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_location_name).set(
+                temperature.value / 1000.0
+            )
 
             # --
             # average socket power [micro Watts, converted to Watts]
