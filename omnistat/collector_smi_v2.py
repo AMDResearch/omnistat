@@ -32,6 +32,7 @@ example highlights example metrics:
 
 amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
 amdsmi_temperature_celsius{card="0",location="edge"} 42.0
+amdsmi_temperature_hbm_celsius{card="0",location="hbm_0"} 46.0
 amdsmi_utilization_percentage{card="0"} 0.0
 amdsmi_vram_used_percentage{card="0"} 0.0
 amdsmi_vram_busy_percentage{card="0"} 22.0
@@ -158,7 +159,6 @@ class AMDSMI(Collector):
             "average_gfx_activity": "utilization_percentage",
             "vram_total": "vram_total_bytes",
             "average_socket_power": "average_socket_power_watts",
-            #            "temperature_edge": "temperature_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz",
             "average_umc_activity": "vram_busy_percentage",
@@ -172,17 +172,32 @@ class AMDSMI(Collector):
             self.__prefix + "vram_used_percentage", "VRAM Memory in Use (%)", labelnames=["card"]
         )
 
-        # Cache valid temperature location and register with location label
+        # Cache valid primary temperature location and register with location label
         dev0 = self.__devices[0]
         for item in smi.AmdSmiTemperatureType:
             temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
             if temperature > 0:
                 self.__temp_location_index = item
                 self.__temp_location_name = item.name.lower()
-                logging.info("--> Using temperature location at %s" % self.__temp_location_name)
+                logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
                 break
         self.__GPUMetrics["temperature_celsius"] = Gauge(
             self.__prefix + "temperature_celsius", "Temperature (C)", labelnames=["card", "location"]
+        )
+
+        # Cache valid HBM temperature location and register with location label
+        dev0 = self.__devices[0]
+        for item in smi.AmdSmiTemperatureType:
+            if "HBM" not in item.name:
+                continue
+            temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            if temperature > 0:
+                self.__temp_hbm_location_index = item
+                self.__temp_hbm_location_name = item.name.lower()
+                logging.info("--> Using HBM temperature location at %s" % self.__temp_hbm_location_name)
+                break
+        self.__GPUMetrics["temperature_hbm_celsius"] = Gauge(
+            self.__prefix + "temperature_hbm_celsius", "HBM Temperature (C)", labelnames=["card", "location"]
         )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
@@ -227,6 +242,12 @@ class AMDSMI(Collector):
             self.__GPUMetrics["temperature_celsius"].labels(card=cardId, location=self.__temp_location_name).set(
                 temperature
             )
+            hbm_temperature = smi.amdsmi_get_temp_metric(
+                device, self.__temp_hbm_location_index, smi.AmdSmiTemperatureMetric.CURRENT
+            )
+            self.__GPUMetrics["temperature_hbm_celsius"].labels(
+                card=cardId, location=self.__temp_hbm_location_name
+            ).set(hbm_temperature)
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
