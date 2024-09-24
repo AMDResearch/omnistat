@@ -185,20 +185,26 @@ class AMDSMI(Collector):
             self.__prefix + "temperature_celsius", "Temperature (C)", labelnames=["card", "location"]
         )
 
-        # Cache valid HBM temperature location and register with location label
+        # Cache valid HBM temperature location and register with location
+        # label (note: not available on all parts)
+        self.__temp_hbm_location_index = None
         dev0 = self.__devices[0]
         for item in smi.AmdSmiTemperatureType:
             if "HBM" not in item.name:
                 continue
-            temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            try:
+                temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            except smi.AmdSmiException:
+                continue
             if temperature > 0:
                 self.__temp_hbm_location_index = item
                 self.__temp_hbm_location_name = item.name.lower()
                 logging.info("--> Using HBM temperature location at %s" % self.__temp_hbm_location_name)
                 break
-        self.__GPUMetrics["temperature_hbm_celsius"] = Gauge(
-            self.__prefix + "temperature_hbm_celsius", "HBM Temperature (C)", labelnames=["card", "location"]
-        )
+        if self.__temp_hbm_location_index:
+            self.__GPUMetrics["temperature_hbm_celsius"] = Gauge(
+                self.__prefix + "temperature_hbm_celsius", "HBM Temperature (C)", labelnames=["card", "location"]
+            )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
         for idx, device in enumerate(self.__devices):
@@ -242,12 +248,13 @@ class AMDSMI(Collector):
             self.__GPUMetrics["temperature_celsius"].labels(card=cardId, location=self.__temp_location_name).set(
                 temperature
             )
-            hbm_temperature = smi.amdsmi_get_temp_metric(
-                device, self.__temp_hbm_location_index, smi.AmdSmiTemperatureMetric.CURRENT
-            )
-            self.__GPUMetrics["temperature_hbm_celsius"].labels(
-                card=cardId, location=self.__temp_hbm_location_name
-            ).set(hbm_temperature)
+            if self.__temp_hbm_location_index:
+                hbm_temperature = smi.amdsmi_get_temp_metric(
+                    device, self.__temp_hbm_location_index, smi.AmdSmiTemperatureMetric.CURRENT
+                )
+                self.__GPUMetrics["temperature_hbm_celsius"].labels(
+                    card=cardId, location=self.__temp_hbm_location_name
+                ).set(hbm_temperature)
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
