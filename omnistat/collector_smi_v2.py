@@ -27,12 +27,14 @@
 Implements a number of prometheus gauge metrics based on GPU data collected from
 amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
+metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following 
+example highlights example metrics:
 
 amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
-amdsmi_temperature_celsius{card="0"} 42.0
+amdsmi_temperature_celsius{card="0",location="edge"} 42.0
 amdsmi_utilization_percentage{card="0"} 0.0
 amdsmi_vram_used_percentage{card="0"} 0.0
+amdsmi_vram_busy_percentage{card="0"} 22.0
 amdsmi_average_socket_power_watts{card="0"} 35.0
 amdsmi_mlck_clock_mhz{card="0"} 1200.0
 amdsmi_slck_clock_mhz{card="0"} 300.0
@@ -143,8 +145,7 @@ class AMDSMI(Collector):
             asic_info = smi.amdsmi_get_gpu_asic_info(device)
             devtype = asic_info["market_name"]
 
-            handle = smi.amdsmi_get_processor_handles()[0]
-            driver_info = smi.amdsmi_get_gpu_driver_info(handle)
+            driver_info = smi.amdsmi_get_gpu_driver_info(device)
             gpuDriverVer = driver_info["driver_version"]
 
             version_metric.labels(
@@ -157,7 +158,7 @@ class AMDSMI(Collector):
             "average_gfx_activity": "utilization_percentage",
             "vram_total": "vram_total_bytes",
             "average_socket_power": "average_socket_power_watts",
-            "temperature_edge": "temperature_celsius",
+            #            "temperature_edge": "temperature_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz",
             "average_umc_activity": "vram_busy_percentage",
@@ -169,6 +170,19 @@ class AMDSMI(Collector):
         )
         self.__GPUMetrics["vram_used_percentage"] = Gauge(
             self.__prefix + "vram_used_percentage", "VRAM Memory in Use (%)", labelnames=["card"]
+        )
+
+        # Cache valid temperature location and register with location label
+        dev0 = self.__devices[0]
+        for item in smi.AmdSmiTemperatureType:
+            temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            if temperature > 0:
+                self.__temp_location_index = item
+                self.__temp_location_name = item.name.lower()
+                logging.info("--> Using temperature location at %s" % self.__temp_location_name)
+                break
+        self.__GPUMetrics["temperature_celsius"] = Gauge(
+            self.__prefix + "temperature_celsius", "Temperature (C)", labelnames=["card", "location"]
         )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
@@ -205,6 +219,14 @@ class AMDSMI(Collector):
             vram_used_bytes = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
             percentage = round(100.0 * vram_used_bytes / device_total_vram, 4)
             self.__GPUMetrics["vram_used_percentage"].labels(card=cardId).set(percentage)
+
+            # temperature-related stats
+            temperature = smi.amdsmi_get_temp_metric(
+                device, self.__temp_location_index, smi.AmdSmiTemperatureMetric.CURRENT
+            )
+            self.__GPUMetrics["temperature_celsius"].labels(card=cardId, location=self.__temp_location_name).set(
+                temperature
+            )
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
