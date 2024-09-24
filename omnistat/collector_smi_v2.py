@@ -93,6 +93,7 @@ class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
         self.__prefix = "amdsmi_"
+        self.__schema = 1.0
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
         self.__num_gpus = 0
@@ -128,6 +129,28 @@ class AMDSMI(Collector):
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
         self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
 
+        # version info metric
+        version_metric = Gauge(
+            self.__prefix + "version_info",
+            "GPU versioning information",
+            labelnames=["card", "driver_ver", "vbios", "type", "schema"],
+        )
+
+        for idx, device in enumerate(self.__devices):
+            gpuLabel = self.__indexMapping[idx]
+            vbios_info = smi.amdsmi_get_gpu_vbios_info(device)
+            vbios = vbios_info["part_number"]
+            asic_info = smi.amdsmi_get_gpu_asic_info(device)
+            devtype = asic_info["market_name"]
+
+            handle = smi.amdsmi_get_processor_handles()[0]
+            driver_info = smi.amdsmi_get_gpu_driver_info(handle)
+            gpuDriverVer = driver_info["driver_version"]
+
+            version_metric.labels(
+                card=gpuLabel, driver_ver=gpuDriverVer, vbios=vbios, type=devtype, schema=self.__schema
+            ).set(1)
+
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
             # core GPU metric definitions
@@ -137,6 +160,7 @@ class AMDSMI(Collector):
             "temperature_edge": "temperature_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz",
+            "average_umc_activity": "vram_busy_percentage",
         }
 
         # Register memory related metrics
