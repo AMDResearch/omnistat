@@ -80,7 +80,7 @@ class ROCMEvents(Collector):
     def registerMetrics(self):
 
         metricName = self.__prefix + "throttle_events"
-        self.__GPUmetrics["throttle_events"] = Gauge(metricName, "# of throttling events detected",labelnames=["card"])
+        self.__GPUmetrics["throttle_events"] = Gauge(metricName, "# of throttling events detected", labelnames=["card"])
         logging.info("  --> [registered] %s (gauge)" % metricName)
         for gpu in range(self.__numGpus):
             self.__GPUmetrics["throttle_events"].labels(card=gpu).set(0)
