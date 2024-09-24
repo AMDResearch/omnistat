@@ -104,10 +104,12 @@ class rsmi_version_t(ctypes.Structure):
         ("build", ctypes.c_char_p),
     ]
 
+
 class rsmi_sw_component_t(ctypes.c_int):
     RSMI_SW_COMP_FIRST = 0x0
     RSMI_SW_COMP_DRIVER = RSMI_SW_COMP_FIRST
     RSMI_SW_COMP_LAST = RSMI_SW_COMP_DRIVER
+
 
 # --
 
@@ -116,6 +118,7 @@ class ROCMSMI(Collector):
     def __init__(self, rocm_path="/opt/rocm"):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
+        self.__schema = 1.0
 
         # load smi runtime
         smi_lib = rocm_path + "/lib/librocm_smi64.so"
@@ -157,18 +160,14 @@ class ROCMSMI(Collector):
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
 
-        schema = 1.0
-        schema_version = Gauge(self.__prefix + "schema_version", "metric naming scheme version")
-        schema_version.set(schema)
-
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
         assert ret == 0
         logging.info("Number of GPU devices = %i" % numDevices.value)
 
-        # register number of GPUs (gpu driver version stored as label)
-        numGPUs_metric = Gauge(self.__prefix + "num_gpus", "# of GPUS available on host",labelnames=["driver_ver"])
-        numGPUs_metric.labels(driver_ver=self.__gpuDriverVer).set(numDevices.value)
+        # register number of GPUs
+        numGPUs_metric = Gauge(self.__prefix + "num_gpus", "# of GPUS available on host")
+        numGPUs_metric.set(numDevices.value)
         self.__num_gpus = numDevices.value
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
@@ -180,6 +179,27 @@ class ROCMSMI(Collector):
             assert ret == 0
             guidMapping[i] = guid.value
         self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
+
+        # version info metric
+        version_metric = Gauge(
+            self.__prefix + "version_info",
+            "GPU versioning information",
+            labelnames=["card", "driver_ver", "vbios", "type", "schema"],
+        )
+        for i in range(self.__num_gpus):
+            gpuLabel = self.__indexMapping[i]
+            ver_str = ctypes.create_string_buffer(256)
+            device = ctypes.c_uint32(i)
+
+            self.__libsmi.rsmi_dev_vbios_version_get(device, ver_str, 256)
+            vbios = ver_str.value.decode()
+
+            self.__libsmi.rsmi_dev_name_get(device, ver_str, 256)
+            devtype = ver_str.value.decode()
+
+            version_metric.labels(
+                card=gpuLabel, driver_ver=self.__gpuDriverVer, vbios=vbios, type=devtype, schema=self.__schema
+            ).set(1)
 
         # register desired metric names
         self.__GPUmetrics = {}
@@ -216,12 +236,9 @@ class ROCMSMI(Collector):
         # memory
         self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
         self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
-        self.registerGPUMetric(self.__prefix + "vram_busy_percentage","gauge","Memory controller activity (%)")
+        self.registerGPUMetric(self.__prefix + "vram_busy_percentage", "gauge", "Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
-        # pci xfers
-        self.registerGPUMetric(self.__prefix + "pci_throughput_sent_bytes_per_sec", "gauge", "PCI send rate (bytes/s)")
-        self.registerGPUMetric(self.__prefix + "pci_throughput_received_bytes_per_sec", "gauge", "PCI receive rate (bytes/s)")
 
         return
 
@@ -321,14 +338,5 @@ class ROCMSMI(Collector):
             metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
-
-            # # --
-            # # PCI throughput
-            # metric_send = self.__prefix + "pci_throughput_sent_bytes_per_sec"
-            # metric_receive = self.__prefix + "pci_throughput_received_bytes_per_sec"
-            # ret = self.__libsmi.rsmi_dev_pci_throughput_get(device, ctypes.byref(pcie_sent),
-            #                                                 ctypes.byref(pcie_received),ctypes.byref(pcie_max_pkt_sz))
-            # self.__GPUmetrics[metric_send].labels(card=gpuLabel).set(pcie_sent.value)
-            # self.__GPUmetrics[metric_receive].labels(card=gpuLabel).set(pcie_received.value)
 
         return
