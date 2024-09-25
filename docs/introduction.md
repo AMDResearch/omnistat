@@ -33,10 +33,6 @@ Omnistat utilities can be deployed with two primary use-cases in mind that diffe
 
 To demonstrate the overall data collection architecture employed by Omnistat in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
 
-<!-- ![System Mode](images/architecture_system-mode.png)
-
-![User Mode](images/architecture_user-mode.png) -->
-
 ```{figure} images/architecture_system-mode.png
 ---
 name: fig-system-mode
