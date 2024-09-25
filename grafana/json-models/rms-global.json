@@ -4938,7 +4938,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "d/fdxiufe2bkyrkd/rms-node?var-node=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdxiufe2bkyrkd/rms-node?var-node=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
