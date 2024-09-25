@@ -187,7 +187,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "count(rocm_utilization_percentage)",
+          "expr": "sum(rocm_num_gpus)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -824,6 +824,92 @@
         "x": 12,
         "y": 9
       },
+      "id": 133,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_receive_bytes_total[$__rate_interval]))",
+          "instant": false,
+          "legendFormat": "Rx",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_network_transmit_bytes_total[$__rate_interval]))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Tx",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Network: Ethernet",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
       "id": 129,
       "options": {
         "colorMode": "value",
@@ -872,92 +958,6 @@
         }
       ],
       "title": "Network: Infiniband",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "binBps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 9
-      },
-      "id": 131,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {},
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.3.0-75826",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(node_disk_read_bytes_total[$__rate_interval]))",
-          "instant": false,
-          "legendFormat": "Read",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(node_disk_written_bytes_total[$__rate_interval]))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "Write",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "IO",
       "type": "stat"
     },
     {
@@ -1021,7 +1021,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 14
+            "y": 919
           },
           "id": 110,
           "options": {
@@ -1141,7 +1141,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 14
+            "y": 919
           },
           "id": 112,
           "options": {
@@ -1266,7 +1266,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 20
+            "y": 2035
           },
           "id": 113,
           "options": {
@@ -1394,7 +1394,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 20
+            "y": 2035
           },
           "id": 114,
           "options": {
@@ -1487,920 +1487,6 @@
         "w": 24,
         "x": 0,
         "y": 14
-      },
-      "id": 97,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "center",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false,
-                "minWidth": 100
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red"
-                  },
-                  {
-                    "color": "green",
-                    "value": 90
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Mean Util. (%)"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "percent"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Job ID"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "Job ${__value.numeric} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 12,
-            "w": 5,
-            "x": 0,
-            "y": 4884
-          },
-          "id": 12,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "11.3.0-75826",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Occupancy (Top 10 Jobs)",
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": true,
-                  "instance": true,
-                  "job": true,
-                  "monitor": true
-                },
-                "indexByName": {},
-                "renameByName": {
-                  "Field": "",
-                  "Mean": "Mean Util. (%)",
-                  "job": "",
-                  "jobid": "Job ID",
-                  "user": "User"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Mean Util. (%)"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "limit",
-              "options": {}
-            },
-            {
-              "id": "convertFieldType",
-              "options": {
-                "conversions": [
-                  {
-                    "targetField": "Job ID"
-                  }
-                ],
-                "fields": {}
-              }
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "center",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false,
-                "minWidth": 100
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red"
-                  },
-                  {
-                    "color": "green",
-                    "value": 90
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Mean Util. (%)"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "percent"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Job ID"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 12,
-            "w": 5,
-            "x": 5,
-            "y": 4884
-          },
-          "id": 20,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "11.3.0-75826",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Occupancy (Bottom 10 Jobs)",
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": true,
-                  "instance": true,
-                  "job": true,
-                  "monitor": true
-                },
-                "indexByName": {},
-                "renameByName": {
-                  "Field": "",
-                  "Mean": "Mean Util. (%)",
-                  "job": "",
-                  "jobid": "Job ID",
-                  "user": "User"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": false,
-                    "field": "Mean Util. (%)"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "limit",
-              "options": {}
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "center",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false,
-                "minWidth": 80
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red"
-                  },
-                  {
-                    "color": "green",
-                    "value": 50
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Max Mem (%)"
-                },
-                "properties": [
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Job ID"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Mean Mem (%)"
-                },
-                "properties": [
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 12,
-            "w": 7,
-            "x": 10,
-            "y": 4884
-          },
-          "id": 21,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "frameIndex": 1,
-            "showHeader": true
-          },
-          "pluginVersion": "11.3.0-75826",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Memory Usage (Top 10 Jobs)",
-          "transformations": [
-            {
-              "filter": {
-                "id": "byRefId",
-                "options": "A"
-              },
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "filter": {
-                "id": "byRefId",
-                "options": "B"
-              },
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "max"
-                ]
-              }
-            },
-            {
-              "id": "joinByField",
-              "options": {
-                "byField": "jobid",
-                "mode": "inner"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": true,
-                  "Field 2": true,
-                  "user 2": true
-                },
-                "includeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "Field 1": "",
-                  "Max": "Max Mem (%)",
-                  "Mean": "Mean Mem (%)",
-                  "jobid": "Job ID",
-                  "user": "User",
-                  "user 1": "User"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Max Mem (%)"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "limit",
-              "options": {}
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "center",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false,
-                "minWidth": 80
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red"
-                  },
-                  {
-                    "color": "green",
-                    "value": 50
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Max Mem (%)"
-                },
-                "properties": [
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Job ID"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Mean Mem (%)"
-                },
-                "properties": [
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 12,
-            "w": 7,
-            "x": 17,
-            "y": 4884
-          },
-          "id": 22,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "frameIndex": 1,
-            "showHeader": true
-          },
-          "pluginVersion": "11.3.0-75826",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Memory Usage (Bottom 10 Jobs)",
-          "transformations": [
-            {
-              "filter": {
-                "id": "byRefId",
-                "options": "A"
-              },
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "filter": {
-                "id": "byRefId",
-                "options": "B"
-              },
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "max"
-                ]
-              }
-            },
-            {
-              "id": "joinByField",
-              "options": {
-                "byField": "jobid",
-                "mode": "inner"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": true,
-                  "Field 2": true,
-                  "user 2": true
-                },
-                "includeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "Max": "Max Mem (%)",
-                  "Mean": "Mean Mem (%)",
-                  "jobid": "Job ID",
-                  "user": "User",
-                  "user 1": "User"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": false,
-                    "field": "Max Mem (%)"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "limit",
-              "options": {}
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "center",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false,
-                "minWidth": 100
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "red"
-                  },
-                  {
-                    "color": "green",
-                    "value": 90
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Job ID"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "Job ${__value.numeric} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Load Average"
-                },
-                "properties": [
-                  {
-                    "id": "decimals",
-                    "value": 1
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 5525
-          },
-          "id": 37,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true
-          },
-          "pluginVersion": "11.3.0-75826",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (user,jobid) (node_load1 * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "CPU 1m Load Average (Top 10 Jobs)",
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": {
-                "labelsToFields": true,
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": true,
-                  "instance": true,
-                  "job": true,
-                  "monitor": true
-                },
-                "includeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "Field": "",
-                  "Mean": "Load Average",
-                  "job": "",
-                  "jobid": "Job ID",
-                  "user": "User"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Load Average"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "limit",
-              "options": {}
-            },
-            {
-              "id": "convertFieldType",
-              "options": {
-                "conversions": [
-                  {
-                    "targetField": "Job ID"
-                  }
-                ],
-                "fields": {}
-              }
-            }
-          ],
-          "type": "table"
-        }
-      ],
-      "title": "Jobs - Rankings",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 15
       },
       "id": 98,
       "panels": [
@@ -2546,7 +1632,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 4885
+            "y": 9195
           },
           "id": 99,
           "interval": "5s",
@@ -2733,6 +1819,762 @@
         "h": 1,
         "w": 24,
         "x": 0,
+        "y": 15
+      },
+      "id": 97,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 100
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean Util. (%)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Job ID"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "title": "Job ${__value.numeric} Dashboard",
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "id": 12,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "GPU Occupancy (Top 10 Jobs)",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Field": true,
+                  "instance": true,
+                  "job": true,
+                  "monitor": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Field": "",
+                  "Mean": "Mean Util. (%)",
+                  "job": "",
+                  "jobid": "Job ID",
+                  "user": "User"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Mean Util. (%)"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "targetField": "Job ID"
+                  }
+                ],
+                "fields": {}
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 100
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 90
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean Util. (%)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Job ID"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "title": "Job ${__value.raw} Dashboard",
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 12,
+            "y": 16
+          },
+          "id": 20,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobid,user) (rocm_utilization_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "GPU Occupancy (Bottom 10 Jobs)",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Field": true,
+                  "instance": true,
+                  "job": true,
+                  "monitor": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Field": "",
+                  "Mean": "Mean Util. (%)",
+                  "job": "",
+                  "jobid": "Job ID",
+                  "user": "User"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "Mean Util. (%)"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 80
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 50
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max Mem (%)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Job ID"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "title": "Job ${__value.raw} Dashboard",
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean Mem (%)"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 0,
+            "y": 444
+          },
+          "id": 21,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "GPU Memory Usage (Top 10 Jobs)",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "joinByField",
+              "options": {
+                "byField": "jobid",
+                "mode": "inner"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Field": true,
+                  "Field 2": true,
+                  "user 2": true
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Field 1": "",
+                  "Max": "Max Mem (%)",
+                  "Mean": "Mean Mem (%)",
+                  "jobid": "Job ID",
+                  "user": "User",
+                  "user 1": "User"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Max Mem (%)"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false,
+                "minWidth": 80
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 50
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max Mem (%)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Job ID"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "title": "Job ${__value.raw} Dashboard",
+                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean Mem (%)"
+                },
+                "properties": [
+                  {
+                    "id": "decimals",
+                    "value": 1
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 12,
+            "x": 12,
+            "y": 444
+          },
+          "id": 22,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "max by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"}))) / count by (jobid,user) (rocm_vram_used_percentage * on (instance) group_left(jobid,user) (count by (instance,jobid,user) (rmsjob_info{jobid=~\"^\\\\d+\"})))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "GPU Memory Usage (Bottom 10 Jobs)",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": true,
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "joinByField",
+              "options": {
+                "byField": "jobid",
+                "mode": "inner"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Field": true,
+                  "Field 2": true,
+                  "user 2": true
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Max": "Max Mem (%)",
+                  "Mean": "Mean Mem (%)",
+                  "jobid": "Job ID",
+                  "user": "User",
+                  "user 1": "User"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "Max Mem (%)"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "limit",
+              "options": {}
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Jobs - Rankings",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
         "y": 16
       },
       "id": 8,
@@ -2826,7 +2668,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6595
+            "y": 10905
           },
           "id": 28,
           "options": {
@@ -3097,7 +2939,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -3109,7 +2952,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6596
+            "y": 923
           },
           "id": 23,
           "options": {
@@ -3244,7 +3087,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 769
+            "y": 2253
           },
           "id": 26,
           "options": {
@@ -3328,7 +3171,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1174
+            "y": 2316
           },
           "id": 6,
           "options": {
@@ -3462,7 +3305,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1183
+            "y": 2325
           },
           "id": 29,
           "options": {
@@ -3570,7 +3413,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1183
+            "y": 2325
           },
           "id": 103,
           "options": {
@@ -3680,7 +3523,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -3700,7 +3544,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2050
+            "y": 925
           },
           "id": 102,
           "options": {
@@ -3796,7 +3640,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -3816,7 +3661,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2352
+            "y": 1270
           },
           "id": 38,
           "options": {
@@ -3912,7 +3757,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -3932,7 +3778,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2352
+            "y": 1270
           },
           "id": 39,
           "options": {
@@ -4028,7 +3874,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -4048,7 +3895,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2361
+            "y": 1279
           },
           "id": 109,
           "options": {
@@ -4158,7 +4005,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4170,7 +4018,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 771
+            "y": 926
           },
           "id": 106,
           "options": {
@@ -4266,7 +4114,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4278,7 +4127,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 938
+            "y": 1271
           },
           "id": 119,
           "options": {
@@ -4374,7 +4223,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4386,7 +4236,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 947
+            "y": 1280
           },
           "id": 104,
           "options": {
@@ -4482,7 +4332,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4494,7 +4345,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 947
+            "y": 1280
           },
           "id": 105,
           "options": {
@@ -4604,7 +4455,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4616,7 +4468,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 190
+            "y": 2037
           },
           "id": 124,
           "options": {
@@ -4712,7 +4564,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -4724,7 +4577,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 240
+            "y": 2110
           },
           "id": 125,
           "options": {
@@ -4848,7 +4701,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 191
+            "y": 4196
           },
           "id": 123,
           "options": {
@@ -4938,7 +4791,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "/d/fdxiufe2bkyrkd/rms-node?var-node=${__value.raw}&${__url_time_range}"
+                        "url": "d/fdxiufe2bkyrkd/rms-node?var-node=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -4950,7 +4803,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 200
+            "y": 4205
           },
           "id": 108,
           "options": {
@@ -5083,7 +4936,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5098,7 +4952,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 209
+            "y": 24
           },
           "id": 35,
           "options": {
@@ -5190,7 +5044,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5205,7 +5060,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 217
+            "y": 88
           },
           "id": 65,
           "options": {
@@ -5297,7 +5152,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5312,7 +5168,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 217
+            "y": 88
           },
           "id": 66,
           "options": {
@@ -5420,7 +5276,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5436,7 +5293,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 145
+            "y": 930
           },
           "id": 118,
           "options": {
@@ -5468,6 +5325,114 @@
             }
           ],
           "title": "Aggregate CPU Memory (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 1018
+          },
+          "id": 134,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "100 - (sum by (instance) (node_memory_MemAvailable_bytes) / sum by (instance) (node_memory_MemTotal_bytes)) * 100",
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "CPU Memory (%)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -5542,7 +5507,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5558,7 +5524,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 110
+            "y": 338
           },
           "id": 92,
           "options": {
@@ -5604,6 +5570,226 @@
             }
           ],
           "title": "Aggregate IO Bandwidth",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 346
+          },
+          "id": 135,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(node_disk_read_bytes_total[$__rate_interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "IO Bandwidth per Node - Read",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 346
+          },
+          "id": 136,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(node_disk_written_bytes_total[$__rate_interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "IO Bandwidth per Node - Write",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
           "type": "timeseries"
         }
       ],
@@ -5669,7 +5855,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5685,7 +5872,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 119
+            "y": 27
           },
           "id": 121,
           "options": {
@@ -5709,7 +5896,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(sum by (instance) (rate(node_network_receive_bytes_total[$__rate_interval])))",
+              "expr": "sum(rate(node_network_receive_bytes_total[$__rate_interval]))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,
@@ -5721,7 +5908,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(sum by (instance) (rate(node_network_transmit_bytes_total[$__rate_interval])))",
+              "expr": "sum(rate(node_network_transmit_bytes_total[$__rate_interval]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted",
@@ -5736,6 +5923,224 @@
               "options": {
                 "regex": "(.*):(.*)",
                 "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 35
+          },
+          "id": 137,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(node_network_receive_bytes_total[$__rate_interval]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Ethernet Bandwidth - Received",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 35
+          },
+          "id": 138,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(node_network_transmit_bytes_total[$__rate_interval]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Ethernet Bandwidth - Transmitted",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
               }
             }
           ],
@@ -5804,7 +6209,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5820,7 +6226,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2001
+            "y": 44
           },
           "id": 115,
           "options": {
@@ -5925,7 +6331,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5941,7 +6348,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2009
+            "y": 52
           },
           "id": 96,
           "options": {
@@ -6033,7 +6440,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6049,7 +6457,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2009
+            "y": 52
           },
           "id": 94,
           "options": {
@@ -6141,7 +6549,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6157,7 +6566,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2017
+            "y": 60
           },
           "id": 93,
           "options": {
@@ -6249,7 +6658,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6265,7 +6675,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2017
+            "y": 60
           },
           "id": 95,
           "options": {
