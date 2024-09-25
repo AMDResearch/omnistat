@@ -580,8 +580,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -700,8 +699,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -832,8 +830,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -956,8 +953,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1099,8 +1095,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "green",
@@ -1156,7 +1151,7 @@
             "h": 12,
             "w": 5,
             "x": 0,
-            "y": 263
+            "y": 591
           },
           "id": 12,
           "options": {
@@ -1270,8 +1265,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "green",
@@ -1327,7 +1321,7 @@
             "h": 12,
             "w": 5,
             "x": 5,
-            "y": 263
+            "y": 591
           },
           "id": 20,
           "options": {
@@ -1431,8 +1425,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "green",
@@ -1495,7 +1488,7 @@
             "h": 12,
             "w": 7,
             "x": 10,
-            "y": 263
+            "y": 591
           },
           "id": 21,
           "options": {
@@ -1637,8 +1630,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "green",
@@ -1701,7 +1693,7 @@
             "h": 12,
             "w": 7,
             "x": 17,
-            "y": 263
+            "y": 591
           },
           "id": 22,
           "options": {
@@ -1842,8 +1834,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "green",
@@ -1889,7 +1880,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 483
+            "y": 811
           },
           "id": 37,
           "options": {
@@ -2018,8 +2009,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2138,7 +2128,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 264
+            "y": 592
           },
           "id": 99,
           "interval": "5s",
@@ -2378,8 +2368,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2419,7 +2408,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 265
+            "y": 593
           },
           "id": 28,
           "options": {
@@ -2690,8 +2679,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2703,7 +2691,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 266
+            "y": 594
           },
           "id": 23,
           "options": {
@@ -2823,8 +2811,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2839,7 +2826,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 267
+            "y": 595
           },
           "id": 26,
           "options": {
@@ -2923,7 +2910,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 403
+            "y": 731
           },
           "id": 6,
           "options": {
@@ -3045,8 +3032,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -3058,7 +3044,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 412
+            "y": 740
           },
           "id": 29,
           "options": {
@@ -3154,8 +3140,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -3167,7 +3152,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 412
+            "y": 740
           },
           "id": 103,
           "options": {
@@ -3277,8 +3262,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -3298,7 +3282,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 268
+            "y": 596
           },
           "id": 102,
           "options": {
@@ -3394,8 +3378,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -3415,7 +3398,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 377
+            "y": 705
           },
           "id": 38,
           "options": {
@@ -3511,8 +3494,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -3532,7 +3514,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 377
+            "y": 705
           },
           "id": 39,
           "options": {
@@ -3628,8 +3610,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -3649,7 +3630,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 386
+            "y": 714
           },
           "id": 109,
           "options": {
@@ -3759,8 +3740,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -3772,7 +3752,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 269
+            "y": 597
           },
           "id": 106,
           "options": {
@@ -3868,8 +3848,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -3881,7 +3860,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 342
+            "y": 670
           },
           "id": 104,
           "options": {
@@ -3977,8 +3956,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -3990,7 +3968,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 342
+            "y": 670
           },
           "id": 105,
           "options": {
@@ -4099,8 +4077,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4115,7 +4092,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2206
+            "y": 2534
           },
           "id": 101,
           "options": {
@@ -4184,8 +4161,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4218,7 +4194,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2215
+            "y": 2543
           },
           "id": 108,
           "options": {
@@ -4351,8 +4327,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4367,7 +4342,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 271
+            "y": 19
           },
           "id": 35,
           "options": {
@@ -4459,8 +4434,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4475,7 +4449,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 327
+            "y": 291
           },
           "id": 65,
           "options": {
@@ -4567,8 +4541,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4583,7 +4556,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 327
+            "y": 291
           },
           "id": 66,
           "options": {
@@ -4638,6 +4611,141 @@
         "x": 0,
         "y": 19
       },
+      "id": 116,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 92,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(sum by (instance) (rate(node_network_receive_bytes_total[$__rate_interval])))",
+              "instant": false,
+              "legendFormat": "Received",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(sum by (instance) (rate(node_network_transmit_bytes_total[$__rate_interval])))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Transmitted",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Aggregate Ethernet Bandwidth",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "Network - Ethernet Bandwidth",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
       "id": 67,
       "panels": [
         {
@@ -4689,8 +4797,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4706,9 +4813,9 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 272
+            "y": 29
           },
-          "id": 92,
+          "id": 115,
           "options": {
             "legend": {
               "calcs": [],
@@ -4730,7 +4837,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
+              "expr": "sum(sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,
@@ -4742,7 +4849,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum((sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) group_left(jobid,user) (label_replace(rmsjob_info{jobid=~\"^\\\\d+\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))))",
+              "expr": "sum(sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])))",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted",
@@ -4750,7 +4857,7 @@
               "refId": "B"
             }
           ],
-          "title": "Infiniband Bandwidth - Allocated Nodes",
+          "title": "Aggregate Infiniband Bandwidth",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -4811,8 +4918,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4828,7 +4934,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 280
+            "y": 37
           },
           "id": 96,
           "options": {
@@ -4920,8 +5026,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4937,7 +5042,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 280
+            "y": 37
           },
           "id": 94,
           "options": {
@@ -5029,8 +5134,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5046,7 +5150,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 288
+            "y": 45
           },
           "id": 93,
           "options": {
@@ -5138,8 +5242,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5155,7 +5258,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 288
+            "y": 45
           },
           "id": 95,
           "options": {
