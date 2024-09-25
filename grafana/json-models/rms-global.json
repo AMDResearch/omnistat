@@ -1151,7 +1151,7 @@
             "h": 12,
             "w": 5,
             "x": 0,
-            "y": 591
+            "y": 4671
           },
           "id": 12,
           "options": {
@@ -1321,7 +1321,7 @@
             "h": 12,
             "w": 5,
             "x": 5,
-            "y": 591
+            "y": 4671
           },
           "id": 20,
           "options": {
@@ -1488,7 +1488,7 @@
             "h": 12,
             "w": 7,
             "x": 10,
-            "y": 591
+            "y": 4671
           },
           "id": 21,
           "options": {
@@ -1693,7 +1693,7 @@
             "h": 12,
             "w": 7,
             "x": 17,
-            "y": 591
+            "y": 4671
           },
           "id": 22,
           "options": {
@@ -1880,7 +1880,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 811
+            "y": 5312
           },
           "id": 37,
           "options": {
@@ -2128,7 +2128,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 592
+            "y": 4672
           },
           "id": 99,
           "interval": "5s",
@@ -2408,7 +2408,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 593
+            "y": 6382
           },
           "id": 28,
           "options": {
@@ -2691,7 +2691,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 594
+            "y": 6383
           },
           "id": 23,
           "options": {
@@ -2826,7 +2826,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 595
+            "y": 556
           },
           "id": 26,
           "options": {
@@ -2883,7 +2883,7 @@
               "refId": "C"
             }
           ],
-          "title": "Cluster Utilization (%)",
+          "title": "Aggregate Cluster Utilization (%)",
           "type": "timeseries"
         },
         {
@@ -2910,7 +2910,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 731
+            "y": 961
           },
           "id": 6,
           "options": {
@@ -3044,7 +3044,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 740
+            "y": 970
           },
           "id": 29,
           "options": {
@@ -3152,7 +3152,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 740
+            "y": 970
           },
           "id": 103,
           "options": {
@@ -3282,7 +3282,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 596
+            "y": 1837
           },
           "id": 102,
           "options": {
@@ -3398,7 +3398,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 705
+            "y": 2139
           },
           "id": 38,
           "options": {
@@ -3514,7 +3514,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 705
+            "y": 2139
           },
           "id": 39,
           "options": {
@@ -3630,7 +3630,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 714
+            "y": 2148
           },
           "id": 109,
           "options": {
@@ -3752,9 +3752,117 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 597
+            "y": 558
           },
           "id": 106,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": false,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rocm_average_socket_power_watts) ",
+              "instant": false,
+              "legendFormat": "Power",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Aggregate GPU Power",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*), (.*)",
+                "renamePattern": "Node: $1 (card $3)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue"
+                  }
+                ]
+              },
+              "unit": "watt"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 725
+          },
+          "id": 119,
           "options": {
             "legend": {
               "calcs": [],
@@ -3785,7 +3893,7 @@
               "refId": "A"
             }
           ],
-          "title": "GPU Power",
+          "title": "GPU Power per Node",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -3860,7 +3968,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 670
+            "y": 734
           },
           "id": 104,
           "options": {
@@ -3968,7 +4076,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 670
+            "y": 734
           },
           "id": 105,
           "options": {
@@ -4024,6 +4132,238 @@
         "w": 24,
         "x": 0,
         "y": 17
+      },
+      "id": 122,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "rotmhz"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 124,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance,card) (rocm_sclk_clock_mhz) ",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Clock Frequency per Node",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*), (.*)",
+                "renamePattern": "Node: $1 (card $3)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "rotmhz"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 27
+          },
+          "id": 125,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance,card) (rocm_mclk_clock_mhz) ",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Memory Clock Frequency per Node",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*), (.*)",
+                "renamePattern": "Node: $1 (card $3)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU - Frequency",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
       },
       "id": 107,
       "panels": [
@@ -4092,9 +4432,9 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2534
+            "y": 939
           },
-          "id": 101,
+          "id": 123,
           "options": {
             "legend": {
               "calcs": [],
@@ -4194,7 +4534,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2543
+            "y": 948
           },
           "id": 108,
           "options": {
@@ -4274,7 +4614,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 36,
       "panels": [
@@ -4342,7 +4682,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 19
+            "y": 669
           },
           "id": 35,
           "options": {
@@ -4449,7 +4789,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 291
+            "y": 685
           },
           "id": 65,
           "options": {
@@ -4556,7 +4896,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 291
+            "y": 685
           },
           "id": 66,
           "options": {
@@ -4609,7 +4949,258 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 20
+      },
+      "id": 117,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 562
+          },
+          "id": 118,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "100 - (sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Aggregate CPU Memory (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "CPU - Memory",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 120,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 1778
+          },
+          "id": 92,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(node_disk_read_bytes_total[$__rate_interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Read",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(node_disk_written_bytes_total[$__rate_interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Write",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Aggregate IO Bandwidth",
+          "type": "timeseries"
+        }
+      ],
+      "title": "IO - Disk Bandwidth",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
       },
       "id": 116,
       "panels": [
@@ -4678,9 +5269,9 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 1948
           },
-          "id": 92,
+          "id": 121,
           "options": {
             "legend": {
               "calcs": [],
@@ -4744,7 +5335,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 23
       },
       "id": 67,
       "panels": [
@@ -4813,7 +5404,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 29
+            "y": 1788
           },
           "id": 115,
           "options": {
@@ -4934,7 +5525,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 37
+            "y": 1796
           },
           "id": 96,
           "options": {
@@ -5042,7 +5633,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 37
+            "y": 1796
           },
           "id": 94,
           "options": {
@@ -5150,7 +5741,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 45
+            "y": 1804
           },
           "id": 93,
           "options": {
@@ -5258,7 +5849,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 45
+            "y": 1804
           },
           "id": 95,
           "options": {
