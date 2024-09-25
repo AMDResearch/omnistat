@@ -1,4 +1,4 @@
-name: Test System mode
+name: System mode
 on:
   push:
     branches:  [ main, dev ]
