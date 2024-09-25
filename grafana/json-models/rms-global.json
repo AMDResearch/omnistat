@@ -67,217 +67,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 0,
-        "y": 1
-      },
-      "id": 1,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.3.0-75826",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count(rmsjob_info{jobid=~\"^\\\\d+\"})",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Number of Active Jobs",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 5,
-        "y": 1
-      },
-      "id": 33,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.3.0-75826",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count(rmsjob_info{jobid=~\"^\\\\d+\", batchflag=\"1\"})",
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Number of Active Batch Jobs",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 14,
-        "x": 10,
-        "y": 1
-      },
-      "id": 3,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "max"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.3.0-75826",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "expr": "count(count by (jobid) (rmsjob_info{jobid=~\"^\\\\d.+\"}))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Max Number of Jobs Running During Timeframe",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "mappings": [],
           "thresholds": {
@@ -295,14 +85,14 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
+        "w": 6,
         "x": 0,
-        "y": 5
+        "y": 1
       },
       "id": 31,
       "options": {
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -314,6 +104,78 @@
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "count(rocm_num_gpus)",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Nodes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "id": 126,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -332,74 +194,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total Number of GPUs",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "description": "Number of GPUs in nodes allocated to active jobs.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 5,
-        "y": 5
-      },
-      "id": 41,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "11.3.0-75826",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (rmsjob_info{jobid=~\"^\\\\d+\"}))",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Number of Active GPUs",
+      "title": "Number of GPUs",
       "type": "stat"
     },
     {
@@ -435,9 +230,9 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
-        "x": 10,
-        "y": 5
+        "w": 6,
+        "x": 12,
+        "y": 1
       },
       "id": 30,
       "options": {
@@ -454,6 +249,9 @@
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -508,9 +306,9 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
-        "x": 17,
-        "y": 5
+        "w": 6,
+        "x": 18,
+        "y": 1
       },
       "id": 32,
       "options": {
@@ -527,6 +325,9 @@
           "values": false
         },
         "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
         "textMode": "auto",
         "wideLayout": true
       },
@@ -549,12 +350,623 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 5
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count(rmsjob_info{jobid=~\"^\\\\d+\"})",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Jobs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "description": "Number of GPUs in nodes allocated to active jobs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 5
+      },
+      "id": 41,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (rmsjob_info{jobid=~\"^\\\\d+\"}))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Number of Allocated GPUs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "description": "Average 1m Load Average.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 5
+      },
+      "id": 128,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "avg(node_load1)",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Load Average",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 5
+      },
+      "id": 130,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "100 - (sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Memory",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "count(count by (jobid) (rmsjob_info{jobid=~\"^\\\\d.+\"}))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Max Number of Jobs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 9
+      },
+      "id": 132,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 72
+        },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "count(rocm_utilization_percentage * on (instance) group_left() (rmsjob_info{jobid=~\"^\\\\d+\"}))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Max Number of Allocated GPUs",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 9
+      },
+      "id": 129,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]))",
+          "instant": false,
+          "legendFormat": "Rx",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Tx",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Network: Infiniband",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${source}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
+      "id": 131,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.3.0-75826",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_disk_read_bytes_total[$__rate_interval]))",
+          "instant": false,
+          "legendFormat": "Read",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(node_disk_written_bytes_total[$__rate_interval]))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Write",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "IO",
+      "type": "stat"
+    },
+    {
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 13
       },
       "id": 111,
       "panels": [
@@ -580,7 +992,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -608,7 +1021,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 10
+            "y": 14
           },
           "id": 110,
           "options": {
@@ -699,7 +1112,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -727,7 +1141,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 10
+            "y": 14
           },
           "id": 114,
           "options": {
@@ -830,7 +1244,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -858,7 +1273,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 16
+            "y": 20
           },
           "id": 112,
           "options": {
@@ -953,7 +1368,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -981,7 +1397,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 16
+            "y": 20
           },
           "id": 113,
           "options": {
@@ -1068,7 +1484,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 14
       },
       "id": 97,
       "panels": [
@@ -1151,7 +1567,7 @@
             "h": 12,
             "w": 5,
             "x": 0,
-            "y": 4671
+            "y": 4860
           },
           "id": 12,
           "options": {
@@ -1321,7 +1737,7 @@
             "h": 12,
             "w": 5,
             "x": 5,
-            "y": 4671
+            "y": 4860
           },
           "id": 20,
           "options": {
@@ -1488,7 +1904,7 @@
             "h": 12,
             "w": 7,
             "x": 10,
-            "y": 4671
+            "y": 4860
           },
           "id": 21,
           "options": {
@@ -1693,7 +2109,7 @@
             "h": 12,
             "w": 7,
             "x": 17,
-            "y": 4671
+            "y": 4860
           },
           "id": 22,
           "options": {
@@ -1880,7 +2296,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5312
+            "y": 5501
           },
           "id": 37,
           "options": {
@@ -1982,7 +2398,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 15
       },
       "id": 98,
       "panels": [
@@ -2128,7 +2544,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 4672
+            "y": 4861
           },
           "id": 99,
           "interval": "5s",
@@ -2315,7 +2731,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 16
       },
       "id": 8,
       "panels": [
@@ -2408,7 +2824,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6382
+            "y": 6571
           },
           "id": 28,
           "options": {
@@ -2644,7 +3060,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 17
       },
       "id": 25,
       "panels": [
@@ -2691,7 +3107,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6383
+            "y": 6572
           },
           "id": 23,
           "options": {
@@ -2757,7 +3173,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 18
       },
       "id": 9,
       "panels": [
@@ -2826,7 +3242,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 556
+            "y": 745
           },
           "id": 26,
           "options": {
@@ -2910,7 +3326,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 961
+            "y": 1150
           },
           "id": 6,
           "options": {
@@ -3044,7 +3460,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 970
+            "y": 1159
           },
           "id": 29,
           "options": {
@@ -3152,7 +3568,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 970
+            "y": 1159
           },
           "id": 103,
           "options": {
@@ -3207,7 +3623,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 19
       },
       "id": 40,
       "panels": [
@@ -3282,7 +3698,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1837
+            "y": 2026
           },
           "id": 102,
           "options": {
@@ -3398,7 +3814,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2139
+            "y": 2328
           },
           "id": 38,
           "options": {
@@ -3514,7 +3930,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2139
+            "y": 2328
           },
           "id": 39,
           "options": {
@@ -3630,7 +4046,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2148
+            "y": 2337
           },
           "id": 109,
           "options": {
@@ -3685,7 +4101,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 100,
       "panels": [
@@ -3752,7 +4168,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 558
+            "y": 747
           },
           "id": 106,
           "options": {
@@ -3860,7 +4276,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 725
+            "y": 914
           },
           "id": 119,
           "options": {
@@ -3968,7 +4384,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 734
+            "y": 923
           },
           "id": 104,
           "options": {
@@ -4076,7 +4492,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 734
+            "y": 923
           },
           "id": 105,
           "options": {
@@ -4131,7 +4547,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 21
       },
       "id": 122,
       "panels": [
@@ -4199,7 +4615,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 166
           },
           "id": 124,
           "options": {
@@ -4308,7 +4724,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 216
           },
           "id": 125,
           "options": {
@@ -4363,7 +4779,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 22
       },
       "id": 107,
       "panels": [
@@ -4417,7 +4833,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4432,7 +4849,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 939
+            "y": 167
           },
           "id": 123,
           "options": {
@@ -4501,7 +4918,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4534,7 +4952,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 948
+            "y": 176
           },
           "id": 108,
           "options": {
@@ -4614,7 +5032,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 36,
       "panels": [
@@ -4667,7 +5085,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4682,7 +5101,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 669
+            "y": 185
           },
           "id": 35,
           "options": {
@@ -4774,7 +5193,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4789,7 +5209,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 685
+            "y": 193
           },
           "id": 65,
           "options": {
@@ -4881,7 +5301,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4896,7 +5317,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 685
+            "y": 193
           },
           "id": 66,
           "options": {
@@ -4949,7 +5370,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "id": 117,
       "panels": [
@@ -5004,7 +5425,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5020,7 +5442,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 562
+            "y": 121
           },
           "id": 118,
           "options": {
@@ -5073,7 +5495,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 120,
       "panels": [
@@ -5126,7 +5548,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5142,7 +5565,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1778
+            "y": 86
           },
           "id": 92,
           "options": {
@@ -5200,7 +5623,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 26
       },
       "id": 116,
       "panels": [
@@ -5253,7 +5676,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5269,7 +5693,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1948
+            "y": 95
           },
           "id": 121,
           "options": {
@@ -5335,7 +5759,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 27
       },
       "id": 67,
       "panels": [
@@ -5404,7 +5828,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1788
+            "y": 1977
           },
           "id": 115,
           "options": {
@@ -5525,7 +5949,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1796
+            "y": 1985
           },
           "id": 96,
           "options": {
@@ -5633,7 +6057,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1796
+            "y": 1985
           },
           "id": 94,
           "options": {
@@ -5741,7 +6165,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1804
+            "y": 1993
           },
           "id": 93,
           "options": {
@@ -5849,7 +6273,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1804
+            "y": 1993
           },
           "id": 95,
           "options": {
