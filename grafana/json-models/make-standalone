@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+
+import argparse
+import re
+
+import json
+
+
+def panel_contains_pattern(panel, pattern):
+    for target in panel.get("targets", []):
+        expr = target.get("expr", "")
+        if re.search(pattern, expr, re.IGNORECASE):
+            return True
+    return False
+
+
+def convert_url(url):
+    url = url.replace("/rms-", "/standalone-")
+    pattern = r"/d/([\w]+)/standalone-"
+    found = re.match(pattern, url)
+    if found:
+        uid = found.group(1)
+        url = url.replace(uid, f"{uid}-standalone")
+    return url
+
+
+def update_attribute(json_object, attribute, function):
+    if isinstance(json_object, dict):
+        for key, value in json_object.items():
+            if key == attribute:
+                json_object[key] = function(value)
+            update_attribute(value, attribute, function)
+    elif isinstance(json_object, list):
+        for item in json_object:
+            update_attribute(item, attribute, function)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input-dashboard", help="Input Grafana dashboard in JSON format", required=True, type=str)
+args = parser.parse_args()
+
+# Patterns to exclude panels and links in the standalone version.
+exclude_metric = r"rmsjob_"
+exclude_link = r"Job"
+
+with open(args.input_dashboard, "r") as f:
+    dashboard = json.load(f)
+
+title = dashboard["title"]
+uid = dashboard["uid"]
+panels = dashboard.get("panels", [])
+links = dashboard.get("links", [])
+
+# Update Grafana dashboard title and UID for standalone.
+dashboard["title"] = title.replace("rms-", "standalone-")
+dashboard["uid"] = f"{uid}-standalone"
+
+# Reset dashboard panels and links.
+dashboard["panels"] = []
+dashboard["links"] = []
+
+for panel in panels:
+    if not "panels" in panel:
+        if not panel_contains_pattern(panel, exclude_metric):
+            dashboard["panels"].append(panel)
+    else:
+        # Collapsed panels contain subpanels that also need to be evaluated.
+        subpanels = panel["panels"]
+        panel["panels"] = []
+
+        for subpanel in subpanels:
+            if not panel_contains_pattern(subpanel, exclude_metric):
+                panel["panels"].append(subpanel)
+
+        if len(panel["panels"]) > 0:
+            dashboard["panels"].append(panel)
+
+for link in links:
+    if "title" in link and exclude_link not in link["title"]:
+        dashboard["links"].append(link)
+
+update_attribute(dashboard, "url", convert_url)
+
+print(json.dumps(dashboard, indent=2))
