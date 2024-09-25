@@ -1082,7 +1082,7 @@
                 "includeByName": {},
                 "indexByName": {},
                 "renameByName": {
-                  "instance (count)": "Count",
+                  "instance (count)": "Number of GPUs",
                   "type": "Model"
                 }
               }
@@ -1143,7 +1143,7 @@
             "x": 12,
             "y": 14
           },
-          "id": 114,
+          "id": 112,
           "options": {
             "cellHeight": "sm",
             "footer": {
@@ -1174,32 +1174,26 @@
               "refId": "A"
             }
           ],
-          "title": "Omnistat Schema",
+          "title": "GPU Driver",
           "transformations": [
             {
               "id": "groupBy",
               "options": {
                 "fields": {
                   "driver_ver": {
-                    "aggregations": []
+                    "aggregations": [],
+                    "operation": "groupby"
                   },
                   "instance": {
                     "aggregations": [
-                      "count"
+                      "distinctCount"
                     ],
                     "operation": "aggregate"
-                  },
-                  "schema": {
-                    "aggregations": [],
-                    "operation": "groupby"
                   },
                   "type": {
                     "aggregations": [
                       "count"
                     ]
-                  },
-                  "vbios": {
-                    "aggregations": []
                   }
                 }
               }
@@ -1213,9 +1207,8 @@
                 "renameByName": {
                   "driver_ver": "Driver Version",
                   "instance (count)": "Count",
-                  "schema": "Schema Version",
-                  "type": "Model",
-                  "vbios": "VBIOS Version"
+                  "instance (distinctCount)": "Number of Nodes",
+                  "type": "Model"
                 }
               }
             }
@@ -1275,7 +1268,7 @@
             "x": 0,
             "y": 20
           },
-          "id": 112,
+          "id": 113,
           "options": {
             "cellHeight": "sm",
             "footer": {
@@ -1306,15 +1299,14 @@
               "refId": "A"
             }
           ],
-          "title": "GPU Driver Version",
+          "title": "GPU VBIOS",
           "transformations": [
             {
               "id": "groupBy",
               "options": {
                 "fields": {
                   "driver_ver": {
-                    "aggregations": [],
-                    "operation": "groupby"
+                    "aggregations": []
                   },
                   "instance": {
                     "aggregations": [
@@ -1326,6 +1318,10 @@
                     "aggregations": [
                       "count"
                     ]
+                  },
+                  "vbios": {
+                    "aggregations": [],
+                    "operation": "groupby"
                   }
                 }
               }
@@ -1338,8 +1334,9 @@
                 "indexByName": {},
                 "renameByName": {
                   "driver_ver": "Driver Version",
-                  "instance (count)": "Count",
-                  "type": "Model"
+                  "instance (count)": "Number of GPUs",
+                  "type": "Model",
+                  "vbios": "VBIOS Version"
                 }
               }
             }
@@ -1399,7 +1396,7 @@
             "x": 12,
             "y": 20
           },
-          "id": 113,
+          "id": 114,
           "options": {
             "cellHeight": "sm",
             "footer": {
@@ -1430,7 +1427,7 @@
               "refId": "A"
             }
           ],
-          "title": "GPU VBIOS Version",
+          "title": "Omnistat Schema",
           "transformations": [
             {
               "id": "groupBy",
@@ -1441,9 +1438,13 @@
                   },
                   "instance": {
                     "aggregations": [
-                      "count"
+                      "distinctCount"
                     ],
                     "operation": "aggregate"
+                  },
+                  "schema": {
+                    "aggregations": [],
+                    "operation": "groupby"
                   },
                   "type": {
                     "aggregations": [
@@ -1451,8 +1452,7 @@
                     ]
                   },
                   "vbios": {
-                    "aggregations": [],
-                    "operation": "groupby"
+                    "aggregations": []
                   }
                 }
               }
@@ -1466,6 +1466,8 @@
                 "renameByName": {
                   "driver_ver": "Driver Version",
                   "instance (count)": "Count",
+                  "instance (distinctCount)": "Number of Nodes",
+                  "schema": "Schema Version",
                   "type": "Model",
                   "vbios": "VBIOS Version"
                 }
@@ -1567,7 +1569,7 @@
             "h": 12,
             "w": 5,
             "x": 0,
-            "y": 4860
+            "y": 4884
           },
           "id": 12,
           "options": {
@@ -1737,7 +1739,7 @@
             "h": 12,
             "w": 5,
             "x": 5,
-            "y": 4860
+            "y": 4884
           },
           "id": 20,
           "options": {
@@ -1904,7 +1906,7 @@
             "h": 12,
             "w": 7,
             "x": 10,
-            "y": 4860
+            "y": 4884
           },
           "id": 21,
           "options": {
@@ -2109,7 +2111,7 @@
             "h": 12,
             "w": 7,
             "x": 17,
-            "y": 4860
+            "y": 4884
           },
           "id": 22,
           "options": {
@@ -2296,7 +2298,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5501
+            "y": 5525
           },
           "id": 37,
           "options": {
@@ -2544,7 +2546,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 4861
+            "y": 4885
           },
           "id": 99,
           "interval": "5s",
@@ -2824,7 +2826,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6571
+            "y": 6595
           },
           "id": 28,
           "options": {
@@ -3107,7 +3109,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6572
+            "y": 6596
           },
           "id": 23,
           "options": {
@@ -3242,7 +3244,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 745
+            "y": 769
           },
           "id": 26,
           "options": {
@@ -3326,7 +3328,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1150
+            "y": 1174
           },
           "id": 6,
           "options": {
@@ -3460,7 +3462,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1159
+            "y": 1183
           },
           "id": 29,
           "options": {
@@ -3568,7 +3570,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1159
+            "y": 1183
           },
           "id": 103,
           "options": {
@@ -3698,7 +3700,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2026
+            "y": 2050
           },
           "id": 102,
           "options": {
@@ -3814,7 +3816,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2328
+            "y": 2352
           },
           "id": 38,
           "options": {
@@ -3930,7 +3932,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2328
+            "y": 2352
           },
           "id": 39,
           "options": {
@@ -4046,7 +4048,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2337
+            "y": 2361
           },
           "id": 109,
           "options": {
@@ -4168,7 +4170,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 747
+            "y": 771
           },
           "id": 106,
           "options": {
@@ -4276,7 +4278,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 914
+            "y": 938
           },
           "id": 119,
           "options": {
@@ -4384,7 +4386,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 923
+            "y": 947
           },
           "id": 104,
           "options": {
@@ -4492,7 +4494,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 923
+            "y": 947
           },
           "id": 105,
           "options": {
@@ -4602,8 +4604,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -4615,7 +4616,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 166
+            "y": 190
           },
           "id": 124,
           "options": {
@@ -4711,8 +4712,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -4724,7 +4724,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 216
+            "y": 240
           },
           "id": 125,
           "options": {
@@ -4833,8 +4833,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4849,7 +4848,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 167
+            "y": 191
           },
           "id": 123,
           "options": {
@@ -4918,8 +4917,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4952,7 +4950,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 176
+            "y": 200
           },
           "id": 108,
           "options": {
@@ -5085,8 +5083,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5101,7 +5098,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 185
+            "y": 209
           },
           "id": 35,
           "options": {
@@ -5193,8 +5190,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5209,7 +5205,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 193
+            "y": 217
           },
           "id": 65,
           "options": {
@@ -5301,8 +5297,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5317,7 +5312,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 193
+            "y": 217
           },
           "id": 66,
           "options": {
@@ -5425,8 +5420,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5442,7 +5436,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 121
+            "y": 145
           },
           "id": 118,
           "options": {
@@ -5548,8 +5542,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5565,7 +5558,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 110
           },
           "id": 92,
           "options": {
@@ -5676,8 +5669,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5693,7 +5685,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 95
+            "y": 119
           },
           "id": 121,
           "options": {
@@ -5828,7 +5820,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1977
+            "y": 2001
           },
           "id": 115,
           "options": {
@@ -5949,7 +5941,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1985
+            "y": 2009
           },
           "id": 96,
           "options": {
@@ -6057,7 +6049,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1985
+            "y": 2009
           },
           "id": 94,
           "options": {
@@ -6165,7 +6157,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1993
+            "y": 2017
           },
           "id": 93,
           "options": {
@@ -6273,7 +6265,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1993
+            "y": 2017
           },
           "id": 95,
           "options": {
