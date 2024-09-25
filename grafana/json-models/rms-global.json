@@ -556,6 +556,524 @@
         "x": 0,
         "y": 9
       },
+      "id": 111,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 337
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "id": 110,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rocm_version_info",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Models",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "instance": {
+                    "aggregations": [
+                      "count"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "type": {
+                    "aggregations": [
+                      "count"
+                    ],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "instance (count)": "Count",
+                  "type": "Model"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 337
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
+          "id": 114,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rocm_version_info",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Omnistat Schema",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "driver_ver": {
+                    "aggregations": []
+                  },
+                  "instance": {
+                    "aggregations": [
+                      "count"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "schema": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  },
+                  "type": {
+                    "aggregations": [
+                      "count"
+                    ]
+                  },
+                  "vbios": {
+                    "aggregations": []
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "driver_ver": "Driver Version",
+                  "instance (count)": "Count",
+                  "schema": "Schema Version",
+                  "type": "Model",
+                  "vbios": "VBIOS Version"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 337
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "id": 112,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rocm_version_info",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Driver Version",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "driver_ver": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  },
+                  "instance": {
+                    "aggregations": [
+                      "count"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "type": {
+                    "aggregations": [
+                      "count"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "driver_ver": "Driver Version",
+                  "instance (count)": "Count",
+                  "type": "Model"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 337
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 16
+          },
+          "id": 113,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rocm_version_info",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU VBIOS Version",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "driver_ver": {
+                    "aggregations": []
+                  },
+                  "instance": {
+                    "aggregations": [
+                      "count"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "type": {
+                    "aggregations": [
+                      "count"
+                    ]
+                  },
+                  "vbios": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "driver_ver": "Driver Version",
+                  "instance (count)": "Count",
+                  "type": "Model",
+                  "vbios": "VBIOS Version"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Inventory",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
       "id": 97,
       "panels": [
         {
@@ -638,7 +1156,7 @@
             "h": 12,
             "w": 5,
             "x": 0,
-            "y": 10
+            "y": 263
           },
           "id": 12,
           "options": {
@@ -809,7 +1327,7 @@
             "h": 12,
             "w": 5,
             "x": 5,
-            "y": 10
+            "y": 263
           },
           "id": 20,
           "options": {
@@ -977,7 +1495,7 @@
             "h": 12,
             "w": 7,
             "x": 10,
-            "y": 10
+            "y": 263
           },
           "id": 21,
           "options": {
@@ -1183,7 +1701,7 @@
             "h": 12,
             "w": 7,
             "x": 17,
-            "y": 10
+            "y": 263
           },
           "id": 22,
           "options": {
@@ -1371,7 +1889,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 483
           },
           "id": 37,
           "options": {
@@ -1473,7 +1991,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 11
       },
       "id": 98,
       "panels": [
@@ -1620,7 +2138,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1037
+            "y": 264
           },
           "id": 99,
           "interval": "5s",
@@ -1807,7 +2325,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 12
       },
       "id": 8,
       "panels": [
@@ -1901,7 +2419,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1047
+            "y": 265
           },
           "id": 28,
           "options": {
@@ -2137,7 +2655,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 25,
       "panels": [
@@ -2185,7 +2703,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1057
+            "y": 266
           },
           "id": 23,
           "options": {
@@ -2251,7 +2769,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 14
       },
       "id": 9,
       "panels": [
@@ -2321,7 +2839,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1067
+            "y": 267
           },
           "id": 26,
           "options": {
@@ -2405,7 +2923,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1076
+            "y": 403
           },
           "id": 6,
           "options": {
@@ -2540,7 +3058,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1085
+            "y": 412
           },
           "id": 29,
           "options": {
@@ -2649,7 +3167,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1085
+            "y": 412
           },
           "id": 103,
           "options": {
@@ -2704,7 +3222,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 15
       },
       "id": 40,
       "panels": [
@@ -2780,7 +3298,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1095
+            "y": 268
           },
           "id": 102,
           "options": {
@@ -2897,7 +3415,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1104
+            "y": 377
           },
           "id": 38,
           "options": {
@@ -3014,7 +3532,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1104
+            "y": 377
           },
           "id": 39,
           "options": {
@@ -3131,7 +3649,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1113
+            "y": 386
           },
           "id": 109,
           "options": {
@@ -3186,7 +3704,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 16
       },
       "id": 100,
       "panels": [
@@ -3254,7 +3772,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1123
+            "y": 269
           },
           "id": 106,
           "options": {
@@ -3363,7 +3881,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1132
+            "y": 342
           },
           "id": 104,
           "options": {
@@ -3472,7 +3990,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1132
+            "y": 342
           },
           "id": 105,
           "options": {
@@ -3527,7 +4045,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 17
       },
       "id": 107,
       "panels": [
@@ -3597,7 +4115,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1142
+            "y": 2206
           },
           "id": 101,
           "options": {
@@ -3700,7 +4218,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1151
+            "y": 2215
           },
           "id": 108,
           "options": {
@@ -3780,7 +4298,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "id": 36,
       "panels": [
@@ -3849,7 +4367,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1160
+            "y": 271
           },
           "id": 35,
           "options": {
@@ -3957,7 +4475,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1168
+            "y": 327
           },
           "id": 65,
           "options": {
@@ -4065,7 +4583,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1168
+            "y": 327
           },
           "id": 66,
           "options": {
@@ -4118,7 +4636,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 67,
       "panels": [
@@ -4188,7 +4706,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1177
+            "y": 272
           },
           "id": 92,
           "options": {
@@ -4310,7 +4828,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1185
+            "y": 280
           },
           "id": 96,
           "options": {
@@ -4419,7 +4937,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1185
+            "y": 280
           },
           "id": 94,
           "options": {
@@ -4528,7 +5046,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1193
+            "y": 288
           },
           "id": 93,
           "options": {
@@ -4637,7 +5155,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1193
+            "y": 288
           },
           "id": 95,
           "options": {
@@ -4681,7 +5199,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "Network - Bandwidth",
+      "title": "Network - Infiniband Bandwidth",
       "type": "row"
     }
   ],
