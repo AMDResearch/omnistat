@@ -22,6 +22,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # -------------------------------------------------------------------------------
+#
+# make-standalone - Generate standalone dashboards from RMS dashboard
+#
+# Load RMS dashboard in JSON format, transform it into a standalone
+# dashboard, and print it to stdout. RMS dashboards are meant to be used with a
+# resource manager like SLURM and assume the `enable_rms` config option is
+# turned on. Standalone dashboards can be used without a resource manager.
+# 
+# The conversion to a standalone dashboard involves:
+#  1. Removing any panel that uses the `rmsjob_info` metric.
+#  2. Rewrite UID and update all URLs accordingly.
 
 import argparse
 import re
