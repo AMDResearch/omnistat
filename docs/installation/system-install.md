@@ -91,19 +91,22 @@ configuration options housed within an [omnistat/config/omnistat.default](https:
 ```shell-session
 Reading configuration from /home1/omnidc/omnistat/omnistat/config/omnistat.default
 Allowed query IPs = ['127.0.0.1']
-Disabling SLURM collector via host_skip match (login.*)
-Runtime library loaded from /opt/rocm-6.0.2/lib/librocm_smi64.so
+Runtime library loaded from /opt/rocm-6.2.1/lib/librocm_smi64.so
 SMI library API initialized
 SMI version >= 6
 Number of GPU devices = 4
 GPU topology indexing: Scanning devices from /sys/class/kfd/kfd/topology/nodes
 --> Mapping: {0: '3', 1: '2', 2: '1', 3: '0'}
---> [registered] rocm_temperature_edge_celsius -> Temperature (Sensor edge) (C) (gauge)
+--> Using primary temperature location at edge
+--> Using HBM temperature location at hbm_0
+--> [registered] rocm_temperature_celsius -> Temperature (C) (gauge)
+--> [registered] rocm_temperature_hbm_celsius -> HBM Temperature (C) (gauge)
 --> [registered] rocm_average_socket_power_watts -> Average Graphics Package Power (W) (gauge)
 --> [registered] rocm_sclk_clock_mhz -> current sclk clock speed (Mhz) (gauge)
 --> [registered] rocm_mclk_clock_mhz -> current mclk clock speed (Mhz) (gauge)
 --> [registered] rocm_vram_total_bytes -> VRAM Total Memory (B) (gauge)
 --> [registered] rocm_vram_used_percentage -> VRAM Memory in Use (%) (gauge)
+--> [registered] rocm_vram_busy_percentage -> Memory controller activity (%) (gauge)
 --> [registered] rocm_utilization_percentage -> GPU use (%) (gauge)
 [2024-07-09 13:19:33 -0500] [2995880] [INFO] Starting gunicorn 21.2.0
 [2024-07-09 13:19:33 -0500] [2995880] [INFO] Listening at: http://0.0.0.0:8001 (2995880)
@@ -131,6 +134,7 @@ rocm_average_socket_power_watts{card="0"} 35.0
 ...
 ```
 
+Once local functionality has been established, you can terminate the interactive test (ctrl-c) and proceed with an automated startup procedure.
 
 
 ### Enable systemd service
@@ -152,6 +156,27 @@ Using elevated credentials, install the omnistat.service file across all desired
 
 ---
 
+## Host telemetry
+
+As mentioned in the [intro](../introduction.md) discussion, we recommend enablement of the popular [node-exporter](https://github.com/prometheus/node_exporter) client for host-level monitoring including CPU load, host memory usage, I/O, and network traffic.  This client is available in most standard distros and we highlight common package manager installs below. Alternatively, you can download binary distributions from [here](https://prometheus.io/download/#node_exporter).
+
+For Debian-based systems:
+```shell-session
+# apt-get install prometheus-node-exporter
+```
+For RHEL:
+```shell-session
+# dnf install golang-github-prometheus-node-exporter
+```
+For SUSE:
+```shell-session
+#  zypper install golang-github-prometheus-node_exporter
+```
+
+The relevant OS package should be installed on all desired cluster hosts and enabled for execution (e.g. `systemctl enable prometheus-node-exporter` on a RHEL9-based system).
+
+---
+
 ## Prometheus server
 
 Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlights installation via package manager followed by a simple scrape configuration.
@@ -167,14 +192,14 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
    ```
    For RHEL:
    ```shell-session
-   # rpm -ivh golang-github-prometheus
+   # dnf install golang-github-prometheus
    ```
    For SUSE:
    ```shell-session
    #  zypper install golang-github-prometheus-prometheus
    ```
 
-2. Configuration: add a scrape configuration to Prometheus to enable telemetry collection. This configuration stanza typically resides in the `/etc/prometheus/prometheus.yml` runtime config file and controls which nodes to poll and at what frequency. The example below highlights addition of an omnistat job that polls for data at 30 second intervals from four separate compute nodes.  We recommend keeping the `scrape_interval` setting at 5 seconds or larger.
+2. Configuration: add a scrape configuration to Prometheus to enable telemetry collection. This configuration stanza typically resides in the `/etc/prometheus/prometheus.yml` runtime config file and controls which nodes to poll and at what frequency. The example below highlights configuration of two Prometheus jobs.  The first enables an omnistat job to poll GPU data at 30 second intervals from four separate compute nodes.  The second job enables collection of the recommended node-exporter to collect host-level data at a similar frequency (default node-exporter port is). We recommend keeping the `scrape_interval` setting at 5 seconds or larger.
 
    ```
    scrape_configs:
@@ -187,6 +212,16 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
            - compute-01:8001
            - compute-02:8001
            - compute-03:8001
+
+      - job_name: "node"
+       scrape_interval:  30s
+       scrape_timeout:   5s  
+       static_configs:
+         - targets:
+           - compute-00:9100
+           - compute-01:9100
+           - compute-02:9100
+           - compute-03:9100
    ```
 
 Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection.
@@ -203,7 +238,6 @@ ExecStart=/usr/bin/prometheus $ARGS --storage.tsdb.retention.time=3y
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
 SendSIGKILL=no
-
 ```
 
 ## Ansible example
