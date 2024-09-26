@@ -47,4 +47,6 @@ To import a dashboard:
 
 ![Global dashboard screenshot](images/dashboard-global.png)
 
+![Node dashboard screenshot](images/dashboard-node.png)
+
 ![Job dashboard screenshot](images/dashboard-job.png)
