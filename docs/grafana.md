@@ -51,7 +51,7 @@ such as network ports, but may require changes depending on the environment.
 The following variables represent the most relevant dashboard settings:
 - `source`: Name of the Prometheus data source where the data is stored.
    Defaults to `prometheus`.
-- `omnistat_exporter_port`: Port of the Omnistat monitor. Defaults to `8000`.
+- `omnistat_exporter_port`: Port of the Omnistat monitor. Defaults to `8001`.
 - `node_exporter_port`: Port of the Prometheus Node Exporter. Defaults to `9100`.
 
 To configure a dashboard:
