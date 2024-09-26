@@ -18,7 +18,7 @@ To reiterate, the following assumptions are made throughout the rest of this sys
 
 __Assumptions__:
 * Installer has `sudo` or elevated credentials to install software system-wide, enable systemd services, and optionally modify the local SLURM configuration
-* [ROCm](https://rocm.docs.amd.com/en/latest/) v5.7 or newer is pre-installed on all GPU hosts
+* [ROCm](https://rocm.docs.amd.com/en/latest/) v6.1 or newer is pre-installed on all GPU hosts
 * Installer has provisioned a dedicated user (eg. `omnidc`) across all desired compute nodes of their system
 * Installer has identified a location to host a Prometheus server (if not present already) that has network access to all compute nodes.
 
@@ -120,10 +120,10 @@ While the client is running interactively, we can use a _separate_ command shell
 ```shell-session
 [omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
 rocm_num_gpus 4.0
-rocm_temperature_edge_celsius{card="3"} 40.0
-rocm_temperature_edge_celsius{card="2"} 43.0
-rocm_temperature_edge_celsius{card="1"} 43.0
-rocm_temperature_edge_celsius{card="0"} 42.0
+rocm_temperature_celsius{card="3",location="edge"} 38.0
+rocm_temperature_celsius{card="2",location="edge"} 43.0
+rocm_temperature_celsius{card="1",location="edge"} 40.0
+rocm_temperature_celsius{card="0",location="edge"} 54.0
 rocm_average_socket_power_watts{card="3"} 35.0
 rocm_average_socket_power_watts{card="2"} 33.0
 rocm_average_socket_power_watts{card="1"} 35.0
