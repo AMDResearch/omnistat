@@ -339,5 +339,5 @@ Note that this recipe assumes existence of a dedicated non-root user to run the 
 .. code-block:: bash
    :caption: roles/omnistat/templates/prometheus-node-exporter.j2
 
-    ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats --collector.meminfo --collector.stat --collector.infiniband'
+    ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats --collector.meminfo --collector.stat --collector.netdev --collector.infiniband'
 ```
