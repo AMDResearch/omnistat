@@ -1,7 +1,6 @@
 pyyaml
 importlib-metadata
 Flask>=2.3.2
-flask_prometheus_metrics>=1.0.0
 prometheus_client>=0.17.0
 gunicorn>=21.2.0
 packaging>=24.1
