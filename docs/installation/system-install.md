@@ -240,7 +240,7 @@ TimeoutStopSec=20s
 SendSIGKILL=no
 ```
 
-## Ansible example
+<!-- ## Ansible example
 
 For a cluster or data center deployment, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat.
 
@@ -300,4 +300,4 @@ systemd service. This example is provided as a starting reference for system adm
       file:
         path: "{{ omnistat_tmp }}"
         state: absent
-```
+``` -->
