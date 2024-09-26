@@ -111,9 +111,9 @@ class AMDSMI(Collector):
         self.__GPUMetrics = {}
         self.__metricMapping = {}
         self.__indexMapping = {}
-        self.__dumpMappedMetricsOnly = False # TODO should be a config option
+        self.__dumpMappedMetricsOnly = False  # TODO should be a config option
         # verify minimum version met
-        check_min_version("23.4.0") # Rocm 6.0.2
+        check_min_version("23.4.0")  # Rocm 6.0.2
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
@@ -133,14 +133,13 @@ class AMDSMI(Collector):
         numGPUs_metric.set(self.__num_gpus)
 
         # Register Total VRAM for GPU metric Duplicated for support
-        total_vram_metric = Gauge(
-            self.__prefix + "total_vram", "Total VRAM available on GPU", labelnames=["card"])
+        total_vram_metric = Gauge(self.__prefix + "total_vram", "Total VRAM available on GPU",
+                                  labelnames=["card"])
 
         # determine GPU index mapping (i.e. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         bdfMapping = {}
         for index, device in enumerate(self.__devices):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
-            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
         self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
 
@@ -244,8 +243,6 @@ class AMDSMI(Collector):
                 old_metric_name = self.__prefix + old_metric
                 if old_metric and old_metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[old_metric_name] = Gauge(old_metric_name, f"{old_metric}", labelnames=["card"])
-
-
         return
 
     def updateMetrics(self):

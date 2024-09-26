@@ -66,7 +66,7 @@ def get_gpu_processes(device):
             # Catch all for unsupported rocm version for process info
             return result
         # Ignore the Omnistat process itself for the reading
-        if p['name'] == 'python3' and (p['mem'] == 4096 or p["memory_usage"]["vram_mem"] == 12288) or p['name'] == 'omnistat':
+        if p["name"] == "python3" and (p["mem"] == 4096 or p["memory_usage"]["vram_mem"] == 12288) or p["name"] == "omnistat":
             continue
         result.append(p)
     return result
@@ -96,10 +96,8 @@ class AMDSMIProcess(Collector):
         bdfMapping = {}
         for index, device in enumerate(self.__devices):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
-            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
         self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
-
 
         metric_vram = Gauge(
             f"{self.__prefix}vram",
