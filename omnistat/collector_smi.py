@@ -22,7 +22,7 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""ROCM-smi data collector
+"""ROCM-smi based data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
 rocm smi library.  The ROCm runtime must be pre-installed to use this data

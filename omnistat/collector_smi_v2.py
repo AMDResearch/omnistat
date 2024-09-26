@@ -22,7 +22,7 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""amd-smi data collector
+"""amd-smi based data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
 amd-smi library.  The ROCm runtime must be pre-installed to use this data
@@ -95,7 +95,7 @@ def check_min_version(minVersion):
 class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
-        self.__prefix = "amdsmi_"
+        self.__prefix = "rocm_"
         self.__schema = 1.0
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
