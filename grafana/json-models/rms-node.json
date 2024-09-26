@@ -2283,7 +2283,7 @@
       {
         "hide": 2,
         "name": "omnistat_exporter_port",
-        "query": "8000",
+        "query": "8001",
         "skipUrlSync": true,
         "type": "constant"
       },
