@@ -31,17 +31,31 @@ ensure the Prometheus data source has been added to Grafana, and then import
 the sample dashboards.
 
 To add a data source to Grafana:
-1. Click Connections in the left-side menu.
-2. Enter "Prometheus" in the search dialog, and click the "Prometheus" button
+1. Click **Connections** in the left-side menu.
+2. Enter "Prometheus" in the search dialog, and click the **Prometheus** button
    under the search box.
 3. Configure the new Prometehus data source following instructions and provide
    the hostname and port where Omnistat's Prometheus server is running.
 
 To import a dashboard:
-1. Click Dashboards in the left-side menu.
-2. Click New and select New Dashboard from the drop-down menu.
-3. On the dashboard, click + Add visualization.
+1. Click **Dashboards** in the left-side menu.
+2. Click **New** and select **New Dashboard** from the drop-down menu.
+3. On the dashboard, click **+ Add visualization**.
 4. Upload the dashboard JSON file.
+
+Sample dashboards are configured using standard default values for settings
+such as network ports, but may require changes depending on the environment.
+The following variables represent the most relevant dashboard settings:
+- `source`: Name of the Prometheus data source where the data is stored.
+   Defaults to `prometheus`.
+- `omnistat_exporter_port`: Port of the Omnistat monitor. Defaults to `8000`.
+- `node_exporter_port`: Port of the Prometheus Node Exporter. Defaults to `9100`.
+
+To configure a dashboard:
+1. Open a dashboard in edit mode.
+2. Click **Dashboard settings** located at the top of the page.
+3. Click **Variables**.
+4. Click the desired variable and update its value.
 
 ## Example screenshots
 
