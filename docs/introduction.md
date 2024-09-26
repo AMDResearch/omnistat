@@ -17,9 +17,13 @@ Omnistat provides a set of utilities to aid cluster administrators or individual
 * GPU utilization (occupancy)
 * High-bandwidth memory (HBM) usage
 * GPU power
-* GPU temperature
+* GPU temperature(s)
 * GPU clock frequency (Mhz)
 * GPU memory clock frequency (Mhz)
+* Inventory information:
+  * ROCm driver version
+  * GPU type
+  * GPU vBIOS version
 
 To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
 
