@@ -102,4 +102,4 @@ Omnistat can be _optionally_ configured to map telemetry tracking to specific jo
 * number of nodes allocated
 * batch vs interactive job
 
-Additional details on enabling this integration are discussed in the [Installation](./installation/index.md) section. In addition, job-oriented dashboards leveraging this feature are included in the companion [Grafana](./grafana.md) discussion.
+Additional details on enabling this integration are discussed in the system-mode [Installation](./installation/system-install.md/#slurm-integration) section. In addition, job-oriented dashboards leveraging this feature are included in the companion [Grafana](./grafana.md) discussion.
