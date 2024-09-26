@@ -9,12 +9,17 @@
 Dashboards allow showing real-time cluster telemetry data in a visual form.
 Omnistat provides a few sample dashboards for system-wide deployments in
 clusters:
-- [Standalone Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone.json):
+- [Standalone Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
   includes an overview of the system, with telemetry for each one of the
   GPUs; works without a resource manager.
+- [Standalone Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-node.json):
+  detailed metrics for a single node in the cluster; works without a resource
+  manager.
 - [Resource Manager Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-global.json):
   provides an overview of the system with a resource manager, includes job
   indices, and cluster-level telemetry.
+- [Resource Manager Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-node.json):
+  detailed metrics and job allocation for a single node in the cluster.
 - [Resource Manager Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-job.json):
   provides detailed time-series data, load distribution, and other metrics for
   a single job in a system with a resource manager.
