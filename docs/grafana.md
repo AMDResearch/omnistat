@@ -7,23 +7,25 @@
 ```
 
 Dashboards allow cluster telemetry data to be visualized interactively in near real-time.
-Omnistat provides several sample dashboards for cluster-wide deployments that vary depending on whether resource manager integration is desired or not (screenshots of the variants with resource manager integration enabled are highlighted in [Example Screenshots](#example-screenshots)). JSON sources for example dashboards that can be used in local deployments are highlighted below. Note that in addition to querying GPU data gathered with the Omnistat data collector, these panels example also assume that [node-exporter](https://github.com/prometheus/node_exporter) data is also being collected.
+Omnistat provides several sample dashboards for cluster-wide deployments that vary depending on whether resource manager integration is desired or not (screenshots of the variants with resource manager integration enabled are highlighted in [Example Screenshots](#example-screenshots)). JSON sources for example dashboards that can be used in local deployments are highlighted below. Note that in addition to querying GPU data gathered with the Omnistat data collector, these example dashboards assume that [node-exporter](https://github.com/prometheus/node_exporter) data is also being collected.
 
+- *RMS* dashboards provide integration with *Resource Managers* like
+  SLURM.
+  - [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-global.json):
+    provides an overview of the system, cluster-level telemetry for allocated
+    and unallocated nodes, and job indices.
+  - [Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-node.json):
+    job allocation timeline and detailed metrics for a single node in the
+    cluster.
+  - [Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-job.json):
+    provides detailed time-series data, load distribution, and other metrics for
+    a single job.
+- *Standalone* dashboards are meant to work without a resource manager.
+  - [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
+    provides an overview of the system and cluster-level telemetry.
+  - [Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-node.json):
+    detailed metrics for a single node in the cluster.
 
-- [Standalone Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
-  includes an overview of the system, with telemetry for each one of the
-  GPUs; works without a resource manager.
-- [Standalone Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-node.json):
-  detailed metrics for a single node in the cluster; works without a resource
-  manager.
-- [Resource Manager Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-global.json):
-  provides an overview of the system with a resource manager, includes job
-  indices, and cluster-level telemetry.
-- [Resource Manager Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-node.json):
-  detailed metrics and job allocation for a single node in the cluster.
-- [Resource Manager Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-job.json):
-  provides detailed time-series data, load distribution, and other metrics for
-  a single job in a system with a resource manager.
 
 ## Import dashboards
 
