@@ -80,25 +80,21 @@ exclude_link = r"Job"
 with open(args.input_dashboard, "r") as f:
     dashboard = json.load(f)
 
+# Update Grafana dashboard title and UID for standalone.
 title = dashboard["title"]
 uid = dashboard["uid"]
-panels = dashboard.get("panels", [])
-links = dashboard.get("links", [])
-
-# Update Grafana dashboard title and UID for standalone.
 dashboard["title"] = title.replace("rms-", "standalone-")
 dashboard["uid"] = f"{uid}-standalone"
 
-# Reset dashboard panels and links.
+# First pass to remove panels that contain matching pattern.
+panels = dashboard.get("panels", [])
 dashboard["panels"] = []
-dashboard["links"] = []
-
 for panel in panels:
     if not "panels" in panel:
         if not panel_contains_pattern(panel, exclude_metric):
             dashboard["panels"].append(panel)
     else:
-        # Collapsed panels contain subpanels that also need to be evaluated.
+        # Collapsible panels contain subpanels that also need to be evaluated.
         subpanels = panel["panels"]
         panel["panels"] = []
 
@@ -106,9 +102,30 @@ for panel in panels:
             if not panel_contains_pattern(subpanel, exclude_metric):
                 panel["panels"].append(subpanel)
 
-        if len(panel["panels"]) > 0:
+        # Keep all expanded row panels because there is no way to know if they
+        # will be empty at this point.
+        expanded = not panel["collapsed"] if "collapsed" in panel else False
+        if expanded or len(panel["panels"]) > 0:
             dashboard["panels"].append(panel)
 
+# Second pass over panels to remove empty expanded row panels.
+panels = dashboard.get("panels", [])
+dashboard["panels"] = []
+for i, panel in enumerate(panels):
+    expanded = not panel["collapsed"] if "collapsed" in panel else False
+    last = True if i == len(panels) - 1 else False
+
+    empty = False
+    if expanded and last:
+        empty = True
+    elif expanded and not last:
+        empty = panels[i + 1]["type"] == "row"
+
+    if not empty:
+        dashboard["panels"].append(panel)
+
+links = dashboard.get("links", [])
+dashboard["links"] = []
 for link in links:
     if "title" in link and exclude_link not in link["title"]:
         dashboard["links"].append(link)
