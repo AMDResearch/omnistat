@@ -8,13 +8,12 @@
 
 ## Installing Omnistat
 
-1. Create a virtual environment in a shared directory, with Python 3.8, 3.9,
-   or 3.10.
+1. Create a virtual environment in a shared directory, with Python 3.8 or higher.
    ```
    $ python -m venv ~/omnistat
    ```
 
-2. From to root directory of the Omnistat repository, install omnistat in
+2. From the root directory of the Omnistat repository, install omnistat in
    the virtual environment.
    ```
    $ ~/omnistat/bin/python -m pip install .[query]
@@ -23,24 +22,20 @@
 ## Running a SLURM Job
 
 In the SLURM job script, add the following lines to start and stop the data
-collection before and after running the application.
+collection before and after running the application (this example highlights use of a 10 second sampling interval).
 
 ```
 export OMNISTAT_CONFIG=~/omnistat/omnistat.config
 
 # Start data collector
-~/omnistat/bin/omnistat-util --start --interval 1
+~/omnistat/bin/omnistat-usermode --start --interval 10
 
-# Run application
-sleep 10
+# Run application(s) as normal
+srun <options> ./a.out
 
-# Stop data collector
-~/omnistat/bin/omnistat-util --stop
-
-# Query server to generate job report
-~/omnistat/bin/omnistat-util --startserver
-~/omnistat/bin/omnistat-util --job ${SLURM_JOB_ID}
-~/omnistat/bin/omnistat-util --stopserver
+# End of job - generate summary report and stop data collection
+~/omnistat/bin/omnistat-query --job ${SLURM_JOB_ID} --interval 10
+~/omnistat/bin/omnistat-usermode --stop
 ```
 
 ## Exploring results with a local Docker environment
