@@ -6,9 +6,10 @@
    :maxdepth: 4
 ```
 
-Dashboards allow showing real-time cluster telemetry data in a visual form.
-Omnistat provides a few sample dashboards for system-wide deployments in
-clusters:
+Dashboards allow cluster telemetry data to be visualized interactively in near real-time.
+Omnistat provides several sample dashboards for cluster-wide deployments that vary depending on whether resource manager integration is desired or not (screenshots of the variants with resource manager integration enabled are highlighted in [Example Screenshots](#example-screenshots)). JSON sources for example dashboards that can be used in local deployments are highlighted below. Note that in addition to querying GPU data gathered with the Omnistat data collector, these panels example also assume that [node-exporter](https://github.com/prometheus/node_exporter) data is also being collected.
+
+
 - [Standalone Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
   includes an overview of the system, with telemetry for each one of the
   GPUs; works without a resource manager.
@@ -57,6 +58,7 @@ To configure a dashboard:
 3. Click **Variables**.
 4. Click the desired variable and update its value.
 
+(example-screenshots)=
 ## Example screenshots
 
 ![Global dashboard screenshot](images/dashboard-global.png)
