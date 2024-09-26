@@ -364,18 +364,18 @@ An optional info metric capability exists within Omnistat to allow collected tel
 1. To enable resource manager tracking on the Omnistat client side, edit the chosen runtime config file and update the `[omnistat.collectors]` and `[omnistat.collectors.rms]` sections to have the following settings highlighted in yellow.
 
 ```eval_rst
-.. code-block:: yaml
+.. code-block:: ini
    :caption: omnistat.default
    :emphasize-lines: 4,7-8
 
    [omnistat.collectors]
-    port = 8000
-    enable_rocm_smi = True
-    enable_rms = True
+   port = 8001
+   enable_rocm_smi = True
+   enable_rms = True
 
-    [omnistat.collectors.rms]
-    job_detection_mode = file-based
-    job_detection_file = /tmp/omni_rmsjobinfo
+   [omnistat.collectors.rms]
+   job_detection_mode = file-based
+   job_detection_file = /tmp/omni_rmsjobinfo
 ```
 The settings above enable the resource manager collector and configures Omnistat to query the `/tmp/omni_rmsjobinfo` file to derive dynamic job information.  This file can be generated using the `omnistat-rms-env` utility from within an actively running job, or during prolog execution.  The resulting file contains a simple JSON format as follows:
 
