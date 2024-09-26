@@ -42,7 +42,6 @@ import sys
 import gunicorn.app.base
 
 from flask import Flask, request, abort, jsonify
-from flask_prometheus_metrics import register_metrics
 
 from omnistat import utils
 from omnistat.monitor import Monitor
@@ -95,11 +94,10 @@ def main():
     # preserve the state of the collectors.
     def post_fork(server, worker):
         monitor.initMetrics()
-        #register_metrics(app, app_version="v0.1.0", app_config="production")
         app.route("/metrics")(monitor.updateAllMetrics)
         app.route("/shutdown")(shutdown)
 
-    listenPort = config["omnistat.collectors"].get("port", 8000)
+    listenPort = config["omnistat.collectors"].get("port", 8001)
     options = {
         "bind": "%s:%s" % ("0.0.0.0", listenPort),
         "workers": 1,

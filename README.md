@@ -1,4 +1,5 @@
-[![Ubuntu/SLURM](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml)
+[![System mode](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml)
+[![User mode](https://github.com/AMDResearch/omnistat/actions/workflows/test-user.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test-user.yml)
 
 # Omnistat
 

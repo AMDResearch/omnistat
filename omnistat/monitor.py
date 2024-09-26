@@ -55,10 +55,20 @@ class Monitor:
         self.runtimeConfig["collector_enable_amd_smi"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi", False
         )
+
+        # verify only one SMI collector is enabled
+        if self.runtimeConfig["collector_enable_rocm_smi"] and self.runtimeConfig["collector_enable_amd_smi"]:
+            logging.error("")
+            logging.error("[ERROR]: Only one SMI GPU data collector may be configured at a time.")
+            logging.error("")
+            logging.error('Please choose either "enable_rocm_smi" or "enable_amd_smi" in runtime config')
+            sys.exit(1)
+
         self.runtimeConfig["collector_enable_amd_smi_process"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi_process", False
         )
-        self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8000)
+        self.runtimeConfig["collector_enable_events"] = config["omnistat.collectors"].getboolean("enable_events", False)
+        self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8001)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
 
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
@@ -125,6 +135,10 @@ class Monitor:
                     jobDetection=self.jobDetection,
                 )
             )
+        if self.runtimeConfig["collector_enable_events"]:
+            from omnistat.collector_events import ROCMEvents
+
+            self.__collectors.append(ROCMEvents())
 
         # Initialize all metrics
         for collector in self.__collectors:

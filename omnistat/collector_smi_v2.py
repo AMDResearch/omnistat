@@ -22,17 +22,20 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""amd-smi data collector
+"""amd-smi based data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
 amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following example highlights example metrics:
+metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following 
+example highlights example metrics:
 
 amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
-amdsmi_temperature_celsius{card="0"} 42.0
+amdsmi_temperature_celsius{card="0",location="edge"} 42.0
+amdsmi_temperature_hbm_celsius{card="0",location="hbm_0"} 46.0
 amdsmi_utilization_percentage{card="0"} 0.0
 amdsmi_vram_used_percentage{card="0"} 0.0
+amdsmi_vram_busy_percentage{card="0"} 22.0
 amdsmi_average_socket_power_watts{card="0"} 35.0
 amdsmi_mlck_clock_mhz{card="0"} 1200.0
 amdsmi_slck_clock_mhz{card="0"} 300.0
@@ -99,7 +102,8 @@ def check_min_version(minVersion):
 class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
-        self.__prefix = "amdsmi_"
+        self.__prefix = "rocm_"
+        self.__schema = 1.0
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
         self.__num_gpus = 0
@@ -140,15 +144,36 @@ class AMDSMI(Collector):
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
         self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
 
+        # version info metric
+        version_metric = Gauge(
+            self.__prefix + "version_info",
+            "GPU versioning information",
+            labelnames=["card", "driver_ver", "vbios", "type", "schema"],
+        )
+
+        for idx, device in enumerate(self.__devices):
+            gpuLabel = self.__indexMapping[idx]
+            vbios_info = smi.amdsmi_get_gpu_vbios_info(device)
+            vbios = vbios_info["part_number"]
+            asic_info = smi.amdsmi_get_gpu_asic_info(device)
+            devtype = asic_info["market_name"]
+
+            driver_info = smi.amdsmi_get_gpu_driver_info(device)
+            gpuDriverVer = driver_info["driver_version"]
+
+            version_metric.labels(
+                card=gpuLabel, driver_ver=gpuDriverVer, vbios=vbios, type=devtype, schema=self.__schema
+            ).set(1)
+
         # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
         self.__metricMapping = {
             # core GPU metric definitions
             "average_gfx_activity": "utilization_percentage",
             "vram_total": "vram_total_bytes",
             "average_socket_power": "average_socket_power_watts",
-            "temperature_edge": "temperature_celsius",
             "current_gfxclks": "sclk_clock_mhz",
             "average_uclk_frequency": "mclk_clock_mhz",
+            "average_umc_activity": "vram_busy_percentage",
         }
 
         # Register memory related metrics
@@ -158,6 +183,40 @@ class AMDSMI(Collector):
         self.__GPUMetrics["vram_used_percentage"] = Gauge(
             self.__prefix + "vram_used_percentage", "VRAM Memory in Use (%)", labelnames=["card"]
         )
+
+        # Cache valid primary temperature location and register with location label
+        dev0 = self.__devices[0]
+        for item in smi.AmdSmiTemperatureType:
+            temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            if temperature > 0:
+                self.__temp_location_index = item
+                self.__temp_location_name = item.name.lower()
+                logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
+                break
+        self.__GPUMetrics["temperature_celsius"] = Gauge(
+            self.__prefix + "temperature_celsius", "Temperature (C)", labelnames=["card", "location"]
+        )
+
+        # Cache valid HBM temperature location and register with location
+        # label (note: not available on all parts)
+        self.__temp_hbm_location_index = None
+        dev0 = self.__devices[0]
+        for item in smi.AmdSmiTemperatureType:
+            if "HBM" not in item.name:
+                continue
+            try:
+                temperature = smi.amdsmi_get_temp_metric(dev0, item, smi.AmdSmiTemperatureMetric.CURRENT)
+            except smi.AmdSmiException:
+                continue
+            if temperature > 0:
+                self.__temp_hbm_location_index = item
+                self.__temp_hbm_location_name = item.name.lower()
+                logging.info("--> Using HBM temperature location at %s" % self.__temp_hbm_location_name)
+                break
+        if self.__temp_hbm_location_index:
+            self.__GPUMetrics["temperature_hbm_celsius"] = Gauge(
+                self.__prefix + "temperature_hbm_celsius", "HBM Temperature (C)", labelnames=["card", "location"]
+            )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
         for idx, device in enumerate(self.__devices):
@@ -205,6 +264,21 @@ class AMDSMI(Collector):
             vram_used_bytes = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
             percentage = round(100.0 * vram_used_bytes / device_total_vram, 4)
             self.__GPUMetrics["vram_used_percentage"].labels(card=cardId).set(percentage)
+
+            # temperature-related stats
+            temperature = smi.amdsmi_get_temp_metric(
+                device, self.__temp_location_index, smi.AmdSmiTemperatureMetric.CURRENT
+            )
+            self.__GPUMetrics["temperature_celsius"].labels(card=cardId, location=self.__temp_location_name).set(
+                temperature
+            )
+            if self.__temp_hbm_location_index:
+                hbm_temperature = smi.amdsmi_get_temp_metric(
+                    device, self.__temp_hbm_location_index, smi.AmdSmiTemperatureMetric.CURRENT
+                )
+                self.__GPUMetrics["temperature_hbm_celsius"].labels(
+                    card=cardId, location=self.__temp_hbm_location_name
+                ).set(hbm_temperature)
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)

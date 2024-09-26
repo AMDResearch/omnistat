@@ -17,10 +17,13 @@ Omnistat provides a set of utilities to aid cluster administrators or individual
 * GPU utilization (occupancy)
 * High-bandwidth memory (HBM) usage
 * GPU power
-* GPU temperature
+* GPU temperature(s)
 * GPU clock frequency (Mhz)
 * GPU memory clock frequency (Mhz)
-* GPU throttling events
+* Inventory information:
+  * ROCm driver version
+  * GPU type
+  * GPU vBIOS version
 
 To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
 
@@ -33,10 +36,6 @@ Omnistat utilities can be deployed with two primary use-cases in mind that diffe
 1. __User-mode monitoring__: does not require administrative rights and can be run entirely within user-space. This case is typically exercised by end application users running on production SLURM clusters who want to gather telemetry data within a single SLURM job allocation.  Frequently, this approach is performed entirely within a command-line `ssh` environment but Omnistat includes support for downloading data after a job for visualization with a dockerized Grafana environment. Alternatively, standalone query utilities can be used to summarize collected metrics at the conclusion of a SLURM job.
 
 To demonstrate the overall data collection architecture employed by Omnistat in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
-
-<!-- ![System Mode](images/architecture_system-mode.png)
-
-![User Mode](images/architecture_user-mode.png) -->
 
 ```{figure} images/architecture_system-mode.png
 ---
@@ -51,6 +50,8 @@ name: fig-user-mode
 User-mode monitoring
 
 In the __system-wide monitoring__ case, a system administrator enables data collectors permanently on all relevant hosts within the cluster and configures a Prometheus server to periodically poll these nodes (e.g. at 1 minute or 5 minute intervals). The Prometheus server typically runs on the cluster head node (or separate administrative host) and does not require GPU resources locally. For real-time and historical queries, the system administrator also enables a Grafana instance that queries the Prometheus datastore to provide a variety of visualizations with collected data. Example visualization panels using this approach are highlighted in the [Grafana](./grafana.md) section.
+
+In addition to enabling GPU metrics collection in the __system-wide monitoring__ case, sites may also wish to collect host-side metrics (CPU load, memory usage, etc). Other open-source Prometheus collectors exist for this purpose and we recommend enabling the [node-exporter](https://github.com/prometheus/node_exporter) in combination with Omnistat.  
 
 Conversely, in the __user-mode__ case,  Omnistat data collector(s) and a companion prometheus server are deployed temporarily on hosts assigned to a user's SLURM job.  At the end of the job, Omnistat utilities can query cached telemetry data to summarize GPU utilization details or it can be visualized offline after the job completes. An example command-line summary from this user-mode approach is highlighted as follows:
 
@@ -82,8 +83,8 @@ Version = 0.2.0
 
 The basic minimum dependencies to enable data collection via Omnistat tools in user-mode are as follows:
 
-* [ROCm](https://rocm.docs.amd.com/en/latest)
-* Python dependencies (see top-level requirements.txt)
+* [ROCm](https://rocm.docs.amd.com/en/latest) (v6.1.0 or newer )
+* Python dependencies (see top-level [requirements.txt](https://github.com/AMDResearch/omnistat/blob/main/requirements.txt))
 
 System administrators wishing to deploy a system-wide GPU monitoring capability with near real-time visualization will also need one or more servers to host two additional services:
 
@@ -91,6 +92,14 @@ System administrators wishing to deploy a system-wide GPU monitoring capability 
 * [Prometheus server](https://prometheus.io/docs/prometheus/latest/getting_started/) - used to periodically poll and aggregate data from multiple compute nodes
 
 
-<!-- ## Additional Features
+## Resource Manager Integration
 
-TODO: discuss SLURM integration -->
+Omnistat can be _optionally_ configured to map telemetry tracking to specific job Ids when using the popular [SLURM](https://github.com/SchedMD/slurm) resource manager.  This is accomplished via enablement of a Prometheus info metric that tracks node-level job assignments and makes the following metadata available to Prometheus:
+
+* job id
+* username
+* partition name
+* number of nodes allocated
+* batch vs interactive job
+
+Additional details on enabling this integration are discussed in the system-mode [Installation](./installation/system-install.md/#slurm-integration) section. In addition, job-oriented dashboards leveraging this feature are included in the companion [Grafana](./grafana.md) discussion.

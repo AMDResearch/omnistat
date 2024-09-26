@@ -22,7 +22,7 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-"""ROCM-smi data collector
+"""ROCM-smi based data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
 rocm smi library.  The ROCm runtime must be pre-installed to use this data
@@ -30,10 +30,12 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with a "rocm" prefix with individual cards denotes by labels. The
 following example highlights example metrics for card 0:
 
-rocm_temperature_celsius{card="0"} 41.0
+rocm_temperature_celsius{card="0",location="edge"} 41.0
+rocm_temperature_hbm_celsius{card="0",location="hbm_0"} 46.0
 rocm_average_socket_power_watts{card="0"} 35.0
 rocm_sclk_clock_mhz{card="0"} 1502.0
 rocm_mclk_clock_mhz{card="0"} 1200.0
+rocm_vram_busy_percentage{card="0"} 22.0
 rocm_vram_total_bytes{card="0"} 3.4342961152e+010
 rocm_vram_used_percentage{card="0"} 0.0198
 rocm_utilization_percentage{card="0"} 0.0
@@ -43,6 +45,7 @@ import ctypes
 import logging
 import os
 import sys
+from enum import IntEnum
 from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 from omnistat.collector_base import Collector
@@ -105,6 +108,22 @@ class rsmi_version_t(ctypes.Structure):
     ]
 
 
+class rsmi_sw_component_t(ctypes.c_int):
+    RSMI_SW_COMP_FIRST = 0x0
+    RSMI_SW_COMP_DRIVER = RSMI_SW_COMP_FIRST
+    RSMI_SW_COMP_LAST = RSMI_SW_COMP_DRIVER
+
+
+class rsmi_temperature_type_t(IntEnum):
+    RSMI_TEMP_TYPE_EDGE = 0
+    RSMI_TEMP_TYPE_JUNCTION = 1
+    RSMI_TEMP_TYPE_MEMORY = 2
+    RSMI_TEMP_TYPE_HBM_0 = 3
+    RSMI_TEMP_TYPE_HBM_1 = 4
+    RSMI_TEMP_TYPE_HBM_2 = 5
+    RSMI_TEMP_TYPE_HBM_3 = 6
+
+
 # --
 
 
@@ -112,6 +131,7 @@ class ROCMSMI(Collector):
     def __init__(self, rocm_path="/opt/rocm"):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
+        self.__schema = 1.0
 
         # load smi runtime
         smi_lib = rocm_path + "/lib/librocm_smi64.so"
@@ -131,6 +151,12 @@ class ROCMSMI(Collector):
 
             self.__rsmi_frequencies_type = get_rsmi_frequencies_type(self.__smiVersion)
 
+            # driver version
+            ver_str = ctypes.create_string_buffer(256)
+            self.__libsmi.rsmi_version_str_get(rsmi_sw_component_t.RSMI_SW_COMP_DRIVER, ver_str, 256)
+            assert ret_init == 0
+            self.__gpuDriverVer = ver_str.value.decode()
+
         else:
             logging.error("")
             logging.error("ERROR: Unable to load SMI library.")
@@ -146,11 +172,6 @@ class ROCMSMI(Collector):
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
-        # proto_devices = self.__libsmi.rsmi_num_monitor_devices
-        # # proto_devices.argtypes = [ctypes.byref(ctypes.c_uint32)]
-        # # proto_devices.argtype = [ctypes.pointer(ctypes.c_uint32)]
-        # # proto_devices.restype = ctypes.c_int
-        # # proto_devices = ctypes.CFUNCTYPE(ctypes.c_int,ctypes.byref(ctypes.c_uint32))
 
         numDevices = ctypes.c_uint32(0)
         ret = self.__libsmi.rsmi_num_monitor_devices(ctypes.byref(numDevices))
@@ -172,30 +193,76 @@ class ROCMSMI(Collector):
             guidMapping[i] = guid.value
         self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
+        # version info metric
+        version_metric = Gauge(
+            self.__prefix + "version_info",
+            "GPU versioning information",
+            labelnames=["card", "driver_ver", "vbios", "type", "schema"],
+        )
+        for i in range(self.__num_gpus):
+            gpuLabel = self.__indexMapping[i]
+            ver_str = ctypes.create_string_buffer(256)
+            device = ctypes.c_uint32(i)
+
+            self.__libsmi.rsmi_dev_vbios_version_get(device, ver_str, 256)
+            vbios = ver_str.value.decode()
+
+            self.__libsmi.rsmi_dev_name_get(device, ver_str, 256)
+            devtype = ver_str.value.decode()
+
+            version_metric.labels(
+                card=gpuLabel, driver_ver=self.__gpuDriverVer, vbios=vbios, type=devtype, schema=self.__schema
+            ).set(1)
+
         # register desired metric names
         self.__GPUmetrics = {}
 
         # temperature: note that temperature queries require a location index to be supplied that can
         # vary depending on hardware (e.g. RSMI_TEMP_TYPE_EDGE vs RSMI_TEMP_TYPE_JUNCTION). During init,
-        # check which is available cache index of first non-zero response.
+        # check which is available and cache index/location of first non-zero response.
 
         maxTempLocations = 4
         temperature = ctypes.c_int64(0)
         temp_metric = ctypes.c_int32(0)  # 0=RSMI_TEMP_CURRENT
         device = ctypes.c_uint32(0)
 
-        for index in range(maxTempLocations):
-            temp_location = ctypes.c_int32(index)
+        # primary temperature location
+        for temp_type in rsmi_temperature_type_t:
+            temp_location = ctypes.c_int32(temp_type.value)
             ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
             if ret == 0 and temperature.value > 0:
                 self.__temp_location_index = temp_location
+                self.__temp_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
+                logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
+                break
+
+        # HBM memory location (not available on all parts)
+        self.__temp_hbm_location_index = None
+        for temp_type in rsmi_temperature_type_t:
+            temp_location = ctypes.c_int32(temp_type.value)
+            if "HBM" not in temp_type.name:
+                continue
+            ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
+            if ret == 0 and temperature.value > 0:
+                self.__temp_hbm_location_index = temp_location
+                self.__temp_hbm_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
+                logging.info("--> Using HBM temperature location at %s" % self.__temp_hbm_location_name)
                 break
 
         self.registerGPUMetric(
             self.__prefix + "temperature_celsius",
             "gauge",
-            "Temperature(C), RSMI Index = %i" % self.__temp_location_index.value,
+            "Temperature (C)",
+            labelExtra=["location"],
         )
+
+        if self.__temp_hbm_location_index:
+            self.registerGPUMetric(
+                self.__prefix + "temperature_hbm_celsius",
+                "gauge",
+                "HBM Temperature (C)",
+                labelExtra=["location"],
+            )
 
         # power
         self.registerGPUMetric(
@@ -207,6 +274,7 @@ class ROCMSMI(Collector):
         # memory
         self.registerGPUMetric(self.__prefix + "vram_total_bytes", "gauge", "VRAM Total Memory (B)")
         self.registerGPUMetric(self.__prefix + "vram_used_percentage", "gauge", "VRAM Memory in Use (%)")
+        self.registerGPUMetric(self.__prefix + "vram_busy_percentage", "gauge", "Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
 
@@ -219,12 +287,16 @@ class ROCMSMI(Collector):
     # --------------------------------------------------------------------------------------
     # Additional custom methods unique to this collector
 
-    def registerGPUMetric(self, metricName, type, description):
+    def registerGPUMetric(self, metricName, type, description, labelExtra=None):
         if metricName in self.__GPUmetrics:
             logging.error("Ignoring duplicate metric name addition: %s" % (name))
             return
         if type == "gauge":
-            self.__GPUmetrics[metricName] = Gauge(metricName, description, labelnames=["card"])
+            labelnames = ["card"]
+            if labelExtra:
+                for entry in labelExtra:
+                    labelnames.append(entry)
+            self.__GPUmetrics[metricName] = Gauge(metricName, description, labelnames=labelnames)
 
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
         else:
@@ -241,13 +313,16 @@ class ROCMSMI(Collector):
         temp_location = ctypes.c_int32(0)  # 0=RSMI_TEMP_TYPE_EDGE
         power = ctypes.c_uint64(0)
         power_type = rsmi_power_type_t()
-        # freq = rsmi_frequencies_t()
         freq = self.__rsmi_frequencies_type
         freq_system_clock = 0  # 0=RSMI_CLK_TYPE_SYS
         freq_mem_clock = 4  # 4=RSMI_CLK_TYPE_MEM
         vram_total = ctypes.c_uint64(0)
         vram_used = ctypes.c_uint64(0)
+        vram_busy = ctypes.c_uint32(0)
         utilization = ctypes.c_uint32(0)
+        pcie_sent = ctypes.c_uint64(0)
+        pcie_received = ctypes.c_uint64(0)
+        pcie_max_pkt_sz = ctypes.c_uint64(0)
 
         for i in range(self.__num_gpus):
 
@@ -260,7 +335,20 @@ class ROCMSMI(Collector):
             ret = self.__libsmi.rsmi_dev_temp_metric_get(
                 device, self.__temp_location_index, temp_metric, ctypes.byref(temperature)
             )
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(temperature.value / 1000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_location_name).set(
+                temperature.value / 1000.0
+            )
+
+            # --
+            # HBM temperature [millidegrees Celcius, converted to degrees Celcius]
+            if self.__temp_hbm_location_index:
+                metric = self.__prefix + "temperature_hbm_celsius"
+                ret = self.__libsmi.rsmi_dev_temp_metric_get(
+                    device, self.__temp_hbm_location_index, temp_metric, ctypes.byref(temperature)
+                )
+                self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_hbm_location_name).set(
+                    temperature.value / 1000.0
+                )
 
             # --
             # average socket power [micro Watts, converted to Watts]
@@ -294,6 +382,10 @@ class ROCMSMI(Collector):
             ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_used))
             percentage = round(100.0 * vram_used.value / vram_total.value, 4)
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(percentage)
+
+            metric = self.__prefix + "vram_busy_percentage"
+            ret = self.__libsmi.rsmi_dev_memory_busy_percent_get(device, ctypes.byref(vram_busy))
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_busy.value)
 
             # --
             # utilization

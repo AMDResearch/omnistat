@@ -325,8 +325,8 @@ def getVersion():
     except importlib.metadata.PackageNotFoundError:
         # When package is not installed, rely on top-level VERSION file and local git tools to assemble version info
 
-        omniwatch_home = Path(__file__).resolve().parent.parent
-        versionFile = os.path.join(omniwatch_home, "VERSION")
+        omnistat_home = Path(__file__).resolve().parent.parent
+        versionFile = os.path.join(omnistat_home, "VERSION")
         try:
             with open(versionFile, "r") as file:
                 VER = file.read().replace("\n", "")
@@ -335,7 +335,7 @@ def getVersion():
 
         # git version query
         SHA = None
-        gitDir = os.path.join(omniwatch_home, ".git")
+        gitDir = os.path.join(omnistat_home, ".git")
         if (shutil.which("git") is not None) and os.path.exists(gitDir):
             gitQuery = subprocess.run(
                 ["git", "log", "--pretty=format:%h", "-n", "1"],

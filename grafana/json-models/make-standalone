@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+# -------------------------------------------------------------------------------
+# MIT License
+#
+# Copyright (c) 2024 Advanced Micro Devices, Inc. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# -------------------------------------------------------------------------------
+#
+# make-standalone - Generate standalone dashboards from RMS dashboard
+#
+# Load RMS dashboard in JSON format, transform it into a standalone
+# dashboard, and print it to stdout. RMS dashboards are meant to be used with a
+# resource manager like SLURM and assume the `enable_rms` config option is
+# turned on. Standalone dashboards can be used without a resource manager.
+# 
+# The conversion to a standalone dashboard involves:
+#  1. Removing any panel that uses the `rmsjob_info` metric.
+#  2. Rewrite UID and update all URLs accordingly.
+
+import argparse
+import re
+
+import json
+
+
+def panel_contains_pattern(panel, pattern):
+    for target in panel.get("targets", []):
+        expr = target.get("expr", "")
+        if re.search(pattern, expr, re.IGNORECASE):
+            return True
+    return False
+
+
+def convert_url(url):
+    url = url.replace("/rms-", "/standalone-")
+    pattern = r"/d/([\w]+)/standalone-"
+    found = re.match(pattern, url)
+    if found:
+        uid = found.group(1)
+        url = url.replace(uid, f"{uid}-standalone")
+    return url
+
+
+def update_attribute(json_object, attribute, function):
+    if isinstance(json_object, dict):
+        for key, value in json_object.items():
+            if key == attribute:
+                json_object[key] = function(value)
+            update_attribute(value, attribute, function)
+    elif isinstance(json_object, list):
+        for item in json_object:
+            update_attribute(item, attribute, function)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input-dashboard", help="Input Grafana dashboard in JSON format", required=True, type=str)
+args = parser.parse_args()
+
+# Patterns to exclude panels and links in the standalone version.
+exclude_metric = r"rmsjob_"
+exclude_link = r"Job"
+
+with open(args.input_dashboard, "r") as f:
+    dashboard = json.load(f)
+
+# Update Grafana dashboard title and UID for standalone.
+title = dashboard["title"]
+uid = dashboard["uid"]
+dashboard["title"] = title.replace("rms-", "standalone-")
+dashboard["uid"] = f"{uid}-standalone"
+
+# First pass to remove panels that contain matching pattern.
+panels = dashboard.get("panels", [])
+dashboard["panels"] = []
+for panel in panels:
+    if not "panels" in panel:
+        if not panel_contains_pattern(panel, exclude_metric):
+            dashboard["panels"].append(panel)
+    else:
+        # Collapsible panels contain subpanels that also need to be evaluated.
+        subpanels = panel["panels"]
+        panel["panels"] = []
+
+        for subpanel in subpanels:
+            if not panel_contains_pattern(subpanel, exclude_metric):
+                panel["panels"].append(subpanel)
+
+        # Keep all expanded row panels because there is no way to know if they
+        # will be empty at this point.
+        expanded = not panel["collapsed"] if "collapsed" in panel else False
+        if expanded or len(panel["panels"]) > 0:
+            dashboard["panels"].append(panel)
+
+# Second pass over panels to remove empty expanded row panels.
+panels = dashboard.get("panels", [])
+dashboard["panels"] = []
+for i, panel in enumerate(panels):
+    expanded = not panel["collapsed"] if "collapsed" in panel else False
+    last = True if i == len(panels) - 1 else False
+
+    empty = False
+    if expanded and last:
+        empty = True
+    elif expanded and not last:
+        empty = panels[i + 1]["type"] == "row"
+
+    if not empty:
+        dashboard["panels"].append(panel)
+
+links = dashboard.get("links", [])
+dashboard["links"] = []
+for link in links:
+    if "title" in link and exclude_link not in link["title"]:
+        dashboard["links"].append(link)
+
+update_attribute(dashboard, "url", convert_url)
+
+print(json.dumps(dashboard, indent=2))
