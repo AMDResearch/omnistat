@@ -175,6 +175,14 @@ For SUSE:
 
 The relevant OS package should be installed on all desired cluster hosts and enabled for execution (e.g. `systemctl enable prometheus-node-exporter` on a RHEL9-based system).
 
+```{note}
+The default node-exporter configuration can enable a significantly large number of metrics per host and the example Grafana [dashboards](../grafana.md) included with Omnistat are restricted to rely on a modest number of available metrics. In addition, if desiring to monitor InfiniBand traffic an additional module needs to be enabled. The configuration below highlights  example node-exporter arguments for the `/etc/default/prometheus-node-exporter` file to enable InfiniBand and metrics referenced in example Omnistat dashboards.
+```text
+ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats
+      --collector.meminfo --collector.stat --collector.netdev
+      --collector.infiniband'
+```
+
 ---
 
 ## Prometheus server
