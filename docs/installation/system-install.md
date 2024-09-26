@@ -240,64 +240,104 @@ TimeoutStopSec=20s
 SendSIGKILL=no
 ```
 
-<!-- ## Ansible example
+## Ansible example
 
-For a cluster or data center deployment, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat.
+For production cluster or data center deployments, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat. To aid in this process, the following example highlights key elements of an Ansible role to install necessary Python dependencies and configure the Omnistat and node-exporter Prometheus clients. These RHEL9-based example files are provided as a starting reference for system administrators and can be adjusted to suit per local conventions.
 
-To aid in this process, the following Ansible playbook will fetch the Omnistat repository on each
-node, create a virtual environment for Omnistat under `/opt/omnistat`,
-install a configuration file under `/etc/omnistat`, and enable Omnistat as a
-systemd service. This example is provided as a starting reference for system administrators and can be adjusted to suit per local conventions.
+Note that this recipe assumes existence of a dedicated non-root user to run the Omnistat exporter, templated as `{{ omnistat_user }}`.  It also assumes that the Omnistat repository is already cloned into a path, templated to be in the `{{ omnistat_dir }}`.
 
-```
-- hosts: all
-  vars:
-    - omnistat_url: git@github.com:AMDResearch/omnistat.git
-    - omnistat_tmp: /tmp/omnistat-install
-    - omnistat_dir: /opt/omnistat
+```eval_rst
+.. code-block:: yaml
+   :caption: roles/omnistat/tasks/main.yml
 
-  tasks:
-    - name: Fetch copy of omnistat repository for installation
-      git:
-        repo: "{{ omnistat_url }}"
-        dest: "{{ omnistat_tmp }}"
-        version: jorda/python-package
-        single_branch: true
+    - name: Set omnistat_dir
+      set_fact:
+        omnistat_dir: "/path/to/omnistat-repo"
+        omnistat_user: "omnidc"
 
-    - name: Install omnistat in virtual environment
-      pip:
-        name: "{{ omnistat_tmp }}[query]"
-        virtualenv: "{{ omnistat_dir }}"
-        virtualenv_command: /usr/bin/python3 -m venv
+    - name: Show omnistat dir
+      debug:
+        msg: "Omnistat directory -> {{ omnistat_dir }}"
+        verbosity: 0
 
-    - name: Create configuration directory
-      file:
-        path: /etc/omnistat
-        state: directory
-        mode: "0755"
+    - name: Install python package dependencies
+      ansible.builtin.pip:
+        requirements: "{{ omnistat_dir }}/requirements.txt"
+      become_user: "{{ omnistat_user }}"
 
-    - name: Copy configuration file
-      copy:
-        remote_src: true
-        src: "{{ omnistat_tmp }}/omnistat/config/omnistat.default"
-        dest: /etc/omnistat/config
-        mode: "0644"
+    - name: Install python package dependencies to support query tool
+      ansible.builtin.pip:
+        requirements: "{{ omnistat_dir }}/requirements-query.txt"
+      become_user: "{{ omnistat_user }}"
 
-    - name: Copy service file
-      copy:
-        remote_src: true
-        src: "{{ omnistat_tmp }}/omnistat.service"
-        dest: /etc/systemd/system
-        mode: "0644"
+    #--
+    # omnistat service file
+    #--
 
-    - name: Enable service
-      service:
+    - name: install omnistat service file
+      ansible.builtin.template:
+        src: templates/omnistat.service.j2
+        dest: /etc/systemd/system/omnistat.service
+        mode: '0644'
+
+    - name: omnistat service enabled
+      ansible.builtin.service:
         name: omnistat
         enabled: yes
         state: started
 
-    - name: Delete temporary installation files
-      file:
-        path: "{{ omnistat_tmp }}"
-        state: absent
-``` -->
+    #--
+    #  prometheus node exporter
+    #--
+
+    - name: node-exporter package
+      ansible.builtin.yum:
+        name: golang-github-prometheus-node-exporter
+        state: installed
+
+    - name: /etc/default/prometheus-node-exporter
+      ansible.builtin.template:
+        src:  prometheus-node-exporter.j2
+        dest:  /etc/default/prometheus-node-exporter
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: node-exporter service enabled
+      ansible.builtin.service:
+        name: prometheus-node-exporter
+        enabled: yes
+        state: started
+```
+
+```eval_rst
+.. code-block:: bash
+   :caption: roles/omnistat/templates/omnistat.service.j2
+
+    [Unit]
+    Description=Prometheus exporter for HPC/GPU oriented metrics
+    Documentation=https://tbd
+    Requires=network-online.target
+    After=network-online.target
+
+    [Service]
+    User={{ omnistat_user}}
+    Environment="OMNISTAT_CONFIG={{ omnistat_dir}}/omnistat/config/omnistat.default"
+    CPUAffinity=0
+    SyslogIdentifier=omnistat
+    ExecStart={{ omnistat_dir}}/omnistat-monitor
+    ExecReload=/bin/kill -HUP $MAINPID
+    TimeoutStopSec=20s
+    SendSIGKILL=no
+    Nice=19
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
+  ```
+```eval_rst
+.. code-block:: bash
+   :caption: roles/omnistat/templates/prometheus-node-exporter.j2
+
+    ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats --collector.meminfo --collector.stat --collector.infiniband'
+```
