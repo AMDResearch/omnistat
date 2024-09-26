@@ -55,6 +55,15 @@ class Monitor:
         self.runtimeConfig["collector_enable_amd_smi"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi", False
         )
+
+        # verify only one SMI collector is enabled
+        if self.runtimeConfig["collector_enable_rocm_smi"] and self.runtimeConfig["collector_enable_amd_smi"]:
+            logging.error("")
+            logging.error("[ERROR]: Only one SMI GPU data collector may be configured at a time.")
+            logging.error("")
+            logging.error('Please choose either "enable_rocm_smi" or "enable_amd_smi" in runtime config')
+            sys.exit(1)
+
         self.runtimeConfig["collector_enable_amd_smi_process"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi_process", False
         )
