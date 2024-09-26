@@ -248,6 +248,8 @@ TimeoutStopSec=20s
 SendSIGKILL=no
 ```
 
+---
+
 ## Ansible example
 
 For production cluster or data center deployments, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat. To aid in this process, the following example highlights key elements of an Ansible role to install necessary Python dependencies and configure the Omnistat and node-exporter Prometheus clients. These RHEL9-based example files are provided as a starting reference for system administrators and can be adjusted to suit per local conventions.
@@ -348,4 +350,83 @@ Note that this recipe assumes existence of a dedicated non-root user to run the 
    :caption: roles/omnistat/templates/prometheus-node-exporter.j2
 
     ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats --collector.meminfo --collector.stat --collector.netdev --collector.infiniband'
+```
+
+---
+
+## SLURM Integration
+
+An optional info metric capability exists within Omnistat to allow collected telemetry data to be mapped to individual jobs as they are scheduled by the resource manager.  Multiple options exist to implements this integration, but the recommended approach for large-scale production resources is to leverage prolog/epilog functionality within SLURM to expose relevant job information to the Omnistat data collector. This remaining portion of this section highlights basic steps for implementing this particular strategy.
+
+<u>Note/Assumption</u>: the architecture of the resource manager integration assumes that compute nodes on the cluster are allocated **exclusively** (ie, multiple SLURM jobs do not share the same host).
+
+1. To enable resource manager tracking on the Omnistat client side, edit the chosen runtime config file and update the `[omnistat.collectors]` and `[omnistat.collectors.rms]` sections to have the following settings highlighted in yellow.
+
+```eval_rst
+.. code-block:: yaml
+   :caption: omnistat.default
+   :emphasize-lines: 4,7-8
+
+   [omnistat.collectors]
+    port = 8000
+    enable_rocm_smi = True
+    enable_rms = True
+
+    [omnistat.collectors.rms]
+    job_detection_mode = file-based
+    job_detection_file = /tmp/omni_rmsjobinfo
+```
+The settings above enable the resource manager collector and configures Omnistat to query the `/tmp/omni_rmsjobinfo` file to derive dynamic job information.  This file can be generated using the `omnistat-rms-env` utility from within an actively running job, or during prolog execution.  The resulting file contains a simple JSON format as follows:
+
+```eval_rst
+.. code-block:: json
+   :caption: /tmp/omni_rmsjobinfo
+
+    {
+        "RMS_TYPE": "slurm",
+        "RMS_JOB_ID": "74129",
+        "RMS_JOB_USER": "auser",
+        "RMS_JOB_PARTITION": "devel",
+        "RMS_JOB_NUM_NODES": "2",
+        "RMS_JOB_BATCHMODE": 1,
+        "RMS_STEP_ID": -1
+    }
+```
+
+2. SLURM configuration update(s)
+
+The second step to enable resource manager integration is to augment the prolog/epilog scripts configured for your local SLURM environment to create and tear-down the `/tmp/omni_rmsjobinfo` file. Below are example snippets that can be added to the scripts. Note that in these examples, we assume a local `slurm.conf` configuration where Prolog and Epilog are enabled as follows:
+
+
+```
+Prolog=/etc/slurm/slurm.prolog
+Epilog=/etc/slurm/slurm.epilog
+```
+
+```eval_rst
+.. code-block:: bash
+   :caption: /etc/slurm/slurm.prolog snippet
+
+    # cache job data for omnistat
+    OMNISTAT_DIR="/home/omnidc/omnistat"
+    OMNISTAT_USER=omnidc
+    if [ -e ${OMNISTAT_DIR}/omnistat-rms-env ];then
+        su ${OMNISTAT_USER} -c ${OMNISTAT_DIR}/omnistat-rms-env    
+    fi
+```
+
+```eval_rst
+.. code-block:: bash
+   :caption: /etc/slurm/slurm.epilog snippet
+
+    # remove cached job info to indicate end of job
+    if [ -e "/tmp/omni_rmsjobinfo" ];then
+        rm -f /tmp/omni_rmsjobinfo
+    fi
+```
+
+```{note}
+To make sure the cached job data file is created immediately upon on allocation of a user job (instead of the first `srun` invocation), be sure to include the following setting in your local SLURM configuration:
+```text
+PrologFlags=Alloc
 ```
