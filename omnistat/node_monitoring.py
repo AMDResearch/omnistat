@@ -97,7 +97,7 @@ def main():
         app.route("/metrics")(monitor.updateAllMetrics)
         app.route("/shutdown")(shutdown)
 
-    listenPort = config["omnistat.collectors"].get("port", 8000)
+    listenPort = config["omnistat.collectors"].get("port", 8001)
     options = {
         "bind": "%s:%s" % ("0.0.0.0", listenPort),
         "workers": 1,
