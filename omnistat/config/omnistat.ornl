@@ -43,4 +43,6 @@ prometheus_binary = /autofs/nccs-svm1_sw/crusher/amdsw/omnistat/prometheus-2.45.
 # prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/scratch/%(USER)s/omnistat/%(SLURM_JOB_ID)s
 prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/world-shared/omnistat/%(SLURM_JOB_ID)s
 prometheus_logfile = prom_server.log
+
+exporter_corebinding = 0
 prometheus_corebinding = 95
