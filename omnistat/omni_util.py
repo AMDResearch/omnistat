@@ -171,6 +171,7 @@ class UserBasedMonitoring:
 
     def startExporters(self):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
+        ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].get("exporter_corebinding", None)
 
         cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
@@ -199,7 +200,7 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel using pdsh")
 
-            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=350)
+            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
             try:
                 output = client.run_command(
                     f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False

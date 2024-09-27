@@ -33,6 +33,8 @@ system_name = My Snazzy System
 
 [omnistat.usermode]
 
+ssh_key = ~/.ssh/id_rsa
+
 prometheus_binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
 prometheus_datadir = data_prom
 prometheus_logfile = prom_server.log
