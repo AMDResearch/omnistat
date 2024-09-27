@@ -36,7 +36,4 @@ system_name = My Snazzy System
 logfile = prom_server.log
 binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
 datadir = data_prom
-corebinding = 95
-
-
-
+# corebinding = 95
