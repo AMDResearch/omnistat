@@ -75,7 +75,7 @@ source_suffix = {
     ".md": "markdown",
 }
 
-sphinxmark_enable = True
+sphinxmark_enable = False
 sphinxmark_image = "text"
 sphinxmark_text = "D R A F T"
 sphinxmark_text_size = 80
