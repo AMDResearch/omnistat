@@ -148,7 +148,7 @@ class UserBasedMonitoring:
             ]
 
             numactl = shutil.which("numactl")
-            if numactl and ps_corebinding != None:
+            if numactl and isinstance(ps_corebinding, int):
                 command = ["numactl", f"--physcpubind={ps_corebinding}"] + command
             else:
                 logging.info("Skipping Prometheus corebinding")
@@ -176,7 +176,7 @@ class UserBasedMonitoring:
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
         numactl = shutil.which("numactl")
-        if numactl and corebinding != None:
+        if numactl and isinstance(corebinding, int):
             cmd = f"numactl --physcpubind={corebinding} {cmd}"
         else:
             logging.info("Skipping exporter corebinding")
