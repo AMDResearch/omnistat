@@ -3921,7 +3921,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_temperature_hbm_celsius) ",
+              "expr": "avg by (instance,card) (rocm_temperature_memory_celsius) ",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
