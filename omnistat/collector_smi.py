@@ -241,7 +241,9 @@ class ROCMSMI(Collector):
         for temp_type in rsmi_temperature_type_t:
             temp_location = ctypes.c_int32(temp_type.value)
             if "HBM" in temp_type.name or "VRAM" in temp_type.name:
-                ret = self.__libsmi.rsmi_dev_temp_metric_get(device, temp_location, temp_metric, ctypes.byref(temperature))
+                ret = self.__libsmi.rsmi_dev_temp_metric_get(
+                    device, temp_location, temp_metric, ctypes.byref(temperature)
+                )
                 if ret == 0 and temperature.value > 0:
                     self.__temp_memory_location_index = temp_location
                     self.__temp_memory_location_name = temp_type.name.removeprefix("RSMI_TEMP_TYPE_").lower()
