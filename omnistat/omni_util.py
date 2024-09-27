@@ -97,7 +97,7 @@ class UserBasedMonitoring:
             ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
 
         ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
-        ps_corebinding = self.runtimeConfig[section].get("corebinding", "0")
+        ps_corebinding = self.runtimeConfig[section].get("corebinding", None)
 
         # check if remote_write is desired
         remoteWrite = self.runtimeConfig[section].getboolean("remote_write", False)
@@ -148,10 +148,10 @@ class UserBasedMonitoring:
             ]
 
             numactl = shutil.which("numactl")
-            if numactl:
+            if numactl and ps_corebinding != None:
                 command = ["numactl", f"--physcpubind={ps_corebinding}"] + command
             else:
-                logging.info("Ignoring Prometheus corebinding; unable to find numactl")
+                logging.info("Skipping Prometheus corebinding")
 
             logging.debug("Server start command: %s" % command)
             utils.runBGProcess(command, outputFile=ps_logfile)
@@ -169,15 +169,17 @@ class UserBasedMonitoring:
 
     def startExporters(self):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
+        corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", None)
 
         cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
         numactl = shutil.which("numactl")
-        if numactl:
+        if numactl and corebinding != None:
             cmd = f"numactl --physcpubind={corebinding} {cmd}"
+        else:
+            logging.info("Skipping exporter corebinding")
 
         if self.slurmHosts:
             logging.info("Saving SLURM job state locally to compute hosts...")
