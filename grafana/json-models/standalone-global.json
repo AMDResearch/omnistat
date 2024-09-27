@@ -98,7 +98,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -167,7 +167,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -243,7 +243,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -319,7 +319,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -396,7 +396,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -472,7 +472,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -545,7 +545,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -631,7 +631,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.3.0-75826.patch4-76464",
       "targets": [
         {
           "datasource": {
@@ -694,8 +694,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -723,7 +722,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 919
+            "y": 14
           },
           "id": 110,
           "options": {
@@ -739,7 +738,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-75826.patch4-76464",
           "targets": [
             {
               "datasource": {
@@ -756,7 +755,7 @@
               "refId": "A"
             }
           ],
-          "title": "GPU Models",
+          "title": "GPU Types",
           "transformations": [
             {
               "id": "groupBy",
@@ -785,7 +784,7 @@
                 "indexByName": {},
                 "renameByName": {
                   "instance (count)": "Number of GPUs",
-                  "type": "Model"
+                  "type": "Type"
                 }
               }
             }
@@ -814,8 +813,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -843,7 +841,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 919
+            "y": 14
           },
           "id": 112,
           "options": {
@@ -859,7 +857,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-75826.patch4-76464",
           "targets": [
             {
               "datasource": {
@@ -939,8 +937,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -968,7 +965,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2035
+            "y": 20
           },
           "id": 113,
           "options": {
@@ -984,7 +981,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-75826.patch4-76464",
           "targets": [
             {
               "datasource": {
@@ -1067,8 +1064,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1096,9 +1092,9 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2035
+            "y": 20
           },
-          "id": 114,
+          "id": 140,
           "options": {
             "cellHeight": "sm",
             "footer": {
@@ -1110,9 +1106,14 @@
               "show": false
             },
             "showHeader": true,
-            "sortBy": []
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Type"
+              }
+            ]
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-75826.patch4-76464",
           "targets": [
             {
               "datasource": {
@@ -1129,7 +1130,7 @@
               "refId": "A"
             }
           ],
-          "title": "Omnistat Schema",
+          "title": "GPU Type to VBIOS Mapping",
           "transformations": [
             {
               "id": "groupBy",
@@ -1140,21 +1141,19 @@
                   },
                   "instance": {
                     "aggregations": [
-                      "distinctCount"
+                      "count"
                     ],
                     "operation": "aggregate"
-                  },
-                  "schema": {
-                    "aggregations": [],
-                    "operation": "groupby"
                   },
                   "type": {
                     "aggregations": [
                       "count"
-                    ]
+                    ],
+                    "operation": "groupby"
                   },
                   "vbios": {
-                    "aggregations": []
+                    "aggregations": [],
+                    "operation": "groupby"
                   }
                 }
               }
@@ -1162,15 +1161,152 @@
             {
               "id": "organize",
               "options": {
-                "excludeByName": {},
+                "excludeByName": {
+                  "instance (count)": true
+                },
                 "includeByName": {},
                 "indexByName": {},
                 "renameByName": {
                   "driver_ver": "Driver Version",
-                  "instance (count)": "Count",
-                  "instance (distinctCount)": "Number of Nodes",
-                  "schema": "Schema Version",
-                  "type": "Model",
+                  "instance (count)": "Number of GPUs",
+                  "type": "Type",
+                  "vbios": "VBIOS Version"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "inspect": false
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "pattern": "(.*):([0-9]+)",
+                    "result": {
+                      "index": 0,
+                      "text": "$1"
+                    }
+                  },
+                  "type": "regex"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "type"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 337
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 26
+          },
+          "id": 139,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "rocm_version_info",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Detailed GPU Versions",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "job": true,
+                  "monitor": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Time": 1,
+                  "Value": 10,
+                  "__name__": 2,
+                  "card": 3,
+                  "driver_ver": 4,
+                  "instance": 0,
+                  "job": 5,
+                  "monitor": 8,
+                  "schema": 9,
+                  "type": 6,
+                  "vbios": 7
+                },
+                "renameByName": {
+                  "card": "Card",
+                  "driver_ver": "Driver Version",
+                  "instance": "Node",
+                  "instance (count)": "Number of GPUs",
+                  "job": "",
+                  "schema": "Omnistat Schema",
+                  "type": "Type",
                   "vbios": "VBIOS Version"
                 }
               }
@@ -1257,7 +1393,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2253
+            "y": 3534
           },
           "id": 26,
           "options": {
@@ -1341,7 +1477,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2316
+            "y": 3597
           },
           "id": 6,
           "options": {
@@ -1477,8 +1613,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -1498,7 +1633,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 925
+            "y": 2206
           },
           "id": 102,
           "options": {
@@ -1594,8 +1729,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -1615,7 +1749,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1279
+            "y": 2560
           },
           "id": 109,
           "options": {
@@ -1725,8 +1859,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1738,7 +1871,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 926
+            "y": 2207
           },
           "id": 106,
           "options": {
@@ -1834,8 +1967,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1847,7 +1979,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1271
+            "y": 2552
           },
           "id": 119,
           "options": {
@@ -1957,8 +2089,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1970,7 +2101,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2037
+            "y": 3318
           },
           "id": 124,
           "options": {
@@ -2066,8 +2197,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -2079,7 +2209,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2110
+            "y": 3391
           },
           "id": 125,
           "options": {
@@ -2203,7 +2333,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 4196
+            "y": 5477
           },
           "id": 123,
           "options": {
@@ -2305,7 +2435,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4205
+            "y": 5486
           },
           "id": 108,
           "options": {
@@ -2438,8 +2568,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2454,7 +2583,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 24
+            "y": 1305
           },
           "id": 35,
           "options": {
@@ -2562,8 +2691,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2579,7 +2707,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 930
+            "y": 2211
           },
           "id": 118,
           "options": {
@@ -2671,8 +2799,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2687,7 +2814,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1018
+            "y": 2299
           },
           "id": 134,
           "options": {
@@ -2793,8 +2920,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2810,7 +2936,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 338
+            "y": 1619
           },
           "id": 92,
           "options": {
@@ -2907,8 +3033,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2924,7 +3049,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 346
+            "y": 1627
           },
           "id": 135,
           "options": {
@@ -3017,8 +3142,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3034,7 +3158,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 346
+            "y": 1627
           },
           "id": 136,
           "options": {
@@ -3141,8 +3265,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3158,7 +3281,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 27
+            "y": 1308
           },
           "id": 121,
           "options": {
@@ -3263,8 +3386,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3280,7 +3402,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 1316
           },
           "id": 137,
           "options": {
@@ -3372,8 +3494,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3389,7 +3510,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 1316
           },
           "id": 138,
           "options": {
@@ -3495,8 +3616,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3512,7 +3632,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 1325
           },
           "id": 115,
           "options": {
