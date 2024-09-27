@@ -70,10 +70,10 @@ The following lines highlighted in yellow may need to be customized.
     job_detection_mode = file-based
     job_detection_file = /tmp/omni_rmsjobinfo_user
 
-    [omnistat.promserver]
-    binary = /path/to/prometheus
-    datadir = data_prom
-    logfile = prom_server.log
+    [omnistat.usermode]
+    prometheus_binary = /path/to/prometheus
+    prometheus_datadir = data_prom
+    prometheus_logfile = prom_server.log
   ```
 
 ## Running a SLURM Job

@@ -10,9 +10,8 @@ rocm_path = /opt/rocm
 
 # List of IPs allowed to query the collector (comma separated). By
 # default, access will be restricted to the localhost (127.0.0.1).
-# Expand this value to include IP of local Prometheus server
+# Expand this value to include IP of local Prometheus server.
 allowed_ips = 127.0.0.1
-
 
 [omnistat.collectors.rms]
 
@@ -27,13 +26,18 @@ job_detection_file = /tmp/omni_rmsjobinfo
 prometheus_url = http://localhost:9090
 system_name = My Snazzy System
 
+
 #--
 # User-mode Settings
 #--
 
-# --user-spawned promserver
-[omnistat.promserver]
-logfile = prom_server.log
-binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
-datadir = data_prom
-# corebinding = 95
+[omnistat.usermode]
+
+prometheus_binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
+prometheus_datadir = data_prom
+prometheus_logfile = prom_server.log
+
+# Bind user-mode Omnistat monitor and Prometheus to a specific cores.
+# Requires numactl. When these options are not set, no binding is enforced.
+# exporter_corebinding = 0
+# prometheus_corebinding = 1
