@@ -59,7 +59,7 @@ The following lines highlighted in yellow may need to be customized.
 ```eval_rst
 .. code-block:: ini
    :caption: Sample Omnistat configuration file
-   :emphasize-lines: 2,8,11
+   :emphasize-lines: 2,8,11,12,13
 
     [omnistat.collectors]
     port = 8001
@@ -71,6 +71,7 @@ The following lines highlighted in yellow may need to be customized.
     job_detection_file = /tmp/omni_rmsjobinfo_user
 
     [omnistat.usermode]
+    ssh_key = ~/.ssh/id_rsa
     prometheus_binary = /path/to/prometheus
     prometheus_datadir = data_prom
     prometheus_logfile = prom_server.log
