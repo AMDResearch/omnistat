@@ -9,12 +9,12 @@ enable_rocm_smi = True
 enable_amd_smi = False
 enable_rms = True
 
-# Path to local ROCM install to access SMI library
+## Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm-6.2.0
 
-# List of IPs allowed to query the collector (comma separated). By
-# default, access will be restricted to the localhost (127.0.0.1).
-# Set this value to IP of companion Prometheus server.
+## List of IPs allowed to query the collector (comma separated). By
+## default, access will be restricted to the localhost (127.0.0.1).
+## Set this value to IP of companion Prometheus server.
 allowed_ips = 127.0.0.1, 0.0.0.0
 
 [omnistat.collectors.rms]
