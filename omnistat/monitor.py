@@ -52,6 +52,7 @@ class Monitor:
             "enable_rocm_smi", True
         )
         self.runtimeConfig["collector_enable_rms"] = config["omnistat.collectors"].getboolean("enable_rms", False)
+        self.runtimeConfig["collector_enable_rms_v2"] = config["omnistat.collectors"].getboolean("enable_rms_v2", False)
         self.runtimeConfig["collector_enable_amd_smi"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi", False
         )
@@ -139,6 +140,10 @@ class Monitor:
             from omnistat.collector_events import ROCMEvents
 
             self.__collectors.append(ROCMEvents())
+        if self.runtimeConfig["collector_enable_rms_v2"]:
+            from omnistat.collector_rms_v2 import RMSJobV2
+
+            self.__collectors.append(RMSJobV2())
 
         # Initialize all metrics
         for collector in self.__collectors:
