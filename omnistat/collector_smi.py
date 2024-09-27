@@ -236,7 +236,7 @@ class ROCMSMI(Collector):
                 logging.info("--> Using primary temperature location at %s" % self.__temp_location_name)
                 break
 
-        # HBM memory location (not available on all parts)
+        # Cache valid memory temperature location
         self.__temp_memory_location_index = None
         for temp_type in rsmi_temperature_type_t:
             temp_location = ctypes.c_int32(temp_type.value)
