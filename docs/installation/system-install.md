@@ -149,10 +149,29 @@ Now that the software is installed under a dedicated user and basic functionalit
 
 ```eval_rst
 .. literalinclude:: omnistat.service
+   :language: ini
    :emphasize-lines: 8-11
 ```
 
 Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl  enable omnistat`).
+
+### Access restriction configuration
+
+By default, the omnistat data collector will only respond to queries initiated from the local host where the service is running.  This functionality is controlled by a runtime configuration and generally needs to be updated to include the IP address of a companion Prometheus server in order to gather system-wide metrics (see follow-on [discussion](#prometheus-server) for additional details on configuring a Prometheus server).  For example, if your locally configured Prometheus instance has an IP address of `10.0.0.42`, update the `omnistat/config/omnistat.default` runtime file (or equivalent if using a custom configfile) to include the following setting:
+
+```eval_rst
+.. code-block:: ini
+   :emphasize-lines: 3
+
+    [omnistat.collectors]
+
+    allowed_ips = 127.0.0.1, 10.0.0.42
+```
+
+```{note}
+Alternatively, you can specify a value of `allowed_ips = 0.0.0.0` to disable any access restrictions.
+```
+
 
 ---
 
@@ -232,7 +251,7 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
            - compute-03:9100
    ```
 
-Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection.
+Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection. Please also ensure that the target hosts configured for the Omnistat data collection allow queries initiated from this Prometheus server as discussed in the [access restriction](#access-restriction-configuration) section.
 
 ```{note}
 You may want to adjust the Prometheus server default storage retention policy in order to retain telemetry data longer than the default (which is typically 15 days). Assuming you are using a distro-provided version of Prometheus, you can modify the systemd launch process to include a `--storage.tsdb.retention.time` option as shown in the snippet below:
