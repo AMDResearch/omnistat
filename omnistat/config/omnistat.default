@@ -20,9 +20,8 @@ enable_annotations = False
 job_detection_mode = file-based
 job_detection_file = /tmp/omni_rmsjobinfo
 
-[omnistat.report]
-
 [omnistat.query]
+
 prometheus_url = http://localhost:9090
 system_name = My Snazzy System
 

@@ -14,7 +14,7 @@ rocm_path = /opt/rocm-6.2.0
 
 ## List of IPs allowed to query the collector (comma separated). By
 ## default, access will be restricted to the localhost (127.0.0.1).
-## Set this value to IP of companion Prometheus server.
+## Expand this value to include IP of local Prometheus server.
 allowed_ips = 127.0.0.1, 0.0.0.0
 
 [omnistat.collectors.rms]
@@ -22,9 +22,8 @@ allowed_ips = 127.0.0.1, 0.0.0.0
 host_skip = "login.*"
 enable_annotations = True
 
-[omnistat.report]
-
 [omnistat.query]
+
 prometheus_url = http://localhost:9090
 system_name = ORNL Frontier/Borg
 
