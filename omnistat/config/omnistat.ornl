@@ -37,8 +37,6 @@ system_name = ORNL Frontier/Borg
 
 ssh_key = ~/.ssh/id_rsa
 
-template = prometheus.yml.template
-
 prometheus_binary = /autofs/nccs-svm1_sw/crusher/amdsw/omnistat/prometheus-2.45.1.linux-amd64/prometheus
 # prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/scratch/%(USER)s/omnistat/%(SLURM_JOB_ID)s
 prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/world-shared/omnistat/%(SLURM_JOB_ID)s
