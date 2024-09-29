@@ -97,7 +97,7 @@ class UserBasedMonitoring:
             ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
 
         ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
-        ps_corebinding = self.runtimeConfig[section].get("prometheus_corebinding", None)
+        ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
 
         # check if remote_write is desired
         remoteWrite = self.runtimeConfig[section].getboolean("prometheus_remote_write", False)
@@ -172,7 +172,7 @@ class UserBasedMonitoring:
     def startExporters(self):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
-        corebinding = self.runtimeConfig["omnistat.usermode"].get("exporter_corebinding", None)
+        corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
 
         cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
