@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 85,
+  "id": 104,
   "links": [
     {
       "asDropdown": false,
@@ -98,7 +98,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -165,7 +165,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -243,7 +243,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -319,7 +319,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -388,7 +388,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -465,7 +465,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -541,7 +541,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -633,7 +633,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -784,7 +784,7 @@
           "reverse": false
         }
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -884,7 +884,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -984,7 +984,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-75826.patch4-76464",
+      "pluginVersion": "11.3.0-76537",
       "targets": [
         {
           "datasource": {
@@ -1084,7 +1084,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 35
+            "y": 43
           },
           "id": 102,
           "options": {
@@ -1102,7 +1102,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76537",
           "targets": [
             {
               "datasource": {
@@ -1110,14 +1110,122 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(rocm_temperature_celsius{instance=\"$instance\"}) ",
+              "expr": "avg by (card, location) (rocm_temperature_celsius{instance=\"$instance\"}) ",
               "instant": false,
-              "legendFormat": "Card: {{card}}",
+              "legendFormat": "Card: {{card}} ({{location}})",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "GPU Temperature",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  },
+                  {
+                    "color": "#56A64B",
+                    "value": 25
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 52
+          },
+          "id": 129,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-76537",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (card, location) (rocm_temperature_memory_celsius{instance=\"$instance\"})",
+              "instant": false,
+              "legendFormat": "Card: {{card}} ({{location}})",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Memory Temperature",
           "type": "timeseries"
         },
         {
@@ -1171,7 +1279,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1183,7 +1292,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 136
+            "y": 61
           },
           "id": 101,
           "options": {
@@ -1201,7 +1310,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-76537",
           "targets": [
             {
               "datasource": {
@@ -1270,7 +1379,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1282,7 +1392,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 145
+            "y": 70
           },
           "id": 114,
           "options": {
@@ -1300,7 +1410,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-76537",
           "targets": [
             {
               "datasource": {
@@ -1369,7 +1479,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1381,7 +1492,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 153
+            "y": 78
           },
           "id": 115,
           "options": {
@@ -1399,7 +1510,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-76537",
           "targets": [
             {
               "datasource": {
@@ -1468,7 +1579,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1480,7 +1592,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 161
+            "y": 86
           },
           "id": 108,
           "interval": "1s",
@@ -1499,7 +1611,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-76537",
           "targets": [
             {
               "datasource": {
@@ -1581,8 +1693,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1597,7 +1708,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 287
+            "y": 422
           },
           "id": 119,
           "options": {
@@ -1707,7 +1818,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 295
+            "y": 430
           },
           "id": 120,
           "options": {
@@ -1813,8 +1924,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1830,7 +1940,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 304
+            "y": 439
           },
           "id": 121,
           "options": {
@@ -1941,8 +2051,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2063,8 +2172,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2080,7 +2188,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 58
+            "y": 193
           },
           "id": 123,
           "options": {
@@ -2172,8 +2280,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2201,7 +2308,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 43
+            "y": 178
           },
           "id": 111,
           "options": {
@@ -2332,8 +2439,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2452,7 +2558,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 76
+            "y": 211
           },
           "id": 99,
           "interval": "5s",
@@ -2636,7 +2742,7 @@
   ],
   "preload": false,
   "refresh": "",
-  "schemaVersion": 39,
+  "schemaVersion": 40,
   "tags": [
     "omnistat"
   ],
