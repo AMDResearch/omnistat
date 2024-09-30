@@ -143,7 +143,7 @@ latex_elements = {
 
 # html_logo = "images/amd-header-logo.svg"
 html_theme_options = {
-    "analytics_id": "G-C5DYLCE9ED",  #  Provided by Google in your dashboard
+    "analytics_id": "G-J4ERLK3MS3",  #  Provided by Google in your dashboard
     "analytics_anonymize_ip": False,
     "logo_only": False,
     "display_version": True,
