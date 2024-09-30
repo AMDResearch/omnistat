@@ -5,16 +5,13 @@ enable_rocm_smi = True
 enable_amd_smi = False
 enable_rms = True
 
-# Path to local ROCM install to access SMI library
+## Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm
 
-# List of IPs allowed to query the collector (comma separated). By
-# default, access will be restricted to the localhost (127.0.0.1).
-# Set this value to IP of companion Prometheus server.
+## List of IPs allowed to query the collector (comma separated). By
+## default, access will be restricted to the localhost (127.0.0.1).
+## Expand this value to include IP of local Prometheus server.
 allowed_ips = 127.0.0.1
-
-# corebinding = 31
-
 
 [omnistat.collectors.rms]
 
@@ -23,22 +20,25 @@ enable_annotations = False
 job_detection_mode = file-based
 job_detection_file = /tmp/omni_rmsjobinfo
 
-[omnistat.report]
-
 [omnistat.query]
+
 prometheus_url = http://localhost:9090
 system_name = My Snazzy System
+
 
 #--
 # User-mode Settings
 #--
 
-# --user-spawned promserver
-[omnistat.promserver]
-logfile = prom_server.log
-binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
-datadir = data_prom
-corebinding = 95
+[omnistat.usermode]
 
+ssh_key = ~/.ssh/id_rsa
 
+prometheus_binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-amd64/prometheus
+prometheus_datadir = data_prom
+prometheus_logfile = prom_server.log
 
+## Bind user-mode Omnistat monitor and Prometheus to specific cores.
+## Requires numactl. When these options are not set, no binding is enforced.
+# exporter_corebinding = 0
+# prometheus_corebinding = 1

@@ -118,7 +118,7 @@ GPU topology indexing: Scanning devices from /sys/class/kfd/kfd/topology/nodes
 You can override the default runtime configuration file above by setting an `OMNISTAT_CONFIG` environment variable or by using the `./omnistat-monitor --configfile` option.
 ```
 
-While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUS installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
+While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUs installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
 
 ```shell-session
 [omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
@@ -139,7 +139,7 @@ Once local functionality has been established, you can terminate the interactive
 
 ### Enable systemd service
 
-Now that the software is installed under a dedicated user and basic functionality has been confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage `systemd` and an example service file named [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is included in the distribution. This contents of the file are shown below with four lines highlighted in yellow that are most likely to require local customization.
+Now that the software is installed under a dedicated user and basic functionality has been confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage `systemd` and an example service file named [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is included in the distribution. The contents of the file are shown below with four lines highlighted in yellow that are most likely to require local customization.
 
 <!-- * `User` set to the local Linux user created to run Omnistat
 * `OMNISTAT_DIR` set to the local path where you downloaded the source tree
@@ -149,10 +149,29 @@ Now that the software is installed under a dedicated user and basic functionalit
 
 ```eval_rst
 .. literalinclude:: omnistat.service
+   :language: ini
    :emphasize-lines: 8-11
 ```
 
-Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl  enable omnistat`).
+Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl enable omnistat`).
+
+### Access restriction configuration
+
+By default, the omnistat data collector will only respond to queries initiated from the local host where the service is running.  This functionality is controlled by a runtime configuration and generally needs to be updated to include the IP address of a companion Prometheus server in order to gather system-wide metrics (see follow-on [discussion](#prometheus-server) for additional details on configuring a Prometheus server).  For example, if your locally configured Prometheus instance has an IP address of `10.0.0.42`, update the `omnistat/config/omnistat.default` runtime file (or equivalent if using a custom configfile) to include the following setting:
+
+```eval_rst
+.. code-block:: ini
+   :emphasize-lines: 3
+
+    [omnistat.collectors]
+
+    allowed_ips = 127.0.0.1, 10.0.0.42
+```
+
+```{note}
+Alternatively, you can specify a value of `allowed_ips = 0.0.0.0` to disable any access restrictions.
+```
+
 
 ---
 
@@ -187,7 +206,7 @@ ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats
 
 ## Prometheus server
 
-Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlights installation via package manager followed by a simple scrape configuration.
+Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlight installation via package manager followed by a simple scrape configuration.
 
 <!-- On a separate server with access to compute nodes, install and configure
 [Prometheus](https://prometheus.io/). -->
@@ -209,7 +228,7 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
 
 2. Configuration: add a scrape configuration to Prometheus to enable telemetry collection. This configuration stanza typically resides in the `/etc/prometheus/prometheus.yml` runtime config file and controls which nodes to poll and at what frequency. The example below highlights configuration of two Prometheus jobs.  The first enables an omnistat job to poll GPU data at 30 second intervals from four separate compute nodes.  The second job enables collection of the recommended node-exporter to collect host-level data at a similar frequency (default node-exporter port is). We recommend keeping the `scrape_interval` setting at 5 seconds or larger.
 
-   ```
+   ```yaml
    scrape_configs:
      - job_name: "omnistat"
        scrape_interval: 30s
@@ -221,23 +240,23 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
            - compute-02:8001
            - compute-03:8001
 
-      - job_name: "node"
-       scrape_interval:  30s
-       scrape_timeout:   5s  
-       static_configs:
-         - targets:
-           - compute-00:9100
-           - compute-01:9100
-           - compute-02:9100
-           - compute-03:9100
+     - job_name: "node"
+       scrape_interval: 30s
+       scrape_timeout: 5s
+       static_configs:
+         - targets:
+           - compute-00:9100
+           - compute-01:9100
+           - compute-02:9100
+           - compute-03:9100
    ```
 
-Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection.
+Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection. Please also ensure that the target hosts configured for the Omnistat data collection allow queries initiated from this Prometheus server as discussed in the [access restriction](#access-restriction-configuration) section.
 
 ```{note}
 You may want to adjust the Prometheus server default storage retention policy in order to retain telemetry data longer than the default (which is typically 15 days). Assuming you are using a distro-provided version of Prometheus, you can modify the systemd launch process to include a `--storage.tsdb.retention.time` option as shown in the snippet below:
 
-```text
+```ini
 [Service]
 Restart=on-failure
 User=prometheus
@@ -321,21 +340,21 @@ Note that this recipe assumes existence of a dedicated non-root user to run the 
 ```
 
 ```eval_rst
-.. code-block:: bash
+.. code-block:: ini
    :caption: roles/omnistat/templates/omnistat.service.j2
 
     [Unit]
     Description=Prometheus exporter for HPC/GPU oriented metrics
-    Documentation=https://tbd
+    Documentation=https://amdresearch.github.io/omnistat/
     Requires=network-online.target
     After=network-online.target
 
     [Service]
-    User={{ omnistat_user}}
-    Environment="OMNISTAT_CONFIG={{ omnistat_dir}}/omnistat/config/omnistat.default"
+    User={{ omnistat_user }}
+    Environment="OMNISTAT_CONFIG={{ omnistat_dir }}/omnistat/config/omnistat.default"
     CPUAffinity=0
     SyslogIdentifier=omnistat
-    ExecStart={{ omnistat_dir}}/omnistat-monitor
+    ExecStart={{ omnistat_dir }}/omnistat-monitor
     ExecReload=/bin/kill -HUP $MAINPID
     TimeoutStopSec=20s
     SendSIGKILL=no

@@ -6,7 +6,7 @@
    :maxdepth: 4
 ```
 
-In user-mode executions, Omnistat data collectors and a companion prometheus
+In user-mode executions, Omnistat data collectors and a companion Prometheus
 server are deployed temporarily on hosts assigned to a user's job, as
 highlighted in {numref}`fig-user-mode`. The following assumptions are made
 throughout the rest of this user-mode installation discussion:
@@ -59,7 +59,7 @@ The following lines highlighted in yellow may need to be customized.
 ```eval_rst
 .. code-block:: ini
    :caption: Sample Omnistat configuration file
-   :emphasize-lines: 2,8,11
+   :emphasize-lines: 2,8,11,12,13
 
     [omnistat.collectors]
     port = 8001
@@ -70,10 +70,11 @@ The following lines highlighted in yellow may need to be customized.
     job_detection_mode = file-based
     job_detection_file = /tmp/omni_rmsjobinfo_user
 
-    [omnistat.promserver]
-    binary = /path/to/prometheus
-    datadir = data_prom
-    logfile = prom_server.log
+    [omnistat.usermode]
+    ssh_key = ~/.ssh/id_rsa
+    prometheus_binary = /path/to/prometheus
+    prometheus_datadir = data_prom
+    prometheus_logfile = prom_server.log
   ```
 
 ## Running a SLURM Job

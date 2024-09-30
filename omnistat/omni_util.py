@@ -88,25 +88,27 @@ class UserBasedMonitoring:
         else:
             scrape_timeout = scrape_interval
 
-        section = "omnistat.promserver"
-        ps_binary = self.runtimeConfig[section].get("binary")
-        ps_datadir = self.runtimeConfig[section].get("datadir", "data_prom", vars=os.environ)
+        section = "omnistat.usermode"
+        ps_binary = self.runtimeConfig[section].get("prometheus_binary")
+        ps_datadir = self.runtimeConfig[section].get("prometheus_datadir", "data_prom", vars=os.environ)
 
         # datadir can be overridden by separate env variable
         if "OMNISTAT_PROMSERVER_DATADIR" in os.environ:
             ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
 
-        ps_logfile = self.runtimeConfig[section].get("logfile", "prom_server.log")
-        ps_corebinding = self.runtimeConfig[section].get("corebinding", "0")
+        ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
+        ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
 
         # check if remote_write is desired
-        remoteWrite = self.runtimeConfig[section].getboolean("remote_write", False)
+        remoteWrite = self.runtimeConfig[section].getboolean("prometheus_remote_write", False)
         if remoteWrite:
             remoteWriteConfig = {}
-            remoteWriteConfig["url"] = self.runtimeConfig[section].get("remote_write_url", "unknown")
-            remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get("remote_write_basic_auth_user", "user")
+            remoteWriteConfig["url"] = self.runtimeConfig[section].get("prometheus_remote_write_url", "unknown")
+            remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get(
+                "prometheus_remote_write_basic_auth_user", "user"
+            )
             remoteWriteConfig["auth_cred"] = self.runtimeConfig[section].get(
-                "remote_write_basic_auth_cred", "credential"
+                "prometheus_remote_write_basic_auth_cred", "credential"
             )
             logging.debug("Remote write url:  %s" % remoteWriteConfig["url"])
             logging.debug("Remote write user: %s" % remoteWriteConfig["auth_user"])
@@ -148,10 +150,10 @@ class UserBasedMonitoring:
             ]
 
             numactl = shutil.which("numactl")
-            if numactl:
+            if numactl and isinstance(ps_corebinding, int):
                 command = ["numactl", f"--physcpubind={ps_corebinding}"] + command
             else:
-                logging.info("Ignoring Prometheus corebinding; unable to find numactl")
+                logging.info("Skipping Prometheus corebinding")
 
             logging.debug("Server start command: %s" % command)
             utils.runBGProcess(command, outputFile=ps_logfile)
@@ -169,15 +171,18 @@ class UserBasedMonitoring:
 
     def startExporters(self):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        corebinding = self.runtimeConfig["omnistat.collectors"].get("corebinding", "1")
+        ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
+        corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
 
         cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
         numactl = shutil.which("numactl")
-        if numactl:
+        if numactl and isinstance(corebinding, int):
             cmd = f"numactl --physcpubind={corebinding} {cmd}"
+        else:
+            logging.info("Skipping exporter corebinding")
 
         if self.slurmHosts:
             logging.info("Saving SLURM job state locally to compute hosts...")
@@ -195,7 +200,7 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel using pdsh")
 
-            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=350)
+            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
             try:
                 output = client.run_command(
                     f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False

@@ -75,7 +75,7 @@ source_suffix = {
     ".md": "markdown",
 }
 
-sphinxmark_enable = True
+sphinxmark_enable = False
 sphinxmark_image = "text"
 sphinxmark_text = "D R A F T"
 sphinxmark_text_size = 80
@@ -143,7 +143,7 @@ latex_elements = {
 
 # html_logo = "images/amd-header-logo.svg"
 html_theme_options = {
-    "analytics_id": "G-C5DYLCE9ED",  #  Provided by Google in your dashboard
+    "analytics_id": "G-8K5QQMVD1V",  #  Provided by Google in your dashboard
     "analytics_anonymize_ip": False,
     "logo_only": False,
     "display_version": True,
