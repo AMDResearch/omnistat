@@ -228,7 +228,7 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
 
 2. Configuration: add a scrape configuration to Prometheus to enable telemetry collection. This configuration stanza typically resides in the `/etc/prometheus/prometheus.yml` runtime config file and controls which nodes to poll and at what frequency. The example below highlights configuration of two Prometheus jobs.  The first enables an omnistat job to poll GPU data at 30 second intervals from four separate compute nodes.  The second job enables collection of the recommended node-exporter to collect host-level data at a similar frequency (default node-exporter port is). We recommend keeping the `scrape_interval` setting at 5 seconds or larger.
 
-   ```
+   ```yaml
    scrape_configs:
      - job_name: "omnistat"
        scrape_interval: 30s
@@ -240,15 +240,15 @@ Once the `omnistat-monitor` daemon is configured and running system-wide, we nex
            - compute-02:8001
            - compute-03:8001
 
-      - job_name: "node"
-       scrape_interval:  30s
-       scrape_timeout:   5s  
-       static_configs:
-         - targets:
-           - compute-00:9100
-           - compute-01:9100
-           - compute-02:9100
-           - compute-03:9100
+     - job_name: "node"
+       scrape_interval: 30s
+       scrape_timeout: 5s
+       static_configs:
+         - targets:
+           - compute-00:9100
+           - compute-01:9100
+           - compute-02:9100
+           - compute-03:9100
    ```
 
 Edit your server's prometheus.yml file using the snippet above as a guide and restart the Prometheus server to enable automatic data collection. Please also ensure that the target hosts configured for the Omnistat data collection allow queries initiated from this Prometheus server as discussed in the [access restriction](#access-restriction-configuration) section.
@@ -256,7 +256,7 @@ Edit your server's prometheus.yml file using the snippet above as a guide and re
 ```{note}
 You may want to adjust the Prometheus server default storage retention policy in order to retain telemetry data longer than the default (which is typically 15 days). Assuming you are using a distro-provided version of Prometheus, you can modify the systemd launch process to include a `--storage.tsdb.retention.time` option as shown in the snippet below:
 
-```text
+```ini
 [Service]
 Restart=on-failure
 User=prometheus
@@ -340,21 +340,21 @@ Note that this recipe assumes existence of a dedicated non-root user to run the 
 ```
 
 ```eval_rst
-.. code-block:: bash
+.. code-block:: ini
    :caption: roles/omnistat/templates/omnistat.service.j2
 
     [Unit]
     Description=Prometheus exporter for HPC/GPU oriented metrics
-    Documentation=https://tbd
+    Documentation=https://amdresearch.github.io/omnistat/
     Requires=network-online.target
     After=network-online.target
 
     [Service]
-    User={{ omnistat_user}}
-    Environment="OMNISTAT_CONFIG={{ omnistat_dir}}/omnistat/config/omnistat.default"
+    User={{ omnistat_user }}
+    Environment="OMNISTAT_CONFIG={{ omnistat_dir }}/omnistat/config/omnistat.default"
     CPUAffinity=0
     SyslogIdentifier=omnistat
-    ExecStart={{ omnistat_dir}}/omnistat-monitor
+    ExecStart={{ omnistat_dir }}/omnistat-monitor
     ExecReload=/bin/kill -HUP $MAINPID
     TimeoutStopSec=20s
     SendSIGKILL=no
