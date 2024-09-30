@@ -1076,7 +1076,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1116,14 +1117,14 @@
                   "uid" : "$source"
                },
                "editorMode" : "code",
-               "expr" : "avg by (card) (rocm_temperature_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+               "expr" : "avg by (card, location) (rocm_temperature_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
                "instant" : false,
-               "legendFormat" : "Card: {{card}}",
+               "legendFormat" : "Card: {{card}} ({{location}})",
                "range" : true,
                "refId" : "A"
             }
          ],
-         "title" : "GPU Temperature - Die Edge (°C)",
+         "title" : "GPU Temperature (°C)",
          "type" : "timeseries"
       },
       {
@@ -1173,7 +1174,106 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
+                     },
+                     {
+                        "color" : "red",
+                        "value" : 80
+                     }
+                  ]
+               },
+               "unit" : "celsius"
+            },
+            "overrides" : []
+         },
+         "gridPos" : {
+            "h" : 8,
+            "w" : 24,
+            "x" : 0,
+            "y" : 39
+         },
+         "id" : 60,
+         "interval" : "$interval",
+         "options" : {
+            "legend" : {
+               "calcs" : [],
+               "displayMode" : "list",
+               "placement" : "bottom",
+               "showLegend" : true
+            },
+            "tooltip" : {
+               "maxHeight" : 600,
+               "mode" : "single",
+               "sort" : "none"
+            }
+         },
+         "targets" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "editorMode" : "code",
+               "expr" : "avg by (card, location) (rocm_temperature_memory_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+               "instant" : false,
+               "legendFormat" : "Card: {{card}} ({{location}})",
+               "range" : true,
+               "refId" : "A"
+            }
+         ],
+         "title" : "GPU Memory Temperature (°C)",
+         "type" : "timeseries"
+      },
+      {
+         "datasource" : {
+            "type" : "prometheus",
+            "uid" : "$source"
+         },
+         "fieldConfig" : {
+            "defaults" : {
+               "color" : {
+                  "mode" : "palette-classic"
+               },
+               "custom" : {
+                  "axisBorderShow" : false,
+                  "axisCenteredZero" : false,
+                  "axisColorMode" : "text",
+                  "axisLabel" : "",
+                  "axisPlacement" : "auto",
+                  "barAlignment" : 0,
+                  "drawStyle" : "line",
+                  "fillOpacity" : 0,
+                  "gradientMode" : "none",
+                  "hideFrom" : {
+                     "legend" : false,
+                     "tooltip" : false,
+                     "viz" : false
+                  },
+                  "insertNulls" : false,
+                  "lineInterpolation" : "linear",
+                  "lineWidth" : 1,
+                  "pointSize" : 5,
+                  "scaleDistribution" : {
+                     "type" : "linear"
+                  },
+                  "showPoints" : "auto",
+                  "spanNulls" : false,
+                  "stacking" : {
+                     "group" : "A",
+                     "mode" : "none"
+                  },
+                  "thresholdsStyle" : {
+                     "mode" : "off"
+                  }
+               },
+               "mappings" : [],
+               "thresholds" : {
+                  "mode" : "absolute",
+                  "steps" : [
+                     {
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1189,7 +1289,7 @@
             "h" : 8,
             "w" : 24,
             "x" : 0,
-            "y" : 39
+            "y" : 47
          },
          "id" : 22,
          "interval" : "$interval",
@@ -1270,7 +1370,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1286,7 +1387,7 @@
             "h" : 8,
             "w" : 12,
             "x" : 0,
-            "y" : 47
+            "y" : 55
          },
          "id" : 25,
          "interval" : "$interval",
@@ -1367,7 +1468,8 @@
                   "mode" : "absolute",
                   "steps" : [
                      {
-                        "color" : "green"
+                        "color" : "green",
+                        "value" : null
                      },
                      {
                         "color" : "red",
@@ -1383,7 +1485,7 @@
             "h" : 8,
             "w" : 12,
             "x" : 12,
-            "y" : 47
+            "y" : 55
          },
          "id" : 23,
          "interval" : "$interval",
@@ -1418,569 +1520,573 @@
          "type" : "timeseries"
       },
       {
-         "collapsed" : false,
+         "collapsed" : true,
          "gridPos" : {
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 55
+            "y" : 63
          },
          "id" : 40,
-         "panels" : [],
+         "panels" : [
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "fieldConfig" : {
+                  "defaults" : {
+                     "color" : {
+                        "mode" : "palette-classic"
+                     },
+                     "custom" : {
+                        "axisBorderShow" : false,
+                        "axisCenteredZero" : false,
+                        "axisColorMode" : "text",
+                        "axisLabel" : "",
+                        "axisPlacement" : "auto",
+                        "barAlignment" : 0,
+                        "drawStyle" : "line",
+                        "fillOpacity" : 0,
+                        "gradientMode" : "none",
+                        "hideFrom" : {
+                           "legend" : false,
+                           "tooltip" : false,
+                           "viz" : false
+                        },
+                        "insertNulls" : false,
+                        "lineInterpolation" : "linear",
+                        "lineWidth" : 1,
+                        "pointSize" : 5,
+                        "scaleDistribution" : {
+                           "type" : "linear"
+                        },
+                        "showPoints" : "auto",
+                        "spanNulls" : false,
+                        "stacking" : {
+                           "group" : "A",
+                           "mode" : "none"
+                        },
+                        "thresholdsStyle" : {
+                           "mode" : "off"
+                        }
+                     },
+                     "mappings" : [],
+                     "thresholds" : {
+                        "mode" : "absolute",
+                        "steps" : [
+                           {
+                              "color" : "green",
+                              "value" : null
+                           }
+                        ]
+                     },
+                     "unit" : "percent"
+                  },
+                  "overrides" : [
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "Median"
+                        },
+                        "properties" : [
+                           {
+                              "id" : "custom.fillOpacity",
+                              "value" : 15
+                           },
+                           {
+                              "id" : "custom.fillBelowTo",
+                              "value" : "Quantile 0.2 "
+                           },
+                           {
+                              "id" : "color",
+                              "value" : {
+                                 "fixedColor" : "blue",
+                                 "mode" : "fixed"
+                              }
+                           },
+                           {
+                              "id" : "custom.lineWidth",
+                              "value" : 1
+                           },
+                           {
+                              "id" : "displayName",
+                              "value" : "Median"
+                           }
+                        ]
+                     },
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "Quantile 0.8"
+                        },
+                        "properties" : [
+                           {
+                              "id" : "custom.fillOpacity",
+                              "value" : 15
+                           },
+                           {
+                              "id" : "custom.fillBelowTo",
+                              "value" : "Median"
+                           },
+                           {
+                              "id" : "color",
+                              "value" : {
+                                 "fixedColor" : "blue",
+                                 "mode" : "fixed"
+                              }
+                           },
+                           {
+                              "id" : "custom.lineWidth",
+                              "value" : 0
+                           },
+                           {
+                              "id" : "custom.hideFrom",
+                              "value" : {
+                                 "legend" : true,
+                                 "tooltip" : false,
+                                 "viz" : false
+                              }
+                           }
+                        ]
+                     },
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "Quantile 0.2 "
+                        },
+                        "properties" : [
+                           {
+                              "id" : "custom.lineWidth",
+                              "value" : 0
+                           },
+                           {
+                              "id" : "displayName"
+                           },
+                           {
+                              "id" : "color",
+                              "value" : {
+                                 "fixedColor" : "blue",
+                                 "mode" : "fixed"
+                              }
+                           },
+                           {
+                              "id" : "custom.hideFrom",
+                              "value" : {
+                                 "legend" : true,
+                                 "tooltip" : false,
+                                 "viz" : false
+                              }
+                           }
+                        ]
+                     },
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "Average"
+                        },
+                        "properties" : [
+                           {
+                              "id" : "color",
+                              "value" : {
+                                 "fixedColor" : "#8080805e",
+                                 "mode" : "fixed"
+                              }
+                           }
+                        ]
+                     }
+                  ]
+               },
+               "gridPos" : {
+                  "h" : 9,
+                  "w" : 24,
+                  "x" : 0,
+                  "y" : 64
+               },
+               "id" : 24,
+               "interval" : "$interval",
+               "options" : {
+                  "legend" : {
+                     "calcs" : [],
+                     "displayMode" : "list",
+                     "placement" : "bottom",
+                     "showLegend" : true
+                  },
+                  "tooltip" : {
+                     "maxHeight" : 600,
+                     "mode" : "multi",
+                     "sort" : "none"
+                  }
+               },
+               "targets" : [
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "quantile(0.20, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
+                     "instant" : false,
+                     "legendFormat" : "Quantile 0.2 ",
+                     "range" : true,
+                     "refId" : "Quantile 0.2"
+                  },
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "quantile(0.5, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
+                     "hide" : false,
+                     "instant" : false,
+                     "legendFormat" : "Median",
+                     "range" : true,
+                     "refId" : "Median"
+                  },
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "quantile(0.8, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
+                     "hide" : false,
+                     "instant" : false,
+                     "legendFormat" : "Quantile 0.8",
+                     "range" : true,
+                     "refId" : "Quantile 0.8"
+                  },
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "avg(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+                     "hide" : false,
+                     "instant" : false,
+                     "legendFormat" : "Average",
+                     "range" : true,
+                     "refId" : "Average"
+                  }
+               ],
+               "title" : "Distribution of GPU Utilization Over Time (%)",
+               "type" : "timeseries"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "fieldConfig" : {
+                  "defaults" : {
+                     "color" : {
+                        "mode" : "palette-classic"
+                     },
+                     "custom" : {
+                        "axisBorderShow" : false,
+                        "axisCenteredZero" : false,
+                        "axisColorMode" : "text",
+                        "axisLabel" : "",
+                        "axisPlacement" : "auto",
+                        "axisSoftMax" : 100,
+                        "axisSoftMin" : 0,
+                        "hideFrom" : {
+                           "legend" : false,
+                           "tooltip" : false,
+                           "viz" : false
+                        },
+                        "pointSize" : {
+                           "fixed" : 4
+                        },
+                        "scaleDistribution" : {
+                           "type" : "linear"
+                        },
+                        "show" : "points"
+                     },
+                     "fieldMinMax" : false,
+                     "mappings" : [],
+                     "thresholds" : {
+                        "mode" : "absolute",
+                        "steps" : [
+                           {
+                              "color" : "green",
+                              "value" : null
+                           },
+                           {
+                              "color" : "red",
+                              "value" : 80
+                           }
+                        ]
+                     },
+                     "unit" : "percent"
+                  },
+                  "overrides" : [
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "Node"
+                        },
+                        "properties" : [
+                           {
+                              "id" : "unit",
+                              "value" : "none"
+                           },
+                           {
+                              "id" : "decimals",
+                              "value" : 0
+                           }
+                        ]
+                     }
+                  ]
+               },
+               "gridPos" : {
+                  "h" : 9,
+                  "w" : 12,
+                  "x" : 0,
+                  "y" : 73
+               },
+               "id" : 41,
+               "interval" : "$interval",
+               "options" : {
+                  "legend" : {
+                     "calcs" : [],
+                     "displayMode" : "list",
+                     "placement" : "bottom",
+                     "showLegend" : false
+                  },
+                  "series" : [
+                     {
+                        "x" : "Node",
+                        "y" : "GPU Utilization (%)"
+                     }
+                  ],
+                  "seriesMapping" : "manual",
+                  "tooltip" : {
+                     "maxHeight" : 600,
+                     "mode" : "single",
+                     "sort" : "none"
+                  }
+               },
+               "targets" : [
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+                     "instant" : false,
+                     "legendFormat" : "__auto",
+                     "range" : true,
+                     "refId" : "A"
+                  }
+               ],
+               "title" : "Distribution of Average Utilization per Node",
+               "transformations" : [
+                  {
+                     "id" : "reduce",
+                     "options" : {
+                        "reducers" : [
+                           "mean"
+                        ]
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "desc" : true,
+                              "field" : "Mean"
+                           }
+                        ]
+                     }
+                  },
+                  {
+                     "id" : "calculateField",
+                     "options" : {
+                        "alias" : "Node",
+                        "mode" : "index",
+                        "reduce" : {
+                           "reducer" : "sum"
+                        }
+                     }
+                  },
+                  {
+                     "id" : "organize",
+                     "options" : {
+                        "excludeByName" : {},
+                        "includeByName" : {},
+                        "indexByName" : {},
+                        "renameByName" : {
+                           "Mean" : "GPU Utilization (%)"
+                        }
+                     }
+                  }
+               ],
+               "type" : "xychart"
+            },
+            {
+               "datasource" : {
+                  "type" : "prometheus",
+                  "uid" : "$source"
+               },
+               "fieldConfig" : {
+                  "defaults" : {
+                     "color" : {
+                        "mode" : "palette-classic"
+                     },
+                     "custom" : {
+                        "axisBorderShow" : false,
+                        "axisCenteredZero" : false,
+                        "axisColorMode" : "text",
+                        "axisLabel" : "",
+                        "axisPlacement" : "auto",
+                        "axisSoftMax" : 100,
+                        "axisSoftMin" : 0,
+                        "hideFrom" : {
+                           "legend" : false,
+                           "tooltip" : false,
+                           "viz" : false
+                        },
+                        "pointSize" : {
+                           "fixed" : 4
+                        },
+                        "scaleDistribution" : {
+                           "type" : "linear"
+                        },
+                        "show" : "points"
+                     },
+                     "fieldMinMax" : false,
+                     "mappings" : [],
+                     "thresholds" : {
+                        "mode" : "absolute",
+                        "steps" : [
+                           {
+                              "color" : "green",
+                              "value" : null
+                           },
+                           {
+                              "color" : "red",
+                              "value" : 80
+                           }
+                        ]
+                     },
+                     "unit" : "percent"
+                  },
+                  "overrides" : [
+                     {
+                        "matcher" : {
+                           "id" : "byName",
+                           "options" : "GPU"
+                        },
+                        "properties" : [
+                           {
+                              "id" : "unit",
+                              "value" : "none"
+                           },
+                           {
+                              "id" : "decimals",
+                              "value" : 0
+                           }
+                        ]
+                     }
+                  ]
+               },
+               "gridPos" : {
+                  "h" : 9,
+                  "w" : 12,
+                  "x" : 12,
+                  "y" : 73
+               },
+               "id" : 42,
+               "interval" : "$interval",
+               "options" : {
+                  "legend" : {
+                     "calcs" : [],
+                     "displayMode" : "list",
+                     "placement" : "bottom",
+                     "showLegend" : false
+                  },
+                  "series" : [
+                     {
+                        "x" : "GPU",
+                        "y" : "GPU Utilization (%)"
+                     }
+                  ],
+                  "seriesMapping" : "manual",
+                  "tooltip" : {
+                     "maxHeight" : 600,
+                     "mode" : "single",
+                     "sort" : "none"
+                  }
+               },
+               "targets" : [
+                  {
+                     "datasource" : {
+                        "type" : "prometheus",
+                        "uid" : "$source"
+                     },
+                     "editorMode" : "code",
+                     "expr" : "(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+                     "instant" : false,
+                     "legendFormat" : "__auto",
+                     "range" : true,
+                     "refId" : "A"
+                  }
+               ],
+               "title" : "Distribution of Average Utilization per GPU",
+               "transformations" : [
+                  {
+                     "id" : "reduce",
+                     "options" : {
+                        "reducers" : [
+                           "mean"
+                        ]
+                     }
+                  },
+                  {
+                     "id" : "sortBy",
+                     "options" : {
+                        "fields" : {},
+                        "sort" : [
+                           {
+                              "desc" : true,
+                              "field" : "Mean"
+                           }
+                        ]
+                     }
+                  },
+                  {
+                     "id" : "calculateField",
+                     "options" : {
+                        "alias" : "GPU",
+                        "mode" : "index",
+                        "reduce" : {
+                           "reducer" : "sum"
+                        }
+                     }
+                  },
+                  {
+                     "id" : "organize",
+                     "options" : {
+                        "excludeByName" : {},
+                        "includeByName" : {},
+                        "indexByName" : {},
+                        "renameByName" : {
+                           "Mean" : "GPU Utilization (%)"
+                        }
+                     }
+                  }
+               ],
+               "type" : "xychart"
+            }
+         ],
          "title" : "Multiple Nodes",
          "type" : "row"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "$source"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "palette-classic"
-               },
-               "custom" : {
-                  "axisBorderShow" : false,
-                  "axisCenteredZero" : false,
-                  "axisColorMode" : "text",
-                  "axisLabel" : "",
-                  "axisPlacement" : "auto",
-                  "barAlignment" : 0,
-                  "drawStyle" : "line",
-                  "fillOpacity" : 0,
-                  "gradientMode" : "none",
-                  "hideFrom" : {
-                     "legend" : false,
-                     "tooltip" : false,
-                     "viz" : false
-                  },
-                  "insertNulls" : false,
-                  "lineInterpolation" : "linear",
-                  "lineWidth" : 1,
-                  "pointSize" : 5,
-                  "scaleDistribution" : {
-                     "type" : "linear"
-                  },
-                  "showPoints" : "auto",
-                  "spanNulls" : false,
-                  "stacking" : {
-                     "group" : "A",
-                     "mode" : "none"
-                  },
-                  "thresholdsStyle" : {
-                     "mode" : "off"
-                  }
-               },
-               "mappings" : [],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green"
-                     }
-                  ]
-               },
-               "unit" : "percent"
-            },
-            "overrides" : [
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "Median"
-                  },
-                  "properties" : [
-                     {
-                        "id" : "custom.fillOpacity",
-                        "value" : 15
-                     },
-                     {
-                        "id" : "custom.fillBelowTo",
-                        "value" : "Quantile 0.2 "
-                     },
-                     {
-                        "id" : "color",
-                        "value" : {
-                           "fixedColor" : "blue",
-                           "mode" : "fixed"
-                        }
-                     },
-                     {
-                        "id" : "custom.lineWidth",
-                        "value" : 1
-                     },
-                     {
-                        "id" : "displayName",
-                        "value" : "Median"
-                     }
-                  ]
-               },
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "Quantile 0.8"
-                  },
-                  "properties" : [
-                     {
-                        "id" : "custom.fillOpacity",
-                        "value" : 15
-                     },
-                     {
-                        "id" : "custom.fillBelowTo",
-                        "value" : "Median"
-                     },
-                     {
-                        "id" : "color",
-                        "value" : {
-                           "fixedColor" : "blue",
-                           "mode" : "fixed"
-                        }
-                     },
-                     {
-                        "id" : "custom.lineWidth",
-                        "value" : 0
-                     },
-                     {
-                        "id" : "custom.hideFrom",
-                        "value" : {
-                           "legend" : true,
-                           "tooltip" : false,
-                           "viz" : false
-                        }
-                     }
-                  ]
-               },
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "Quantile 0.2 "
-                  },
-                  "properties" : [
-                     {
-                        "id" : "custom.lineWidth",
-                        "value" : 0
-                     },
-                     {
-                        "id" : "displayName"
-                     },
-                     {
-                        "id" : "color",
-                        "value" : {
-                           "fixedColor" : "blue",
-                           "mode" : "fixed"
-                        }
-                     },
-                     {
-                        "id" : "custom.hideFrom",
-                        "value" : {
-                           "legend" : true,
-                           "tooltip" : false,
-                           "viz" : false
-                        }
-                     }
-                  ]
-               },
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "Average"
-                  },
-                  "properties" : [
-                     {
-                        "id" : "color",
-                        "value" : {
-                           "fixedColor" : "#8080805e",
-                           "mode" : "fixed"
-                        }
-                     }
-                  ]
-               }
-            ]
-         },
-         "gridPos" : {
-            "h" : 9,
-            "w" : 24,
-            "x" : 0,
-            "y" : 56
-         },
-         "id" : 24,
-         "interval" : "$interval",
-         "options" : {
-            "legend" : {
-               "calcs" : [],
-               "displayMode" : "list",
-               "placement" : "bottom",
-               "showLegend" : true
-            },
-            "tooltip" : {
-               "maxHeight" : 600,
-               "mode" : "multi",
-               "sort" : "none"
-            }
-         },
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "quantile(0.20, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
-               "instant" : false,
-               "legendFormat" : "Quantile 0.2 ",
-               "range" : true,
-               "refId" : "Quantile 0.2"
-            },
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "quantile(0.5, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
-               "hide" : false,
-               "instant" : false,
-               "legendFormat" : "Median",
-               "range" : true,
-               "refId" : "Median"
-            },
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "quantile(0.8, (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) ",
-               "hide" : false,
-               "instant" : false,
-               "legendFormat" : "Quantile 0.8",
-               "range" : true,
-               "refId" : "Quantile 0.8"
-            },
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "avg(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-               "hide" : false,
-               "instant" : false,
-               "legendFormat" : "Average",
-               "range" : true,
-               "refId" : "Average"
-            }
-         ],
-         "title" : "Distribution of GPU Utilization Over Time (%)",
-         "type" : "timeseries"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "$source"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "palette-classic"
-               },
-               "custom" : {
-                  "axisBorderShow" : false,
-                  "axisCenteredZero" : false,
-                  "axisColorMode" : "text",
-                  "axisLabel" : "",
-                  "axisPlacement" : "auto",
-                  "axisSoftMax" : 100,
-                  "axisSoftMin" : 0,
-                  "hideFrom" : {
-                     "legend" : false,
-                     "tooltip" : false,
-                     "viz" : false
-                  },
-                  "pointSize" : {
-                     "fixed" : 4
-                  },
-                  "scaleDistribution" : {
-                     "type" : "linear"
-                  },
-                  "show" : "points"
-               },
-               "fieldMinMax" : false,
-               "mappings" : [],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green"
-                     },
-                     {
-                        "color" : "red",
-                        "value" : 80
-                     }
-                  ]
-               },
-               "unit" : "percent"
-            },
-            "overrides" : [
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "Node"
-                  },
-                  "properties" : [
-                     {
-                        "id" : "unit",
-                        "value" : "none"
-                     },
-                     {
-                        "id" : "decimals",
-                        "value" : 0
-                     }
-                  ]
-               }
-            ]
-         },
-         "gridPos" : {
-            "h" : 9,
-            "w" : 12,
-            "x" : 0,
-            "y" : 65
-         },
-         "id" : 41,
-         "interval" : "$interval",
-         "options" : {
-            "legend" : {
-               "calcs" : [],
-               "displayMode" : "list",
-               "placement" : "bottom",
-               "showLegend" : false
-            },
-            "series" : [
-               {
-                  "x" : "Node",
-                  "y" : "GPU Utilization (%)"
-               }
-            ],
-            "seriesMapping" : "manual",
-            "tooltip" : {
-               "maxHeight" : 600,
-               "mode" : "single",
-               "sort" : "none"
-            }
-         },
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-               "instant" : false,
-               "legendFormat" : "__auto",
-               "range" : true,
-               "refId" : "A"
-            }
-         ],
-         "title" : "Distribution of Average Utilization per Node",
-         "transformations" : [
-            {
-               "id" : "reduce",
-               "options" : {
-                  "reducers" : [
-                     "mean"
-                  ]
-               }
-            },
-            {
-               "id" : "sortBy",
-               "options" : {
-                  "fields" : {},
-                  "sort" : [
-                     {
-                        "desc" : true,
-                        "field" : "Mean"
-                     }
-                  ]
-               }
-            },
-            {
-               "id" : "calculateField",
-               "options" : {
-                  "alias" : "Node",
-                  "mode" : "index",
-                  "reduce" : {
-                     "reducer" : "sum"
-                  }
-               }
-            },
-            {
-               "id" : "organize",
-               "options" : {
-                  "excludeByName" : {},
-                  "includeByName" : {},
-                  "indexByName" : {},
-                  "renameByName" : {
-                     "Mean" : "GPU Utilization (%)"
-                  }
-               }
-            }
-         ],
-         "type" : "xychart"
-      },
-      {
-         "datasource" : {
-            "type" : "prometheus",
-            "uid" : "$source"
-         },
-         "fieldConfig" : {
-            "defaults" : {
-               "color" : {
-                  "mode" : "palette-classic"
-               },
-               "custom" : {
-                  "axisBorderShow" : false,
-                  "axisCenteredZero" : false,
-                  "axisColorMode" : "text",
-                  "axisLabel" : "",
-                  "axisPlacement" : "auto",
-                  "axisSoftMax" : 100,
-                  "axisSoftMin" : 0,
-                  "hideFrom" : {
-                     "legend" : false,
-                     "tooltip" : false,
-                     "viz" : false
-                  },
-                  "pointSize" : {
-                     "fixed" : 4
-                  },
-                  "scaleDistribution" : {
-                     "type" : "linear"
-                  },
-                  "show" : "points"
-               },
-               "fieldMinMax" : false,
-               "mappings" : [],
-               "thresholds" : {
-                  "mode" : "absolute",
-                  "steps" : [
-                     {
-                        "color" : "green"
-                     },
-                     {
-                        "color" : "red",
-                        "value" : 80
-                     }
-                  ]
-               },
-               "unit" : "percent"
-            },
-            "overrides" : [
-               {
-                  "matcher" : {
-                     "id" : "byName",
-                     "options" : "GPU"
-                  },
-                  "properties" : [
-                     {
-                        "id" : "unit",
-                        "value" : "none"
-                     },
-                     {
-                        "id" : "decimals",
-                        "value" : 0
-                     }
-                  ]
-               }
-            ]
-         },
-         "gridPos" : {
-            "h" : 9,
-            "w" : 12,
-            "x" : 12,
-            "y" : 65
-         },
-         "id" : 42,
-         "interval" : "$interval",
-         "options" : {
-            "legend" : {
-               "calcs" : [],
-               "displayMode" : "list",
-               "placement" : "bottom",
-               "showLegend" : false
-            },
-            "series" : [
-               {
-                  "x" : "GPU",
-                  "y" : "GPU Utilization (%)"
-               }
-            ],
-            "seriesMapping" : "manual",
-            "tooltip" : {
-               "maxHeight" : 600,
-               "mode" : "single",
-               "sort" : "none"
-            }
-         },
-         "targets" : [
-            {
-               "datasource" : {
-                  "type" : "prometheus",
-                  "uid" : "$source"
-               },
-               "editorMode" : "code",
-               "expr" : "(rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-               "instant" : false,
-               "legendFormat" : "__auto",
-               "range" : true,
-               "refId" : "A"
-            }
-         ],
-         "title" : "Distribution of Average Utilization per GPU",
-         "transformations" : [
-            {
-               "id" : "reduce",
-               "options" : {
-                  "reducers" : [
-                     "mean"
-                  ]
-               }
-            },
-            {
-               "id" : "sortBy",
-               "options" : {
-                  "fields" : {},
-                  "sort" : [
-                     {
-                        "desc" : true,
-                        "field" : "Mean"
-                     }
-                  ]
-               }
-            },
-            {
-               "id" : "calculateField",
-               "options" : {
-                  "alias" : "GPU",
-                  "mode" : "index",
-                  "reduce" : {
-                     "reducer" : "sum"
-                  }
-               }
-            },
-            {
-               "id" : "organize",
-               "options" : {
-                  "excludeByName" : {},
-                  "includeByName" : {},
-                  "indexByName" : {},
-                  "renameByName" : {
-                     "Mean" : "GPU Utilization (%)"
-                  }
-               }
-            }
-         ],
-         "type" : "xychart"
       },
       {
          "collapsed" : true,
@@ -1988,7 +2094,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 74
+            "y" : 64
          },
          "id" : 45,
          "panels" : [
@@ -2014,7 +2120,8 @@
                         "mode" : "absolute",
                         "steps" : [
                            {
-                              "color" : "green"
+                              "color" : "green",
+                              "value" : null
                            },
                            {
                               "color" : "red",
@@ -2095,7 +2202,7 @@
                   "h" : 8,
                   "w" : 24,
                   "x" : 0,
-                  "y" : 75
+                  "y" : 25
                },
                "id" : 43,
                "interval" : "$interval",
@@ -2188,7 +2295,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 75
+            "y" : 65
          },
          "id" : 46,
          "panels" : [
@@ -3536,7 +3643,7 @@
             "h" : 1,
             "w" : 24,
             "x" : 0,
-            "y" : 76
+            "y" : 66
          },
          "id" : 50,
          "panels" : [
@@ -3653,6 +3760,7 @@
          "type" : "row"
       }
    ],
+   "refresh" : "",
    "schemaVersion" : 39,
    "tags" : [
       "omnistat"
