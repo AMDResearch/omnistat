@@ -102,7 +102,7 @@ def check_min_version(minVersion):
 class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
-        self.__prefix = "rocm_"
+        self.__prefix = "amdsmi_"
         self.__schema = 1.0
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
