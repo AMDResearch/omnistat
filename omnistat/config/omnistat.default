@@ -38,7 +38,7 @@ prometheus_binary = /path-to-promeotheus-server-install/prometheus-2.45.1.linux-
 prometheus_datadir = data_prom
 prometheus_logfile = prom_server.log
 
-## Bind user-mode Omnistat monitor and Prometheus to a specific cores.
+## Bind user-mode Omnistat monitor and Prometheus to specific cores.
 ## Requires numactl. When these options are not set, no binding is enforced.
 # exporter_corebinding = 0
 # prometheus_corebinding = 1
