@@ -6,7 +6,7 @@
    :maxdepth: 4
 ```
 
-In user-mode executions, Omnistat data collectors and a companion prometheus
+In user-mode executions, Omnistat data collectors and a companion Prometheus
 server are deployed temporarily on hosts assigned to a user's job, as
 highlighted in {numref}`fig-user-mode`. The following assumptions are made
 throughout the rest of this user-mode installation discussion:

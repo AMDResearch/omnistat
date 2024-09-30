@@ -118,7 +118,7 @@ GPU topology indexing: Scanning devices from /sys/class/kfd/kfd/topology/nodes
 You can override the default runtime configuration file above by setting an `OMNISTAT_CONFIG` environment variable or by using the `./omnistat-monitor --configfile` option.
 ```
 
-While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUS installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
+While the client is running interactively, we can use a _separate_ command shell to query the client to further confirm functionality. The output below highlights an example query response on a system with four GPUs installed (note that the metrics include unique card labels to differentiate specific GPU measurements):
 
 ```shell-session
 [omnidc@login]$ curl localhost:8001/metrics | grep rocm | grep -v "^#"
@@ -139,7 +139,7 @@ Once local functionality has been established, you can terminate the interactive
 
 ### Enable systemd service
 
-Now that the software is installed under a dedicated user and basic functionality has been confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage `systemd` and an example service file named [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is included in the distribution. This contents of the file are shown below with four lines highlighted in yellow that are most likely to require local customization.
+Now that the software is installed under a dedicated user and basic functionality has been confirmed, the data collector can be enabled for permanent service. The recommended approach for this is to leverage `systemd` and an example service file named [omnistat.service](https://github.com/AMDResearch/omnistat/blob/main/omnistat.service) is included in the distribution. The contents of the file are shown below with four lines highlighted in yellow that are most likely to require local customization.
 
 <!-- * `User` set to the local Linux user created to run Omnistat
 * `OMNISTAT_DIR` set to the local path where you downloaded the source tree
@@ -153,7 +153,7 @@ Now that the software is installed under a dedicated user and basic functionalit
    :emphasize-lines: 8-11
 ```
 
-Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl  enable omnistat`).
+Using elevated credentials, install the omnistat.service file across all desired compute nodes (e.g. `/etc/systemd/system/omnistat.service` and enable using systemd (`systemctl enable omnistat`).
 
 ### Access restriction configuration
 
@@ -206,7 +206,7 @@ ARGS='--collector.disable-defaults --collector.loadavg --collector.diskstats
 
 ## Prometheus server
 
-Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlights installation via package manager followed by a simple scrape configuration.
+Once the `omnistat-monitor` daemon is configured and running system-wide, we next install and configure a [Prometheus](https://prometheus.io/) server to enable automatic telemetry collection. This server typically runs on an administrative host and can be installed via package manager, by downloading a [precompiled binary](https://prometheus.io/download/), or using a [Docker image](https://hub.docker.com/u/prom). The install steps below highlight installation via package manager followed by a simple scrape configuration.
 
 <!-- On a separate server with access to compute nodes, install and configure
 [Prometheus](https://prometheus.io/). -->
