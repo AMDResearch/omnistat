@@ -65,6 +65,14 @@ class Monitor:
             logging.error('Please choose either "enable_rocm_smi" or "enable_amd_smi" in runtime config')
             sys.exit(1)
 
+        # verify only one RMS collector is enabled
+        if self.runtimeConfig["collector_enable_rms"] and self.runtimeConfig["collector_enable_rms_v2"]:
+            logging.error("")
+            logging.error("[ERROR]: Only one RMS data collector may be configured at a time.")
+            logging.error("")
+            logging.error('Please choose either "collector_enable_rms" or "collector_enable_rms_v2" in runtime config')
+            sys.exit(1)
+
         self.runtimeConfig["collector_enable_amd_smi_process"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi_process", False
         )
