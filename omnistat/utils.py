@@ -285,6 +285,7 @@ def resolvePath(desiredCommand, envVar):
     Returns:
         string: resolved path to desired comman
     """
+    path = None
     command = desiredCommand
     if envVar in os.environ:
         customPath = os.getenv(envVar)
@@ -298,7 +299,8 @@ def resolvePath(desiredCommand, envVar):
     # verify we can resolve the desired binary
     path = shutil.which(command)
     if not path:
-        error("Unable to resolve path for %s" % command)
+        logging.error("ERROR: Unable to resolve path for %s" % command)
+        return None
     else:
         logging.debug("--> %s path = %s" % (desiredCommand, path))
 
