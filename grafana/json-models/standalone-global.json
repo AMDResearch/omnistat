@@ -2423,7 +2423,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "d/fdxiufe2bkyrkd/standalone-node?var-node=${__value.raw}&${__url_time_range}"
+                        "url": "d/fdxiufe2bkyrkd-standalone/standalone-node?var-node=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
