@@ -53,7 +53,7 @@ from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
 
 def get_gpu_metrics(device):
     result = smi.amdsmi_get_gpu_metrics_info(device)
-    # Duplicate vram metrics to not break support
+    # TODO Duplicate vram metrics to not break support
     device_vram_usage = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
     result['vram_usage'] = device_vram_usage
     for k, v in result.items():
@@ -132,7 +132,7 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.__num_gpus)
 
-        # Register Total VRAM for GPU metric Duplicated for support
+        # TODO Register Total VRAM for GPU metric Duplicated for support
         total_vram_metric = Gauge(self.__prefix + "total_vram", "Total VRAM available on GPU",
                                   labelnames=["card"])
 
@@ -226,7 +226,7 @@ class AMDSMI(Collector):
 
             metrics = get_gpu_metrics(device)
 
-            # Duplicate vram metric for support, register only once
+            # TODO Duplicate vram metric for support, register only once
             device_total_vram = smi.amdsmi_get_gpu_memory_total(device, smi.AmdSmiMemoryType.VRAM)
             total_vram_metric.labels(card=str(idx)).set(device_total_vram)
 
@@ -243,7 +243,7 @@ class AMDSMI(Collector):
                 if metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
 
-                # temp workaround to allow support for all metric names
+                # TODO temp workaround to allow support for all metric names
                 old_metric_name = self.__prefix + old_metric
                 if old_metric and old_metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[old_metric_name] = Gauge(old_metric_name, f"{old_metric}", labelnames=["card"])
@@ -293,7 +293,7 @@ class AMDSMI(Collector):
                 metric = self.__GPUMetrics[self.__prefix + metric]
                 # Set metric
                 metric.labels(card=cardId).set(value)
-                # temp workaround to allow support for all metric names
+                # TODO temp workaround to allow support for all metric names
                 if old_metric:
                     metric = self.__GPUMetrics[self.__prefix + old_metric]
                     metric.labels(card=cardId).set(value)
