@@ -54,25 +54,30 @@ class RMSJob(Collector):
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
 
-        # setup squeue binary path to query slurm to determine node ownership
-        command = utils.resolvePath("squeue", "SLURM_PATH")
-        # command-line flags for use with squeue to obtained desired metrics
-        hostname = platform.node().split(".", 1)[0]
-        flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
-        # cache query command with options
-        self.__squeue_query = [command] + flags.split()
-        # job step query command
-        flags = "-s -w " + hostname + " -h --Format=StepID"
-        self.__squeue_steps = [command] + flags.split()
-        logging.debug("sqeueue_exec = %s" % self.__squeue_query)
-
         # jobMode
         if self.__rmsJobMode == "file-based":
             logging.info(
                 "collector_rms: reading job information from prolog/epilog derived file (%s)" % self.__rmsJobFile
             )
         elif self.__rmsJobMode == "squeue":
-            logging.info("collector_rms: will poll slurm periodicaly with squeue")
+            logging.info("collector_rms: configured to poll slurm periodically with squeue")
+
+            # setup squeue binary path to query slurm to determine node ownership
+            command = utils.resolvePath("squeue", "SLURM_PATH")
+            if command is None:
+                logging.error("")
+                logging.error("Please verify SLURM is installed and squeue binary is available")
+                logging.error("")
+                sys.exit(4)
+            # command-line flags for use with squeue to obtained desired metrics
+            hostname = platform.node().split(".", 1)[0]
+            flags = "-w " + hostname + " -h  --Format=JobID::,UserName::,Partition::,NumNodes::,BatchFlag"
+            # cache query command with options
+            self.__squeue_query = [command] + flags.split()
+            # job step query command
+            flags = "-s -w " + hostname + " -h --Format=StepID"
+            self.__squeue_steps = [command] + flags.split()
+            logging.debug("sqeueue_exec = %s" % self.__squeue_query)
         else:
             logging.error("Unsupported slurm job data collection mode")
 
