@@ -104,6 +104,7 @@ class AMDSMIProcess(Collector):
             f"{self.__prefix}vram",
             labelnames=["card", "name", "pid"],
         )
+        # TODO engine_usage_gfx was removed in rocm 6, to be reintroduced in future version.
         metric_compute = Gauge(
             f"{self.__prefix}compute",
             f"{self.__prefix}compute",
