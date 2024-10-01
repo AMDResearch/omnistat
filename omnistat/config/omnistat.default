@@ -3,7 +3,7 @@
 port = 8001
 enable_rocm_smi = True
 enable_amd_smi = False
-enable_rms = True
+enable_rms = False
 
 ## Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm
