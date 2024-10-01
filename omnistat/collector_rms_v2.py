@@ -36,6 +36,7 @@ import re
 from prometheus_client import Gauge
 from omnistat import utils
 from omnistat.collector_base import Collector
+import json
 
 
 class RMSJobV2(Collector):
@@ -133,6 +134,26 @@ class RMSJobV2(Collector):
 
     def get_job_info(self, job_id):
 
+        def gpuinfo(nodelist, greslist, tres):
+            gpu_list = [""]
+            # Ensure the lengths of nodelist and greslist match
+            if tres and len(greslist) != len(nodelist):
+                logging.error(f"Length of nodelist and greslist do not match."
+                              f"\ntres: {tres}\nnodelist: {nodelist}\ngreslist: {greslist}")
+                return gpu_list
+
+            # Find the index of the current node in the nodelist
+            try:
+                index = nodelist.index(self.hostname)
+            except ValueError:
+                logging.error(f"Node {self.hostname} not found in nodelist {nodelist}")
+                return gpu_list
+
+            # Extract GPU data for the current node
+            gpu_data = greslist[index]
+            gpu_list = expand_gpu(gpu_data)  # Expand the GPU data
+            return gpu_list
+
         def expand_gpu(input_str):
             indexes = input_str.split("(IDX:")[-1].split(")")[0]
             if not indexes:
@@ -164,33 +185,25 @@ class RMSJobV2(Collector):
             else:
                 return [input_str]
 
-        result = {
-            "gpus": [],
-            "account": "",
-        }
-        scontrol_data = utils.runShellCommand(['scontrol', 'show', 'job', job_id.strip(), '-d'],
+        result = {}
+
+        scontrol_data = utils.runShellCommand(['scontrol', 'show', 'job', job_id.strip(), '-d', '--json'],
                                               capture_output=True, text=True)
         if not scontrol_data.stdout.strip():
-            return result
-        for line in scontrol_data.stdout.strip().splitlines():
-            if "Account=" in line:
-                result["account"] = line.split("Account=")[-1].split(" ")[0].replace("(", "").replace(")", "")
-            if line.strip().startswith("Nodes="):
-                # logging.error(f"Line: {line}")
-                nodes = line.split("Nodes=")[-1].split(" ")[0].strip()
-                # logging.error(f"Nodes: {nodes}")
-                nodes = expand_number_range(nodes)
-                if self.hostname not in nodes:
-                    logging.error(f"Node {self.hostname} not in nodes {nodes}")
-                    continue
-                # logging.error(f"Nodes expanded: {nodes}")
-                gpus = line.split("GRES=")[-1].strip()
-                # logging.error(f"GPUs: {gpus}")
-                gpus = expand_gpu(gpus)
-                result["gpus"] = gpus
-                # logging.error(f"GPUs expanded: {gpus}")
-        return result
+            logging.error(f"Failed to get job info for job: {job_id}, Error: {scontrol_data.stderr}")
+            return {}
+        job_data = json.loads(scontrol_data.stdout.strip())['jobs'][0]
 
+        job_resources = job_data.get('job_resources', {})
+        tres_string = job_data.get('tres_per_job', "")
+        node_list = expand_number_range(job_resources.get('nodes', []))
+        gres_list = job_data.get('gres_detail', [])
+        gpus = gpuinfo(node_list, gres_list, tres_string)
+
+        result["account"] = job_data.get('account', "")
+        result["gpus"] = gpus
+
+        return result
 
     def collect_data_incremental(self):
         self.c += 1
