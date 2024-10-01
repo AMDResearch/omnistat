@@ -46,20 +46,17 @@ directory of the cloned Omnistat repository.
 [user@login]$ ~/venv/omnistat/bin/python -m pip install .[query]
 ```
 
-3. Download Prometheus. If `prometheus` isn't already installed in the system,
-   download and extract a [precompiled binary](https://prometheus.io/download/).
+3. Download Prometheus. If a `prometheus` server is not already present on the system,
+   download and extract a [precompiled binary](https://prometheus.io/download/). This binary can generally be stored in any directory accessible by the user, but the path to the binary will need to be known during the next section when configuring user-mode execution.
 
 ## Configuring user-mode Omnistat
 
-Omnistat provides a default configuration file,
-[omnistat/config/omnistat.default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default),
-that will likely require modification to run in different environments.
-The following lines highlighted in yellow may need to be customized.
+For user-mode execution, Omnistat includes additional options in the `[omnistast.usermode]` section of the runtime configuration file. A portion of the [default](https://github.com/AMDResearch/omnistat/blob/main/omnistat/config/omnistat.default) config file is highlighted below with the lines in yellow indicating settings to confirm or customize for your local environment.
 
 ```eval_rst
 .. code-block:: ini
    :caption: Sample Omnistat configuration file
-   :emphasize-lines: 2,8,11,12,13
+   :emphasize-lines: 2,4,8,11,12,13
 
     [omnistat.collectors]
     port = 8001
