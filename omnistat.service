@@ -5,10 +5,10 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=root
-Environment=
+User=omnidc
+Environment="OMNISTAT_CONFIG=/home/omnidc/omnistat/omnistat/config/omnistat.default"
 CPUAffinity=0
-ExecStart=/opt/omnistat/venv/bin/python3 /opt/omnistat/omnistat-monitor --configfile /opt/omnistat/omnistat/config/omnistat.m2m
+ExecStart=/home/omnidc/omnistat/omnistat-monitor
 SyslogIdentifier=omnistat
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=20s
