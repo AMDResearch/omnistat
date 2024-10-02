@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 104,
+  "id": 107,
   "links": [
     {
       "asDropdown": false,
@@ -98,7 +98,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -165,7 +165,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -243,7 +243,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -319,7 +319,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -388,7 +388,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -396,7 +396,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "time() - node_boot_time_seconds{instance=\"$node_exporter_instance\"}",
+          "expr": "time() - node_boot_time_seconds{instance=\"${instance:text}:$node_exporter_port\"}",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -465,7 +465,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -473,7 +473,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "node_load1{instance=\"$node_exporter_instance\"}",
+          "expr": "node_load1{instance=\"${instance:text}:$node_exporter_port\"}",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -541,7 +541,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -549,7 +549,7 @@
             "uid": "${source}"
           },
           "editorMode": "code",
-          "expr": "100 - (node_memory_MemAvailable_bytes{instance=\"$node_exporter_instance\"} / node_memory_MemTotal_bytes{instance=\"$node_exporter_instance\"}) * 100",
+          "expr": "100 - (node_memory_MemAvailable_bytes{instance=\"${instance:text}:$node_exporter_port\"} / node_memory_MemTotal_bytes{instance=\"${instance:text}:$node_exporter_port\"}) * 100",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -640,7 +640,7 @@
           "reverse": false
         }
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -650,7 +650,7 @@
           "editorMode": "code",
           "expr": "rocm_utilization_percentage{instance=\"$instance\"}",
           "instant": false,
-          "legendFormat": "Card: {{card}}",
+          "legendFormat": "Card {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -740,7 +740,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -750,7 +750,7 @@
           "editorMode": "code",
           "expr": "(rocm_utilization_percentage{instance=\"$instance\"})",
           "instant": false,
-          "legendFormat": "Card: {{card}}",
+          "legendFormat": "Card {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -840,7 +840,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.3.0-76576",
       "targets": [
         {
           "datasource": {
@@ -850,7 +850,7 @@
           "editorMode": "code",
           "expr": "rocm_vram_used_percentage{instance=\"$instance\"}",
           "instant": false,
-          "legendFormat": "Card: {{card}}",
+          "legendFormat": "Card {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -919,8 +919,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -958,7 +957,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -968,7 +967,7 @@
               "editorMode": "code",
               "expr": "avg by (card, location) (rocm_temperature_celsius{instance=\"$instance\"}) ",
               "instant": false,
-              "legendFormat": "Card: {{card}} ({{location}})",
+              "legendFormat": "Card {{card}} ({{location}})",
               "range": true,
               "refId": "A"
             }
@@ -1027,8 +1026,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   },
                   {
                     "color": "#56A64B",
@@ -1048,7 +1046,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 52
+            "y": 100
           },
           "id": 129,
           "options": {
@@ -1066,7 +1064,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1076,7 +1074,7 @@
               "editorMode": "code",
               "expr": "avg by (card, location) (rocm_temperature_memory_celsius{instance=\"$instance\"})",
               "instant": false,
-              "legendFormat": "Card: {{card}} ({{location}})",
+              "legendFormat": "Card {{card}} ({{location}})",
               "range": true,
               "refId": "A"
             }
@@ -1135,8 +1133,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1148,7 +1145,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 61
+            "y": 109
           },
           "id": 101,
           "options": {
@@ -1166,7 +1163,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1176,7 +1173,7 @@
               "editorMode": "code",
               "expr": "(rocm_average_socket_power_watts{instance=\"$instance\"}) ",
               "instant": false,
-              "legendFormat": "Card: {{card}}",
+              "legendFormat": "Card {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1235,8 +1232,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1248,7 +1244,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 70
+            "y": 118
           },
           "id": 114,
           "options": {
@@ -1266,7 +1262,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1276,7 +1272,7 @@
               "editorMode": "code",
               "expr": "rocm_sclk_clock_mhz{instance=\"$instance\"}",
               "instant": false,
-              "legendFormat": "Card: {{card}}",
+              "legendFormat": "Card {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1335,8 +1331,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1348,7 +1343,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 78
+            "y": 126
           },
           "id": 115,
           "options": {
@@ -1366,7 +1361,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1376,7 +1371,7 @@
               "editorMode": "code",
               "expr": "rocm_mclk_clock_mhz{instance=\"$instance\"}",
               "instant": false,
-              "legendFormat": "Card: {{card}}",
+              "legendFormat": "Card {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1435,8 +1430,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue",
-                    "value": null
+                    "color": "blue"
                   }
                 ]
               },
@@ -1448,7 +1442,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 134
           },
           "id": 108,
           "interval": "1s",
@@ -1467,7 +1461,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1478,7 +1472,7 @@
               "exemplar": false,
               "expr": "rocm_throttle_events{instance=\"$instance\"}",
               "instant": false,
-              "legendFormat": "Card: {{card}}",
+              "legendFormat": "Card {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1549,7 +1543,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1564,7 +1559,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 422
+            "y": 44
           },
           "id": 119,
           "options": {
@@ -1580,7 +1575,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1588,23 +1583,14 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "node_load1{instance=\"$node_exporter_instance\"}",
+              "expr": "node_load1{instance=\"${instance:text}:$node_exporter_port\"}",
               "instant": false,
-              "legendFormat": "Node: {{instance}}",
+              "legendFormat": "Node: ${instance:text}",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "CPU 1m Load Average per Node",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(.*):(.*)",
-                "renamePattern": "$1"
-              }
-            }
-          ],
           "type": "timeseries"
         },
         {
@@ -1658,7 +1644,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1674,7 +1661,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 430
+            "y": 52
           },
           "id": 120,
           "options": {
@@ -1690,7 +1677,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1698,23 +1685,14 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "100 - (sum(node_memory_MemAvailable_bytes{instance=\"$node_exporter_instance\"}) / sum(node_memory_MemTotal_bytes{instance=\"$node_exporter_instance\"})) * 100",
+              "expr": "100 - (sum(node_memory_MemAvailable_bytes{instance=\"${instance:text}:$node_exporter_port\"}) / sum(node_memory_MemTotal_bytes{instance=\"${instance:text}:$node_exporter_port\"})) * 100",
               "instant": false,
-              "legendFormat": "__auto",
+              "legendFormat": "Node: ${instance:text}",
               "range": true,
               "refId": "A"
             }
           ],
           "title": "CPU Memory (%)",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(.*):(.*)",
-                "renamePattern": "$1"
-              }
-            }
-          ],
           "type": "timeseries"
         }
       ],
@@ -1796,7 +1774,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 439
+            "y": 343
           },
           "id": 121,
           "options": {
@@ -1812,7 +1790,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1820,7 +1798,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_disk_read_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_disk_read_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Read",
@@ -1833,7 +1811,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_disk_written_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_disk_written_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Write",
@@ -1907,7 +1885,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1923,7 +1902,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 78
           },
           "id": 122,
           "options": {
@@ -1939,7 +1918,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -1947,7 +1926,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_network_receive_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_network_receive_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,
@@ -1959,7 +1938,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_network_transmit_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_network_transmit_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted",
@@ -2028,7 +2007,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2044,7 +2024,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 193
+            "y": 86
           },
           "id": 123,
           "options": {
@@ -2060,7 +2040,7 @@
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -2068,7 +2048,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_infiniband_port_data_received_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_infiniband_port_data_received_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,
@@ -2080,7 +2060,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total{instance=\"$node_exporter_instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total{instance=\"${instance:text}:$node_exporter_port\"}[$__rate_interval]))",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted",
@@ -2164,7 +2144,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 178
+            "y": 394
           },
           "id": 111,
           "options": {
@@ -2180,7 +2160,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-75826.patch4-76464",
+          "pluginVersion": "11.3.0-76576",
           "targets": [
             {
               "datasource": {
@@ -2289,21 +2269,15 @@
         "type": "constant"
       },
       {
-        "hide": 2,
-        "name": "omnistat_exporter_port",
-        "query": "8001",
-        "skipUrlSync": true,
-        "type": "constant"
-      },
-      {
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
         "definition": "label_values(rocm_num_gpus,instance)",
         "description": "",
+        "includeAll": false,
         "label": "Node",
-        "name": "node",
+        "name": "instance",
         "options": [],
         "query": {
           "qryType": 1,
@@ -2311,31 +2285,9 @@
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "/(.*):.*/",
+        "regex": "/(?<value>(?<text>[\\w\\-\\.]+):[\\d]+)/",
         "sort": 1,
         "type": "query"
-      },
-      {
-        "hide": 2,
-        "name": "instance",
-        "options": [
-          {
-            "selected": true
-          }
-        ],
-        "query": "$node:$omnistat_exporter_port",
-        "type": "custom"
-      },
-      {
-        "hide": 2,
-        "name": "node_exporter_instance",
-        "options": [
-          {
-            "selected": true
-          }
-        ],
-        "query": "$node:$node_exporter_port",
-        "type": "custom"
       }
     ]
   },
