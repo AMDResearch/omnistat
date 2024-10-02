@@ -81,7 +81,11 @@ To add a data source to Grafana:
    under the search box.
 3. Configure the new Prometehus data source following instructions and provide
    the hostname and port where Omnistat's Prometheus server is running.
-   ![Adding a data source in Grafana](images/grafana-data-source.png)
+   ```eval_rst
+   .. figure:: images/grafana-data-source.png
+
+      Adding a data source in Grafana
+   ```
 
 ## Import dashboards
 
@@ -90,7 +94,11 @@ To import a dashboard to an existing Grafana server:
 2. Click **New** and select **New Dashboard** from the drop-down menu.
 3. On the dashboard, click **+ Add visualization**.
 4. Upload the dashboard JSON file.
-   ![Importing a dashboard in Grafana](images/grafana-import-dashboard.png)
+   ```eval_rst
+   .. figure:: images/grafana-import-dashboard.png
+
+      Importing a dashboard in Grafana
+   ```
 
 Sample dashboards are configured using standard default values for settings
 such as network ports, but may require changes depending on the environment.
@@ -109,8 +117,20 @@ To configure a dashboard:
 (example-screenshots)=
 ## Example screenshots
 
-![Global dashboard screenshot](images/dashboard-global.png)
+```eval_rst
+.. figure:: images/dashboard-global.png
 
-![Node dashboard screenshot](images/dashboard-node.png)
+   Global dashboard screenshot
+```
 
-![Job dashboard screenshot](images/dashboard-job.png)
+```eval_rst
+.. figure:: images/dashboard-node.png
+
+   Node dashboard screenshot
+```
+
+```eval_rst
+.. figure:: images/dashboard-job.png
+
+   Job dashboard screenshot
+```
