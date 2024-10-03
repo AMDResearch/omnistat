@@ -108,6 +108,8 @@ class RMSJobV2(Collector):
 
         if mode == "squeue":
             squeue_data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
+            if squeue_data is None:
+                return results
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
             squeue_data_out = squeue_data.stdout.strip()
             if squeue_data_out:
@@ -118,6 +120,8 @@ class RMSJobV2(Collector):
 
                     # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
                     squeue_step_data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
+                    if squeue_step_data is None:
+                        return results
                     r_job["RMS_STEP_ID"] = -1
                     if squeue_step_data.stdout.strip():
                         # If we are in an active job step, the STEPID will have an integer index appended, e.g.
@@ -189,9 +193,11 @@ class RMSJobV2(Collector):
 
         scontrol_data = utils.runShellCommand(['scontrol', 'show', 'job', job_id.strip(), '-d', '--json'],
                                               capture_output=True, text=True)
-        if not scontrol_data.stdout.strip():
+        if scontrol_data is None:
+            return result
+        elif not scontrol_data.stdout.strip():
             logging.error(f"Failed to get job info for job: {job_id}, Error: {scontrol_data.stderr}")
-            return {}
+            return result
         job_data = json.loads(scontrol_data.stdout.strip())['jobs'][0]
 
         job_resources = job_data.get('job_resources', {})
