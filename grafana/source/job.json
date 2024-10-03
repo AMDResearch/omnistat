@@ -43,7 +43,7 @@
       "title": "Global",
       "tooltip": "",
       "type": "link",
-      "url": "/d/edqnz7pce7togc-rms/global-rms"
+      "url": "/d/edqnz7pce7togc-source/global-source"
     }
   ],
   "panels": [
@@ -1900,7 +1900,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-09
+              "le": 1e-9
             },
             "legend": {
               "show": true
@@ -2243,7 +2243,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-09
+              "le": 1e-9
             },
             "legend": {
               "show": true
@@ -2727,7 +2727,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-09
+              "le": 1e-9
             },
             "legend": {
               "show": true
@@ -4477,7 +4477,7 @@
               "refId": "A"
             }
           ],
-          "title": "GPU Temperature (\u00b0C)",
+          "title": "GPU Temperature (°C)",
           "type": "timeseries"
         },
         {
@@ -4577,7 +4577,7 @@
               "refId": "A"
             }
           ],
-          "title": "GPU Memory Temperature (\u00b0C)",
+          "title": "GPU Memory Temperature (°C)",
           "type": "timeseries"
         },
         {
@@ -6316,8 +6316,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Job - RMS",
-  "uid": "fdqo0h2s2drswe-rms",
+  "title": "Job - Source",
+  "uid": "fdqo0h2s2drswe-source",
   "version": 1,
   "weekStart": ""
 }

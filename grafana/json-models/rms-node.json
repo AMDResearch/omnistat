@@ -30,7 +30,7 @@
       "title": "Global",
       "tooltip": "",
       "type": "link",
-      "url": "/d/edqnz7pce7togc/rms-global"
+      "url": "/d/edqnz7pce7togc-rms/global-rms"
     }
   ],
   "panels": [
@@ -765,7 +765,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -1521,107 +1521,6 @@
             }
           ],
           "title": "GPU Memory Clock Frequency",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "axisSoftMin": 0,
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "fieldMinMax": false,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "blue"
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 24,
-            "x": 0,
-            "y": 134
-          },
-          "id": 108,
-          "interval": "1s",
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true,
-              "sortBy": "Name",
-              "sortDesc": false
-            },
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0-76576",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "rocm_throttle_events{instance=\"$instance\"}",
-              "instant": false,
-              "legendFormat": "Card {{card}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "GPU Throttling  - # of events observed",
           "type": "timeseries"
         }
       ],
@@ -2440,7 +2339,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "/d/fdqo0h2s2drswe/rms-job?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2785,8 +2684,8 @@
     ]
   },
   "timezone": "",
-  "title": "rms-node",
-  "uid": "fdxiufe2bkyrkd",
+  "title": "Node - RMS",
+  "uid": "fdxiufe2bkyrkd-rms",
   "version": 1,
   "weekStart": ""
 }

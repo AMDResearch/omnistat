@@ -54,12 +54,8 @@ def panel_contains_pattern(panel, pattern):
 
 
 def convert_url(url, old, new):
-    url = url.replace(f"/{old}-", f"/{new}-")
-    pattern = f"[/]?d/([\w]+)/{new}-"
-    found = re.match(pattern, url)
-    if found:
-        uid = found.group(1)
-        url = url.replace(uid, f"{uid}-{new}")
+    # Replace twice to change both uid and name.
+    url = url.replace(f"-{old}", f"-{new}", 2)
     return url
 
 
@@ -80,7 +76,7 @@ parser.add_argument(
     "-m", "--exclude-metrics", help="Exclude panels with this metric", nargs="*", required=False, default=[]
 )
 parser.add_argument("-l", "--exclude-links", help="Exclude links with this name", nargs="*", required=False, default=[])
-parser.add_argument("-n", "--replace-name", help="Replace dashboard name and uid", required=False, type=str)
+parser.add_argument("-n", "--replace-name", help="Replace dashboard title and uid", required=False, type=str)
 args = parser.parse_args()
 
 # Patterns to exclude panels and links.
@@ -105,8 +101,8 @@ with open(args.input, "r") as f:
 if args.replace_name:
     title = dashboard["title"]
     uid = dashboard["uid"]
-    dashboard["title"] = title.replace(f"{old}-", f"{new}-")
-    dashboard["uid"] = f"{uid}-{new}"
+    dashboard["title"] = title.replace(f"{old}", f"{new}")
+    dashboard["uid"] = uid.replace(f"-{old.lower()}", f"-{new.lower()}")
 
 # First pass to remove panels that contain matching pattern.
 panels = dashboard.get("panels", [])
@@ -155,6 +151,6 @@ for link in links:
     dashboard["links"].append(link)
 
 if args.replace_name:
-    update_attribute(dashboard, "url", convert_url, old=old, new=new)
+    update_attribute(dashboard, "url", convert_url, old=old.lower(), new=new.lower())
 
 print(json.dumps(dashboard, indent=2))
