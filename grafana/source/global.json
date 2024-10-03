@@ -30,7 +30,7 @@
       "title": "Job",
       "tooltip": "",
       "type": "link",
-      "url": "/d/fdqo0h2s2drswe-rms/job-rms"
+      "url": "/d/fdqo0h2s2drswe-source/job-source"
     },
     {
       "asDropdown": false,
@@ -42,7 +42,7 @@
       "title": "Node",
       "tooltip": "",
       "type": "link",
-      "url": "/d/fdxiufe2bkyrkd-rms/node-rms"
+      "url": "/d/fdxiufe2bkyrkd-source/node-source"
     }
   ],
   "panels": [
@@ -1670,7 +1670,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2026,7 +2026,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.numeric} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2196,7 +2196,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2351,7 +2351,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2556,7 +2556,7 @@
                     "value": [
                       {
                         "title": "Job ${__value.raw} Dashboard",
-                        "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
@@ -2752,7 +2752,7 @@
               "links": [
                 {
                   "title": "Job ${__data.fields[\"Job ID\"]} Dashboard",
-                  "url": "/d/fdqo0h2s2drswe-rms/job-rms?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&${__url_time_range}"
+                  "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__data.fields[\"Job ID\"]}&${__url_time_range}"
                 }
               ],
               "mappings": [],
@@ -3327,7 +3327,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-09
+              "le": 1e-9
             },
             "legend": {
               "show": true
@@ -4745,6 +4745,257 @@
         }
       ],
       "title": "GPU - Frequency",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 107,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Aggregating all throttling events in a node.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Events/m",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 6139
+          },
+          "id": 123,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_throttle_events[1m]))",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Throttling Events per 1m",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "title": "",
+                        "url": "/d/fdxiufe2bkyrkd-source/node-source?var-node=${__value.raw}&${__url_time_range}"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 6148
+          },
+          "id": 108,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "11.3.0-75826",
+          "targets": [
+            {
+              "editorMode": "code",
+              "expr": "sum by (instance) (rocm_throttle_events)",
+              "format": "time_series",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "# of Throttling Events per Node",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            },
+            {
+              "id": "reduce",
+              "options": {
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Field": "Node",
+                  "Max": "# Throttling Events"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "# Throttling Events"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "GPU - Throttling Events",
       "type": "row"
     },
     {
@@ -6621,8 +6872,8 @@
     ]
   },
   "timezone": "",
-  "title": "Global - RMS",
-  "uid": "edqnz7pce7togc-rms",
+  "title": "Global - Source",
+  "uid": "edqnz7pce7togc-source",
   "version": 1,
   "weekStart": ""
 }
