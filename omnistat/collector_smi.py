@@ -67,7 +67,7 @@ def get_rsmi_frequencies_type(rsmiVersion):
         C Struct: struct for use with rsmi_dev_power_get() and rsmi_dev_power_ave_get()
     """
     if rsmiVersion["major"] < 6:
-        logging.info("SMI version < 6")
+        logging.debug("SMI version < 6")
         RSMI_MAX_NUM_FREQUENCIES = 32
 
         class rsmi_frequencies_t(ctypes.Structure):
@@ -79,7 +79,7 @@ def get_rsmi_frequencies_type(rsmiVersion):
 
         return rsmi_frequencies_t()
     else:
-        logging.info("SMI version >= 6")
+        logging.debug("SMI version >= 6")
         RSMI_MAX_NUM_FREQUENCIES = 33
 
         class rsmi_frequencies_t(ctypes.Structure):
@@ -132,6 +132,8 @@ class ROCMSMI(Collector):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
         self.__schema = 1.0
+        self.__minSMIVersionRequired = (7, 0, 0)
+        self.__minROCmVersion = "6.1.0"
 
         # load smi runtime
         smi_lib = rocm_path + "/lib/librocm_smi64.so"
@@ -142,12 +144,28 @@ class ROCMSMI(Collector):
             # initialize smi library
             ret_init = self.__libsmi.rsmi_init(0)
             assert ret_init == 0
-            logging.info("SMI library API initialized")
 
             # cache smi library version
             verInfo = rsmi_version_t()
             ret = self.__libsmi.rsmi_version_get(ctypes.byref(verInfo))
             self.__smiVersion = {"major": verInfo.major, "minor": verInfo.minor, "patch": verInfo.patch}
+            logging.info(
+                "SMI library API initialized --> version %s.%s.%s loaded"
+                % (verInfo.major, verInfo.minor, verInfo.patch)
+            )
+
+            # verify minimum version requirement
+            verlocal = (verInfo.major, verInfo.minor, verInfo.patch)
+            if verlocal < self.__minSMIVersionRequired:
+                logging.error("")
+                logging.error(
+                    "[ERROR]: Minimum SMI version not met: please install ROCm version %s or higher."
+                    % self.__minROCmVersion
+                )
+                logging.error('         Alternatively, update the "rocm_path" setting in the runtime')
+                logging.error("         configuration file if multiple versions are available locally.")
+                logging.error("")
+                sys.exit(4)
 
             self.__rsmi_frequencies_type = get_rsmi_frequencies_type(self.__smiVersion)
 
