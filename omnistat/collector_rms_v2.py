@@ -142,7 +142,7 @@ class RMSJobV2(Collector):
             gpu_list = [""]
             # Ensure the lengths of nodelist and greslist match
             if not tres and len(greslist) != len(nodelist):
-                logging.error(f"Length of nodelist and greslist do not match."
+                logging.debug(f"Length of nodelist and greslist do not match."
                               f"\ntres: {tres}\nnodelist: {nodelist}\ngreslist: {greslist}")
                 return gpu_list
 
