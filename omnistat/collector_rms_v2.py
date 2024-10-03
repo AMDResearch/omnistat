@@ -141,7 +141,7 @@ class RMSJobV2(Collector):
         def gpuinfo(nodelist, greslist, tres):
             gpu_list = [""]
             # Ensure the lengths of nodelist and greslist match
-            if tres and len(greslist) != len(nodelist):
+            if not tres and len(greslist) != len(nodelist):
                 logging.error(f"Length of nodelist and greslist do not match."
                               f"\ntres: {tres}\nnodelist: {nodelist}\ngreslist: {greslist}")
                 return gpu_list
