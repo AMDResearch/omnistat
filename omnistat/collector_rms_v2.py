@@ -76,16 +76,19 @@ class RMSJobV2(Collector):
 
         self.collect_data_incremental()
         # Remove old labels for jobs not currently running
-        for metric, counter in self.__RunningJobs.items():
+        running_jobs = self.__RunningJobs.copy()
+        for metric, counter in running_jobs.items():
             if counter < self.c:
                 # catch edge case for multiple metrics with same name
                 try:
-                    self.__RMSMetrics["info"].remove(metric[0], metric[1], metric[2], metric[3], metric[4], metric[5], metric[6], metric[7], metric[8])
+                    self.__RMSMetrics["info"].remove(*metric)
+                    self.__RunningJobs.pop(metric)
+                    logging.debug(f"Job done, removing metric: {metric}")
                 except Exception as e:
                     logging.error(f"Failed to remove metric: {metric}\n"
-                                  f"error: {e}\n"
+                                  f"Error: {e}\n"
                                   f"Running Jobs: {self.__RunningJobs}\n"
-                                  f"Metrics: {self.__RMSMetrics}")
+                                  f"Gauge Metrics: {self.__RMSMetrics['info']._metrics}")
                     pass
 
         return
