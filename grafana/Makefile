@@ -9,12 +9,12 @@ STANDALONE = $(SOURCE_SYSTEM:source/%=json-models/standalone-%)
 all: $(RMS) $(STANDALONE)
 
 json-models/rms-%.json: source/%.json
-	./filter-dashboard --input $< \
+	./scripts/filter-dashboard --input $< \
 		--exclude-metrics rocm_throttle_events \
 		--replace-name Source:RMS > $@
 
 json-models/standalone-%.json: json-models/rms-%.json
-	./filter-dashboard --input $< \
+	./scripts/filter-dashboard --input $< \
 		--exclude-metrics rmsjob_ \
 		--exclude-links Job \
 		--replace-name RMS:Standalone > $@
