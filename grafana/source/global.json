@@ -4899,26 +4899,7 @@
                   }
                 ]
               }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node"
-                },
-                "properties": [
-                  {
-                    "id": "links",
-                    "value": [
-                      {
-                        "title": "",
-                        "url": "/d/fdxiufe2bkyrkd-source/node-source?var-node=${__value.raw}&${__url_time_range}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+            }
           },
           "gridPos": {
             "h": 8,
