@@ -118,15 +118,17 @@ class AMDSMIProcess(Collector):
 
         self.collect_data_incremental()
         # Remove old labels for process not currently running
-        for metric, counter in self.__process_metrics.items():
+        process_list = self.__process_metrics.copy()
+        for metric, counter in process_list.items():
             if counter < self.c:
                 # catch edge case for multiple metrics with same name
+                self.__process_metrics.pop(metric)
                 try:
-                    self.__metric_vram.remove(metric[0], metric[1], metric[2])
+                    self.__metric_vram.remove(*metric)
                 except:
                     pass
                 try:
-                    self.__metric_compute.remove(metric[0], metric[1], metric[2])
+                    self.__metric_compute.remove(*metric)
                 except:
                     pass
 
