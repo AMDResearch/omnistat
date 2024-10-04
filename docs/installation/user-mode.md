@@ -24,14 +24,16 @@ To begin, we download the Omnistat software and install necessary Python
 dependencies. Per the assumptions above, we clone and install Omnistat in a
 path accessible from all nodes.
 
-1. Clone repository.
+1. Download and expand latest release version.
    ```shell-session
-   [user@login]$ git clone https://github.com/AMDResearch/omnistat.git
+   [user@login]$ REPO=https://github.com/AMDResearch/omnistat
+   [user@login]$ curl -OLJ ${REPO}/archive/refs/tags/v{__VERSION__}.tar.gz
+   [user@login]$ tar xfz omnistat-{__VERSION__}.tar.gz
    ```
 
 2. Install dependencies.
    ```shell-session
-   [user@login]$ cd omnistat
+   [user@login]$ cd omnistat-v{__VERSION__}
    [user@login]$ pip install --user -r requirements.txt
    [user@login]$ pip install --user -r requirements-query.txt
    ```
@@ -41,7 +43,7 @@ Omnistat can also be installed as a Python package. Create a virtual
 environment, and install Omnistat and its dependencies from the top
 directory of the cloned Omnistat repository.
 ```shell-session
-[user@login]$ cd omnistat
+[user@login]$ cd omnistat-v{__VERSION__}
 [user@login]$ python -m venv ~/venv/omnistat
 [user@login]$ ~/venv/omnistat/bin/python -m pip install .[query]
 ```

@@ -26,14 +26,16 @@ __Assumptions__:
 
 To begin, we download the Omnistat software and install necessary Python dependencies. Per the assumptions above, we leverage a dedicated user to house the software install.
 
-1. Clone repository.
+1. Download and expand latest release version.
    ```shell-session
-   [omnidc@login]$ git clone https://github.com/AMDResearch/omnistat.git
+   [omnidc@login]$ REPO=https://github.com/AMDResearch/omnistat
+   [omnidc@login]$ curl -OLJ ${REPO}/archive/refs/tags/v{__VERSION__}.tar.gz
+   [omnidc@login]$ tar xfz omnistat-{__VERSION__}.tar.gz
    ```
 
 2. Install dependencies.
    ```shell-session
-   [omnidc@login]$ cd omnistat
+   [omnidc@login]$ cd omnistat-v{__VERSION__}
    [omnidc@login]$ pip install --user -r requirements.txt
    ```
 
