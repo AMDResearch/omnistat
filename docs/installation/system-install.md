@@ -275,7 +275,7 @@ SendSIGKILL=no
 
 For production cluster or data center deployments, configuration management tools like [Ansible](https://github.com/ansible/ansible) may be useful to automate installation of Omnistat. To aid in this process, the following example highlights key elements of an Ansible role to install necessary Python dependencies and configure the Omnistat and node-exporter Prometheus clients. These RHEL9-based example files are provided as a starting reference for system administrators and can be adjusted to suit per local conventions.
 
-Note that this recipe assumes existence of a dedicated non-root user to run the Omnistat exporter, templated as `{{ omnistat_user }}`.  It also assumes that the Omnistat repository is already cloned into a path, templated to be in the `{{ omnistat_dir }}`.
+Note that this recipe assumes existence of a dedicated non-root user to run the Omnistat exporter, templated as `{{ omnistat_user }}`.  It also assumes that an Omnistat release has been downloaded into a local path, templated to be in the `{{ omnistat_dir }}`.
 
 ```eval_rst
 .. code-block:: yaml

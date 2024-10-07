@@ -21,7 +21,7 @@ __Assumptions__:
 ## Omnistat software installation
 
 To begin, we download the Omnistat software and install necessary Python
-dependencies. Per the assumptions above, we clone and install Omnistat in a
+dependencies. Per the assumptions above, we download and install Omnistat in a
 path accessible from all nodes.
 
 1. Download and expand latest release version.
@@ -41,7 +41,7 @@ path accessible from all nodes.
 ```{note}
 Omnistat can also be installed as a Python package. Create a virtual
 environment, and install Omnistat and its dependencies from the top
-directory of the cloned Omnistat repository.
+directory of the release.
 ```shell-session
 [user@login]$ cd omnistat-v{__VERSION__}
 [user@login]$ python -m venv ~/venv/omnistat
