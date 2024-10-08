@@ -53,6 +53,9 @@ from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
 
 def get_gpu_metrics(device):
     result = smi.amdsmi_get_gpu_metrics_info(device)
+    # TODO Duplicate vram metrics to not break support
+    device_vram_usage = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
+    result['vram_usage'] = device_vram_usage
     for k, v in result.items():
         if type(v) is str:
             # Filter 'N/A' values introduced by rocm 6.1
@@ -74,6 +77,10 @@ def get_gpu_metrics(device):
         # Bigger than signed 64-bit integer
         if v >= 9223372036854775807 or v <= -9223372036854775808:
             result[k] = 0
+    # MI250X to MI300X compatibility for power reading
+    average_power = result.get("average_socket_power", 0)
+    if average_power:
+        result["current_socket_power"] = average_power
     return result
 
 
@@ -95,7 +102,7 @@ def check_min_version(minVersion):
 class AMDSMI(Collector):
     def __init__(self):
         logging.debug("Initializing AMD SMI data collector")
-        self.__prefix = "rocm_"
+        self.__prefix = "amdsmi_"
         self.__schema = 1.0
         smi.amdsmi_init()
         logging.info("AMD SMI library API initialized")
@@ -103,9 +110,10 @@ class AMDSMI(Collector):
         self.__devices = []
         self.__GPUMetrics = {}
         self.__metricMapping = {}
-        self.__dumpMappedMetricsOnly = True
+        self.__indexMapping = {}
+        self.__dumpMappedMetricsOnly = False  # TODO should be a config option
         # verify minimum version met
-        check_min_version("24.5.2")
+        check_min_version("23.4.0")  # Rocm 6.0.2
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
@@ -124,11 +132,14 @@ class AMDSMI(Collector):
         )
         numGPUs_metric.set(self.__num_gpus)
 
-        # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
+        # TODO Register Total VRAM for GPU metric Duplicated for support
+        total_vram_metric = Gauge(self.__prefix + "total_vram", "Total VRAM available on GPU",
+                                  labelnames=["card"])
+
+        # determine GPU index mapping (i.e. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         bdfMapping = {}
         for index, device in enumerate(self.__devices):
             bdf = smi.amdsmi_get_gpu_device_bdf(device)
-            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
             bdfMapping[index] = convert_bdf_to_gpuid(bdf)
         self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
 
@@ -215,8 +226,14 @@ class AMDSMI(Collector):
 
             metrics = get_gpu_metrics(device)
 
+            # TODO Duplicate vram metric for support, register only once
+            device_total_vram = smi.amdsmi_get_gpu_memory_total(device, smi.AmdSmiMemoryType.VRAM)
+            total_vram_metric.labels(card=str(idx)).set(device_total_vram)
+
             for metric, value in metrics.items():
+                old_metric = ""
                 if self.__metricMapping.get(metric):
+                    old_metric = metric
                     metric = self.__metricMapping.get(metric)
                 elif self.__dumpMappedMetricsOnly is True:
                     continue
@@ -226,6 +243,10 @@ class AMDSMI(Collector):
                 if metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
 
+                # TODO temp workaround to allow support for all metric names
+                old_metric_name = self.__prefix + old_metric
+                if old_metric and old_metric_name not in self.__GPUMetrics.keys():
+                    self.__GPUMetrics[old_metric_name] = Gauge(old_metric_name, f"{old_metric}", labelnames=["card"])
         return
 
     def updateMetrics(self):
@@ -263,11 +284,17 @@ class AMDSMI(Collector):
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
             for metric, value in metrics.items():
+                old_metric = ""
                 if self.__metricMapping.get(metric):
+                    old_metric = metric
                     metric = self.__metricMapping.get(metric)
                 elif self.__dumpMappedMetricsOnly is True:
                     continue
                 metric = self.__GPUMetrics[self.__prefix + metric]
                 # Set metric
                 metric.labels(card=cardId).set(value)
+                # TODO temp workaround to allow support for all metric names
+                if old_metric:
+                    metric = self.__GPUMetrics[self.__prefix + old_metric]
+                    metric.labels(card=cardId).set(value)
         return
