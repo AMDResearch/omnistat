@@ -9,5 +9,3 @@ You can build a local copy of the documentation in this directory using
 The base python dependencies for documentation builds are housed in
 requirements-docs.txt. In addition, the Makefile relies on the
 sphinx-build binary which also needs to be available locally.
-
-
