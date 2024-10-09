@@ -1,6 +1,6 @@
+[![Documentation](https://github.com/AMDResearch/omnistat/actions/workflows/docs.yml/badge.svg)](https://amdresearch.github.io/omnistat/)
 [![System mode](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test.yml)
 [![User mode](https://github.com/AMDResearch/omnistat/actions/workflows/test-user.yml/badge.svg)](https://github.com/AMDResearch/omnistat/actions/workflows/test-user.yml)
-[![Documentation](https://github.com/AMDResearch/omnistat/actions/workflows/docs.yml/badge.svg)](https://amdresearch.github.io/omnistat/)
 
 # Omnistat
 
