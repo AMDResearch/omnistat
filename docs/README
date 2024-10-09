@@ -1,5 +1,7 @@
 This subdirectory houses the input markup for Omnistat documentation using
-Sphinx.
+Sphinx. The results are published automatically via a CI trigger at:
+
+https://amdresearch.github.io/omnistat/
 
 You can build a local copy of the documentation in this directory using
 "make html" assuming you have the necessary sphinx dependencies installed.
@@ -7,3 +9,5 @@ You can build a local copy of the documentation in this directory using
 The base python dependencies for documentation builds are housed in
 requirements-docs.txt. In addition, the Makefile relies on the
 sphinx-build binary which also needs to be available locally.
+
+
