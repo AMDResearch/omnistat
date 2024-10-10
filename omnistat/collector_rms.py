@@ -53,6 +53,7 @@ class RMSJob(Collector):
         self.__rmsJobMode = jobDetection["mode"]
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
+        self.__rmsSharedNodes = jobDetection["sharednodes"]
 
         # jobMode
         if self.__rmsJobMode == "file-based":
@@ -132,9 +133,11 @@ class RMSJob(Collector):
     def registerMetrics(self):
         """Register metrics of interest"""
 
-        # alternate approach - define an info metric
+        # define an info metric
         # (https://ypereirareis.github.io/blog/2020/02/21/how-to-join-prometheus-metrics-by-label-with-promql/)
         labels = ["jobid", "user", "partition", "nodes", "batchflag", "jobstep", "type"]
+        if self.__rmsSharedNodes:
+            labels.append("cards")
         self.__RMSMetrics["info"] = Gauge(self.__prefix + "info", "RMS job details", labels)
 
         # metric to support user annotations
@@ -158,15 +161,27 @@ class RMSJob(Collector):
 
         # Case when SLURM job is allocated
         if jobEnabled:
-            self.__RMSMetrics["info"].labels(
-                jobid=results["RMS_JOB_ID"],
-                user=results["RMS_JOB_USER"],
-                partition=results["RMS_JOB_PARTITION"],
-                nodes=results["RMS_JOB_NUM_NODES"],
-                batchflag=results["RMS_JOB_BATCHMODE"],
-                jobstep=results["RMS_STEP_ID"],
-                type=results["RMS_TYPE"],
-            ).set(1)
+            if self.__rmsSharedNodes:
+                self.__RMSMetrics["info"].labels(
+                    jobid=results["RMS_JOB_ID"],
+                    user=results["RMS_JOB_USER"],
+                    partition=results["RMS_JOB_PARTITION"],
+                    nodes=results["RMS_JOB_NUM_NODES"],
+                    batchflag=results["RMS_JOB_BATCHMODE"],
+                    jobstep=results["RMS_STEP_ID"],
+                    type=results["RMS_TYPE"],
+                    cards="0|3|1",
+                ).set(1)
+            else:
+                self.__RMSMetrics["info"].labels(
+                    jobid=results["RMS_JOB_ID"],
+                    user=results["RMS_JOB_USER"],
+                    partition=results["RMS_JOB_PARTITION"],
+                    nodes=results["RMS_JOB_NUM_NODES"],
+                    batchflag=results["RMS_JOB_BATCHMODE"],
+                    jobstep=results["RMS_STEP_ID"],
+                    type=results["RMS_TYPE"],
+                ).set(1)
 
             # Check for user supplied annotations
             if self.__annotationsEnabled:
@@ -198,8 +213,13 @@ class RMSJob(Collector):
 
         # Case when no job detected
         else:
-            self.__RMSMetrics["info"].labels(
-                jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type=""
-            ).set(1)
+            if self.__rmsSharedNodes:
+                self.__RMSMetrics["info"].labels(
+                    jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type="", cards=""
+                ).set(1)
+            else:
+                self.__RMSMetrics["info"].labels(
+                    jobid="", user="", partition="", nodes="", batchflag="", jobstep="", type=""
+                ).set(1)
 
         return
