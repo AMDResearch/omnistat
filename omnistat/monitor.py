@@ -89,6 +89,8 @@ class Monitor:
             self.jobDetection["stepfile"] = config["omnistat.collectors.rms"].get(
                 "step_detection_file", "/tmp/omni_rmsjobinfo_step"
             )
+            self.jobDetection["sharednodes"] = config["omnistat.collectors.rms"].getboolean(
+                "job_shared_hosts_mode",False)
             if config.has_option("omnistat.collectors.rms", "host_skip"):
                 self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
 
