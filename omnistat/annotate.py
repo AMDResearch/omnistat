@@ -25,13 +25,12 @@
 
 """annotate.py
 
-Standalone utility for creating user annotation labels in json format. Intended
-for use in conjunction with companion Slurm data collector that looks for files of the
-following form:
+Standalone utility for creating user annotations that relies on Omnistat
+traces. Intended for use in conjunction with companion Slurm data collector
+that looks for trace messages in a specific path/socket.
 
-/tmp/omnistat_${USER}_annotate.json
-
-File can also be imported for direct Python usage.
+For more detailed application-level traces of Python applications, import
+omnistat's trace module.
 """
 
 import argparse
@@ -39,42 +38,21 @@ import time
 import json
 import os
 
-
-class omnistat_annotate:
-    def __init__(self):
-        self.filename = "/tmp/omnistat_" + os.environ.get("USER") + "_annotate.json"
-
-    def start(self, label):
-        data = {}
-        data["annotation"] = label
-        data["timestamp_secs"] = int(time.time())
-
-        with open(self.filename, "w") as outfile:
-            outfile.write(json.dumps(data, indent=4))
-            outfile.write("\n")
-        return
-
-    def stop(self):
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-        return
+from omnistat import trace
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", choices=["start", "stop"], help="annotation mode", required=True)
-    parser.add_argument("--text", help="desired annotation", required=False)
+    parser.add_argument("--text", help="desired annotation", required=True)
     args = parser.parse_args()
 
-    if args.mode == "start" and args.text is None:
-        parser.error('The --text option is required for "start" mode.')
-
-    annotate = omnistat_annotate()
+    trace = trace.OmnistatTrace(trace_id="annotations")
 
     if args.mode == "start":
-        annotate.start(args.text)
+        trace.start_span(args.text)
     else:
-        annotate.stop()
+        trace.end_span(args.text)
 
 
 if __name__ == "__main__":

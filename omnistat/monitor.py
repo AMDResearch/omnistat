@@ -82,6 +82,9 @@ class Monitor:
             self.runtimeConfig["rms_collector_annotations"] = config["omnistat.collectors.rms"].getboolean(
                 "enable_annotations", False
             )
+            self.runtimeConfig["rms_collector_annotations_path"] = config["omnistat.collectors.rms"].get(
+                "annotations_path", "/tmp/omnistat_trace"
+            )
             self.jobDetection["mode"] = config["omnistat.collectors.rms"].get("job_detection_mode", "file-based")
             self.jobDetection["file"] = config["omnistat.collectors.rms"].get(
                 "job_detection_file", "/tmp/omni_rmsjobinfo"
@@ -132,6 +135,7 @@ class Monitor:
             self.__collectors.append(
                 RMSJob(
                     annotations=self.runtimeConfig["rms_collector_annotations"],
+                    annotationsPath=self.runtimeConfig["rms_collector_annotations_path"],
                     jobDetection=self.jobDetection,
                 )
             )
