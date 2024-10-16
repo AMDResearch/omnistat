@@ -72,6 +72,7 @@ class Standalone:
         logging.basicConfig(format="%(message)s", level=logging.ERROR, stream=sys.stdout)
         self.__data = {}
         self.__dataVM = []
+        self.__hostname = platform.node().split(".", 1)[0]
 
         # Create a die file - process terminates cleanly if this file is removed
         user = getpass.getuser()
@@ -116,13 +117,11 @@ class Standalone:
                 for sample in metric.samples:
                     token = self.tokenizeMetricName(sample.name, sample.labels)
                     self.__data[token].append([timestamp, sample.value])
-                    if not sample.labels:
-                        entry = "%s %s %i" % (sample.name,sample.value,int(timestamp.timestamp()*1000))
-                    else:
-                        labels = ''
+                    labels = "instance=\"%s\"" % self.__hostname
+                    if sample.labels:
                         for key,value in sample.labels.items():
-                            labels += "%s=\"%s\"" % (key,value)
-                        entry = "%s{%s} %s %i" % (sample.name,labels,sample.value,int(timestamp.timestamp()*1000))
+                            labels += ",%s=\"%s\"" % (key,value)
+                    entry = "%s{%s} %s %i" % (sample.name,labels,sample.value,int(timestamp.timestamp()*1000))
                     self.__dataVM.append(entry)
                     
     def checkForTermination(self):
@@ -139,7 +138,7 @@ class Standalone:
             print(self.__data)
         elif mode == "victoria":
             victoria_url = 'http://localhost:8428/api/v1/import/prometheus'
-            logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % filename)
+            logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
             push_to_victoria_metrics(self.__dataVM,victoria_url)
 
         elif mode == "pandas-sqlite":
@@ -201,7 +200,8 @@ def main():
     monitor.initMetrics()
     # Initialize standalone polling
     caching = Standalone()
-    caching.initMetrics(prefix="rocm")
+#    caching.initMetrics(prefix="rocm")
+    caching.initMetrics()
 
     interval_microsecs = int(interval_secs * 1000000)
     exit_check_interval_secs = 5.0
@@ -218,7 +218,8 @@ def main():
             start_time = time.perf_counter()
             timestamp = pd.Timestamp("now")
             monitor.updateAllMetrics()
-            caching.getMetrics(timestamp, prefix="rocm")
+#            caching.getMetrics(timestamp, prefix="rocm")
+            caching.getMetrics(timestamp)
             sample_duration += time.perf_counter() - start_time
 
             num_samples += 1
