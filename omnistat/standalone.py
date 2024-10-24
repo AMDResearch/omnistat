@@ -35,9 +35,6 @@ import pandas as pd
 import platform
 import sqlite3
 import sys
-import json
-
-# import tables
 import time
 import warnings
 from prometheus_client import Gauge, REGISTRY
@@ -70,11 +67,12 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
 
 
 class Standalone:
-    def __init__(self):
+    def __init__(self, args):
         logging.basicConfig(format="%(message)s", level=logging.ERROR, stream=sys.stdout)
         self.__data = {}
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
+        self.__victoriaURL = f'http://{args.endpoint}:{args.port}/api/v1/import/prometheus'
 
         # Create a die file - process terminates cleanly if this file is removed
         user = getpass.getuser()
@@ -139,11 +137,11 @@ class Standalone:
         if mode == "raw":
             print(self.__data)
         elif mode == "victoria":
-            victoria_url = "http://localhost:8428/api/v1/import/prometheus"
+            # victoria_url = "http://localhost:8428/api/v1/import/prometheus"
             logging.info("")
-            logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
+            logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % self.__victoriaURL)
             try:
-                push_to_victoria_metrics(self.__dataVM, victoria_url)
+                push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
             except:
                 logging.error("")
                 logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
@@ -199,6 +197,8 @@ def main():
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--interval", type=float, help="sampling frequencey (in secs)", default=0.5)
     parser.add_argument("--logfile", type=str, help="redirect stdout to logfile", default=None)
+    parser.add_argument("--endpoint",type=str,help="hostname of VictoriaMetrics server", default="localhost")
+    parser.add_argument("--port",type=int,help="port to access VictoriaMetrics server", default=8428)
     args = parser.parse_args()
 
     interval_secs = args.interval
@@ -210,7 +210,7 @@ def main():
     monitor = Monitor(config, logFile=args.logfile)
     monitor.initMetrics()
     # Initialize standalone polling
-    caching = Standalone()
+    caching = Standalone(args)
     caching.initMetrics(prefix=("rocm", "rmsjob_info"))
 
     interval_microsecs = int(interval_secs * 1000000)
