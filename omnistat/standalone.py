@@ -138,8 +138,16 @@ class Standalone:
             print(self.__data)
         elif mode == "victoria":
             victoria_url = 'http://localhost:8428/api/v1/import/prometheus'
+            logging.info("")
             logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
-            push_to_victoria_metrics(self.__dataVM,victoria_url)
+            try:
+                push_to_victoria_metrics(self.__dataVM,victoria_url)
+            except:
+                logging.error("")
+                logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
+                logging.error("ERROR: Collected data not saved :-(")
+                logging.error("")
+                sys.exit(4)
 
         elif mode == "pandas-sqlite":
             filename += ".db"
@@ -200,8 +208,7 @@ def main():
     monitor.initMetrics()
     # Initialize standalone polling
     caching = Standalone()
-#    caching.initMetrics(prefix="rocm")
-    caching.initMetrics()
+    caching.initMetrics(prefix=("rocm","rmsjob_info"))
 
     interval_microsecs = int(interval_secs * 1000000)
     exit_check_interval_secs = 5.0
@@ -218,8 +225,7 @@ def main():
             start_time = time.perf_counter()
             timestamp = pd.Timestamp("now")
             monitor.updateAllMetrics()
-#            caching.getMetrics(timestamp, prefix="rocm")
-            caching.getMetrics(timestamp)
+            caching.getMetrics(timestamp, prefix=("rocm","rmsjob_info"))
             sample_duration += time.perf_counter() - start_time
 
             num_samples += 1
