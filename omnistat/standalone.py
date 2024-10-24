@@ -36,7 +36,8 @@ import platform
 import sqlite3
 import sys
 import json
-#import tables
+
+# import tables
 import time
 import warnings
 from prometheus_client import Gauge, REGISTRY
@@ -52,12 +53,13 @@ from omnistat.monitor import Monitor
 import requests
 import time
 
+
 def push_to_victoria_metrics(metrics_data_list, victoria_url):
     headers = {
-        'Content-Type': 'text/plain',
+        "Content-Type": "text/plain",
     }
 
-    metrics_data = '\n'.join(metrics_data_list)
+    metrics_data = "\n".join(metrics_data_list)
     response = requests.post(victoria_url, data=metrics_data, headers=headers)
 
     if response.status_code != 204:
@@ -76,7 +78,7 @@ class Standalone:
 
         # Create a die file - process terminates cleanly if this file is removed
         user = getpass.getuser()
-        self.__dieFile = "/tmp/.omnistat_standalone_%s" % user
+        self.__dieFile = ".omnistat_standalone_%s" % user
         try:
             with open(self.__dieFile, "w") as file:
                 file.write("Remove this file to terminate standalone data collection")
@@ -117,13 +119,13 @@ class Standalone:
                 for sample in metric.samples:
                     token = self.tokenizeMetricName(sample.name, sample.labels)
                     self.__data[token].append([timestamp, sample.value])
-                    labels = "instance=\"%s\"" % self.__hostname
+                    labels = 'instance="%s"' % self.__hostname
                     if sample.labels:
-                        for key,value in sample.labels.items():
-                            labels += ",%s=\"%s\"" % (key,value)
-                    entry = "%s{%s} %s %i" % (sample.name,labels,sample.value,int(timestamp.timestamp()*1000))
+                        for key, value in sample.labels.items():
+                            labels += ',%s="%s"' % (key, value)
+                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, int(timestamp.timestamp() * 1000))
                     self.__dataVM.append(entry)
-                    
+
     def checkForTermination(self):
         if os.path.exists(self.__dieFile):
             return False
@@ -137,11 +139,11 @@ class Standalone:
         if mode == "raw":
             print(self.__data)
         elif mode == "victoria":
-            victoria_url = 'http://localhost:8428/api/v1/import/prometheus'
+            victoria_url = "http://localhost:8428/api/v1/import/prometheus"
             logging.info("")
             logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
             try:
-                push_to_victoria_metrics(self.__dataVM,victoria_url)
+                push_to_victoria_metrics(self.__dataVM, victoria_url)
             except:
                 logging.error("")
                 logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
@@ -153,7 +155,7 @@ class Standalone:
             filename += ".db"
             logging.info("Save local node telemetry in pandas/sqlite format -> %s" % filename)
             # no hyphens for sql
-            hostname = hostname.replace("-","_")
+            hostname = hostname.replace("-", "_")
             output = {}
             if os.path.exists(filename):
                 os.remove(filename)
@@ -196,6 +198,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--interval", type=float, help="sampling frequencey (in secs)", default=0.5)
+    parser.add_argument("--logfile", type=str, help="redirect stdout to logfile", default=None)
     args = parser.parse_args()
 
     interval_secs = args.interval
@@ -204,11 +207,11 @@ def main():
     config = utils.readConfig(utils.findConfigFile(args.configfile))
 
     # Initialize GPU monitoring
-    monitor = Monitor(config)
+    monitor = Monitor(config, logFile=args.logfile)
     monitor.initMetrics()
     # Initialize standalone polling
     caching = Standalone()
-    caching.initMetrics(prefix=("rocm","rmsjob_info"))
+    caching.initMetrics(prefix=("rocm", "rmsjob_info"))
 
     interval_microsecs = int(interval_secs * 1000000)
     exit_check_interval_secs = 5.0
@@ -225,7 +228,7 @@ def main():
             start_time = time.perf_counter()
             timestamp = pd.Timestamp("now")
             monitor.updateAllMetrics()
-            caching.getMetrics(timestamp, prefix=("rocm","rmsjob_info"))
+            caching.getMetrics(timestamp, prefix=("rocm", "rmsjob_info"))
             sample_duration += time.perf_counter() - start_time
 
             num_samples += 1
@@ -241,7 +244,8 @@ def main():
             caching.sleep_microsecs(interval_microsecs)
             exit_check_duration += time.perf_counter() - start_time
     except KeyboardInterrupt:
-        logging.info("\nTerminating data collection from keyboard interrupt.")
+        logging.info("")
+        logging.info("Terminating data collection from keyboard interrupt.")
 
     # end polling loop
     # ---
