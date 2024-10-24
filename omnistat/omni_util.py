@@ -28,6 +28,7 @@ import importlib.resources
 import getpass
 import logging
 import os
+import platform
 import shutil
 import socket
 import subprocess
@@ -212,7 +213,8 @@ class UserBasedMonitoring:
             if os.path.exists("./exporter.log"):
                 os.remove("./exporter.log")
             logging.info("Standalone sampling interval = %s" % self.scrape_interval)
-            cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --log exporter.log"
+            hostname = platform.node().split(".", 1)[0]
+            cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {hostname} --log exporter.log"
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
