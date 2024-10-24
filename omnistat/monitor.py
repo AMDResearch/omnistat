@@ -43,8 +43,13 @@ from omnistat import utils
 
 
 class Monitor:
-    def __init__(self, config):
-        logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
+    def __init__(self, config, logFile=None):
+
+        if logFile:
+            hostname = platform.node().split(".", 1)[0]
+            logging.basicConfig(format=f'[{hostname}] %(message)s', level=logging.INFO, filename=logFile)
+        else:
+            logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
         self.runtimeConfig = {}
 
