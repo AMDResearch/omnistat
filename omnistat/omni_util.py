@@ -25,6 +25,7 @@
 
 import argparse
 import importlib.resources
+import getpass
 import logging
 import os
 import shutil
@@ -64,7 +65,7 @@ class UserBasedMonitoring:
         self.binDir = Path(sys.argv[0]).resolve().parent
 
     def setMonitoringInterval(self, interval):
-        self.scrape_interval = int(interval)
+        self.scrape_interval = float(interval)
         return
 
     def getSlurmHosts(self):
@@ -78,7 +79,32 @@ class UserBasedMonitoring:
         else:
             utils.error("No SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
 
-    def startPromServer(self):
+    def startVictoriaServer(self):
+        logging.info("Starting VictoriaMetrics server on localhost")
+        section = "omnistat.usermode"
+        ps_binary = self.runtimeConfig[section].get("prometheus_binary")
+        ps_datadir = self.runtimeConfig[section].get("prometheus_datadir", "data_prom", vars=os.environ)
+
+        # datadir can be overridden by separate env variable
+        if "OMNISTAT_PROMSERVER_DATADIR" in os.environ:
+            ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
+
+        ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
+        ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
+
+        command = [
+            ps_binary,
+            "--storageDataPath=%s" % ps_datadir,
+        ]
+        logging.info("Server start command: %s" % command)
+        utils.runBGProcess(command, outputFile=ps_logfile)
+
+    def startPromServer(self, victoriaMode=False):
+
+        if victoriaMode:
+            self.startVictoriaServer()
+            return
+
         logging.info("Starting prometheus server on localhost")
         scrape_interval = "%ss" % self.scrape_interval
         logging.info("--> sampling interval = %s" % scrape_interval)
@@ -131,14 +157,14 @@ class UserBasedMonitoring:
                     "static_configs": [computes],
                 }
             )
-            if remoteWrite:
-                auth = {
-                    "username": remoteWriteConfig["auth_user"],
-                    "password": remoteWriteConfig["auth_cred"],
-                }
+            # if remoteWrite:
+            #     auth = {
+            #         "username": remoteWriteConfig["auth_user"],
+            #         "password": remoteWriteConfig["auth_cred"],
+            #     }
 
-                prom_config["remote_write"] = []
-                prom_config["remote_write"].append({"url": remoteWriteConfig["url"], "basic_auth": auth})
+            #     prom_config["remote_write"] = []
+            #     prom_config["remote_write"].append({"url": remoteWriteConfig["url"], "basic_auth": auth})
 
             with open("prometheus.yml", "w") as yaml_file:
                 yaml.dump(prom_config, yaml_file, sort_keys=False)
@@ -160,21 +186,35 @@ class UserBasedMonitoring:
         else:
             utils.error("No compute hosts avail for startPromServer")
 
-    def stopPromServer(self):
-        logging.info("Stopping prometheus server on localhost")
+    def stopPromServer(self, victoriaMode=False):
+        if victoriaMode:
+            logging.info("Stopping VictoriaMetrics server on localhost")
 
-        command = ["pkill", "-SIGTERM", "-u", "%s" % os.getuid(), "prometheus"]
+            command = ["pkill", "-f", "-SIGTERM", "-u", "%s" % os.getuid(), "victoria-metrics-prod.*storageDataPath"]
+            utils.runShellCommand(command, timeout=5)
+            time.sleep(1)
+            return
+        else:
+            logging.info("Stopping prometheus server on localhost")
 
-        utils.runShellCommand(command, timeout=5)
-        time.sleep(1)
-        return
+            command = ["pkill", "-SIGTERM", "-u", "%s" % os.getuid(), "prometheus"]
 
-    def startExporters(self):
+            utils.runShellCommand(command, timeout=5)
+            time.sleep(1)
+            return
+
+    def startExporters(self, victoriaMode=False):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
 
-        cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
+        if victoriaMode:
+            if os.path.exists("./exporter.log"):
+                os.remove("./exporter.log")
+            logging.info("Standalone sampling interval = %s" % self.scrape_interval)
+            cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --log exporter.log"
+        else:
+            cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
@@ -221,58 +261,69 @@ class UserBasedMonitoring:
             numHosts = len(self.slurmHosts)
             numAvail = 0
 
-            logging.info("Testing exporter availability")
-            delay_start = 0.05
-            hosts_ok = []
-            hosts_bad = []
+            if not victoriaMode:
+                logging.info("Testing exporter availability")
+                delay_start = 0.05
+                hosts_ok = []
+                hosts_bad = []
+                for host in self.slurmHosts:
+                    host_ok = False
+                    for iter in range(1, 25):
+                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                            result = s.connect_ex((host, int(port)))
+                            if result == 0:
+                                numAvail = numAvail + 1
+                                hosts_ok.append(host)
+                                logging.debug("Exporter on %s ok" % host)
+                                host_ok = True
+                                break
+                            else:
+                                delay = delay_start * iter
+                                logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
+                                time.sleep(delay)
+                            s.close()
+
+                    if not host_ok:
+                        logging.error("Missing exporter on %s (%s)" % (host, result))
+                        hosts_bad.append(host)
+
+                logging.info("%i of %i exporters available" % (numAvail, numHosts))
+                if numAvail == numHosts:
+                    logging.info("User mode data collectors: SUCCESS")
+
+                # cache any failed hosts to file
+                jobid = os.getenv("SLURM_JOB_ID", None)
+                if jobid:
+                    fileout = "omnistat_failed_hosts.%s.out" % jobid
+                    if hosts_bad:
+                        with open(fileout, "w") as f:
+                            for host in hosts_bad:
+                                f.write(host + "\n")
+                        f.close()
+                        logging.info("Cached failed startup hosts in %s" % fileout)
+
+        return
+
+    def stopExporters(self, victoriaMode=False):
+
+        if victoriaMode:
+            user = getpass.getuser()
+            dieFile = ".omnistat_standalone_%s" % user
+            logging.info("Removing %s to terminate and flush data collection." % dieFile)
+            if os.path.exists(dieFile):
+                os.remove(dieFile)
+            else:
+                logging.error("Expected die file does not exist (%s)" % dieFile)
+            return
+        else:
+            port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
+
             for host in self.slurmHosts:
-                host_ok = False
-                for iter in range(1, 25):
-                    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                        result = s.connect_ex((host, int(port)))
-                        if result == 0:
-                            numAvail = numAvail + 1
-                            hosts_ok.append(host)
-                            logging.debug("Exporter on %s ok" % host)
-                            host_ok = True
-                            break
-                        else:
-                            delay = delay_start * iter
-                            logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
-                            time.sleep(delay)
-                        s.close()
-
-                if not host_ok:
-                    logging.error("Missing exporter on %s (%s)" % (host, result))
-                    hosts_bad.append(host)
-
-            logging.info("%i of %i exporters available" % (numAvail, numHosts))
-            if numAvail == numHosts:
-                logging.info("User mode data collectors: SUCCESS")
-
-            # cache any failed hosts to file
-            jobid = os.getenv("SLURM_JOB_ID", None)
-            if jobid:
-                fileout = "omnistat_failed_hosts.%s.out" % jobid
-                if hosts_bad:
-                    with open(fileout, "w") as f:
-                        for host in hosts_bad:
-                            f.write(host + "\n")
-                    f.close()
-                    logging.info("Cached failed startup hosts in %s" % fileout)
-
-        return
-
-    def stopExporters(self):
-        port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-
-        for host in self.slurmHosts:
-            logging.info("Stopping exporter for host -> %s" % host)
-            cmd = ["curl", f"{host}:{port}/shutdown"]
-            logging.debug("-> running command: %s" % cmd)
-            # utils.runShellCommand(["ssh", host] + cmd)
-            utils.runShellCommand(cmd, timeout=5)
-        return
+                logging.info("Stopping exporter for host -> %s" % host)
+                cmd = ["curl", f"{host}:{port}/shutdown"]
+                logging.debug("-> running command: %s" % cmd)
+                utils.runShellCommand(cmd, timeout=5)
+            return
 
 
 def main():
@@ -302,20 +353,22 @@ def main():
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
 
+    victoriaMode = True
     if args.startserver:
-        userUtils.startPromServer()
+        userUtils.startPromServer(victoriaMode=victoriaMode)
     elif args.stopserver:
-        userUtils.stopPromServer()
+        userUtils.stopPromServer(victoriaMode=victoriaMode)
     elif args.startexporters:
-        userUtils.startExporters()
+        userUtils.startExporters(victoriaMode=victoriaMode)
     elif args.stopexporters:
-        userUtils.stopExporters()
+        userUtils.stopExporters(victoriaMode=victoriaMode)
     elif args.start:
-        userUtils.startPromServer()
-        userUtils.startExporters()
+        userUtils.startPromServer(victoriaMode=victoriaMode)
+        userUtils.startExporters(victoriaMode=victoriaMode)
     elif args.stop:
-        userUtils.stopPromServer()
-        userUtils.stopExporters()
+        userUtils.stopExporters(victoriaMode=victoriaMode)
+        time.sleep(6)
+        userUtils.stopPromServer(victoriaMode=victoriaMode)
     else:
         parser.print_help()
 
