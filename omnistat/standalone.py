@@ -228,7 +228,7 @@ def main():
             start_time = time.perf_counter()
             timestamp = pd.Timestamp("now")
             monitor.updateAllMetrics()
-            caching.getMetrics(timestamp, prefix=("rocm", "rmsjob_info"))
+            caching.getMetrics(timestamp, prefix=("rocm", "rmsjob_"))
             sample_duration += time.perf_counter() - start_time
 
             num_samples += 1
