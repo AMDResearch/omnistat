@@ -211,7 +211,7 @@ def main():
     monitor.initMetrics()
     # Initialize standalone polling
     caching = Standalone(args)
-    caching.initMetrics(prefix=("rocm", "rmsjob_info"))
+    caching.initMetrics(prefix=("rocm", "rmsjob_"))
 
     interval_microsecs = int(interval_secs * 1000000)
     exit_check_interval_secs = 5.0
