@@ -9,12 +9,12 @@ from omnistat.trace.pytorch import PytorchProfilerTrace
 
 def main():
     parser = argparse.ArgumentParser()
-    # parser.add_argument("--jobid", type=int, help="", required=True)
-    # parser.add_argument("--traceid", type=int, help="", required=True)
-    parser.add_argument("--trace", type=str, help="Pytorch profiler JSON trace file", required=True)
+    parser.add_argument("--job", type=int, help="Job ID", required=True)
+    parser.add_argument("--trace", type=int, help="Trace ID", required=True)
+    parser.add_argument("--file", type=str, help="Pytorch profiler JSON trace file", required=True)
     args = parser.parse_args()
 
-    trace = PytorchProfilerTrace(args.trace)
+    trace = PytorchProfilerTrace(args.file)
     trace.minimize()
     trace.flatten()
 
@@ -58,7 +58,7 @@ def main():
         time_ms = row["time"]
         for name in names:
             value = row[name].item()
-            print(f'rmsjob_trace{{jobid="0",traceid="0",marker="{name}"}} {value} {time_ms/1000}')
+            print(f'rmsjob_trace{{jobid="{args.job}",traceid="{args.trace}",marker="{name}"}} {value} {time_ms/1000}')
     print("# EOF")
 
 
