@@ -53,6 +53,8 @@ class RMSJob(Collector):
         self.__rmsJobMode = jobDetection["mode"]
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
+        self.__rmsJobFileTimeStamp = 0
+        self.__resultsCached = {}
 
         # jobMode
         if self.__rmsJobMode == "file-based":
@@ -124,8 +126,16 @@ class RMSJob(Collector):
                 with open(self.__rmsJobStepFile, "r") as file:
                     results = json.load(file)
             elif os.path.isfile(self.__rmsJobFile):
-                with open(self.__rmsJobFile, "r") as file:
-                    results = json.load(file)
+                # only read contents if modify timestamp has been updated
+                modTime = os.path.getmtime(self.__rmsJobFile)
+                if modTime > self.__rmsJobFileTimeStamp:
+                    with open(self.__rmsJobFile, "r") as file:
+                        logging.info("[file-based]: reading %s " % self.__rmsJobFile)
+                        self.__rmsJobFileTimeStamp = modTime
+                        results = json.load(file)
+                    self.__resultsCached = results
+                else:
+                    results = self.__resultsCached
 
         return results
 
@@ -149,8 +159,6 @@ class RMSJob(Collector):
         self.__RMSMetrics["info"].clear()
         self.__RMSMetrics["annotations"].clear()
         jobEnabled = False
-
-        results = None
 
         results = self.querySlurmJob(mode=self.__rmsJobMode)
         if results:
