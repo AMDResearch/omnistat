@@ -54,7 +54,9 @@ class RMSJob(Collector):
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
         self.__rmsJobFileTimeStamp = 0
+        self.__rmsAnnotationsFileTimeStamp = 0
         self.__resultsCached = {}
+        self.__annotationsCached = {}
 
         # jobMode
         if self.__rmsJobMode == "file-based":
@@ -182,8 +184,15 @@ class RMSJob(Collector):
 
                 userFileExists = os.path.isfile(userFile)
                 if userFileExists:
-                    with open(userFile, "r") as file:
-                        data = json.load(file)
+                    # only read contents if modify timestamp has been updated
+                    modTime = os.path.getmtime(userFile)
+                    if modTime > self.__rmsAnnotationsFileTimeStamp:
+                        with open(userFile, "r") as file:
+                            data = json.load(file)
+                        self.__rmsAnnotationsFileTimeStamp = modTime
+                        self.__annotationsCached = data
+                    else:
+                        data = self.__annotationsCached
 
                 # Reset existing annotation in two scenarios:
                 #  1. Previous annotation stopped (file no longer present)
