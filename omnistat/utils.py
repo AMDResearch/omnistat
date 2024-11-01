@@ -267,12 +267,16 @@ def runShellCommand(command, capture_output=True, text=True, exit_on_error=False
     return results
 
 
-def runBGProcess(command, outputFile=".bgcommand.output", mode="w"):
+def runBGProcess(command, outputFile=".bgcommand.output", mode="w", envAdds=None):
     logging.debug("Command to run in background = %s" % command)
-    # results = subprocess.Popen(command,stdout=subprocess.PIPE,stderr=open(outputFile,"w"))
+    env = os.environ.copy()
+
+    if envAdds:
+        for entry in envAdds:
+            env[entry] = envAdds[entry]
 
     outfile = open(outputFile, mode)
-    results = subprocess.Popen(command, stdout=outfile, stderr=outfile)
+    results = subprocess.Popen(command, stdout=outfile, stderr=outfile, env=env)
     return results
 
 
@@ -320,9 +324,11 @@ def removeQuotes(input):
         input = input.strip("'")
     return input
 
+
 def getMemoryUsageMB():
     """Get current process memory usage in MB"""
-    return(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024)
+    return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
+
 
 def getVersion():
     """Return omnistat version info"""
