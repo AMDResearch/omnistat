@@ -96,9 +96,12 @@ class UserBasedMonitoring:
         command = [
             ps_binary,
             "--storageDataPath=%s" % ps_datadir,
+            "-memory.allowedPercent=10"
         ]
+        envAddition = {}
+        envAddition["GOMAXPROCS"] = "4"
         logging.info("Server start command: %s" % command)
-        utils.runBGProcess(command, outputFile=ps_logfile)
+        utils.runBGProcess(command, outputFile=ps_logfile,envAdds=envAddition)
 
     def startPromServer(self, victoriaMode=False):
 
@@ -263,7 +266,7 @@ class UserBasedMonitoring:
             numHosts = len(self.slurmHosts)
             numAvail = 0
 
-            if not victoriaMode:
+            if True:
                 logging.info("Testing exporter availability")
                 delay_start = 0.05
                 hosts_ok = []
@@ -308,24 +311,13 @@ class UserBasedMonitoring:
 
     def stopExporters(self, victoriaMode=False):
 
-        if victoriaMode:
-            user = getpass.getuser()
-            dieFile = ".omnistat_standalone_%s" % user
-            logging.info("Removing %s to terminate and flush data collection." % dieFile)
-            if os.path.exists(dieFile):
-                os.remove(dieFile)
-            else:
-                logging.error("Expected die file does not exist (%s)" % dieFile)
-            return
-        else:
-            port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-
-            for host in self.slurmHosts:
-                logging.info("Stopping exporter for host -> %s" % host)
-                cmd = ["curl", f"{host}:{port}/shutdown"]
-                logging.debug("-> running command: %s" % cmd)
-                utils.runShellCommand(cmd, timeout=5)
-            return
+        port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
+        for host in self.slurmHosts:
+            logging.info("Stopping exporter for host -> %s" % host)
+            cmd = ["curl", f"{host}:{port}/shutdown"]
+            logging.debug("-> running command: %s" % cmd)
+            utils.runShellCommand(cmd, timeout=10)
+        return
 
 
 def main():
@@ -369,7 +361,6 @@ def main():
         userUtils.startExporters(victoriaMode=victoriaMode)
     elif args.stop:
         userUtils.stopExporters(victoriaMode=victoriaMode)
-        time.sleep(6)
         userUtils.stopPromServer(victoriaMode=victoriaMode)
     else:
         parser.print_help()
