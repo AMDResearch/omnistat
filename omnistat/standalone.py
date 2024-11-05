@@ -122,7 +122,6 @@ class Standalone:
                     if token not in self.__data:
                         self.__data[token] = []
                         logging.debug("Enabling caching for metric -> %s" % token)
-                    self.__data[token].append([timestamp, sample.value])
                     labels = 'instance="%s"' % self.__hostname
                     if sample.labels:
                         for key, value in sample.labels.items():
@@ -132,11 +131,11 @@ class Standalone:
                     if token == "rmsjob_annotations":
                         print("%s: %s" % (timestamp, sample.value))
 
-    def dumpCache(self, mode="raw"):
+    def dumpCache(self, mode="victoria"):
 
-        if mode == "raw":
-            print(self.__data)
-        elif mode == "victoria":
+        if mode == "victoria":
+            if len(self.__dataVM) == 0:
+                return
             logging.info("")
             logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % self.__victoriaURL)
             try:
@@ -161,6 +160,8 @@ class Standalone:
         push_frequency_secs = self.__pushFrequencyMins * 60
         push_time_accumulation = 0.0
         interval_microsecs = int(interval_secs * 1000000)
+        mem_mb_base = utils.getMemoryUsageMB()
+        base_start_time = time.perf_counter()
 
         # ---
         # main sampling loop
@@ -181,7 +182,7 @@ class Standalone:
                             self.dumpCache(mode="victoria")
                             self.__dataVM.clear()
                             num_pushes += 1
-                            push_time_accumulation = time.perf_counter() - push_start_time
+                            push_time_accumulation += time.perf_counter() - push_start_time
                         except:
                             pass
 
@@ -195,6 +196,8 @@ class Standalone:
 
         # end sampling loop
         # ---
+
+        duration_secs = time.perf_counter() - base_start_time
 
         if len(self.__dataVM) > 0:
             try:
@@ -210,13 +213,15 @@ class Standalone:
         logging.info("--> Total data pushes          = %i" % num_pushes)
         if num_pushes > 0:
             logging.info("--> Average push duration      = %.4f (secs)" % (push_time_accumulation / num_pushes))
-        duration_secs = num_samples * interval_secs
+        # duration_secs = num_samples * interval_secs
         if duration_secs >= 3600:
             logging.info("--> Data collection duration   = %.4f (hours)" % (1.0 * duration_secs / 3600.0))
         elif duration_secs >= 60:
             logging.info("--> Data collection duration   = %.4f (mins)" % (1.0 * duration_secs / 60.0))
         else:
             logging.info("--> Data collection duration   = %.4f (secs)" % duration_secs)
+        logging.info("--> Base memory use at start   = %.3f MB" % mem_mb_base)
+        logging.info("--> Memory growth at stop      = %.3f MB" % (utils.getMemoryUsageMB() - mem_mb_base))
 
         # deliver event to shutdown procedure
         logging.debug("setting shutdown delivery event")
