@@ -28,6 +28,7 @@
 # --> provides a flask endpoint to terminate data collection (http://host:port/shutdown)
 
 import argparse
+import copy
 import ctypes
 import getpass
 import logging
@@ -58,6 +59,7 @@ dataDeliveredEvent = threading.Event()
 
 
 def push_to_victoria_metrics(metrics_data_list, victoria_url):
+    logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
     headers = {
         "Content-Type": "text/plain",
     }
@@ -100,14 +102,14 @@ class Standalone:
         return token
 
     def getMetrics(self, timestamp_millisecs, prefix=None):
-        """Cache current metrics from latest Prometheus query"""
+        """Cache current metrics from latest query"""
         for metric in REGISTRY.collect():
             if metric.type == "gauge":
                 if prefix and not metric.name.startswith(prefix):
                     continue
                 for sample in metric.samples:
                     # labels = 'instance="%s"' % self.__hostname
-                    labels =  self.__instanceLabel
+                    labels = self.__instanceLabel
                     if sample.labels:
                         for key, value in sample.labels.items():
                             labels += ',%s="%s"' % (key, value)
@@ -116,24 +118,24 @@ class Standalone:
                     # if token == "rmsjob_annotations":
                     #     print("%s: %s" % (timestamp, sample.value))
 
-    def dumpCache(self, mode="victoria"):
+    # def dumpCache(self, mode="victoria"):
 
-        if mode == "victoria":
-            if len(self.__dataVM) == 0:
-                return
-            logging.info("")
-            logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % self.__victoriaURL)
-            try:
-                push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
-            except:
-                logging.error("")
-                logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
-                logging.error("ERROR: Collected data not saved :-(")
-                logging.error("")
-                sys.exit(4)
-        else:
-            logging.error("Unsupported dumpCache mode -> %s" % mode)
-            sys.exit(1)
+    #     if mode == "victoria":
+    #         if len(self.__dataVM) == 0:
+    #             return
+    #         logging.info("")
+    #         logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % self.__victoriaURL)
+    #         try:
+    #             push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
+    #         except:
+    #             logging.error("")
+    #             logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
+    #             logging.error("ERROR: Collected data not saved :-(")
+    #             logging.error("")
+    #             sys.exit(4)
+    #     else:
+    #         logging.error("Unsupported dumpCache mode -> %s" % mode)
+    #         sys.exit(1)
 
     def polling(self, monitor, interval_secs):
         """main polling function"""
@@ -147,29 +149,41 @@ class Standalone:
         interval_microsecs = int(interval_secs * 1000000)
         mem_mb_base = utils.getMemoryUsageMB()
         base_start_time = time.perf_counter()
+        push_thread = None
+        push_frequency_secs = 10
 
         # ---
         # main sampling loop
         try:
             while not terminateFlagEvent.is_set():
                 start_time = time.perf_counter()
-                timestamp_msecs = int(datetime.now(timezone.utc).timestamp()*1000.0)
+                timestamp_msecs = int(datetime.now(timezone.utc).timestamp() * 1000.0)
                 monitor.updateAllMetrics()
                 self.getMetrics(timestamp_msecs)
                 num_samples += 1
                 sample_duration += time.perf_counter() - start_time
 
+                # periodically push cached data to VictoriaMetrics
                 if push_check_duration > push_frequency_secs:
                     push_check_duration = 0.0
-                    if True:
-                        try:
-                            push_start_time = time.perf_counter()
-                            self.dumpCache(mode="victoria")
-                            self.__dataVM.clear()
-                            num_pushes += 1
-                            push_time_accumulation += time.perf_counter() - push_start_time
-                        except:
-                            pass
+                    # ensure previous push thread completed...
+                    if push_thread is not None and push_thread.is_alive():
+                        logging.info("Previous metric push is still running - blocking till complete.")
+                        push_thread.join()
+                        logging.info("Resuming after previous metric push complete.")
+
+                    try:
+                        push_start_time = time.perf_counter()
+                        dataToPush = copy.deepcopy(self.__dataVM)
+                        push_thread = threading.Thread(
+                            target=push_to_victoria_metrics, args=(dataToPush, self.__victoriaURL)
+                        )
+                        push_thread.start()
+                        self.__dataVM.clear()
+                        num_pushes += 1
+                        push_time_accumulation += time.perf_counter() - push_start_time
+                    except:
+                        pass
 
                 self.sleep_microsecs(interval_microsecs)
                 # time.sleep(interval_secs)
@@ -183,6 +197,11 @@ class Standalone:
         # ---
 
         duration_secs = time.perf_counter() - base_start_time
+
+        if push_thread is not None and push_thread.is_alive():
+            logging.info("Last metric push from polling loop is still running - blocking till complete.")
+            push_thread.join()
+            logging.info("Ready for final data dump after previous metric push complete.")
 
         if len(self.__dataVM) > 0:
             try:
@@ -198,7 +217,6 @@ class Standalone:
         logging.info("--> Total data pushes          = %i" % num_pushes)
         if num_pushes > 0:
             logging.info("--> Average push duration      = %.4f (secs)" % (push_time_accumulation / num_pushes))
-        # duration_secs = num_samples * interval_secs
         if duration_secs >= 3600:
             logging.info("--> Data collection duration   = %.4f (hours)" % (1.0 * duration_secs / 3600.0))
         elif duration_secs >= 60:
