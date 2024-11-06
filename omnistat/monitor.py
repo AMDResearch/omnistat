@@ -47,7 +47,7 @@ class Monitor:
 
         if logFile:
             hostname = platform.node().split(".", 1)[0]
-            logging.basicConfig(format=f'[{hostname}] %(message)s', level=logging.INFO, filename=logFile)
+            logging.basicConfig(format=f'[{hostname}: %(asctime)s] %(message)s', level=logging.INFO, filename=logFile, datefmt='%H:%M:%S')
         else:
             logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
