@@ -75,9 +75,9 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
 class Standalone:
     def __init__(self, args, config):
         logging.basicConfig(format="%(message)s", level=logging.ERROR, stream=sys.stdout, flush=True)
-        self.__data = {}
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
+        self.__instanceLabel = 'instance="%s"' % self.__hostname
         self.__victoriaURL = f"http://{args.endpoint}:{args.port}/api/v1/import/prometheus"
         self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
         if self.__pushFrequencyMins < 1:
@@ -99,37 +99,22 @@ class Standalone:
             token = "card%s_" % labels["card"] + name
         return token
 
-    def initMetrics(self, prefix=None):
-        """Initialize data structure to house caching of telemetry data"""
-        for metric in REGISTRY.collect():
-            if metric.type == "gauge":
-                if prefix and not metric.name.startswith(prefix):
-                    continue
-                for sample in metric.samples:
-                    token = self.tokenizeMetricName(sample.name, sample.labels)
-                    logging.debug("Enabling caching for metric -> %s" % token)
-                    self.__data[token] = []
-
-    def getMetrics(self, timestamp, prefix=None):
+    def getMetrics(self, timestamp_millisecs, prefix=None):
         """Cache current metrics from latest Prometheus query"""
         for metric in REGISTRY.collect():
             if metric.type == "gauge":
                 if prefix and not metric.name.startswith(prefix):
                     continue
                 for sample in metric.samples:
-                    token = self.tokenizeMetricName(sample.name, sample.labels)
-                    # account for possibility of dynamic metric definitions (e.g. annotations)
-                    if token not in self.__data:
-                        self.__data[token] = []
-                        logging.debug("Enabling caching for metric -> %s" % token)
-                    labels = 'instance="%s"' % self.__hostname
+                    # labels = 'instance="%s"' % self.__hostname
+                    labels =  self.__instanceLabel
                     if sample.labels:
                         for key, value in sample.labels.items():
                             labels += ',%s="%s"' % (key, value)
-                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, int(timestamp.timestamp() * 1000))
+                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
                     self.__dataVM.append(entry)
-                    if token == "rmsjob_annotations":
-                        print("%s: %s" % (timestamp, sample.value))
+                    # if token == "rmsjob_annotations":
+                    #     print("%s: %s" % (timestamp, sample.value))
 
     def dumpCache(self, mode="victoria"):
 
@@ -168,9 +153,9 @@ class Standalone:
         try:
             while not terminateFlagEvent.is_set():
                 start_time = time.perf_counter()
-                timestamp = datetime.now(timezone.utc)
+                timestamp_msecs = int(datetime.now(timezone.utc).timestamp()*1000.0)
                 monitor.updateAllMetrics()
-                self.getMetrics(timestamp)
+                self.getMetrics(timestamp_msecs)
                 num_samples += 1
                 sample_duration += time.perf_counter() - start_time
 
@@ -295,7 +280,6 @@ def main():
         exit(1)
 
     caching = Standalone(args, config)
-    caching.initMetrics()
 
     # Launch flask app as thread so we can respond to remote shutdown requests
     flask_thread = threading.Thread(target=runFlask, args=[config])
