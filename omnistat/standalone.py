@@ -283,7 +283,6 @@ def main():
 
     args = parse_args()
     config = utils.readConfig(utils.findConfigFile(args.configfile))
-    print(config)
 
     # Initialize GPU monitoring
     monitor = Monitor(config, logFile=args.logfile)
