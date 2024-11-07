@@ -83,7 +83,7 @@ class UserBasedMonitoring:
     def startVictoriaServer(self):
         logging.info("Starting VictoriaMetrics server on localhost")
         section = "omnistat.usermode"
-        ps_binary = self.runtimeConfig[section].get("prometheus_binary")
+        ps_binary = self.runtimeConfig[section].get("victoria_binary")
         ps_datadir = self.runtimeConfig[section].get("prometheus_datadir", "data_prom", vars=os.environ)
 
         # datadir can be overridden by separate env variable
@@ -93,15 +93,11 @@ class UserBasedMonitoring:
         ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
 
-        command = [
-            ps_binary,
-            "--storageDataPath=%s" % ps_datadir,
-            "-memory.allowedPercent=10"
-        ]
+        command = [ps_binary, "--storageDataPath=%s" % ps_datadir, "-memory.allowedPercent=10"]
         envAddition = {}
         envAddition["GOMAXPROCS"] = "4"
         logging.info("Server start command: %s" % command)
-        utils.runBGProcess(command, outputFile=ps_logfile,envAdds=envAddition)
+        utils.runBGProcess(command, outputFile=ps_logfile, envAdds=envAddition)
 
     def startPromServer(self, victoriaMode=False):
 
@@ -110,7 +106,10 @@ class UserBasedMonitoring:
             return
 
         logging.info("Starting prometheus server on localhost")
-        scrape_interval = "%ss" % self.scrape_interval
+        if self.scrape_interval >= 1:
+            scrape_interval = "%ss" % int(self.scrape_interval)
+        else:
+            scrape_interval = "0s%sms" % int(self.scrape_interval * 1000)
         logging.info("--> sampling interval = %s" % scrape_interval)
 
         if self.timeout < self.scrape_interval:
@@ -129,19 +128,19 @@ class UserBasedMonitoring:
         ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
 
-        # check if remote_write is desired
-        remoteWrite = self.runtimeConfig[section].getboolean("prometheus_remote_write", False)
-        if remoteWrite:
-            remoteWriteConfig = {}
-            remoteWriteConfig["url"] = self.runtimeConfig[section].get("prometheus_remote_write_url", "unknown")
-            remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get(
-                "prometheus_remote_write_basic_auth_user", "user"
-            )
-            remoteWriteConfig["auth_cred"] = self.runtimeConfig[section].get(
-                "prometheus_remote_write_basic_auth_cred", "credential"
-            )
-            logging.debug("Remote write url:  %s" % remoteWriteConfig["url"])
-            logging.debug("Remote write user: %s" % remoteWriteConfig["auth_user"])
+        # # check if remote_write is desired
+        # remoteWrite = self.runtimeConfig[section].getboolean("prometheus_remote_write", False)
+        # if remoteWrite:
+        #     remoteWriteConfig = {}
+        #     remoteWriteConfig["url"] = self.runtimeConfig[section].get("prometheus_remote_write_url", "unknown")
+        #     remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get(
+        #         "prometheus_remote_write_basic_auth_user", "user"
+        #     )
+        #     remoteWriteConfig["auth_cred"] = self.runtimeConfig[section].get(
+        #         "prometheus_remote_write_basic_auth_cred", "credential"
+        #     )
+        #     logging.debug("Remote write url:  %s" % remoteWriteConfig["url"])
+        #     logging.debug("Remote write user: %s" % remoteWriteConfig["auth_user"])
 
         # generate prometheus config file to scrape local exporters
         computes = {}
@@ -332,7 +331,10 @@ def main():
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
-    parser.add_argument("--interval", help="Monitoring sampling interval in secs (default=60)")
+    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=60)")
+    parser.add_argument(
+        "--push", help="Initiate data collection in push mode with VictoriaMetrocs", action="store_true"
+    )
 
     args = parser.parse_args()
 
@@ -347,7 +349,8 @@ def main():
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
 
-    victoriaMode = True
+    victoriaMode = args.push
+
     if args.startserver:
         userUtils.startPromServer(victoriaMode=victoriaMode)
     elif args.stopserver:
@@ -357,6 +360,10 @@ def main():
     elif args.stopexporters:
         userUtils.stopExporters(victoriaMode=victoriaMode)
     elif args.start:
+        if victoriaMode:
+            logging.info("Initiating data collection in [push] mode -> VictoriaMetrics")
+        else:
+            logging.info("Initiating data collection in [pull] mode -> Prometheus")
         userUtils.startPromServer(victoriaMode=victoriaMode)
         userUtils.startExporters(victoriaMode=victoriaMode)
     elif args.stop:
