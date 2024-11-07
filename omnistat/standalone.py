@@ -118,25 +118,6 @@ class Standalone:
                     # if token == "rmsjob_annotations":
                     #     print("%s: %s" % (timestamp, sample.value))
 
-    # def dumpCache(self, mode="victoria"):
-
-    #     if mode == "victoria":
-    #         if len(self.__dataVM) == 0:
-    #             return
-    #         logging.info("")
-    #         logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % self.__victoriaURL)
-    #         try:
-    #             push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
-    #         except:
-    #             logging.error("")
-    #             logging.error("ERROR: Unable to push cached metrics -> please verify local server is running.")
-    #             logging.error("ERROR: Collected data not saved :-(")
-    #             logging.error("")
-    #             sys.exit(4)
-    #     else:
-    #         logging.error("Unsupported dumpCache mode -> %s" % mode)
-    #         sys.exit(1)
-
     def polling(self, monitor, interval_secs):
         """main polling function"""
 
@@ -150,7 +131,6 @@ class Standalone:
         mem_mb_base = utils.getMemoryUsageMB()
         base_start_time = time.perf_counter()
         push_thread = None
-        push_frequency_secs = 10
 
         # ---
         # main sampling loop
@@ -206,7 +186,7 @@ class Standalone:
         if len(self.__dataVM) > 0:
             try:
                 logging.info("Initiating final data push...")
-                self.dumpCache(mode="victoria")
+                push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
             except:
                 pass
 
