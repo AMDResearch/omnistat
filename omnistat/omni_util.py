@@ -49,7 +49,7 @@ from omnistat import utils
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
-        self.scrape_interval = 60  # default scrape interval in seconds
+        self.scrape_interval = 30  # default scrape interval in seconds
         self.timeout = 5  # default scrape timeout in seconds
 
     def setup(self, configFileArgument):
@@ -85,6 +85,13 @@ class UserBasedMonitoring:
         section = "omnistat.usermode"
         vm_binary = self.runtimeConfig[section].get("victoria_binary")
         vm_datadir = self.runtimeConfig[section].get("victoria_datadir", "data_prom", vars=os.environ)
+
+        if not os.path.exists(vm_binary):
+            logging.error("")
+            logging.error("[ERROR]: Unable to resolve path to VictoriaMetrics binary -> %s" % vm_binary)
+            logging.error("[ERROR]: Please verify setting for \"victoria_binary\" in runtime configfile.")
+            sys.exit(1)
+
 
         # datadir can be overridden by separate env variable
         if "OMNISTAT_VICSERVER_DATADIR" in os.environ:
@@ -323,7 +330,10 @@ class UserBasedMonitoring:
             logging.info("Stopping exporter for host -> %s" % host)
             cmd = ["curl", f"{host}:{port}/shutdown"]
             logging.debug("-> running command: %s" % cmd)
-            utils.runShellCommand(cmd, timeout=10)
+            timeout = 10
+            if victoriaMode:
+                timeout = 120
+            utils.runShellCommand(cmd, timeout=timeout)
         return
 
 
@@ -339,7 +349,7 @@ def main():
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
-    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=60)")
+    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=30)")
     parser.add_argument(
         "--push", help="Initiate data collection in push mode with VictoriaMetrocs", action="store_true", default=True,
     )
