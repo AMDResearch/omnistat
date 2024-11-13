@@ -83,21 +83,29 @@ class UserBasedMonitoring:
     def startVictoriaServer(self):
         logging.info("Starting VictoriaMetrics server on localhost")
         section = "omnistat.usermode"
-        ps_binary = self.runtimeConfig[section].get("victoria_binary")
-        ps_datadir = self.runtimeConfig[section].get("prometheus_datadir", "data_prom", vars=os.environ)
+        vm_binary = self.runtimeConfig[section].get("victoria_binary")
+        vm_datadir = self.runtimeConfig[section].get("victoria_datadir", "data_prom", vars=os.environ)
 
         # datadir can be overridden by separate env variable
-        if "OMNISTAT_PROMSERVER_DATADIR" in os.environ:
-            ps_datadir = os.getenv("OMNISTAT_PROMSERVER_DATADIR")
+        if "OMNISTAT_VICSERVER_DATADIR" in os.environ:
+            VM_datadir = os.getenv("OMNISTAT_VICSERVER_DATADIR")
 
-        ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
-        ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
+        vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
+        vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
 
-        command = [ps_binary, "--storageDataPath=%s" % ps_datadir, "-memory.allowedPercent=10"]
+        command = [vm_binary, "--storageDataPath=%s" % vm_datadir, "-memory.allowedPercent=10"]
         envAddition = {}
+        # restrict thread usage
         envAddition["GOMAXPROCS"] = "4"
+
+        numactl = shutil.which("numactl")
+        if numactl and isinstance(vm_corebinding, int):
+            command = ["numactl", f"--physcpubind={vm_corebinding}"] + command
+        else:
+            logging.info("Skipping VictoriaMetrics corebinding")
+
         logging.info("Server start command: %s" % command)
-        utils.runBGProcess(command, outputFile=ps_logfile, envAdds=envAddition)
+        utils.runBGProcess(command, outputFile=vm_logfile, envAdds=envAddition)
 
     def startPromServer(self, victoriaMode=False):
 
@@ -333,7 +341,7 @@ def main():
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=60)")
     parser.add_argument(
-        "--push", help="Initiate data collection in push mode with VictoriaMetrocs", action="store_true"
+        "--push", help="Initiate data collection in push mode with VictoriaMetrocs", action="store_true", default=True,
     )
 
     args = parser.parse_args()
