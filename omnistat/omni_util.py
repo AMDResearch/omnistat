@@ -89,9 +89,8 @@ class UserBasedMonitoring:
         if not os.path.exists(vm_binary):
             logging.error("")
             logging.error("[ERROR]: Unable to resolve path to VictoriaMetrics binary -> %s" % vm_binary)
-            logging.error("[ERROR]: Please verify setting for \"victoria_binary\" in runtime configfile.")
+            logging.error('[ERROR]: Please verify setting for "victoria_binary" in runtime configfile.')
             sys.exit(1)
-
 
         # datadir can be overridden by separate env variable
         if "OMNISTAT_VICSERVER_DATADIR" in os.environ:
@@ -351,7 +350,10 @@ def main():
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=30)")
     parser.add_argument(
-        "--push", help="Initiate data collection in push mode with VictoriaMetrocs", action="store_true", default=True,
+        "--push",
+        help="Initiate data collection in push mode with VictoriaMetrics",
+        action=argparse.BooleanOptionalAction,
+        default=True,
     )
 
     args = parser.parse_args()
