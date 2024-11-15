@@ -10,6 +10,7 @@ omnistat-usermode = "omnistat.omni_util:main"
 omnistat-annotate = "omnistat.annotate:main"
 omnistat-query = "omnistat.query:main"
 omnistat-rms-env = "omnistat.rms_env:main"
+omnistat-standalone = "omnistat.standalone:main"
 
 [build-system]
 requires = ["setuptools>=61", "wheel", "setuptools-git-versioning>=2.0,<3"]
