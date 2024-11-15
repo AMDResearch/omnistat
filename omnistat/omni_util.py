@@ -94,7 +94,7 @@ class UserBasedMonitoring:
 
         # datadir can be overridden by separate env variable
         if "OMNISTAT_VICSERVER_DATADIR" in os.environ:
-            VM_datadir = os.getenv("OMNISTAT_VICSERVER_DATADIR")
+            vm_datadir = os.getenv("OMNISTAT_VICSERVER_DATADIR")
 
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
