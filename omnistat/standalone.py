@@ -65,13 +65,25 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
     }
 
     metrics_data = "\n".join(metrics_data_list)
-    response = requests.post(victoria_url, data=metrics_data, headers=headers)
+    try:
+        response = requests.post(victoria_url, data=metrics_data, headers=headers)
+    except requests.ConnectionError:
+        logging.error("")
+        logging.error("[FAILED]: Unable to make connection - please verify VictoriaMetrics is running and accessible from this host.")
+        return False
+    except Exception as e:
+        logging.error("")
+        logging.error("[FAILED]: Unable to post data to Victoria endpoint")
+        logging.error(e)
+        return False
 
     if response.status_code != 204:
-        logging.error(f"Failed to push metrics: {response.status_code}, {response.text}")
-        sys.exit(1)
+        logging.error("")
+        logging.error(f"[FAILED] Unable to push metrics: {response.status_code}, {response.text}")
+        return False
     else:
         logging.info("Metrics pushed successfully!")
+        return True
 
 
 class Standalone:
@@ -85,6 +97,22 @@ class Standalone:
         if self.__pushFrequencyMins < 1:
             logging.error("")
             logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
+            sys.exit(1)
+
+        # verify victoriaURL is accessible
+        failed = False
+        try:
+            response = requests.get(self.__victoriaURL)
+            if response.status_code != 204:
+                failed = True
+        except requests.exceptions.RequestException as e:
+            failed = True
+
+        if failed:
+            logging.error("")
+            logging.error("[ERROR]: Unable to access VictoriaMetrics server endpoint (%s)" % self.__victoriaURL)
+            logging.error("[ERROR]: Please verify server is running and accessible from this host.")
+            logging.error("")
             sys.exit(1)
 
         logging.info("Cached data will be pushed every %i minute(s)" % self.__pushFrequencyMins)
@@ -184,12 +212,10 @@ class Standalone:
             logging.info("Ready for final data dump after previous metric push complete.")
 
         if len(self.__dataVM) > 0:
-            try:
                 logging.info("Initiating final data push...")
                 push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
-            except:
-                pass
 
+        logging.info("")
         logging.info("--> Sampling interval          = %.4f (secs)" % interval_secs)
         logging.info("--> Total # of samples         = %i" % num_samples)
         if num_samples > 0:
