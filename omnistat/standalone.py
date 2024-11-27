@@ -182,12 +182,12 @@ class Standalone:
 
                     try:
                         push_start_time = time.perf_counter()
-                        dataToPush = copy.deepcopy(self.__dataVM)
+                        dataToPush = self.__dataVM
                         push_thread = threading.Thread(
                             target=push_to_victoria_metrics, args=(dataToPush, self.__victoriaURL)
                         )
                         push_thread.start()
-                        self.__dataVM.clear()
+                        self.__dataVM = []
                         num_pushes += 1
                         push_time_accumulation += time.perf_counter() - push_start_time
                     except:
