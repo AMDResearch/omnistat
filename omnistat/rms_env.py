@@ -77,7 +77,17 @@ def main():
         jobData["RMS_STEP_ID"] = step
 
     elif "FLUX_URI" in os.environ:
-        command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}"]
+        # step 1: get parent jobid
+        command = ["flux","getattr","jobid"]
+        try:
+            results = subprocess.run(command, capture_output=True, text=True, timeout=5.0)
+        except:
+            print("ERROR: Unable to query flux jobid")
+            sys.exit(0)
+        jobid = results.stdout.strip()
+
+        # step 2: get details for given job
+        command = ["flux", "-p", "jobs", "-n", "--format={id.f58},{username},{queue},{nnodes}","%s" % jobid]
         try:
             results = subprocess.run(command, capture_output=True, text=True, timeout=5.0)
         except:
