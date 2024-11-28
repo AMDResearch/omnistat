@@ -169,20 +169,6 @@ class UserBasedMonitoring:
         ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
 
-        # # check if remote_write is desired
-        # remoteWrite = self.runtimeConfig[section].getboolean("prometheus_remote_write", False)
-        # if remoteWrite:
-        #     remoteWriteConfig = {}
-        #     remoteWriteConfig["url"] = self.runtimeConfig[section].get("prometheus_remote_write_url", "unknown")
-        #     remoteWriteConfig["auth_user"] = self.runtimeConfig[section].get(
-        #         "prometheus_remote_write_basic_auth_user", "user"
-        #     )
-        #     remoteWriteConfig["auth_cred"] = self.runtimeConfig[section].get(
-        #         "prometheus_remote_write_basic_auth_cred", "credential"
-        #     )
-        #     logging.debug("Remote write url:  %s" % remoteWriteConfig["url"])
-        #     logging.debug("Remote write user: %s" % remoteWriteConfig["auth_user"])
-
         # generate prometheus config file to scrape local exporters
         computes = {}
         computes["targets"] = []
