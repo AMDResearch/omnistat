@@ -51,11 +51,13 @@ class UserBasedMonitoring:
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
         self.scrape_interval = 30  # default scrape interval in seconds
         self.timeout = 5  # default scrape timeout in seconds
+        self.__hosts = None
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
         self.runtimeConfig = utils.readConfig(self.configFile)
-        self.slurmHosts = self.getSlurmHosts()
+        self.rmsDetection()
+        self.getRMSHosts()
 
         # Path to Omnistat's executable scripts. For source deployments, this
         # is the top directory of a working copy of Omnistat. For package
@@ -69,16 +71,39 @@ class UserBasedMonitoring:
         self.scrape_interval = float(interval)
         return
 
-    def getSlurmHosts(self):
-        hostlist = os.getenv("SLURM_JOB_NODELIST", None)
-        if hostlist:
-            results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist], timeout=10)
-            if results.stdout.strip():
-                return results.stdout.splitlines()
-            else:
-                utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
+    def rmsDetection(self):
+        """Query environment to infer resource manager"""
+        if "SLURM_JOB_NODELIST" in os.environ:
+            self.__rms = "slurm"
+        elif "FLUX_URI" in os.environ:
+            self.__rms = "flux"
         else:
-            utils.error("No SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+            utils.error("Unknown/unsupported resource manager")
+        logging.info("RMS detected = %s" % self.__rms)
+        return
+
+    def getRMSHosts(self):
+        if self.__rms == "slurm":
+            hostlist = os.getenv("SLURM_JOB_NODELIST", None)
+            if hostlist:
+                results = utils.runShellCommand(["scontrol", "show", "hostname", hostlist], timeout=10)
+                if results.stdout.strip():
+                    self.__hosts = results.stdout.splitlines()
+                    # return results.stdout.splitlines()
+                    return
+                else:
+                    utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
+            else:
+                logging.warning("\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+        elif self.__rms == "flux":
+            results = utils.runShellCommand(["flux","hostlist","local","-e","-d",","])
+            if results.stdout.strip():
+                self.__hosts = results.stdout.strip().split(",")
+                return
+            else:
+                utils.error("Unable to detect assigned Flux hosts.")
+        else:
+            utils.error("Unsupported RMS.")
 
     def startVictoriaServer(self):
         logging.info("Starting VictoriaMetrics server on localhost")
@@ -160,8 +185,8 @@ class UserBasedMonitoring:
         computes = {}
         computes["targets"] = []
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        if self.slurmHosts:
-            for host in self.slurmHosts:
+        if self.__hosts:
+            for host in self.__hosts:
                 computes["targets"].append("%s:%s" % (host, port))
 
             prom_config = {}
@@ -242,23 +267,34 @@ class UserBasedMonitoring:
         else:
             logging.info("Skipping exporter corebinding")
 
-        if self.slurmHosts:
-            logging.info("Saving SLURM job state locally to compute hosts...")
-            numNodes = os.getenv("SLURM_JOB_NUM_NODES")
-            srun_cmd = [
-                "srun",
-                "-N %s" % numNodes,
-                "--ntasks-per-node=1",
-                "%s" % sys.executable,
-                "%s/omnistat-rms-env" % self.binDir,
-                "--nostep",
-                "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
-            ]
-            utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
+        if self.__hosts:
+            logging.info("Saving RMS job state locally to compute hosts...")
+            if self.__rms == "slurm":
+                numNodes = os.getenv("SLURM_JOB_NUM_NODES")
+                srun_cmd = [
+                    "srun",
+                    "-N %s" % numNodes,
+                    "--ntasks-per-node=1",
+                    "%s" % sys.executable,
+                    "%s/omnistat-rms-env" % self.binDir,
+                    "--nostep",
+                    "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                ]
+                utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
+            elif self.__rms == "flux":
+                flux_cmd = [
+                    "flux",
+                    "exec",
+                    "%s" % sys.executable,
+                    "%s/omnistat-rms-env" % self.binDir,
+                    "--nostep",
+                    "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                    ]
+                utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
 
             logging.info("Launching exporters in parallel using pdsh")
 
-            client = ParallelSSHClient(self.slurmHosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
+            client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
             try:
                 output = client.run_command(
                     f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
@@ -266,17 +302,18 @@ class UserBasedMonitoring:
             except:
                 logging.info("Exception thrown launching parallell ssh client")
 
+
             # verify exporter available on all nodes...
-            if len(self.slurmHosts) <= 8:
+            if len(self.__hosts) <= 8:
                 psecs = 5
-            elif len(self.slurmHosts) <= 128:
+            elif len(self.__hosts) <= 128:
                 psecs = 30
             else:
                 psecs = 90
 
             logging.info("Exporters launched, pausing for %i secs" % psecs)
             time.sleep(psecs)  # <-- needed for slow SLURM query times on ORNL
-            numHosts = len(self.slurmHosts)
+            numHosts = len(self.__hosts)
             numAvail = 0
 
             if True:
@@ -284,7 +321,7 @@ class UserBasedMonitoring:
                 delay_start = 0.05
                 hosts_ok = []
                 hosts_bad = []
-                for host in self.slurmHosts:
+                for host in self.__hosts:
                     host_ok = False
                     for iter in range(1, 25):
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -325,7 +362,7 @@ class UserBasedMonitoring:
     def stopExporters(self, victoriaMode=False):
 
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        for host in self.slurmHosts:
+        for host in self.__hosts:
             logging.info("Stopping exporter for host -> %s" % host)
             cmd = ["curl", f"{host}:{port}/shutdown"]
             logging.debug("-> running command: %s" % cmd)
