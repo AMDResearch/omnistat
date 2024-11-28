@@ -94,9 +94,11 @@ class UserBasedMonitoring:
                 else:
                     utils.error("Unable to detect assigned SLURM hosts from %s" % hostlist)
             else:
-                logging.warning("\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n")
+                logging.warning(
+                    "\nNo SLURM_JOB_NODELIST var detected - please verify running under active SLURM job.\n"
+                )
         elif self.__rms == "flux":
-            results = utils.runShellCommand(["flux","hostlist","local","-e","-d",","])
+            results = utils.runShellCommand(["flux", "hostlist", "local", "-e", "-d", ","])
             if results.stdout.strip():
                 self.__hosts = results.stdout.strip().split(",")
                 return
@@ -278,7 +280,8 @@ class UserBasedMonitoring:
                     "%s" % sys.executable,
                     "%s/omnistat-rms-env" % self.binDir,
                     "--nostep",
-                    "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                    "%s"
+                    % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
                 ]
                 utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
             elif self.__rms == "flux":
@@ -288,8 +291,9 @@ class UserBasedMonitoring:
                     "%s" % sys.executable,
                     "%s/omnistat-rms-env" % self.binDir,
                     "--nostep",
-                    "%s" % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
-                    ]
+                    "%s"
+                    % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                ]
                 utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
 
             logging.info("Launching exporters in parallel using pdsh")
@@ -301,7 +305,6 @@ class UserBasedMonitoring:
                 )
             except:
                 logging.info("Exception thrown launching parallell ssh client")
-
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
