@@ -101,7 +101,10 @@ def main():
         jobData["RMS_JOB_PARTITION"] = fluxdata[2]
         jobData["RMS_JOB_NUM_NODES"] = fluxdata[3]
         jobData["RMS_JOB_BATCHMODE"] = 1  # marking all jobs as batch jobs to start
-        jobData["RMS_STEP_ID"] = -1  # marking steps as -1
+        step = -1
+        if "FLUX_JOB_ID" in os.environ:
+            step = os.getenv("FLUX_JOB_ID")
+        jobData["RMS_STEP_ID"] = step
 
     else:
         print("ERROR: Unknown or undetected resource manager. Verify running in active job")
