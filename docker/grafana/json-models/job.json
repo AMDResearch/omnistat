@@ -2493,7 +2493,7 @@
                      "options" : {
                         "conversions" : [
                            {
-                              "destinationType" : "number",
+                              "destinationType" : "string",
                               "targetField" : "Field"
                            }
                         ],
@@ -2820,7 +2820,7 @@
                      "options" : {
                         "conversions" : [
                            {
-                              "destinationType" : "number",
+                              "destinationType" : "string",
                               "targetField" : "Field"
                            }
                         ],
@@ -3146,7 +3146,7 @@
                      "options" : {
                         "conversions" : [
                            {
-                              "destinationType" : "number",
+                              "destinationType" : "string",
                               "targetField" : "Field"
                            }
                         ],
@@ -3473,7 +3473,7 @@
                      "options" : {
                         "conversions" : [
                            {
-                              "destinationType" : "number",
+                              "destinationType" : "string",
                               "targetField" : "Field"
                            }
                         ],
@@ -3816,7 +3816,7 @@
                   "value" : "1s"
                }
             ],
-            "query" : "60s,30s,5s,1s",
+            "query" : "30s,5s,1s,0.5s,0.1s",
             "queryValue" : "",
             "skipUrlSync" : false,
             "type" : "custom"
