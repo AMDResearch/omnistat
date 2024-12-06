@@ -3781,7 +3781,7 @@
                      "calcs": [],
                      "displayMode": "list",
                      "placement": "bottom",
-                     "showLegend": false
+                     "showLegend": true
                   },
                   "orientation": "auto",
                   "showValue": "auto",
