@@ -16,6 +16,7 @@ RUN apt-get update -y && \
         slurmctld \
         slurmd \
         vim \
+        victoria-metrics \
         wget
 
 RUN mkdir /var/spool/slurmctld && \
