@@ -69,7 +69,9 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
         response = requests.post(victoria_url, data=metrics_data, headers=headers)
     except requests.ConnectionError:
         logging.error("")
-        logging.error("[FAILED]: Unable to make connection - please verify VictoriaMetrics is running and accessible from this host.")
+        logging.error(
+            "[FAILED]: Unable to make connection - please verify VictoriaMetrics is running and accessible from this host."
+        )
         return False
     except Exception as e:
         logging.error("")
@@ -212,8 +214,8 @@ class Standalone:
             logging.info("Ready for final data dump after previous metric push complete.")
 
         if len(self.__dataVM) > 0:
-                logging.info("Initiating final data push...")
-                push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
+            logging.info("Initiating final data push...")
+            push_to_victoria_metrics(self.__dataVM, self.__victoriaURL)
 
         logging.info("")
         logging.info("--> Sampling interval          = %.4f (secs)" % interval_secs)
