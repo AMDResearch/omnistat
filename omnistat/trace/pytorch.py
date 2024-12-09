@@ -1,3 +1,4 @@
+import gzip
 import json
 
 import pandas
@@ -6,7 +7,7 @@ import pandas
 class PytorchProfilerTrace:
     def __init__(self, trace_file):
         self.file = trace_file
-        with open(self.file, "r") as file:
+        with gzip.open(self.file, "rb") if self.file.endswith("gz") else open(self.file, "r") as file:
             self.trace = json.load(file)
 
     def minimize(self, min_duration=1000):
