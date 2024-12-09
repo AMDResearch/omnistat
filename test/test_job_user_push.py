@@ -99,7 +99,15 @@ class TestJobUser:
     def start_victoria_proxy(self, data_path=config.victoria_data_user):
         self.stop_victoria_proxy(ignore_errors=True)
 
-        start_cmd = ["docker", "exec", "-d", "slurm-controller", "victoria-metrics", "-httpListenAddr=:9090", f"--storageDataPath={data_path}"]
+        start_cmd = [
+            "docker",
+            "exec",
+            "-d",
+            "slurm-controller",
+            "victoria-metrics",
+            "-httpListenAddr=:9090",
+            f"--storageDataPath={data_path}",
+        ]
         p = subprocess.run(start_cmd)
         assert p.returncode == 0
 
@@ -136,7 +144,7 @@ class TestJobUser:
             f"{num_nodes} of {num_nodes} exporters available",
             "User mode data collectors: SUCCESS",
             "Stopping VictoriaMetrics server",
-            "Stopping exporter for host -> node",            
+            "Stopping exporter for host -> node",
         ]
 
         for pattern in patterns:
