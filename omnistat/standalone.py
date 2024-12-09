@@ -41,7 +41,7 @@ import threading
 import time
 import warnings
 from datetime import datetime, timezone
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from prometheus_client import Gauge, REGISTRY
 
 # Ensure current directory is part of Python's path; allows direct execution
@@ -279,6 +279,11 @@ def terminate():
     return jsonify({"message": "Shutting down..."}), 200
 
 
+@app.errorhandler(403)
+def forbidden(e):
+    return jsonify(error="Access denied"), 403
+
+
 @app.route("/metrics")
 def heartbeat():
     """Endpoint that can be used to confirm exporter is running"""
@@ -306,6 +311,16 @@ def main():
         exit(1)
 
     caching = Standalone(args, config)
+
+    # Enforce network restrictions
+    @app.before_request
+    def restrict_ips():
+        allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
+        logging.info(allowed_ips)
+        if "0.0.0.0" in allowed_ips:
+            return
+        elif request.remote_addr not in allowed_ips:
+            abort(403)
 
     # Launch flask app as thread so we can respond to remote shutdown requests
     flask_thread = threading.Thread(target=runFlask, args=[config])
