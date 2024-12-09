@@ -220,7 +220,7 @@ class UserBasedMonitoring:
         if victoriaMode:
             logging.info("Stopping VictoriaMetrics server on localhost")
 
-            command = ["pkill", "-f", "-SIGTERM", "-u", "%s" % os.getuid(), "victoria-metrics-prod.*storageDataPath"]
+            command = ["pkill", "-f", "-SIGTERM", "-u", "%s" % os.getuid(), "victoria-metrics.*storageDataPath"]
             utils.runShellCommand(command, timeout=5)
             time.sleep(1)
             return
