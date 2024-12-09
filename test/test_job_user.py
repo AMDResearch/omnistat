@@ -45,9 +45,9 @@ fi
 . /opt/omnistat/bin/activate
 cd /jobs
 
-$OMNISTAT_DIR/omnistat-usermode --start --interval 1
+$OMNISTAT_DIR/omnistat-usermode --start --interval 1 --no-push
 $cmd
-$OMNISTAT_DIR/omnistat-usermode --stop
+$OMNISTAT_DIR/omnistat-usermode --stop --no-push
 """
 
 
