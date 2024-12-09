@@ -9,6 +9,7 @@ nodes = ["node1", "node2"]
 
 # Prometheus URL and query configuration.
 prometheus_url = "http://localhost:9090/"
+victoria_url = "http://localhost:9090/"
 time_range = "30m"
 
 # Omnistat monitor port; same port is used for system and user tests.
@@ -17,3 +18,4 @@ port = "8001"
 # Path to prometheus data for user-level executions; needs to match datadir
 # as defined in docker/slurm/omnistat-user.config.
 prometheus_data_user = "/jobs/prometheus-data"
+victoria_data_user = "/jobs/vic-data"
