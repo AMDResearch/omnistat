@@ -47,7 +47,7 @@ cd /jobs
 
 # Default mode now uses a push model with victoria
 
-$OMNISTAT_DIR/omnistat-usermode --start --interval 1
+$OMNISTAT_DIR/omnistat-usermode --start --interval 0.5
 $cmd
 $OMNISTAT_DIR/omnistat-usermode --stop
 """
