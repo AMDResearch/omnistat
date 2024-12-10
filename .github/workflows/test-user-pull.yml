@@ -6,7 +6,7 @@ on:
     branches: [ main, dev ]
 jobs:
   test:
-    name: User-level Omnistat
+    name: User-level Omnistat (pull/prometheus)
     runs-on: ubuntu-22.04
     strategy:
       matrix:
