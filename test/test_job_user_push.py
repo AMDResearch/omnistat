@@ -62,8 +62,19 @@ class TestJobUser:
 
         self.start_victoria_proxy()
 
+        # verify we see rmsjob_info metric; note that VM can take some time on first startup before it successfully reports
+        # data via api/v1 queries. Hence, we try multiple times here before giving up...
+        
         prometheus = PrometheusConnect(url=config.victoria_url)
-        results = prometheus.custom_query("rmsjob_info")
+        wait_interval = 2.0
+        for i in range(15):
+            results = prometheus.custom_query("rmsjob_info")
+            if len(results) == 0:
+                print("sleeping to wait for VM to deliver...")
+                time.sleep(wait_interval)
+            else:
+                break
+
         assert len(results) >= 1, "Metric rmsjob_info not available"
 
         query = f"rmsjob_info{{jobid='{jobid}'}}[{config.time_range}]"
@@ -106,10 +117,17 @@ class TestJobUser:
             "slurm-controller",
             "victoria-metrics",
             "-httpListenAddr=:9090",
+#            "-search.disableCache",
+#            "-search.maxStalenessInterval=15m",
+#            "-search.resetRollupResultCacheOnStartup",
             f"--storageDataPath={data_path}",
         ]
         p = subprocess.run(start_cmd)
         assert p.returncode == 0
+
+        time.sleep(2)
+        cmd = ["curl", "localhost:9090/internal/resetRollupResultCache"]
+        p = subprocess.run(cmd)
 
     def stop_victoria_proxy(self, ignore_errors=False):
         stop_cmd = ["docker", "exec", "slurm-controller", "pkill", "-f", "-SIGTERM", "victoria-metrics"]

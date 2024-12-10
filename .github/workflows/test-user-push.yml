@@ -39,4 +39,4 @@ jobs:
         run: pip3 install -r test/requirements.txt
       - name: Run tests
         working-directory: ./test
-        run: pytest -v test_job_user_push.py
+        run: pytest -s -v test_job_user_push.py
