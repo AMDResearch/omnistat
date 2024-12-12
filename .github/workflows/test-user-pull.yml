@@ -1,4 +1,4 @@
-name: User mode
+name: User mode - Pull
 on:
   push:
     branches:  [ main, dev ]
