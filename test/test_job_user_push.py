@@ -64,7 +64,7 @@ class TestJobUser:
 
         # verify we see rmsjob_info metric; note that VM can take some time on first startup before it successfully reports
         # data via api/v1 queries. Hence, we try multiple times here before giving up...
-        
+
         prometheus = PrometheusConnect(url=config.victoria_url)
         wait_interval = 2.0
         for i in range(15):
@@ -117,9 +117,9 @@ class TestJobUser:
             "slurm-controller",
             "victoria-metrics",
             "-httpListenAddr=:9090",
-#            "-search.disableCache",
-#            "-search.maxStalenessInterval=15m",
-#            "-search.resetRollupResultCacheOnStartup",
+            #            "-search.disableCache",
+            #            "-search.maxStalenessInterval=15m",
+            #            "-search.resetRollupResultCacheOnStartup",
             f"--storageDataPath={data_path}",
         ]
         p = subprocess.run(start_cmd)
