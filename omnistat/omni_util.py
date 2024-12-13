@@ -52,12 +52,11 @@ class UserBasedMonitoring:
         self.scrape_interval = 30  # default scrape interval in seconds
         self.timeout = 5  # default scrape timeout in seconds
         self.__hosts = None
+        self.__RMS_Detected = False
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
         self.runtimeConfig = utils.readConfig(self.configFile)
-        self.rmsDetection()
-        self.getRMSHosts()
 
         # Path to Omnistat's executable scripts. For source deployments, this
         # is the top directory of a working copy of Omnistat. For package
@@ -73,6 +72,10 @@ class UserBasedMonitoring:
 
     def rmsDetection(self):
         """Query environment to infer resource manager"""
+
+        if self.__RMS_Detected:
+            return
+
         if "SLURM_JOB_NODELIST" in os.environ:
             self.__rms = "slurm"
         elif "FLUX_URI" in os.environ:
@@ -80,6 +83,10 @@ class UserBasedMonitoring:
         else:
             utils.error("Unknown/unsupported resource manager")
         logging.info("RMS detected = %s" % self.__rms)
+
+        self.getRMSHosts()
+        self.__RMS_Detected = True
+
         return
 
     def getRMSHosts(self):
@@ -126,7 +133,7 @@ class UserBasedMonitoring:
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
 
-        command = [vm_binary, "--storageDataPath=%s" % vm_datadir, "-memory.allowedPercent=10"]
+        command = [vm_binary, "--storageDataPath=%s" % vm_datadir, "-memory.allowedPercent=10", "-retentionPeriod=10y"]
         envAddition = {}
         # restrict thread usage
         envAddition["GOMAXPROCS"] = "4"
@@ -145,6 +152,8 @@ class UserBasedMonitoring:
         if victoriaMode:
             self.startVictoriaServer()
             return
+
+        self.rmsDetection()
 
         logging.info("Starting prometheus server on localhost")
         if self.scrape_interval >= 1:
@@ -237,6 +246,8 @@ class UserBasedMonitoring:
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
+
+        self.rmsDetection()
 
         if victoriaMode:
             if os.path.exists("./exporter.log"):
@@ -349,7 +360,7 @@ class UserBasedMonitoring:
         return
 
     def stopExporters(self, victoriaMode=False):
-
+        self.rmsDetection()
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         for host in self.__hosts:
             logging.info("Stopping exporter for host -> %s" % host)
