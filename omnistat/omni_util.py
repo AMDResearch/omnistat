@@ -133,7 +133,13 @@ class UserBasedMonitoring:
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
 
-        command = [vm_binary, "--storageDataPath=%s" % vm_datadir, "-memory.allowedPercent=10", "-retentionPeriod=10y"]
+        command = [
+            vm_binary,
+            "--storageDataPath=%s" % vm_datadir,
+            "-memory.allowedPercent=10",
+            "-retentionPeriod=10y",
+            "-httpListenAddr=:9090",
+        ]
         envAddition = {}
         # restrict thread usage
         envAddition["GOMAXPROCS"] = "4"

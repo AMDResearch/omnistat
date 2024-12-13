@@ -181,7 +181,6 @@ class Standalone:
                         logging.info("Previous metric push is still running - blocking till complete.")
                         push_thread.join()
                         logging.info("Resuming after previous metric push complete.")
-
                     try:
                         push_start_time = time.perf_counter()
                         dataToPush = self.__dataVM
@@ -256,7 +255,7 @@ def parse_args():
     parser.add_argument("--interval", type=float, help="sampling frequency (in secs)", default=0.5)
     parser.add_argument("--logfile", type=str, help="redirect stdout to logfile", default=None)
     parser.add_argument("--endpoint", type=str, help="hostname of VictoriaMetrics server", default="localhost")
-    parser.add_argument("--port", type=int, help="port to access VictoriaMetrics server", default=8428)
+    parser.add_argument("--port", type=int, help="port to access VictoriaMetrics server", default=9090)
 
     return parser.parse_args()
 
