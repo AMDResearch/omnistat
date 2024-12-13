@@ -196,14 +196,6 @@ class UserBasedMonitoring:
                     "static_configs": [computes],
                 }
             )
-            # if remoteWrite:
-            #     auth = {
-            #         "username": remoteWriteConfig["auth_user"],
-            #         "password": remoteWriteConfig["auth_cred"],
-            #     }
-
-            #     prom_config["remote_write"] = []
-            #     prom_config["remote_write"].append({"url": remoteWriteConfig["url"], "basic_auth": auth})
 
             with open("prometheus.yml", "w") as yaml_file:
                 yaml.dump(prom_config, yaml_file, sort_keys=False)
