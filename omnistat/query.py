@@ -228,7 +228,7 @@ class queryMetrics:
                 break
 
         if not firstTimestamp:
-            print("[ERROR]: no monitoring data found for job=%i" % self.jobID)
+            print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
         # expand job window to nearest minute
