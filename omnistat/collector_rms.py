@@ -98,7 +98,7 @@ class RMSJob(Collector):
         if mode == "squeue":
             data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
-            if data.stdout.strip():
+            if data and data.stdout.strip():
                 data = data.stdout.strip().split(":")
                 keys = [
                     "RMS_JOB_ID",
@@ -113,7 +113,7 @@ class RMSJob(Collector):
                 # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
                 data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
                 results["RMS_STEP_ID"] = -1
-                if data.stdout.strip():
+                if data and data.stdout.strip():
                     # If we are in an active job step, the STEPID will have an integer index appended, e.g.
                     # 57735.10
                     # 57735.interactive
