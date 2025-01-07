@@ -25,15 +25,15 @@ Omnistat provides a set of utilities to aid cluster administrators or individual
   * GPU type
   * GPU vBIOS version
 
-To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server.
+To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server (or a [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics) server).
 
 (user-vs-system)=
 ## User-mode vs System-level monitoring 
 
 Omnistat utilities can be deployed with two primary use-cases in mind that differ based on the end-consumer and whether the user has administrative rights or not.  The use cases are denoted as follows:
 
-1. __System-wide monitoring__: requires administrative rights and is typically used to monitor all GPU hosts within a given cluster in a 24x7 mode of operation. Use this approach to support system-wide telemetry collection for all user workloads and optionally, provide job-level insights for systems running the [SLURM](https://slurm.schedmd.com) workload manager.
-1. __User-mode monitoring__: does not require administrative rights and can be run entirely within user-space. This case is typically exercised by end application users running on production SLURM clusters who want to gather telemetry data within a single SLURM job allocation.  Frequently, this approach is performed entirely within a command-line `ssh` environment but Omnistat includes support for downloading data after a job for visualization with a dockerized Grafana environment. Alternatively, standalone query utilities can be used to summarize collected metrics at the conclusion of a SLURM job.
+1. __System-wide monitoring__: requires administrative rights and is typically used to monitor all GPU hosts within a given cluster in a 24x7 mode of operation. Use this approach to support system-wide telemetry collection for all user workloads and optionally, provide job-level insights for systems running the [SLURM](https://slurm.schedmd.com) or [Flux](https://flux-framework.org) workload managers.
+1. __User-mode monitoring__: does not require administrative rights and can be run entirely within user-space. This case is typically exercised by end application users running on production clusters under the auspices of a resource manager who want to gather telemetry data within a single job allocation.  Frequently, this approach is performed entirely within a command-line `ssh` environment but Omnistat includes support for downloading data after a job for visualization with a dockerized Grafana environment. Alternatively, standalone query utilities can be used to summarize collected metrics at the conclusion of a job. Resource managers supported by user-mode Omnistat include both [SLURM](https://github.com/SchedMD/slurm) and [Flux](https://flux-framework.org).
 
 To demonstrate the overall data collection architecture employed by Omnistat in these two modes of operation, the following diagrams highlight the data collector layout and life-cycle for both cases.
 
@@ -53,18 +53,24 @@ In the __system-wide monitoring__ case, a system administrator enables data coll
 
 In addition to enabling GPU metrics collection in the __system-wide monitoring__ case, sites may also wish to collect host-side metrics (CPU load, memory usage, etc). Other open-source Prometheus collectors exist for this purpose and we recommend enabling the [node-exporter](https://github.com/prometheus/node_exporter) in combination with Omnistat.  
 
-Conversely, in the __user-mode__ case,  Omnistat data collector(s) and a companion prometheus server are deployed temporarily on hosts assigned to a user's SLURM job.  At the end of the job, Omnistat utilities can query cached telemetry data to summarize GPU utilization details or it can be visualized offline after the job completes. An example command-line summary from this user-mode approach is highlighted as follows:
+Conversely, in the __user-mode__ case,  Omnistat data collector(s) and a companion VictoriaMetrics server are deployed temporarily on hosts assigned to a user's job.  At the end of the job, Omnistat utilities can query cached telemetry data to summarize GPU utilization details or it can be visualized offline after the job completes. An example command-line summary from this user-mode approach is highlighted as follows:
 
-```none
-----------------------------------------
-Omnistat Report Card for Job # 44092
-----------------------------------------
+(query_report_card)=
+```eval_rst
+.. _report_card:
 
-Job Overview (Num Nodes = 1, Machine = Snazzy Cluster)
- --> Start time = 2024-05-17 10:14:00
- --> End   time = 2024-05-17 10:19:00
+.. code-block:: none
+   :caption: Example telemetry summary report card in user-mode.
 
-GPU Statistics:
+    ----------------------------------------
+    Omnistat Report Card for Job # 44092
+    ----------------------------------------
+
+    Job Overview (Num Nodes = 1, Machine = Snazzy Cluster)
+    --> Start time = 2024-05-17 10:14:00
+    --> End   time = 2024-05-17 10:19:00
+
+    GPU Statistics:
 
            | Utilization (%)  |  Memory Use (%)  | Temperature (C)  |    Power (W)     |
      GPU # |    Max     Mean  |    Max     Mean  |    Max     Mean  |    Max     Mean  |
@@ -74,9 +80,9 @@ GPU Statistics:
          2 |  100.00   55.56  |   94.92   63.28  |   60.00   51.11  |  304.00  176.78  |
          3 |  100.00   55.56  |   94.78   63.20  |   58.00   48.89  |  354.00  184.67  |
 
---
-Query execution time = 0.1 secs
-Version = 0.2.0
+    --
+    Query execution time = 0.1 secs
+    Version = {__VERSION__}
 ```
 
 ## Software dependencies
@@ -94,7 +100,7 @@ System administrators wishing to deploy a system-wide GPU monitoring capability 
 
 ## Resource Manager Integration
 
-Omnistat can be _optionally_ configured to map telemetry tracking to specific job Ids when using the popular [SLURM](https://github.com/SchedMD/slurm) resource manager.  This is accomplished via enablement of a Prometheus info metric that tracks node-level job assignments and makes the following metadata available to Prometheus:
+Omnistat can be _optionally_ configured to map telemetry tracking to specific job Ids when using the popular [SLURM](https://github.com/SchedMD/slurm) resource manager or the new [Flux](https://flux-framework.org) framework.  This is accomplished via enablement of a Prometheus info metric that tracks node-level job assignments and makes the following metadata available:
 
 * job id
 * username
