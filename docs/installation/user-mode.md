@@ -6,7 +6,7 @@
    :maxdepth: 4
 ```
 
-In user-mode executions, Omnistat data collectors and a companion Prometheus
+In user-mode executions, Omnistat data collectors and a companion VictoriaMetrics
 server are deployed temporarily on hosts assigned to a user's job, as
 highlighted in {numref}`fig-user-mode`. The following assumptions are made
 throughout the rest of this user-mode installation discussion:
@@ -15,7 +15,7 @@ __Assumptions__:
 * [ROCm](https://rocm.docs.amd.com/en/latest/) v6.1 or newer is pre-installed
   on all GPU hosts.
 * Installer has access to a distributed file-system; if no distributed
-  file-system is present, installation steps need to be repeated in all nodes.
+  file-system is present, installation steps need to be repeated across all nodes.
 
 
 ## Omnistat software installation
@@ -48,8 +48,8 @@ directory of the release.
 [user@login]$ ~/venv/omnistat/bin/python -m pip install .[query]
 ```
 
-3. Download Prometheus. If a `prometheus` server is not already present on the system,
-   download and extract a [precompiled binary](https://prometheus.io/download/). This binary can generally be stored in any directory accessible by the user, but the path to the binary will need to be known during the next section when configuring user-mode execution.
+3. Download a **single-node** VictoriaMetrics server. Assuming a `victoria-metrics` server is not already present on the system,
+   download and extract a [precompiled binary](https://github.com/VictoriaMetrics/VictoriaMetrics/releases/latest) from upstream. This binary can generally be stored in any directory accessible by the user, but the path to the binary will need to be known during the next section when configuring user-mode execution. Note that VictoriaMetrics provides a larger number binary releases and we typically use the `victoria-metrics-linux-amd64` variant on x86_64 clusters.
 
 ## Configuring user-mode Omnistat
 
@@ -71,35 +71,76 @@ For user-mode execution, Omnistat includes additional options in the `[omnistast
 
     [omnistat.usermode]
     ssh_key = ~/.ssh/id_rsa
-    prometheus_binary = /path/to/prometheus
-    prometheus_datadir = data_prom
-    prometheus_logfile = prom_server.log
+    victoria_binary = /path/to/victoria-metrics
+    victoria_datadir = data_prom
+    victoria_logfile = vic_server.log
+    push_frequency_mins = 5
   ```
 
-## Running a SLURM Job
+## Running Jobs
 
-In the SLURM job script, add the following lines to start and stop the data
-collection before and after running the application. Lines highlighted in
-yellow need to be customized for different installation paths.
+To enable user-mode data collection for a specifid job, add logic within your job script to start and stop the collection mechanism before and after running your desired application(s).  Omnistat includes an `omnistat-usermode` utility to help automate this process and the examples below highlight the steps for simple SLURM and Flux job scripts.  Note that the lines highlighted in
+yellow need to be customized for the local installation path.
 
+
+   ### SLURM example
 ```eval_rst
 .. code-block:: bash
-   :emphasize-lines: 1-2
-   :caption: SLURM job file using user-mode Omnistat with a 10 second sampling interval
+   :emphasize-lines: 6-7
+   :caption: Example SLURM job file using user-mode Omnistat with a 10 second sampling interval
+
+   #!/bin/bash
+   #SBATCH -N 8
+   #SBATCH -n 16
+   #SBATCH -t 02:00:00
 
     export OMNISTAT_CONFIG=/path/to/omnistat.config
     export OMNISTAT_DIR=/path/to/omnistat
 
-    # Start data collector
+    # Beginning of job - start data collector
     ${OMNISTAT_DIR}/omnistat-usermode --start --interval 10
 
     # Run application(s) as normal
     srun <options> ./a.out
     
-    # End of job - generate summary report and stop data collection
+    # End of job -  stop data collection, generate summary and store collected data by jobid
+    ${OMNISTAT_DIR}/omnistat-usermode --stopexporters
     ${OMNISTAT_DIR}/omnistat-query --job ${SLURM_JOB_ID} --interval 10
-    ${OMNISTAT_DIR}/omnistat-usermode --stop
+    ${OMNISTAT_DIR}/omnistat-usermode --stopserver
+    mv data_prom data_prom_${SLURM_JOB_ID}
   ```
+
+  ### Flux example
+
+```eval_rst
+.. code-block:: bash
+   :emphasize-lines: 8-9
+   :caption: Example FLUX job file using user-mode Omnistat with a 1 second sampling interval
+
+   #!/bin/bash
+   #flux: -N 8
+   #flux: -n 16
+   #flux: -t 2h
+
+   jobid=`flux getattr jobid`
+
+   export OMNISTAT_CONFIG=/path/to/omnistat.config
+   export OMNISTAT_DIR=/path/to/omnistat
+
+   # Beginning of job - start data collector
+   ${OMNISTAT_DIR}/omnistat-usermode --start --interval 1
+
+   # Run application(s) as normal
+   flux run <options> ./a.out
+
+   # End of job -  stop data collection, generate summary and store collected data by jobid
+   ${OMNISTAT_DIR}/omnistat-usermode --stopexporters
+   ${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1
+   ${OMNISTAT_DIR}/omnistat-usermode --stopserver
+   mv data_prom data_prom.${jobid}
+  ```
+
+ In both examples above, the `omnistat-query` utility is used at the end of the job to query collected telemetry (prior to shutting down the server) for the assigned jobid. This should produce a summary report card for the job similar to the [report card](query_report_card) example mentioned in the Overview directly within the recorded job output.
 
 ## Exploring results with a local Docker environment
 
