@@ -1,3 +1,9 @@
-Version 1.0.0 (07 Oct 2024)
+Version 1.1 (07 Jan 2025)
+
+  * updated standalone user-mode data collection to support a "push" model using VictoriaMetrics (#133)
+  * added user-mode support for the Flux resource manager (in addition to SLURM) (#132, #133, #135)
+  * updated query utility to support Flux-style jobids (#136)
+
+Version 1.0 (07 Oct 2024)
 
   * initial Omnistat release
