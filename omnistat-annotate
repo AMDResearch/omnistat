@@ -29,8 +29,9 @@ import sys
 
 try:
     from omnistat.annotate import main
-except:
-    print("Unable to load omnistat.annotate. Please verify installation.")
+except ImportError as err:
+    print(f"Unable to load Omnistat: {err}")
+    print("Please verify installation and dependencies.")
     sys.exit(1)
 
 if __name__ == "__main__":
