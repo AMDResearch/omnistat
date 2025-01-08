@@ -650,7 +650,7 @@
           "editorMode": "code",
           "expr": "rocm_utilization_percentage{instance=\"$instance\"}",
           "instant": false,
-          "legendFormat": "Card {{card}}",
+          "legendFormat": "GPU ID {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -750,7 +750,7 @@
           "editorMode": "code",
           "expr": "(rocm_utilization_percentage{instance=\"$instance\"})",
           "instant": false,
-          "legendFormat": "Card {{card}}",
+          "legendFormat": "GPU ID {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -850,7 +850,7 @@
           "editorMode": "code",
           "expr": "rocm_vram_used_percentage{instance=\"$instance\"}",
           "instant": false,
-          "legendFormat": "Card {{card}}",
+          "legendFormat": "GPU ID {{card}}",
           "range": true,
           "refId": "A"
         }
@@ -967,7 +967,7 @@
               "editorMode": "code",
               "expr": "avg by (card, location) (rocm_temperature_celsius{instance=\"$instance\"}) ",
               "instant": false,
-              "legendFormat": "Card {{card}} ({{location}})",
+              "legendFormat": "GPU ID {{card}} ({{location}})",
               "range": true,
               "refId": "A"
             }
@@ -1074,7 +1074,7 @@
               "editorMode": "code",
               "expr": "avg by (card, location) (rocm_temperature_memory_celsius{instance=\"$instance\"})",
               "instant": false,
-              "legendFormat": "Card {{card}} ({{location}})",
+              "legendFormat": "GPU ID {{card}} ({{location}})",
               "range": true,
               "refId": "A"
             }
@@ -1173,7 +1173,7 @@
               "editorMode": "code",
               "expr": "(rocm_average_socket_power_watts{instance=\"$instance\"}) ",
               "instant": false,
-              "legendFormat": "Card {{card}}",
+              "legendFormat": "GPU ID {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1272,7 +1272,7 @@
               "editorMode": "code",
               "expr": "rocm_sclk_clock_mhz{instance=\"$instance\"}",
               "instant": false,
-              "legendFormat": "Card {{card}}",
+              "legendFormat": "GPU ID {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1371,7 +1371,7 @@
               "editorMode": "code",
               "expr": "rocm_mclk_clock_mhz{instance=\"$instance\"}",
               "instant": false,
-              "legendFormat": "Card {{card}}",
+              "legendFormat": "GPU ID {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -2126,7 +2126,7 @@
                   "vbios": 9
                 },
                 "renameByName": {
-                  "card": "GPU Card ID",
+                  "card": "GPU ID",
                   "driver_ver": "Driver Version",
                   "instance (count)": "Number of GPUs",
                   "type": "Type",
