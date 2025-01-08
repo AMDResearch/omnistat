@@ -40,8 +40,7 @@ import signal
 import sys
 
 import gunicorn.app.base
-
-from flask import Flask, request, abort, jsonify
+from flask import Flask, abort, jsonify, request
 
 from omnistat import utils
 from omnistat.monitor import Monitor

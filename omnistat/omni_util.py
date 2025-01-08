@@ -24,8 +24,8 @@
 # -------------------------------------------------------------------------------
 
 import argparse
-import importlib.resources
 import getpass
+import importlib.resources
 import logging
 import os
 import platform
@@ -35,9 +35,9 @@ import subprocess
 import sys
 import tempfile
 import time
-import yaml
-
 from pathlib import Path
+
+import yaml
 
 # Use libssh instead of the default libssh2 to avoid issues with certain keys
 # and newer versions of SSH.

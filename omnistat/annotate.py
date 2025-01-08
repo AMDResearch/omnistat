@@ -35,9 +35,9 @@ File can also be imported for direct Python usage.
 """
 
 import argparse
-import time
 import json
 import os
+import time
 
 
 class omnistat_annotate:

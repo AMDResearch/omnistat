@@ -23,27 +23,37 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-from prometheus_api_client import PrometheusConnect, MetricSnapshotDataFrame
-from prometheus_api_client.utils import parse_datetime
-from datetime import datetime, timedelta
 import argparse
 import logging
-import numpy as np
 import os
+import shutil
 import subprocess
 import sys
 import timeit
-import matplotlib.pylab as plt
-import matplotlib.dates as mdates
-import shutil
+from datetime import datetime, timedelta
 from pathlib import Path
+
+import matplotlib.dates as mdates
+import matplotlib.pylab as plt
+import numpy as np
+from prometheus_api_client import MetricSnapshotDataFrame, PrometheusConnect
+from prometheus_api_client.utils import parse_datetime
 from reportlab.lib import colors
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle, PageBreak, HRFlowable
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.pagesizes import landscape, letter
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
+from reportlab.platypus import (
+    HRFlowable,
+    Image,
+    PageBreak,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
 
 from omnistat import utils
 

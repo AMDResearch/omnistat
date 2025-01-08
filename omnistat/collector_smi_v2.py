@@ -42,12 +42,14 @@ amdsmi_slck_clock_mhz{card="0"} 300.0
 """
 
 import logging
-import packaging.version
 import statistics
 import sys
+
 import amdsmi as smi
-from omnistat.collector_base import Collector
+import packaging.version
 from prometheus_client import Gauge
+
+from omnistat.collector_base import Collector
 from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
 
 

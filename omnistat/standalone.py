@@ -34,15 +34,16 @@ import getpass
 import logging
 import os
 import platform
-import requests
-import sys
 import signal
+import sys
 import threading
 import time
 import warnings
 from datetime import datetime, timezone
-from flask import Flask, request, jsonify, abort
-from prometheus_client import Gauge, REGISTRY
+
+import requests
+from flask import Flask, abort, jsonify, request
+from prometheus_client import REGISTRY, Gauge
 
 # Ensure current directory is part of Python's path; allows direct execution
 # from the top directory of the project when package is not installed.
@@ -51,7 +52,6 @@ if os.path.isdir("omnistat") and sys.path[0]:
 
 from omnistat import utils
 from omnistat.monitor import Monitor
-
 
 app = Flask(__name__)
 terminateFlagEvent = threading.Event()

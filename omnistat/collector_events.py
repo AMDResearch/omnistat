@@ -22,15 +22,17 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-from amdsmi import *
-from amdsmi import amdsmi_interface
 import _thread
-import time
 import logging
 import os
 import sys
+import time
+
+from amdsmi import *
+from amdsmi import amdsmi_interface
+from prometheus_client import CollectorRegistry, Gauge, generate_latest
+
 from omnistat.collector_base import Collector
-from prometheus_client import Gauge, generate_latest, CollectorRegistry
 
 
 class ROCMEvents(Collector):
