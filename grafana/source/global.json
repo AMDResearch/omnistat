@@ -1598,7 +1598,7 @@
                   "vbios": 7
                 },
                 "renameByName": {
-                  "card": "Card",
+                  "card": "GPU ID",
                   "driver_ver": "Driver Version",
                   "instance": "Node",
                   "instance (count)": "Number of GPUs",
@@ -3713,7 +3713,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
@@ -4061,7 +4061,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
@@ -4183,7 +4183,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
@@ -4291,7 +4291,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
@@ -4629,7 +4629,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
@@ -4737,7 +4737,7 @@
               "id": "renameByRegex",
               "options": {
                 "regex": "(.*):(.*), (.*)",
-                "renamePattern": "Node: $1 (card $3)"
+                "renamePattern": "GPU: $1/$3"
               }
             }
           ],
