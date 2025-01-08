@@ -27,9 +27,6 @@
 import os
 import sys
 
-if os.path.isdir("omnistat") and sys.path[0]:
-    sys.path.insert(0, "")
-
 try:
     from omnistat.standalone import main
 except ImportError as err:
