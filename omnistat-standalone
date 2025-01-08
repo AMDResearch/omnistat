@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -------------------------------------------------------------------------------                                                                                                             # -------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 # MIT License
 #
 # Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
@@ -32,8 +32,9 @@ if os.path.isdir("omnistat") and sys.path[0]:
 
 try:
     from omnistat.standalone import main
-except:
-    print("Unable to load omnistat.standalone. Please verify installation.")
+except ImportError as err:
+    print(f"Unable to load Omnistat: {err}")
+    print("Please verify installation and dependencies.")
     sys.exit(1)
 
 if __name__ == "__main__":

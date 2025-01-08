@@ -29,8 +29,9 @@ import sys
 
 try:
     from omnistat.node_monitoring import main
-except:
-    print("Unable to load omnistat.node_monitoring. Please verify installation.")
+except ImportError as err:
+    print(f"Unable to load Omnistat: {err}")
+    print("Please verify installation and dependencies.")
     sys.exit(1)
 
 if __name__ == "__main__":
