@@ -35,9 +35,9 @@ import os
 import platform
 import re
 import sys
-
 from pathlib import Path
-from prometheus_client import generate_latest, CollectorRegistry
+
+from prometheus_client import CollectorRegistry, generate_latest
 
 from omnistat import utils
 

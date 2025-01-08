@@ -30,12 +30,12 @@
 # Default path for output_file: /tmp/omni_rmsjobinfo
 # -------------------------------------------------------------------------------
 
+import argparse
 import fcntl
 import json
 import os
 import subprocess
 import sys
-import argparse
 
 
 def main():

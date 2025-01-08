@@ -39,10 +39,9 @@
 #  3. Rewrite dashboard UID and update all URLs accordingly.
 
 import argparse
+import json
 import re
 import sys
-
-import json
 
 
 def panel_contains_pattern(panel, pattern):

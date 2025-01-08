@@ -16,16 +16,14 @@
 #    server, allowing further validation of the trace.
 
 import os
-import pytest
 import re
 import subprocess
 import time
-
 from string import Template
 
-from prometheus_api_client import PrometheusConnect
-
 import config
+import pytest
+from prometheus_api_client import PrometheusConnect
 
 slurm_job_template = """\
 #!/bin/bash

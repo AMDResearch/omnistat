@@ -30,11 +30,11 @@ optional "rmsjob_annotations{}" metric can be published to provide
 user-provided annotation timestamps.
 """
 
-import sys
 import json
 import logging
 import os
 import platform
+import sys
 
 from prometheus_client import Gauge
 

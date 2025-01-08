@@ -30,7 +30,6 @@ import resource
 import shutil
 import subprocess
 import sys
-
 from importlib.metadata import version
 from pathlib import Path
 
