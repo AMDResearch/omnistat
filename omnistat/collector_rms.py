@@ -97,8 +97,13 @@ class RMSJob(Collector):
 
         if mode == "squeue":
             data = utils.runShellCommand(self.__squeue_query, timeout=timeout, exit_on_error=exit_on_error)
+            if data == None:
+                logging.warning(
+                    "Failed to capture job information: squeue timed out. "
+                    "Please increase sampling interval or switch to file-based mode."
+                )
             # squeue query output format: JOBID:USER:PARTITION:NUM_NODES:BATCHFLAG
-            if data and data.stdout.strip():
+            elif data.stdout.strip():
                 data = data.stdout.strip().split(":")
                 keys = [
                     "RMS_JOB_ID",
@@ -111,9 +116,14 @@ class RMSJob(Collector):
                 results["RMS_TYPE"] = "slurm"
 
                 # require a 2nd query to ascertain job steps (otherwise, miss out on batchflag)
-                data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
                 results["RMS_STEP_ID"] = -1
-                if data and data.stdout.strip():
+                data = utils.runShellCommand(self.__squeue_steps, timeout=timeout, exit_on_error=exit_on_error)
+                if data == None:
+                    logging.warning(
+                        "Failed to capture job step information: squeue timed out. "
+                        "Please increase sampling interval or switch to file-based mode."
+                    )
+                elif data.stdout.strip():
                     # If we are in an active job step, the STEPID will have an integer index appended, e.g.
                     # 57735.10
                     # 57735.interactive
