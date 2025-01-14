@@ -36,7 +36,8 @@ from pathlib import Path
 import matplotlib.dates as mdates
 import matplotlib.pylab as plt
 import numpy as np
-from prometheus_api_client import MetricSnapshotDataFrame, PrometheusConnect
+import pandas
+from prometheus_api_client import MetricRangeDataFrame, PrometheusConnect
 from prometheus_api_client.utils import parse_datetime
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_JUSTIFY
@@ -842,6 +843,50 @@ class queryMetrics:
 
         return
 
+    def export(self, output_file):
+        df = pandas.DataFrame()
+
+        index = ["timestamp", "instance", "card"]
+        pivot_labels = ["instance", "card"]
+
+        for metric in self.metrics:
+            metric_name = metric["metric"]
+            metric_data = self.prometheus.custom_query_range(
+                '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery),
+                self.start_time,
+                self.end_time,
+                step=self.interval,
+            )
+
+            metric_df = MetricRangeDataFrame(metric_data)
+
+            # Discard additional labels some metrics may have, like "location"
+            # in "rocm_temperature_celsius".
+            metric_df = metric_df.reset_index()
+            extra_labels = set(metric_df.columns) - set(index) - {"value"}
+            for label in extra_labels:
+                metric_df = metric_df.drop(label, axis=1)
+
+            # Organize columns hierarchically, aligning timestamps and
+            # allowing access to values by metric -> instance -> card.
+            # Example:
+            #  | metric              | rocm_utilization_percentage   |
+            #  | instance            | node01        | node02        |
+            #  | card                | 0     | 1     | 0     | 1     |
+            #  | timestamp           |       |       |       |       |
+            #  | ------------------- | ----- | ----- | ----- | ----- |
+            #  | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
+            #  | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
+            #  | ...                 | ...   | ...   | ...   | ...   |
+            metric_df = metric_df.rename(columns={"value": metric_name})
+            metric_df = metric_df.set_index(index, drop=True)
+            metric_df = metric_df.unstack(pivot_labels)
+            metric_df.columns = metric_df.columns.set_names("metric", level=0)
+            metric_df = metric_df.sort_index(axis=1)
+
+            df = pandas.concat([df, metric_df], axis=1)
+
+        df.to_csv(output_file)
 
 def main():
 
@@ -854,6 +899,7 @@ def main():
     parser.add_argument("--output", help="location for stdout report")
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--pdf", help="generate PDF report")
+    parser.add_argument("--export", help="export entire time-series in CSV format")
     args = parser.parse_args()
 
     # logger config
@@ -873,9 +919,12 @@ def main():
     query.setup()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
+
     if args.pdf:
         query.dumpFile(args.pdf)
 
+    if args.export:
+        query.export(args.export)
 
 if __name__ == "__main__":
     main()
