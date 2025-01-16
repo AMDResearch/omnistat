@@ -858,7 +858,8 @@ class queryMetrics:
         for metric in self.metrics:
             metric_name = metric["metric"]
             metric_data = self.prometheus.custom_query_range(
-                '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery),
+                '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
+                % (metric_name, self.jobID, self.jobstepQuery),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
@@ -893,6 +894,7 @@ class queryMetrics:
             df = pandas.concat([df, metric_df], axis=1)
 
         df.to_csv(output_file)
+
 
 def main():
 
@@ -931,6 +933,7 @@ def main():
 
     if args.export:
         query.export(args.export)
+
 
 if __name__ == "__main__":
     main()
