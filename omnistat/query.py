@@ -844,6 +844,12 @@ class queryMetrics:
         return
 
     def export(self, output_file):
+        """Export time series for all metrics/nodes/GPUs as a CSV file
+
+        Args:
+            output_file (string): path to output CSV file
+        """
+
         df = pandas.DataFrame()
 
         index = ["timestamp", "instance", "card"]
