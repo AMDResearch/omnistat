@@ -850,11 +850,10 @@ class queryMetrics:
             output_file (string): path to output CSV file
         """
 
-        df = pandas.DataFrame()
-
         index = ["timestamp", "instance", "card"]
         pivot_labels = ["instance", "card"]
 
+        metric_dfs = []
         for metric in self.metrics:
             metric_name = metric["metric"]
             metric_data = self.prometheus.custom_query_range(
@@ -891,8 +890,9 @@ class queryMetrics:
             metric_df.columns = metric_df.columns.set_names("metric", level=0)
             metric_df = metric_df.sort_index(axis=1)
 
-            df = pandas.concat([df, metric_df], axis=1)
+            metric_dfs.append(metric_df)
 
+        df = pandas.concat(metric_dfs, axis=1)
         df.to_csv(output_file)
 
 
