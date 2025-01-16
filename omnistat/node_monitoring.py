@@ -93,7 +93,7 @@ def main():
     # preserve the state of the collectors.
     def post_fork(server, worker):
         monitor.initMetrics()
-        app.route("/metrics")(monitor.updateAllMetrics)
+        app.route("/metrics")(lambda: (monitor.updateAllMetrics(), {"Content-Type": "text/plain; charset=utf-8"}))
         app.route("/shutdown")(shutdown)
 
     listenPort = config["omnistat.collectors"].get("port", 8001)
