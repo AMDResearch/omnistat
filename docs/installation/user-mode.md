@@ -168,3 +168,40 @@ To explore results:
    ```shell-session
    [user@login]$ docker compose down
    ```
+
+## Exporting time series data
+
+To explore and process raw Omnistat data without relying on the Docker
+environment or a Prometheus/VictoriaMetrics server, the `omnistat-query` tool
+has an option to export all time series data to a CSV file.
+
+```eval_rst
+.. code-block:: bash
+   :caption: Using the export option in `omnistat-query`
+
+   ${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1 --export data.csv
+  ```
+
+Exported data can be easily loaded as a data frame using tools like Pandas for
+further processing.
+
+```eval_rst
+.. code-block:: python
+   :caption: Python script to read exported time series as a Pandas data frame
+
+   import pandas
+
+   df = pandas.read_csv("data.csv", header=[0, 1, 2], index_col=0)
+
+   # Select a single metric
+   df["rocm_utilization_percentage"]
+
+   # Select a single metric and node
+   df["rocm_utilization_percentage"]["node01"]
+
+   # Select a single metric, node, and GPU
+   df["rocm_utilization_percentage"]["node01"]["0"]
+
+   # Select GPU Utilization and GPU Memory Utilization for GPU ID 0 in all nodes
+   df.loc[:, pandas.IndexSlice[["rocm_utilization_percentage", "rocm_vram_used_percentage"], :, ["0"]]]
+  ```
