@@ -24,11 +24,12 @@ basis). Relevant target metrics include:
 * GPU memory clock frequency (Mhz)
 * GPU throttling events
 
-The data can be scraped for detailed visualization and analysis via
-a combination of [Prometheus](https://prometheus.io/) and
-[Grafana](https://github.com/grafana/grafana). Users can also generate
-PDF reports summarizing resource utilization on a per job basis with SLURM
-entirely in user-space.
+The data can be scraped for detailed visualization and analysis via a
+combination of [Prometheus](https://prometheus.io/) /
+[VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)
+and [Grafana](https://github.com/grafana/grafana). Users can also
+generate PDF reports summarizing resource utilization on a per job
+basis with SLURM entirely in user-space.
 
 
 For more information on available features and installation steps
