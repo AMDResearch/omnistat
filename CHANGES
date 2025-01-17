@@ -1,3 +1,11 @@
+Version 1.2 (17 Jan 2025)
+
+  * update VictoriaMetric server endpoint check in user-mode (#147)
+  * tweak Flask endpoint return to use `text/plain` content type (#146)
+  * extend `omnistat-query` to support exporting of CSV time series data (#145)
+  * avoid data collector stoppage when SLURM squeue times out (#142)
+  * expand error message when loading omnistat modules (#141)
+
 Version 1.1 (07 Jan 2025)
 
   * updated standalone user-mode data collection to support a "push" model using VictoriaMetrics (#133)
