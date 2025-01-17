@@ -205,3 +205,28 @@ further processing.
    # Select GPU Utilization and GPU Memory Utilization for GPU ID 0 in all nodes
    df.loc[:, pandas.IndexSlice[["rocm_utilization_percentage", "rocm_vram_used_percentage"], :, ["0"]]]
   ```
+
+```eval_rst
+.. code-block:: python
+   :caption: Python script to plot average GPU Utilization per node
+
+   import pandas
+   import matplotlib.pyplot as plt
+
+   df = pandas.read_csv("data.csv", header=[0, 1, 2], index_col=0)
+   df.index = pandas.to_datetime(df.index)
+
+   metric = "rocm_utilization_percentage"
+
+   # Create a new dataframe with node averages
+   node_mean = pandas.DataFrame(index=df.index)
+   nodes = df[metric].columns.get_level_values("instance").unique()
+   for node in nodes:
+       node_mean[node] = df[metric][node].mean(axis=1)
+
+   node_mean.plot(linewidth=1)
+   plt.title("Mean utilization per node")
+   plt.xlabel("Time")
+   plt.ylabel("GPU Utilization (%)")
+   plt.show()
+  ```
