@@ -96,14 +96,26 @@ class Standalone:
             logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
             sys.exit(1)
 
-        # verify victoriaURL is accessible
-        failed = False
-        try:
-            response = requests.get(self.__victoriaURL)
-            if response.status_code != 204:
+        # verify victoriaURL is operational and ready to receive queries (poll for a bit if necessary)
+        failed = True
+        delay_start = 0.05
+        testURL = f"http://{args.endpoint}:{args.port}/ready"
+        for iter in range(1, 25):
+            try:
+                response = requests.get(testURL)
+                logging.debug("VM ready response = %s" % response)
+                if response.status_code != 200:
+                    failed = True
+                else:
+                    failed = False
+                    break
+            except requests.exceptions.RequestException as e:
+                logging.debug(e)
                 failed = True
-        except requests.exceptions.RequestException as e:
-            failed = True
+
+            delay = delay_start * iter
+            logging.info("Retrying VM endpoint (sleeping for %.2f sec)" % (delay))
+            time.sleep(delay)
 
         if failed:
             logging.error("")
