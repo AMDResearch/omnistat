@@ -1,4 +1,11 @@
 #!/bin/sh
+#
+# entrypoint-loader - Switch user running loader container
+#
+# Script to switch user running in the container to the same owner as the
+# given reference directory. Switching the user ensures the permissions of
+# files generated during the execution of the container under the reference
+# directory match the user in the host.
 
 reference_dir=/jobs
 
