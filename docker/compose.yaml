@@ -3,7 +3,7 @@ services:
     build:
       dockerfile: Dockerfile.victoriametrics
     image: victoriametrics
-    container_name: prometheus
+    container_name: victoriametrics
     command:
       - '-httpListenAddr=:9090'
       - '-retentionPeriod=1y'

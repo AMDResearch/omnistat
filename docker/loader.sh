@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SOURCE_URL=localhost:8428
-TARGET_URL=prometheus:9090
+TARGET_URL=victoriametrics:9090
 
 MAX_ATTEMPTS=10
 CHECK_INTERVAL=1
