@@ -20,7 +20,6 @@ connect Grafana and Prometheus, and pre-load a couple of dashboards:
    (e.g. a `data` directory should be present under `./prometheus-data`).
 2. Start services:
    ```
-   export PROMETHEUS_USER="$(id -u):$(id -g)"
    docker compose up -d
    ```
    User and group IDs are exported with the `PROMETHEUS_USER` variable to ensure
