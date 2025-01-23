@@ -4,7 +4,8 @@ data_prom
 *.log
 *.pdf
 *~
-docker/prometheus-data
+docker/jobs
+docker/victoria-metrics-data
 build
 omnistat.egg-info/
 test/slurm-job-user.sh
