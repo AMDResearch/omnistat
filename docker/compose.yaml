@@ -1,14 +1,28 @@
 services:
   prometheus:
-    image: victoriametrics/victoria-metrics
+    build:
+      dockerfile: Dockerfile.victoriametrics
+    image: victoriametrics
     container_name: prometheus
     command:
       - '-httpListenAddr=:9090'
+      - '-retentionPeriod=1y'
     ports:
       - 9090:9090
     restart: unless-stopped
     volumes:
-      - ./prometheus-data/vicdata/:/victoria-metrics-data
+      - ./victoria-metrics-data:/victoria-metrics-data
+
+  loader:
+    build:
+      dockerfile: Dockerfile.loader
+    image: loader
+    container_name: loader
+    environment:
+      - FORCE_RELOAD=$FORCE_RELOAD
+    volumes:
+      - ./jobs/:/jobs
+
   grafana:
     image: grafana/grafana
     container_name: grafana
