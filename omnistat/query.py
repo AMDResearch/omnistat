@@ -138,6 +138,7 @@ class queryMetrics:
         # NOOP if job is very short running
         runtime = (self.end_time - self.start_time).total_seconds()
         if runtime < 61:
+            logging.info("--> Short duration job detected...(%.1f secs) - unsupported query." % runtime)
             sys.exit()
 
         # cache hosts assigned to job
