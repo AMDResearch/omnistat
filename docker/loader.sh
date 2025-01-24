@@ -51,7 +51,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Load job databases (force reload $FORCE_RELOAD)"
+echo "Load job databases"
 
 num_databases=0
 for i in $SOURCE_DIR/*; do
