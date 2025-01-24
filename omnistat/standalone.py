@@ -61,26 +61,42 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
 
     metrics_data = "\n".join(metrics_data_list)
     try:
-        response = requests.post(victoria_url, data=metrics_data, headers=headers)
+        response = requests.post(victoria_url + "/api/v1/import/prometheus", data=metrics_data, headers=headers)
     except requests.ConnectionError:
         logging.error("")
         logging.error(
             "[FAILED]: Unable to make connection - please verify VictoriaMetrics is running and accessible from this host."
         )
-        return False
+        return
     except Exception as e:
         logging.error("")
         logging.error("[FAILED]: Unable to post data to Victoria endpoint")
         logging.error(e)
-        return False
+        return
 
     if response.status_code != 204:
         logging.error("")
         logging.error(f"[FAILED] Unable to push metrics: {response.status_code}, {response.text}")
-        return False
+        return
     else:
         logging.info("Metrics pushed successfully!")
-        return True
+
+    # notify on backfill event
+    endpoints = ["/internal/resetRollupResultCache","/internal/force_flush"]
+    for endpoint in endpoints:
+        try:
+            response = requests.get(victoria_url + endpoint)
+            logging.debug("--> Response from victoria endpoint %s = %s" % (endpoint,response.status_code))
+        except Exception as e:
+            logging.error("")
+            logging.error("[FAILED]: Unable to GET Victoria endpoint -> %s" % endpoint)
+            logging.error(e)
+            return
+
+        if response.status_code != 200:
+            logging.warn(f"[WARN] Unexpected return code from VM endpoint: {endpoint} = {response.status_code}")
+
+    return
 
 
 class Standalone:
@@ -89,7 +105,7 @@ class Standalone:
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
         self.__instanceLabel = 'instance="%s"' % self.__hostname
-        self.__victoriaURL = f"http://{args.endpoint}:{args.port}/api/v1/import/prometheus"
+        self.__victoriaURL = f"http://{args.endpoint}:{args.port}"
         self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
         if self.__pushFrequencyMins < 1:
             logging.error("")
