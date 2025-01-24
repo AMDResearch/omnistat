@@ -292,7 +292,7 @@ class UserBasedMonitoring:
                 ]
                 utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
 
-            logging.info("Launching exporters in parallel using pdsh")
+            logging.info("Launching exporters in parallel via ssh")
 
             client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
             try:
@@ -300,7 +300,7 @@ class UserBasedMonitoring:
                     f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
                 )
             except:
-                logging.info("Exception thrown launching parallell ssh client")
+                logging.info("Exception thrown launching parallel ssh client")
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
