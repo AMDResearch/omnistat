@@ -20,9 +20,11 @@ services:
     image: loader
     container_name: loader
     environment:
-      - FORCE_RELOAD=$FORCE_RELOAD
+      - FORCE_RELOAD=${FORCE_RELOAD:-0}
     volumes:
       - ./data.d/:/data.d
+    depends_on:
+      - victoriametrics
 
   grafana:
     image: grafana/grafana
