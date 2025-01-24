@@ -16,24 +16,24 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Deploy
 
-1. Copy Omnistat database collected in usermode to `./victoria-metrics-data`.
-   All the contents of the `victoria_datadir` defined in the Omnistat
-   configuration need to be copied, resulting in the following hierarchy:
+1. Copy Omnistat database collected in usermode to `./data`.  All the contents
+   of the `victoria_datadir` (defined in the Omnistat configuration) need to be
+   copied, typically resulting in the following hierarchy:
    ```
-   ./victoria-metrics-data/cache/
-   ./victoria-metrics-data/data/
-   ./victoria-metrics-data/flock.lock
-   ./victoria-metrics-data/indexdb/
-   ./victoria-metrics-data/metadata/
-   ./victoria-metrics-data/snapshots/
-   ./victoria-metrics-data/tmp/
+   ./data/cache/
+   ./data/data/
+   ./data/flock.lock
+   ./data/indexdb/
+   ./data/metadata/
+   ./data/snapshots/
+   ./data/tmp/
    ```
 2. Start services:
    ```
    docker compose up -d
    ```
    Services will run with the same user and group ID as the owner and group of
-   the `./victoria-metrics-data` directory.
+   the `./data` directory.
 4. Access Grafana dashboard at http://localhost:3000. Note that starting
    Grafana can take a few seconds.
 5. Stop services:
@@ -43,19 +43,27 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Combining several Omnistat databases
 
-Copying a single Omnistat database to `./victoria-metrics-data` works well to
-visualize a single execution. To work with several Omnistat databases, copy
-them to subdirectories under `./jobs`. For example:
+Copying a single Omnistat database to `./data` works well to visualize a single
+execution. To work with several Omnistat databases, copy them to different
+subdirectories under `./data.d`. For instance:
 ```
-./jobs/database-00
-./jobs/database-01
+./data.d/database-0/
+./data.d/database-0/cache/
+./data.d/database-0/data/
+./data.d/database-0/flock.lock
+./data.d/database-0/indexdb/
+./data.d/database-0/metadata/
+./data.d/database-0/snapshots/
+./data.d/database-0/tmp/
+./data.d/database-1/
 ...
 ```
+Where `database-0` and `database-1` are just example names used to store two
+different Omnistat databases.
 
-Databases under the `./jobs` directory are imported into a common
-database when starting the Docker Compose environment. Note that importing
-databases with this approach means the common database under
-`./victoria-metrics-data` will be modified.
+Databases under the `./data.d` directory are imported into a common database
+when starting the Docker Compose environment. Note that importing databases
+with this approach means the main database under `./data` will be modified.
 
 Each database is imported once. To force reloading all the databases, use the
 `FORCE_RELOAD` environment variable:
