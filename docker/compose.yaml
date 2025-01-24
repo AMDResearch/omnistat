@@ -12,7 +12,7 @@ services:
       - 9090:9090
     restart: unless-stopped
     volumes:
-      - ./data:/data
+      - ${DATADIR:-./data}:/data
 
   loader:
     build:
