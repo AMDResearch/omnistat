@@ -4,8 +4,10 @@ data_prom
 *.log
 *.pdf
 *~
-docker/jobs
-docker/victoria-metrics-data
+docker/jobs/*
+!docker/jobs/README.md
+docker/victoria-metrics-data/*
+!docker/victoria-metrics-data/README.md
 build
 omnistat.egg-info/
 test/slurm-job-user.sh
