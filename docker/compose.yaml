@@ -6,7 +6,7 @@ services:
     container_name: victoriametrics
     command:
       - '-httpListenAddr=:9090'
-      - '-retentionPeriod=1y'
+      - '-retentionPeriod=3y'
     ports:
       - 9090:9090
     restart: unless-stopped
