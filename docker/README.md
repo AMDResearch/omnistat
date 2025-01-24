@@ -17,8 +17,8 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 ### Deploy
 
 1. Copy Omnistat database collected in usermode to `./data`.  All the contents
-   of the `victoria_datadir` (defined in the Omnistat configuration) need to be
-   copied, typically resulting in the following hierarchy:
+   of the `victoria_datadir` path (defined in the Omnistat configuration) need
+   to be copied, typically resulting in the following hierarchy:
    ```
    ./data/cache/
    ./data/data/
