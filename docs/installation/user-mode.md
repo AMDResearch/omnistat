@@ -146,22 +146,29 @@ yellow need to be customized for the local installation path.
 
 To explore results generated for user-mode executions of Omnistat, we provide
 a Docker environment that will automatically launch the required services
-locally. That includes Prometheus to read and query the stored data, and
+locally. That includes Victoria Metrics to read and query the stored data, and
 Grafana as visualization platform to display time series and other metrics.
 
 To explore results:
 
-1. Copy Prometheus data collected with Omnistat to `./prometheus-data`. The
-   entire `datadir` defined in the Omnistat configuration needs to be copied
-   (e.g. a `data` directory should be present under `./prometheus-data`).
+1. Copy Omnistat database collected in usermode to `./data`.  All the contents
+   of the `victoria_datadir` path (defined in the Omnistat configuration) need
+   to be copied, typically resulting in the following hierarchy:
+   ```
+   ./data/cache/
+   ./data/data/
+   ./data/flock.lock
+   ./data/indexdb/
+   ./data/metadata/
+   ./data/snapshots/
+   ./data/tmp/
+   ```
 2. Start services:
    ```shell-session
-   [user@login]$ export PROMETHEUS_USER="$(id -u):$(id -g)"
    [user@login]$ docker compose up -d
    ```
-   User and group IDs are exported with the `PROMETHEUS_USER` variable to ensure
-   the container has the right permissions to read the local data under the
-   `./prometheus-data` directory.
+   Services will run with the same user and group ID as the owner and group of
+   the `./data` directory.
 4. Access Grafana dashboard at [http://localhost:3000](http://localhost:3000).
    Note that starting Grafana can take a few seconds.
 5. Stop services:
