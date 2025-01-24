@@ -33,12 +33,13 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    ```
    docker compose up -d
    ```
-   Services will run with the same user and group ID as the owner and group of
-   the data directory. To use a different directory, use the `DATADIR`
-   environment variable:
+   Alternatively, to load a database in a different location, set the
+   `DATADIR` environment variable:
    ```
    DATADIR=/path/to/omnistat/datadir docker compose up -d
    ```
+   Services will run with the same user and group ID as the owner and group of
+   the data directory.
 4. Access Grafana dashboard at http://localhost:3000. Note that starting
    Grafana can take a few seconds.
 5. Stop services:
@@ -46,11 +47,10 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    docker compose down
    ```
 
-### Combining several Omnistat databases
+### Combining Omnistat databases
 
-Copying a single Omnistat database to `./data` works well to visualize a single
-execution. To work with several Omnistat databases, copy them to different
-subdirectories under `./data.d`. For instance:
+To work with several Omnistat databases at the same time, copy them to
+different subdirectories under `./data.d`. For instance:
 ```
 ./data.d/database-0/
 ./data.d/database-0/cache/
@@ -63,12 +63,13 @@ subdirectories under `./data.d`. For instance:
 ./data.d/database-1/
 ...
 ```
-Where `database-0` and `database-1` are just example names used to store two
-different Omnistat databases.
+Where `database-0` and `database-1` are just example directory names that store
+two different Omnistat databases.
 
 Databases under the `./data.d` directory are imported into a common database
 when starting the Docker Compose environment. Note that importing databases
-with this approach means the main database under `./data` will be modified.
+with this approach means the main database under the data directory will be
+modified.
 
 Each database is imported once. To force reloading all the databases, use the
 `FORCE_RELOAD` environment variable:
