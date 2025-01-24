@@ -134,11 +134,8 @@ class Standalone:
             time.sleep(delay)
 
         if failed:
-            logging.error("")
-            logging.error("[ERROR]: Unable to access VictoriaMetrics server endpoint (%s)" % self.__victoriaURL)
-            logging.error("[ERROR]: Please verify server is running and accessible from this host.")
-            logging.error("")
-            sys.exit(1)
+            logging.warning("[WARN]: Unable to access VictoriaMetrics server endpoint (%s)" % self.__victoriaURL)
+            logging.warning("[WARN]: Please verify server is running and accessible from this host.")
 
         logging.info("Cached data will be pushed every %i minute(s)" % self.__pushFrequencyMins)
 
