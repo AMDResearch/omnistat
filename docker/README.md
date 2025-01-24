@@ -16,10 +16,18 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Deploy
 
-1. Copy Omnistat data collected with Omnistat to `./victoria-metrics-data`. All
-   the contents of the `victoria_datadir` defined in the Omnistat configuration
-   needs to be copied (e.g. `data`, `indexdb`, `metadata` directories and a
-   `flock.lock` file should be present under `./victoria-metrics-data`).
+1. Copy Omnistat database collected in usermode to `./victoria-metrics-data`.
+   All the contents of the `victoria_datadir` defined in the Omnistat
+   configuration need to be copied, resulting in the following hierarchy:
+   ```
+   ./victoria-metrics-data/cache/
+   ./victoria-metrics-data/data/
+   ./victoria-metrics-data/flock.lock
+   ./victoria-metrics-data/indexdb/
+   ./victoria-metrics-data/metadata/
+   ./victoria-metrics-data/snapshots/
+   ./victoria-metrics-data/tmp/
+   ```
 2. Start services:
    ```
    docker compose up -d
@@ -32,3 +40,25 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    ```
    docker compose down
    ```
+
+### Combining several Omnistat databases
+
+Copying a single Omnistat database to `./victoria-metrics-data` works well to
+visualize a single execution. To work with several Omnistat databases, copy
+them to subdirectories under `./jobs`. For example:
+```
+./jobs/database-00
+./jobs/database-01
+...
+```
+
+Databases under the `./jobs` directory are imported into a common
+database when starting the Docker Compose environment. Note that importing
+databases with this approach means the common database under
+`./victoria-metrics-data` will be modified.
+
+Each database is imported once. To force reloading all the databases, use the
+`FORCE_RELOAD` environment variable:
+```
+FORCE_RELOAD=1 docker-compose up -d
+```
