@@ -82,11 +82,11 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
         logging.info("Metrics pushed successfully!")
 
     # notify on backfill event
-    endpoints = ["/internal/resetRollupResultCache","/internal/force_flush"]
+    endpoints = ["/internal/resetRollupResultCache", "/internal/force_flush"]
     for endpoint in endpoints:
         try:
             response = requests.get(victoria_url + endpoint)
-            logging.debug("--> Response from victoria endpoint %s = %s" % (endpoint,response.status_code))
+            logging.debug("--> Response from victoria endpoint %s = %s" % (endpoint, response.status_code))
         except Exception as e:
             logging.error("")
             logging.error("[FAILED]: Unable to GET Victoria endpoint -> %s" % endpoint)
