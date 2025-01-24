@@ -73,6 +73,7 @@ for i in $SOURCE_DIR/*; do
     /victoria-metrics-prod \
         -httpListenAddr=$SOURCE_URL \
         -storageDataPath=$i \
+        -retentionPeriod=1y \
         -search.disableCache &
     pid=$!
 
