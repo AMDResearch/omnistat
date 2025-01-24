@@ -16,9 +16,10 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Deploy
 
-1. Copy Omnistat database collected in usermode to `./data`.  All the contents
-   of the `victoria_datadir` path (defined in the Omnistat configuration) need
-   to be copied, typically resulting in the following hierarchy:
+1. Copy Omnistat database collected in usermode to a local directory like
+   `./data`.  All the contents of the `victoria_datadir` path (defined in the
+   Omnistat configuration) need to be copied, typically resulting in the
+   following hierarchy:
    ```
    ./data/cache/
    ./data/data/
@@ -33,7 +34,11 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    docker compose up -d
    ```
    Services will run with the same user and group ID as the owner and group of
-   the `./data` directory.
+   the data directory. To use a different directory, use the `DATADIR`
+   environment variable:
+   ```
+   DATADIR=/path/to/omnistat/datadir docker compose up -d
+   ```
 4. Access Grafana dashboard at http://localhost:3000. Note that starting
    Grafana can take a few seconds.
 5. Stop services:
