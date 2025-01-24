@@ -11,7 +11,7 @@ services:
       - 9090:9090
     restart: unless-stopped
     volumes:
-      - ./victoria-metrics-data:/victoria-metrics-data
+      - ./data:/data
 
   loader:
     build:
@@ -21,7 +21,7 @@ services:
     environment:
       - FORCE_RELOAD=$FORCE_RELOAD
     volumes:
-      - ./jobs/:/jobs
+      - ./data.d/:/data.d
 
   grafana:
     image: grafana/grafana

@@ -7,7 +7,7 @@
 # files generated during the execution of the container under the reference
 # directory match the user in the host.
 
-reference_dir=/jobs
+reference_dir=/data.d
 
 if [ ! -d $reference_dir ]; then
 	echo "Missing $reference_dir directory"

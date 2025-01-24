@@ -13,7 +13,7 @@
 # the databases under $SOURCE_DIR regardless of previous executions, run the
 # script with setting the environment variable FORCE_RELOAD to 1.
 
-SOURCE_DIR=/jobs
+SOURCE_DIR=/data.d
 
 SOURCE_URL=localhost:8428
 TARGET_URL=victoriametrics:9090
