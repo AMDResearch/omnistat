@@ -1,11 +1,12 @@
 services:
-  prometheus:
+  victoriametrics:
     build:
       dockerfile: Dockerfile.victoriametrics
     image: victoriametrics
     container_name: victoriametrics
     command:
       - '-httpListenAddr=:9090'
+      - '-storageDataPath=/data'
       - '-retentionPeriod=3y'
     ports:
       - 9090:9090
