@@ -138,6 +138,7 @@ class UserBasedMonitoring:
             "--storageDataPath=%s" % vm_datadir,
             "-memory.allowedPercent=10",
             "-retentionPeriod=10y",
+            "-search.disableCache",
             "-httpListenAddr=:9090",
         ]
         envAddition = {}
