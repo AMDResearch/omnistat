@@ -132,6 +132,9 @@ class UserBasedMonitoring:
 
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
+        # corebinding can also be overridden by separate env variable
+        if "OMNISTAT_VICSERVER_COREBINDING" in os.environ:
+            vm_corebinding = os.getenv("OMNISTAT_VICSERVER_COREBINDING")
 
         command = [
             vm_binary,
@@ -184,6 +187,9 @@ class UserBasedMonitoring:
 
         ps_logfile = self.runtimeConfig[section].get("prometheus_logfile", "prom_server.log")
         ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
+        # corebinding can also be overridden by separate env variable
+        if "OMNISTAT_PROMSERVER_COREBINDING" in os.environ:
+            ps_corebinding = os.getenv("OMNISTAT_PROMSERVER_COREBINDING")
 
         # generate prometheus config file to scrape local exporters
         computes = {}
@@ -245,6 +251,8 @@ class UserBasedMonitoring:
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
+        if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
+            corebinding = os.getenv("OMNISTAT_EXPORTER_COREBINDING")
 
         self.rmsDetection()
 
