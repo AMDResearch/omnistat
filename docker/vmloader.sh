@@ -2,9 +2,10 @@
 #
 # vmloader -- Start Victoria Metrics with optional database merge
 #
-# Start Victoria Metrics to serve data under the /data directory.
-# When the MERGE variable is set to 1, the /data directory will be used as a
-# source of several databases that will be merged into /data/_merged.
+# If the DATADIR variable is set, start Victoria Metrics to serve data under
+# the /data directory. If the MULTIDIR variable is set, the /data directory
+# will be used as a source of several databases that will be merged into
+# /data/_merged.
 #
 # Merge sequentially starts a Victoria Metrics instance for each source
 # database, exports the data to a file, and then imports it into the target
@@ -12,9 +13,6 @@
 
 TARGET_URL=localhost:9090
 TARGET_DIR=/data
-if [ "$MERGE" == "1" ]; then
-    TARGET_DIR=/data/_merged
-fi
 
 SOURCE_URL=localhost:8428
 SOURCE_DIR=/data
@@ -169,8 +167,19 @@ load_databases() {
     check_victoriametrics_lock $TARGET_DIR
 }
 
-if [ "$MERGE" == "1" ]; then
+if [ -z "$DATADIR" ] && [ -z "$MULTIDIR" ]; then
+    echo "Error: need to set either DATADIR or MULTIDIR"
+    exit 1
+fi
+
+if [ -n "$DATADIR" ] && [ -n "$MULTIDIR" ]; then
+    echo "Error: only one of DATADIR and MULTIDIR can be set simultaneously"
+    exit 1
+fi
+
+if [ -n "$MULTIDIR" ]; then
     echo "Merge databases under the data directory"
+    TARGET_DIR=/data/_merged
     load_databases
 fi
 
