@@ -134,7 +134,8 @@ class UserBasedMonitoring:
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
         # corebinding can also be overridden by separate env variable
         if "OMNISTAT_VICSERVER_COREBINDING" in os.environ:
-            vm_corebinding = os.getenv("OMNISTAT_VICSERVER_COREBINDING")
+            vm_corebinding = int(os.getenv("OMNISTAT_VICSERVER_COREBINDING"))
+            logging.info("--> Overriding corebinding setting using OMNISTAT_VICSERVER_COREBINDING=%i" % vm_corebinding)
 
         command = [
             vm_binary,
@@ -189,7 +190,7 @@ class UserBasedMonitoring:
         ps_corebinding = self.runtimeConfig[section].getint("prometheus_corebinding", None)
         # corebinding can also be overridden by separate env variable
         if "OMNISTAT_PROMSERVER_COREBINDING" in os.environ:
-            ps_corebinding = os.getenv("OMNISTAT_PROMSERVER_COREBINDING")
+            ps_corebinding = int(os.getenv("OMNISTAT_PROMSERVER_COREBINDING"))
 
         # generate prometheus config file to scrape local exporters
         computes = {}
@@ -251,19 +252,21 @@ class UserBasedMonitoring:
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
         ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
-        if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
-            corebinding = os.getenv("OMNISTAT_EXPORTER_COREBINDING")
 
         self.rmsDetection()
 
         if victoriaMode:
             if os.path.exists("./exporter.log"):
                 os.remove("./exporter.log")
-            logging.info("Standalone sampling interval = %s" % self.scrape_interval)
+            logging.info("[exporter]: Standalone sampling interval = %s" % self.scrape_interval)
             hostname = platform.node().split(".", 1)[0]
             cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {hostname} --log exporter.log"
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
+
+        if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
+            corebinding = int(os.getenv("OMNISTAT_EXPORTER_COREBINDING"))
+            logging.info("[exporter]: Overriding corebinding setting using OMNISTAT_EXPORTER_COREBINDING=%i" % corebinding)
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
@@ -274,7 +277,7 @@ class UserBasedMonitoring:
             logging.info("Skipping exporter corebinding")
 
         if self.__hosts:
-            logging.info("Saving RMS job state locally to compute hosts...")
+            logging.info("[exporter]: Saving RMS job state locally to compute hosts...")
             if self.__rms == "slurm":
                 numNodes = os.getenv("SLURM_JOB_NUM_NODES")
                 srun_cmd = [
