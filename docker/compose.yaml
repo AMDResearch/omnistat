@@ -7,9 +7,10 @@ services:
     ports:
       - 9090:9090
     environment:
-      - MERGE=${MERGE:-0}
+      - DATADIR=${DATADIR:-}
+      - MULTIDIR=${MULTIDIR:-}
     volumes:
-      - ${DATADIR:-./data}:/data
+      - ${DATADIR:-${MULTIDIR:-./data}}:/data
 
   grafana:
     image: grafana/grafana
