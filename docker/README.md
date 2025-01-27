@@ -44,21 +44,22 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Combining Omnistat databases
 
-To work with several Omnistat databases at the same time, create a directory
-and copy the desired databases. For instance:
+To work with multiple Omnistat databases at the same time, create a directory
+and copy the desired databases, and then start services with the `MULTIDIR`
+variable:
 ```
-$DATADIR/database-0/
-$DATADIR/database-1/
+MULTIDIR="/path/to/omnistat/data" docker compose up -d
+```
+
+Databases under `$MULTIDIR` directory will be loaded into a common database
+under `$MULTIDIR/_merged` when starting the Docker Compose environment,
+resluting in the following hierarchy:
+```
+$MULTIDIR/database-0/
+$MULTIDIR/database-1/
 ...
-$DATADIR/database-N/
+$MULTIDIR/_merged/
 ```
 Where `database-*` are just example directory names that store different
-Omnistat databases.
-
-Then start services with the `MERGE` variable enabled:
-```
-MERGE=1 DATADIR="/path/to/omnistat/data" docker compose up -d
-```
-
-Databases under `$DATADIR` directory are imported into a common database
-under `$DATADIR/_merged` when starting the Docker Compose environment.
+Omnistat databases, and `_merged` is the location of the generated database
+that combines all other databases in the same directory.
