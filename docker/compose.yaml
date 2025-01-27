@@ -1,30 +1,15 @@
 services:
   victoriametrics:
     build:
-      dockerfile: Dockerfile.victoriametrics
+      dockerfile: Dockerfile
     image: victoriametrics
     container_name: victoriametrics
-    command:
-      - '-httpListenAddr=:9090'
-      - '-storageDataPath=/data'
-      - '-retentionPeriod=3y'
     ports:
       - 9090:9090
-    restart: unless-stopped
+    environment:
+      - MERGE=${MERGE:-0}
     volumes:
       - ${DATADIR:-./data}:/data
-
-  loader:
-    build:
-      dockerfile: Dockerfile.loader
-    image: loader
-    container_name: loader
-    environment:
-      - FORCE_RELOAD=${FORCE_RELOAD:-0}
-    volumes:
-      - ./data.d/:/data.d
-    depends_on:
-      - victoriametrics
 
   grafana:
     image: grafana/grafana

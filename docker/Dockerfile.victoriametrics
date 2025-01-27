@@ -1,7 +1,0 @@
-FROM victoriametrics/victoria-metrics
-
-RUN apk update && apk add su-exec
-
-COPY entrypoint-victoriametrics.sh /usr/local/bin/entrypoint
-
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
