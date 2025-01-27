@@ -16,27 +16,22 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Deploy
 
-1. Copy Omnistat database collected in usermode to a local directory like
-   `./data`.  All the contents of the `victoria_datadir` path (defined in the
-   Omnistat configuration) need to be copied, typically resulting in the
+1. Copy Omnistat database collected in usermode to a local directory. All the
+   contents of the `victoria_datadir` path (defined in the Omnistat
+   configuration) need to be copied, typically resulting in the
    following hierarchy:
    ```
-   ./data/cache/
-   ./data/data/
-   ./data/flock.lock
-   ./data/indexdb/
-   ./data/metadata/
-   ./data/snapshots/
-   ./data/tmp/
+   $DATADIR/cache/
+   $DATADIR/data/
+   $DATADIR/flock.lock
+   $DATADIR/indexdb/
+   $DATADIR/metadata/
+   $DATADIR/snapshots/
+   $DATADIR/tmp/
    ```
 2. Start services:
    ```
-   docker compose up -d
-   ```
-   Alternatively, to load a database in a different location, set the
-   `DATADIR` environment variable:
-   ```
-   DATADIR=/path/to/omnistat/datadir docker compose up -d
+   DATADIR="/path/to/omnistat/data" docker compose up -d
    ```
    Services will run with the same user and group ID as the owner and group of
    the data directory.
@@ -49,30 +44,21 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
 
 ### Combining Omnistat databases
 
-To work with several Omnistat databases at the same time, copy them to
-different subdirectories under `./data.d`. For instance:
+To work with several Omnistat databases at the same time, create a directory
+and copy the desired databases. For instance:
 ```
-./data.d/database-0/
-./data.d/database-0/cache/
-./data.d/database-0/data/
-./data.d/database-0/flock.lock
-./data.d/database-0/indexdb/
-./data.d/database-0/metadata/
-./data.d/database-0/snapshots/
-./data.d/database-0/tmp/
-./data.d/database-1/
+$DATADIR/database-0/
+$DATADIR/database-1/
 ...
+$DATADIR/database-N/
 ```
-Where `database-0` and `database-1` are just example directory names that store
-two different Omnistat databases.
+Where `database-*` are just example directory names that store different
+Omnistat databases.
 
-Databases under the `./data.d` directory are imported into a common database
-when starting the Docker Compose environment. Note that importing databases
-with this approach means the main database under the data directory will be
-modified.
+Then start services with the `MERGE` variable enabled:
+```
+MERGE=1 DATADIR="/path/to/omnistat/data" docker compose up -d
+```
 
-Each database is imported once. To force reloading all the databases, use the
-`FORCE_RELOAD` environment variable:
-```
-FORCE_RELOAD=1 docker-compose up -d
-```
+Databases under `$DATADIR` directory are imported into a common database
+under `$DATADIR/_merged` when starting the Docker Compose environment.
