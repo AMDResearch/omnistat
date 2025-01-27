@@ -25,7 +25,7 @@ enable_annotations = True
 [omnistat.query]
 
 prometheus_url = http://localhost:9090
-system_name = ORNL Frontier/Borg
+system_name = ORNL Frontier
 
 
 #--
@@ -36,10 +36,20 @@ system_name = ORNL Frontier/Borg
 
 ssh_key = ~/.ssh/id_rsa
 
+victoria_binary = /autofs/nccs-svm1_sw/crusher/amdsw/omnistat/victoria-metrics-linux-amd64-v1.109.0/victoria-metrics-prod
+victoria_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/world-shared/omnistat/%(SLURM_JOB_ID)s
+victoria_logfile = vic_server.log
+
 prometheus_binary = /autofs/nccs-svm1_sw/crusher/amdsw/omnistat/prometheus-2.45.1.linux-amd64/prometheus
 # prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/scratch/%(USER)s/omnistat/%(SLURM_JOB_ID)s
 prometheus_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/world-shared/omnistat/%(SLURM_JOB_ID)s
 prometheus_logfile = prom_server.log
 
-exporter_corebinding = 0
-prometheus_corebinding = 95
+## Bind user-mode Omnistat monitor and VictoriaMetrics to specific cores.
+## Requires numactl. When these options are not set, no binding is enforced.
+##
+## Note: you can also control these settings via environment variables:
+## OMNISTAT_EXPORTER_COREBINDING, OMNISTAT_VICSERVER_COREBINDING
+
+#exporter_corebinding = 0
+#victoria_corebinding = 95
