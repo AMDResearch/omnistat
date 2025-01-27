@@ -266,7 +266,9 @@ class UserBasedMonitoring:
 
         if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
             corebinding = int(os.getenv("OMNISTAT_EXPORTER_COREBINDING"))
-            logging.info("[exporter]: Overriding corebinding setting using OMNISTAT_EXPORTER_COREBINDING=%i" % corebinding)
+            logging.info(
+                "[exporter]: Overriding corebinding setting using OMNISTAT_EXPORTER_COREBINDING=%i" % corebinding
+            )
 
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present in all nodes.
