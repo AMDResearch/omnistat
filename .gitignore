@@ -4,8 +4,6 @@ data_prom
 *.log
 *.pdf
 *~
-docker/data*/*
-!docker/data*/README.md
 build
 omnistat.egg-info/
 test/slurm-job-user.sh
