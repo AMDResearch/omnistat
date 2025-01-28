@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# entrypoint - Switch user running Victoria Metrics loader container
+# entrypoint - Switch user running the Omnistat loader container
 #
 # Script to switch user running in the container to the same owner as the
 # given reference directory. Switching the user ensures the permissions of
@@ -18,4 +18,4 @@ uid=$(stat -c "%u" $reference_dir)
 gid=$(stat -c "%g" $reference_dir)
 
 echo "Executing as user $uid:$gid"
-exec su-exec $uid:$gid /usr/local/bin/vmloader
+exec su-exec $uid:$gid /usr/local/bin/omnistat-load
