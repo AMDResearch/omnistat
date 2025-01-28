@@ -392,7 +392,7 @@ class UserBasedMonitoring:
             utils.runShellCommand(cmd, timeout=timeout)
         return
 
-    def verifyNumaCommand(self, coreid):        
+    def verifyNumaCommand(self, coreid):
         """Verify numactl is available and works with supplied core id when provided
 
         Args:
