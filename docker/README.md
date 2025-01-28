@@ -31,7 +31,7 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    ```
 2. Start services:
    ```
-   DATADIR="/path/to/omnistat/data" docker compose up -d
+   DATADIR=./path/to/data docker compose up
    ```
    Services will run with the same user and group ID as the owner and group of
    the data directory.
@@ -48,12 +48,12 @@ To work with multiple Omnistat databases at the same time, create a directory
 and copy the desired databases, and then start services with the `MULTIDIR`
 variable:
 ```
-MULTIDIR="/path/to/omnistat/data" docker compose up -d
+MULTIDIR=./path/to/multidir/data docker compose up
 ```
 
 Databases under `$MULTIDIR` directory will be loaded into a common database
 under `$MULTIDIR/_merged` when starting the Docker Compose environment,
-resluting in the following hierarchy:
+resulting in the following hierarchy:
 ```
 $MULTIDIR/database-0/
 $MULTIDIR/database-1/
