@@ -1,9 +1,9 @@
 services:
-  victoriametrics:
+  omnistat:
     build:
       dockerfile: Dockerfile
-    image: victoriametrics
-    container_name: victoriametrics
+    image: omnistat/load
+    container_name: omnistat
     ports:
       - 9090:9090
     environment:
