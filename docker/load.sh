@@ -11,84 +11,113 @@
 # database, exports the data to a file, and then imports it into the target
 # database.
 
+if [ -z "$DATADIR" ] && [ -z "$MULTIDIR" ]; then
+    echo "Warning: DATADIR is not set, defaulting to ./data"
+    DATADIR=./data
+fi
+
+VOLUME_DIR=/data
+
+# Name of the merged database when using MULTIDIR.
+MERGED_NAME="_merged"
+
+# Target database directories in the container and the host.
+TARGET_DIR=$VOLUME_DIR
+HOST_DIR=$DATADIR
+
+if [ -n "$MULTIDIR" ]; then
+    TARGET_DIR=$VOLUME_DIR/$MERGED_NAME
+    HOST_DIR=$MULTIDIR/$MERGED_NAME
+fi
+
+# Adress of the main Victoria Metrics server.
 TARGET_URL=localhost:9090
-TARGET_DIR=/data
+TARGET_PORT=$(echo $TARGET_URL | awk -F':' '{print $2}')
 
+# Adress to export Victoria Metrics data from source databases when using
+# MULTIDIR.
 SOURCE_URL=localhost:8428
-SOURCE_DIR=/data
 
-MAX_ATTEMPTS=15
-CHECK_INTERVAL=1
+# Control how long to wait for Victoria Metrics servers when they're
+# started and stopped.
+MAX_ATTEMPTS_UP=15
+INTERVAL_UP=1
+MAX_ATTEMPTS_DOWN=15
+INTERVAL_DOWN=1
 
+# Default Victoria Metrics configuration.
+VICTORIA_BIN=/victoria-metrics-prod
+VICTORIA_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
+
+# Path to the temporary file used for exporting/importing databases.
 DATA_FILE=/tmp/data.bin
 
-VM_BIN=/victoria-metrics-prod
-VM_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
-
-# Check Victoria Metrics server in the given address, making sure it's running
-# and ready for requests. If it's not running, retry $MAX_ATTEMPTS times
+# Check Victoria Metrics server is running in the given address and it's
+# aready for requests. If it's not running, retry $MAX_ATTEMPTS_UP times
 # before giving up. Returns 0 if check is successful, otherwise returns 1.
-check_victoriametrics() {
+check_victoria_up() {
     local base_url=$1
     local check_url=$base_url/-/healthy
     local num_attempts=0
-    while [ $num_attempts -lt $MAX_ATTEMPTS ]; do
+
+    while [ $num_attempts -lt $MAX_ATTEMPTS_UP ]; do
         num_attempts=$(($num_attempts + 1))
         curl -s --fail --head $check_url > /dev/null
         if [ $? -eq 0 ]; then
             echo ".. Server $base_url ready after $num_attempts attempt(s)"
             return 0
         fi
-        sleep $CHECK_INTERVAL
+        sleep $INTERVAL_UP
     done
-    echo ".. Server $base_url not ready after $MAX_ATTEMPTS attempts"
+
+    echo ".. Server $base_url not ready after $MAX_ATTEMPTS_UP attempts"
     return 1
 }
 
 # Ensure Victoria Metrics server is no longer running by checking the lock file
-# is available. Times out after 10s.
-check_victoriametrics_lock() {
+# is available. If the lock cannot be acquired, retry $MAX_ATTEMPTS_DOWN
+# times. Returns 0 when the server is no longer running, otherwise abort the
+# execution of the script.
+check_victoria_down() {
     local path=$1/flock.lock
-    local timeout=10
-    local elapsed_time=0
-    local interval=1 
+    local num_attempts=0
 
-    while true; do
+    while [ $num_attempts -lt $MAX_ATTEMPTS_DOWN ]; do
+        num_attempts=$(($num_attempts + 1))
+
         # Subshell to acquire database lock. Returns 0 if lock can be acquired.
         (
             flock -x -n 200 && {
                 exit 0
             }
-        exit 1
+            exit 1
         ) 200>"$path"
 
+        # If subshell exits with 0, confirm server is no longer running.
         if [ $? -eq 0 ]; then
             return 0
         fi
 
-        if [ "$elapsed_time" -ge "$timeout" ]; then
-            echo "Error: server active after stopping it: $path"
-            exit 1
-        fi
-
-        sleep $interval
-        elapsed_time=$((elapsed_time + interval))
+        sleep $INTERVAL_DOWN
     done
+
+    echo "Error: Victoria Metrics server still active after $MAX_ATTEMPTS_DOWN attempts"
+    exit 1
 }
 
-# Start a Victori Metrics server in the background for merging purposes.
+# Start a Victoria Metrics server in the background for merging purposes.
 # Returns the PID of the process if successful, otherwise returns 0.
-start_merge_victoriametrics() {
+start_victoria() {
     local address=$1
     local path=$2
 
-    # -search.maxConcurrentRequests=1
-    $VM_BIN $VM_ARGS \
+    $VICTORIA_BIN $VICTORIA_ARGS \
         -httpListenAddr=$address \
         -storageDataPath=$path \
         -search.disableCache &
     pid=$!
-    check_victoriametrics $address
+
+    check_victoria_up $address
     if [ $? -ne 0 ]; then
         echo "Unable to reach $address"
         return 0
@@ -97,8 +126,8 @@ start_merge_victoriametrics() {
     return $pid
 }
 
-load_databases() {
-    start_merge_victoriametrics $TARGET_URL $TARGET_DIR
+merge_databases() {
+    start_victoria $TARGET_URL $TARGET_DIR
     target_pid=$?
     if [ $target_pid -eq 0 ]; then
         echo "Error: failed to start target Victoria Metrics server"
@@ -106,17 +135,14 @@ load_databases() {
     fi
 
     num_databases=0
-    for i in $SOURCE_DIR/*; do
-        if [ ! -d $i ]; then
-            continue
-        fi
-
+    for i in $VOLUME_DIR/*; do
         db_name=$(basename $i)
-        if [ "$db_name" == "_merged" ]; then
+
+        if [ ! -d $i ] || [ "$db_name" == "$MERGED_NAME" ]; then
             continue
         fi
 
-        if [ ! -f $i/flock.lock ]; then
+        if [ ! -f $i/flock.lock ] || [ ! -d $i/data ]; then
             echo "Skip invalid database: $db_name"
             continue
         fi
@@ -127,27 +153,27 @@ load_databases() {
         fi
 
         echo "Loading $db_name"
-        start_merge_victoriametrics $SOURCE_URL $i
+        start_victoria $SOURCE_URL $i
         source_pid=$!
         if [ $source_pid -eq 0 ]; then
-            echo "Failed to load $i"
+            echo ".. Warning: Failed to load $i"
             continue
         fi
 
         echo ".. Exporting data from $db_name"
         curl -s --fail $SOURCE_URL/api/v1/export/native -d 'match[]={__name__!~"vm_.*"}' > $DATA_FILE
         if [ $? -ne 0 ]; then
-            echo "Failed to export $db_name"
+            echo ".. Warning: Failed to export $db_name"
             continue
         fi
 
         # Shutdown source Victoria Metrics
         kill -SIGINT $source_pid
 
-        echo ".. Merging data from $db_name to $MULTIDIR/_merged"
+        echo ".. Merging data from $db_name to $HOST_DIR"
         curl -s --fail -X POST $TARGET_URL/api/v1/import/native -T $DATA_FILE
         if [ $? -ne 0 ]; then
-            echo "Failed to import $i"
+            echo ".. Warning: Failed to import $i"
             continue
         fi
 
@@ -155,35 +181,32 @@ load_databases() {
         touch $TARGET_DIR/.$db_name
         num_databases=$(($num_databases + 1))
 
-        check_victoriametrics_lock $i
+        check_victoria_down $i
     done
 
     echo "Loaded $num_databases new database(s)"
 
     # Shutdown target Victoria Metrics
     kill -SIGINT $target_pid
-    check_victoriametrics_lock $TARGET_DIR
+    check_victoria_down $TARGET_DIR
 }
-
-if [ -z "$DATADIR" ] && [ -z "$MULTIDIR" ]; then
-    echo "Error: need to set either the DATADIR or MULTIDIR environment variables"
-    exit 1
-fi
 
 if [ -n "$DATADIR" ] && [ -n "$MULTIDIR" ]; then
     echo "Error: only one of DATADIR and MULTIDIR can be set simultaneously"
     exit 1
 fi
 
-host_path=$DATADIR
-
-if [ -n "$MULTIDIR" ]; then
-    host_path=$MULTIDIR/_merged
-    TARGET_DIR=/data/_merged
-    echo "Merging databases under $MULTIDIR to $host_path"
-    load_databases
+if [ -n "$DATADIR" ] && [ ! -f $TARGET_DIR/flock.lock ]; then
+    echo "Error: invalid Omnistat data directory $HOST_DIR"
+    exit 1
 fi
 
-echo "Starting Victoria Metrics using $host_path"
-port=$(echo $TARGET_URL | awk -F':' '{print $2}')
-exec $VM_BIN $VM_ARGS -httpListenAddr=:$port -storageDataPath=$TARGET_DIR
+if [ -n "$MULTIDIR" ]; then
+    echo "Merging databases under $MULTIDIR to $HOST_DIR"
+    merge_databases
+fi
+
+echo "Starting Victoria Metrics using $HOST_DIR"
+exec $VICTORIA_BIN $VICTORIA_ARGS \
+    -httpListenAddr=:$TARGET_PORT \
+    -storageDataPath=$TARGET_DIR
