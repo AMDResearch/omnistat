@@ -131,7 +131,9 @@ class UserBasedMonitoring:
             vm_datadir = os.getenv("OMNISTAT_VICTORIA_DATADIR")
         elif "OMNISTAT_VICSERVER_DATADIR" in os.environ:
             vm_datadir = os.getenv("OMNISTAT_VICSERVER_DATADIR")
-            logging.warning("OMNISTAT_VICSERVER_DATADIR variable is being deprecated - please use OMNISTAT_VICTORIA_DATADIR instead")
+            logging.warning(
+                "OMNISTAT_VICSERVER_DATADIR variable is being deprecated - please use OMNISTAT_VICTORIA_DATADIR instead"
+            )
 
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
