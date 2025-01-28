@@ -4,6 +4,7 @@ services:
       dockerfile: Dockerfile
     image: omnistat/load
     container_name: omnistat
+    init: true
     ports:
       - 9090:9090
     environment:
