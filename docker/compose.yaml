@@ -19,6 +19,12 @@ services:
       - 3000:3000
     restart: unless-stopped
     environment:
+      - GF_LOG_MODE=file
+      - GF_LOG_LEVEL=error
+      - GF_UNIFIED_ALERTING_ENABLED=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
       - GF_USERS_DEFAULT_THEME=light
@@ -26,4 +32,6 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Editor
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/index.json
     volumes:
-      - ./grafana:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/json-models:/etc/grafana/provisioning/json-models
