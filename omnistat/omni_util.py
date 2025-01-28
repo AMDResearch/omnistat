@@ -154,9 +154,10 @@ class UserBasedMonitoring:
         # restrict thread usage
         envAddition["GOMAXPROCS"] = "4"
 
-        numactl = shutil.which("numactl")
-        if numactl and isinstance(vm_corebinding, int):
-            command = ["numactl", f"--physcpubind={vm_corebinding}"] + command
+        # optional NUMA setup
+        numa_command = self.verifyNumaCommand(vm_corebinding)
+        if numa_command:
+            command = numa_command + command
         else:
             logging.info("Skipping VictoriaMetrics corebinding")
 
@@ -225,9 +226,10 @@ class UserBasedMonitoring:
                 "--storage.tsdb.path=%s" % ps_datadir,
             ]
 
-            numactl = shutil.which("numactl")
-            if numactl and isinstance(ps_corebinding, int):
-                command = ["numactl", f"--physcpubind={ps_corebinding}"] + command
+            # optional NUMA setup
+            numa_command = self.verifyNumaCommand(ps_corebinding)
+            if numa_command:
+                command = numa_command + command
             else:
                 logging.info("Skipping Prometheus corebinding")
 
@@ -276,10 +278,11 @@ class UserBasedMonitoring:
             )
 
         # Assume environment is the same across nodes; if numactl is present
-        # here, we expect it to be present in all nodes.
-        numactl = shutil.which("numactl")
-        if numactl and isinstance(corebinding, int):
-            cmd = f"numactl --physcpubind={corebinding} {cmd}"
+        # here, we expect it to be present on all nodes.
+        numa_command = self.verifyNumaCommand(corebinding)
+        if numa_command:
+            numa_command_string = " ".join(numa_command)
+            cmd = f"{numa_command_string} {cmd}"
         else:
             logging.info("Skipping exporter corebinding")
 
@@ -388,6 +391,35 @@ class UserBasedMonitoring:
                 timeout = 120
             utils.runShellCommand(cmd, timeout=timeout)
         return
+
+    def verifyNumaCommand(self, coreid):        
+        """Verify numactl is available and works with supplied core id when provided
+
+        Args:
+            coreid (int): desired CPU core to pin with numacl
+
+        Returns:
+            list: numactl command
+        """
+
+        numactl = shutil.which("numactl")
+        if not numactl:
+            return None
+
+        if not isinstance(coreid, int):
+            return None
+
+        # we have numactl and a core provided - verify we can use it locally
+        numa_command = ["numactl", f"--physcpubind={coreid}"]
+
+        results = utils.runShellCommand(numa_command + ["hostname"], timeout=2)
+        if results.returncode != 0:
+            logging.warning("Unable to use numactl with supplied cpu core = %i" % coreid)
+            logging.debug("--> " + results.stdout.splitlines()[0])
+            logging.debug("--> " + results.stderr.splitlines()[0])
+            return None
+        else:
+            return numa_command
 
 
 def main():
