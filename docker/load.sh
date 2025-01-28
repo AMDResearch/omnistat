@@ -52,6 +52,11 @@ VICTORIA_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
 # Path to the temporary file used for exporting/importing databases.
 DATA_FILE=/tmp/data.bin
 
+# Checks to ensure services are ready.
+VICTORIA_URL=http://omnistat:9090/-/healthy
+GRAFANA_URL=http://grafana:3000/
+INTERVAL_SERVICE=1
+
 # Check Victoria Metrics server is running in the given address and it's
 # aready for requests. If it's not running, retry $MAX_ATTEMPTS_UP times
 # before giving up. Returns 0 if check is successful, otherwise returns 1.
@@ -61,7 +66,7 @@ check_victoria_up() {
     local num_attempts=0
 
     while [ $num_attempts -lt $MAX_ATTEMPTS_UP ]; do
-        num_attempts=$(($num_attempts + 1))
+        num_attempts=$((num_attempts + 1))
         curl -s --fail --head $check_url > /dev/null
         if [ $? -eq 0 ]; then
             echo ".. Server $base_url ready after $num_attempts attempt(s)"
@@ -83,7 +88,7 @@ check_victoria_down() {
     local num_attempts=0
 
     while [ $num_attempts -lt $MAX_ATTEMPTS_DOWN ]; do
-        num_attempts=$(($num_attempts + 1))
+        num_attempts=$((num_attempts + 1))
 
         # Subshell to acquire database lock. Returns 0 if lock can be acquired.
         (
@@ -207,6 +212,27 @@ if [ -n "$MULTIDIR" ]; then
 fi
 
 echo "Starting Victoria Metrics using $HOST_DIR"
-exec $VICTORIA_BIN $VICTORIA_ARGS \
+$VICTORIA_BIN $VICTORIA_ARGS \
     -httpListenAddr=:$TARGET_PORT \
-    -storageDataPath=$TARGET_DIR
+    -storageDataPath=$TARGET_DIR &
+pid=$!
+
+while true; do
+    curl -s --fail --head $VICTORIA_URL > /dev/null
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    sleep $INTERVAL_SERVICE
+done
+
+while true; do
+    curl -s --fail --head $GRAFANA_URL > /dev/null
+    if [ $? -eq 0 ]; then
+        break
+    fi
+    sleep $INTERVAL_SERVICE
+done
+
+echo "Omnistat dashboard ready: http://localhost:3000"
+
+wait $pid
