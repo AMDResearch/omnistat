@@ -49,7 +49,7 @@ prometheus_logfile = prom_server.log
 ## Requires numactl. When these options are not set, no binding is enforced.
 ##
 ## Note: you can also control these settings via environment variables:
-## OMNISTAT_EXPORTER_COREBINDING, OMNISTAT_VICSERVER_COREBINDING
+## OMNISTAT_EXPORTER_COREBINDING, OMNISTAT_VICTORIA_COREBINDING
 
 #exporter_corebinding = 0
 #victoria_corebinding = 95

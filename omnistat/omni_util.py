@@ -127,15 +127,18 @@ class UserBasedMonitoring:
             sys.exit(1)
 
         # datadir can be overridden by separate env variable
-        if "OMNISTAT_VICSERVER_DATADIR" in os.environ:
+        if "OMNISTAT_VICTORIA_DATADIR" in os.environ:
+            vm_datadir = os.getenv("OMNISTAT_VICTORIA_DATADIR")
+        elif "OMNISTAT_VICSERVER_DATADIR" in os.environ:
             vm_datadir = os.getenv("OMNISTAT_VICSERVER_DATADIR")
+            logging.warning("OMNISTAT_VICSERVER_DATADIR variable is being deprecated - please use OMNISTAT_VICTORIA_DATADIR instead")
 
         vm_logfile = self.runtimeConfig[section].get("victoria_logfile", "victoria_server.log")
         vm_corebinding = self.runtimeConfig[section].getint("victoria_corebinding", None)
         # corebinding can also be overridden by separate env variable
-        if "OMNISTAT_VICSERVER_COREBINDING" in os.environ:
-            vm_corebinding = int(os.getenv("OMNISTAT_VICSERVER_COREBINDING"))
-            logging.info("--> Overriding corebinding setting using OMNISTAT_VICSERVER_COREBINDING=%i" % vm_corebinding)
+        if "OMNISTAT_VICTORIA_COREBINDING" in os.environ:
+            vm_corebinding = int(os.getenv("OMNISTAT_VICTORIA_COREBINDING"))
+            logging.info("--> Overriding corebinding setting using OMNISTAT_VICTORIA_COREBINDING=%i" % vm_corebinding)
 
         command = [
             vm_binary,
