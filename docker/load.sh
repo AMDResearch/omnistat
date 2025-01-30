@@ -38,57 +38,76 @@ TARGET_PORT=$(echo $TARGET_URL | awk -F':' '{print $2}')
 # MULTIDIR.
 SOURCE_URL=localhost:8428
 
-# Control how long to wait for Victoria Metrics servers when they're
-# started and stopped.
-MAX_ATTEMPTS_UP=15
-INTERVAL_UP=1
-MAX_ATTEMPTS_DOWN=15
-INTERVAL_DOWN=1
+# Path to the temporary file used for exporting/importing databases.
+DATA_FILE=/tmp/data.bin
 
 # Default Victoria Metrics configuration.
 VICTORIA_BIN=/victoria-metrics-prod
 VICTORIA_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
 
-# Path to the temporary file used for exporting/importing databases.
-DATA_FILE=/tmp/data.bin
-
-# Checks to ensure services are ready.
+# Checks to ensure services are ready. Timeouts and intervals are seconds.
+# Victoria Metrics interval and timeout is also used during database merging,
+# not just for setting up the final service.
 VICTORIA_URL=http://omnistat:9090/-/healthy
+VICTORIA_INTERVAL=1
+VICTORIA_TIMEOUT=30
 GRAFANA_URL=http://grafana:3000/
-INTERVAL_SERVICE=1
+GRAFANA_INTERVAL=1
+GRAFANA_TIMEOUT=30
 
-# Check Victoria Metrics server is running in the given address and it's
-# aready for requests. If it's not running, retry $MAX_ATTEMPTS_UP times
-# before giving up. Returns 0 if check is successful, otherwise returns 1.
-check_victoria_up() {
-    local base_url=$1
-    local check_url=$base_url/-/healthy
-    local num_attempts=0
+# Control how long to wait for Victoria Metrics servers when they're stopped.
+VICTORIA_LOCK_INTERVAL=1
+VICTORIA_LOCK_TIMEOUT=30
 
-    while [ $num_attempts -lt $MAX_ATTEMPTS_UP ]; do
-        num_attempts=$((num_attempts + 1))
-        curl -s --fail --head $check_url > /dev/null
+# Wait until a given URL is responsive, checking it at the given interval.
+# Returns 0 if the URL responds successfully before the timeout threshold,
+# otherwise returns 1.
+wait_for_url() {
+    local url=$1
+    local interval=$2
+    local timeout=$3
+
+    local start_time=$(date +%s)
+    local current_time
+    local elapsed_time
+
+    while true; do
+        current_time=$(date +%s)
+        elapsed_time=$((current_time - start_time))
+
+        if [ $elapsed_time -gt $timeout ]; then
+            echo "Warning: access to $url timed out after $timeout seconds"
+            return 1
+        fi
+
+        curl -s --fail --head $url > /dev/null
         if [ $? -eq 0 ]; then
-            echo ".. Server $base_url ready after $num_attempts attempt(s)"
             return 0
         fi
-        sleep $INTERVAL_UP
-    done
 
-    echo ".. Server $base_url not ready after $MAX_ATTEMPTS_UP attempts"
-    return 1
+        sleep $interval
+    done
 }
 
-# Ensure Victoria Metrics server is no longer running by checking the lock file
-# is available. If the lock cannot be acquired, retry $MAX_ATTEMPTS_DOWN
-# times. Returns 0 when the server is no longer running, otherwise abort the
-# execution of the script.
+# Ensure Victoria Metrics server is no longer running by checking its lock file
+# If the lock cannot be acquired, retry until reaching the timeout threshold.
+# Returns 0 when the server is no longer running, otherwise abort the execution
+# of the script.
 check_victoria_down() {
     local path=$1/flock.lock
-    local num_attempts=0
 
-    while [ $num_attempts -lt $MAX_ATTEMPTS_DOWN ]; do
-        num_attempts=$((num_attempts + 1))
+    local start_time=$(date +%s)
+    local current_time
+    local elapsed_time
+
+    while true; do
+        current_time=$(date +%s)
+        elapsed_time=$((current_time - start_time))
+
+        if [ $elapsed_time -gt $VICTORIA_LOCK_TIMEOUT ]; then
+            echo "Error: Victoria Metrics server shutdown timeout"
+            exit 1
+        fi
 
         # Subshell to acquire database lock. Returns 0 if lock can be acquired.
         (
@@ -103,11 +122,8 @@ check_victoria_down() {
             return 0
         fi
 
-        sleep $INTERVAL_DOWN
+        sleep $VICTORIA_LOCK_INTERVAL
     done
-
-    echo "Error: Victoria Metrics server still active after $MAX_ATTEMPTS_DOWN attempts"
-    exit 1
 }
 
 # Start a Victoria Metrics server in the background for merging purposes.
@@ -116,13 +132,17 @@ start_victoria() {
     local address=$1
     local path=$2
 
+    local pid
+    local url
+
     $VICTORIA_BIN $VICTORIA_ARGS \
         -httpListenAddr=$address \
         -storageDataPath=$path \
         -search.disableCache &
     pid=$!
 
-    check_victoria_up $address
+    url=$address/-/healthy
+    wait_for_url $url $VICTORIA_INTERVAL $VICTORIA_TIMEOUT
     if [ $? -ne 0 ]; then
         echo "Unable to reach $address"
         return 0
@@ -132,6 +152,11 @@ start_victoria() {
 }
 
 merge_databases() {
+    local target_pid
+    local source_pid
+    local num_databases
+    local db_name
+
     start_victoria $TARGET_URL $TARGET_DIR
     target_pid=$?
     if [ $target_pid -eq 0 ]; then
@@ -217,21 +242,17 @@ $VICTORIA_BIN $VICTORIA_ARGS \
     -storageDataPath=$TARGET_DIR &
 pid=$!
 
-while true; do
-    curl -s --fail --head $VICTORIA_URL > /dev/null
-    if [ $? -eq 0 ]; then
-        break
-    fi
-    sleep $INTERVAL_SERVICE
-done
+wait_for_url $VICTORIA_URL $VICTORIA_INTERVAL $VICTORIA_TIMEOUT
+if [ $? -ne 0 ]; then
+    echo "Error: Victoria Metrics not responding"
+    exit 1
+fi
 
-while true; do
-    curl -s --fail --head $GRAFANA_URL > /dev/null
-    if [ $? -eq 0 ]; then
-        break
-    fi
-    sleep $INTERVAL_SERVICE
-done
+wait_for_url $GRAFANA_URL $GRAFANA_INTERVAL $GRAFANA_TIMEOUT
+if [ $? -ne 0 ]; then
+    echo "Error: Grafana not responding"
+    exit 1
+fi
 
 echo "Omnistat dashboard ready: http://localhost:3000"
 
