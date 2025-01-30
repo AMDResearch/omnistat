@@ -50,14 +50,17 @@ VICTORIA_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
 # not just for setting up the final service.
 VICTORIA_URL=http://omnistat:9090/-/healthy
 VICTORIA_INTERVAL=1
-VICTORIA_TIMEOUT=30
+VICTORIA_TIMEOUT=${VICTORIA_TIMEOUT:-30}
 GRAFANA_URL=http://grafana:3000/
 GRAFANA_INTERVAL=1
 GRAFANA_TIMEOUT=30
 
 # Control how long to wait for Victoria Metrics servers when they're stopped.
 VICTORIA_LOCK_INTERVAL=1
-VICTORIA_LOCK_TIMEOUT=30
+VICTORIA_LOCK_TIMEOUT=${VICTORIA_LOCK_TIMEOUT:-30}
+
+echo "Config: $VICTORIA_TIMEOUT"
+echo "Config: $VICTORIA_LOCK_TIMEOUT"
 
 # Wait until a given URL is responsive, checking it at the given interval.
 # Returns 0 if the URL responds successfully before the timeout threshold,
@@ -93,7 +96,7 @@ wait_for_url() {
 # If the lock cannot be acquired, retry until reaching the timeout threshold.
 # Returns 0 when the server is no longer running, otherwise abort the execution
 # of the script.
-check_victoria_down() {
+check_victoria_lock() {
     local path=$1/flock.lock
 
     local start_time=$(date +%s)
@@ -211,14 +214,14 @@ merge_databases() {
         touch $TARGET_DIR/.$db_name
         num_databases=$(($num_databases + 1))
 
-        check_victoria_down $i
+        check_victoria_lock $i
     done
 
     echo "Loaded $num_databases new database(s)"
 
     # Shutdown target Victoria Metrics
     kill -SIGINT $target_pid
-    check_victoria_down $TARGET_DIR
+    check_victoria_lock $TARGET_DIR
 }
 
 if [ -n "$DATADIR" ] && [ -n "$MULTIDIR" ]; then
