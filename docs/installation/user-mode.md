@@ -151,10 +151,10 @@ Grafana as visualization platform to display time series and other metrics.
 
 To explore results:
 
-1. Copy Omnistat database collected in usermode to a local directory. All the
-   contents of the `victoria_datadir` path (defined in the Omnistat
-   configuration) need to be copied, typically resulting in the
-   following hierarchy:
+1. Copy Omnistat database collected in usermode to the `./data` directory. All
+   the contents of the `victoria_datadir` path (defined in the Omnistat
+   configuration) need to be copied, typically resulting in the following
+   hierarchy:
    ```
    ./data/cache/
    ./data/data/
@@ -169,7 +169,11 @@ To explore results:
    [user@login]$ docker compose up
    ```
    Services will run with the same user and group ID as the owner and group of
-   the `./data` directory.
+   the `./data` directory. It's also possible to use a different database
+   directory by setting `DATADIR`:
+   ```shell-session
+   [user@login]$ DATADIR=/path/to/data docker compose up
+   ```
 4. Access Grafana dashboard at [http://localhost:3000](http://localhost:3000).
    Note that starting Grafana can take a few seconds.
 5. Stop services:
