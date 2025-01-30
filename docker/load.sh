@@ -43,7 +43,8 @@ DATA_FILE=/tmp/data.bin
 
 # Default Victoria Metrics configuration.
 VICTORIA_BIN=/victoria-metrics-prod
-VICTORIA_ARGS="-retentionPeriod=3y -loggerLevel=ERROR"
+VICTORIA_RETENTION_PERIOD=${VICTORIA_RETENTION_PERIOD:-3y}
+VICTORIA_ARGS="-retentionPeriod=$VICTORIA_RETENTION_PERIOD -loggerLevel=ERROR"
 
 # Checks to ensure services are ready. Timeouts and intervals are seconds.
 # Victoria Metrics interval and timeout is also used during database merging,

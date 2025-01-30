@@ -12,6 +12,7 @@ services:
       - MULTIDIR=${MULTIDIR:-}
       - VICTORIA_TIMEOUT=30
       - VICTORIA_LOCK_TIMEOUT=30
+      - VICTORIA_RETENTION_PERIOD=5y
     volumes:
       - ${DATADIR:-${MULTIDIR:-./data}}:/data
 
