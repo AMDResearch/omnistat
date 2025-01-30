@@ -60,9 +60,6 @@ GRAFANA_TIMEOUT=30
 VICTORIA_LOCK_INTERVAL=1
 VICTORIA_LOCK_TIMEOUT=${VICTORIA_LOCK_TIMEOUT:-30}
 
-echo "Config: $VICTORIA_TIMEOUT"
-echo "Config: $VICTORIA_LOCK_TIMEOUT"
-
 # Wait until a given URL is responsive, checking it at the given interval.
 # Returns 0 if the URL responds successfully before the timeout threshold,
 # otherwise returns 1.
