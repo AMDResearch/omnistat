@@ -22,6 +22,7 @@ __Assumptions__:
 * Installer has provisioned a dedicated user (eg. `omnidc`) across all desired compute nodes of their system
 * Installer has identified a location to host a Prometheus server (if not present already) that has network access to all compute nodes.
 
+(system-install)=
 ## Omnistat software installation
 
 To begin, we download the Omnistat software and install necessary Python dependencies. Per the assumptions above, we leverage a dedicated user to house the software install.
