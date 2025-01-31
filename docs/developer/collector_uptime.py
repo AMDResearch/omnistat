@@ -22,10 +22,11 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
-from omnistat.collector_base import Collector
 import logging
 
 from prometheus_client import Gauge
+
+from omnistat.collector_base import Collector
 
 
 class NODEUptime(Collector):
