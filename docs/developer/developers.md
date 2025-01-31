@@ -10,6 +10,7 @@ The core telemetry collection facilities within Omnistat are oriented around GPU
 
 ```eval_rst
 .. code-block:: python
+   :caption: Base class definition housed in omnistat/collector_base.py
 
    # Base Collector class - defines required methods for all metric collectors
    # implemented as a child class.
