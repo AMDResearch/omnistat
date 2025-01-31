@@ -27,30 +27,30 @@ import logging
 
 from prometheus_client import Gauge
 
+
 class NODEUptime(Collector):
     def __init__(self):
         logging.debug("Initializing node uptime event collector")
-        self.__metrics = {}       # method storage for Prometheus metrics
-        self.__kernelver = None   # method storage for kernel version
-
+        self.__metrics = {}  # method storage for Prometheus metrics
+        self.__kernelver = None  # method storage for kernel version
 
     # Required child methods
     def registerMetrics(self):
 
         # gather local Linux kernel to store as a label
-        with open('/proc/version', 'r') as f:
+        with open("/proc/version", "r") as f:
             self.__kernelver = f.readline().split()[2]
 
         metricName = "node_uptime_secs"
         description = "System uptime (secs)"
         labels = ["kernel"]
-        self.__metrics[metricName] = Gauge(metricName, description,labels)
+        self.__metrics[metricName] = Gauge(metricName, description, labels)
         logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
         return
 
     def updateMetrics(self):
         # snarf current uptime; file contains two floats - first number is uptime in seconds
-        with open('/proc/uptime', 'r') as f:
+        with open("/proc/uptime", "r") as f:
             uptime = float(f.readline().split()[0])
             self.__metrics["node_uptime_secs"].labels(kernel=self.__kernelver).set(uptime)
         return
