@@ -27,7 +27,7 @@
 Implements a number of prometheus gauge metrics based on GPU data collected from
 amd-smi library.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
-metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following 
+metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following
 example highlights example metrics:
 
 amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
