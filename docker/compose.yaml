@@ -1,14 +1,21 @@
 services:
-  prometheus:
-    image: victoriametrics/victoria-metrics
-    container_name: prometheus
-    command:
-      - '-httpListenAddr=:9090'
+  omnistat:
+    build:
+      dockerfile: Dockerfile
+    image: omnistat/load
+    container_name: omnistat
+    init: true
     ports:
       - 9090:9090
-    restart: unless-stopped
+    environment:
+      - DATADIR=${DATADIR:-}
+      - MULTIDIR=${MULTIDIR:-}
+      - VICTORIA_TIMEOUT=30
+      - VICTORIA_LOCK_TIMEOUT=30
+      - VICTORIA_RETENTION_PERIOD=5y
     volumes:
-      - ./prometheus-data/vicdata/:/victoria-metrics-data
+      - ${DATADIR:-${MULTIDIR:-./data}}:/data
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -16,6 +23,12 @@ services:
       - 3000:3000
     restart: unless-stopped
     environment:
+      - GF_LOG_MODE=file
+      - GF_LOG_LEVEL=error
+      - GF_UNIFIED_ALERTING_ENABLED=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
       - GF_USERS_DEFAULT_THEME=light
@@ -23,4 +36,6 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Editor
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/index.json
     volumes:
-      - ./grafana:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/json-models:/etc/grafana/provisioning/json-models
