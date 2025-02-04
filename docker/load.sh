@@ -31,12 +31,12 @@ if [ -n "$MULTIDIR" ]; then
 fi
 
 # Adress of the main Victoria Metrics server.
-TARGET_URL=localhost:9090
-TARGET_PORT=$(echo $TARGET_URL | awk -F':' '{print $2}')
+TARGET_ADDRESS=localhost:9090
+TARGET_PORT=$(echo $TARGET_ADDRESS | awk -F':' '{print $2}')
 
 # Adress to export Victoria Metrics data from source databases when using
 # MULTIDIR.
-SOURCE_URL=localhost:8428
+SOURCE_ADDRESS=localhost:8428
 
 # Path to the temporary file used for exporting/importing databases.
 DATA_FILE=/tmp/data.bin
@@ -52,6 +52,9 @@ VICTORIA_ARGS="-retentionPeriod=$VICTORIA_RETENTION_PERIOD -loggerLevel=ERROR"
 VICTORIA_URL=http://omnistat:9090/-/healthy
 VICTORIA_INTERVAL=1
 VICTORIA_TIMEOUT=${VICTORIA_TIMEOUT:-30}
+INDEX_URL=http://omnistat:9091/
+INDEX_INTERVAL=1
+INDEX_TIMEOUT=${INDEX_TIMEOUT:-30}
 GRAFANA_URL=http://grafana:3000/
 GRAFANA_INTERVAL=1
 GRAFANA_TIMEOUT=30
@@ -81,7 +84,7 @@ wait_for_url() {
             return 1
         fi
 
-        curl -s --fail --head $url > /dev/null
+        curl -s --fail $url > /dev/null
         if [ $? -eq 0 ]; then
             return 0
         fi
@@ -158,7 +161,7 @@ merge_databases() {
     local num_databases
     local db_name
 
-    start_victoria $TARGET_URL $TARGET_DIR
+    start_victoria $TARGET_ADDRESS $TARGET_DIR
     target_pid=$?
     if [ $target_pid -eq 0 ]; then
         echo "Error: failed to start target Victoria Metrics server"
@@ -184,7 +187,7 @@ merge_databases() {
         fi
 
         echo "Loading $db_name"
-        start_victoria $SOURCE_URL $i
+        start_victoria $SOURCE_ADDRESS $i
         source_pid=$!
         if [ $source_pid -eq 0 ]; then
             echo ".. Warning: Failed to load $i"
@@ -192,7 +195,7 @@ merge_databases() {
         fi
 
         echo ".. Exporting data from $db_name"
-        curl -s --fail $SOURCE_URL/api/v1/export/native -d 'match[]={__name__!~"vm_.*"}' > $DATA_FILE
+        curl -s --fail $SOURCE_ADDRESS/api/v1/export/native -d 'match[]={__name__!~"vm_.*"}' > $DATA_FILE
         if [ $? -ne 0 ]; then
             echo ".. Warning: Failed to export $db_name"
             continue
@@ -202,7 +205,7 @@ merge_databases() {
         kill -SIGINT $source_pid
 
         echo ".. Merging data from $db_name to $HOST_DIR"
-        curl -s --fail -X POST $TARGET_URL/api/v1/import/native -T $DATA_FILE
+        curl -s --fail -X POST $TARGET_ADDRESS/api/v1/import/native -T $DATA_FILE
         if [ $? -ne 0 ]; then
             echo ".. Warning: Failed to import $i"
             continue
@@ -241,11 +244,25 @@ echo "Starting Victoria Metrics using $HOST_DIR"
 $VICTORIA_BIN $VICTORIA_ARGS \
     -httpListenAddr=:$TARGET_PORT \
     -storageDataPath=$TARGET_DIR &
-pid=$!
+victoria_pid=$!
 
 wait_for_url $VICTORIA_URL $VICTORIA_INTERVAL $VICTORIA_TIMEOUT
 if [ $? -ne 0 ]; then
     echo "Error: Victoria Metrics not responding"
+    exit 1
+fi
+
+omnistat-index \
+    --address ${TARGET_ADDRESS} \
+    --days ${INDEX_DAYS:-365} \
+    --step ${INDEX_STEP:-5} \
+    --limit ${INDEX_LIMIT:-16} \
+    --timeout ${INDEX_QUERY_TIMEOUT:-1} &
+index_pid=$!
+
+wait_for_url $INDEX_URL $INDEX_INTERVAL $INDEX_TIMEOUT
+if [ $? -ne 0 ]; then
+    echo "Error: Job index not responding"
     exit 1
 fi
 
@@ -257,4 +274,5 @@ fi
 
 echo "Omnistat dashboard ready: http://localhost:3000"
 
-wait $pid
+wait $victoria_pid $index_pid
+exit 0

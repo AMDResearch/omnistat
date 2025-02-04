@@ -177,7 +177,7 @@ print(f"  Number of successful queries: {num_success} (out of {num_queries})")
 print(f"  Number of jobs in the database: {len(job_data)}")
 
 print("Starting job index", flush=True)
-server_address = ("", 8181)
+server_address = ("", 9091)
 handler = JobIndexHandler(job_data)
 httpd = http.server.HTTPServer(server_address, handler)
 httpd.serve_forever()

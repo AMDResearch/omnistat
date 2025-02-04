@@ -13,6 +13,9 @@ services:
       - VICTORIA_TIMEOUT=30
       - VICTORIA_LOCK_TIMEOUT=30
       - VICTORIA_RETENTION_PERIOD=5y
+      - INDEX_DAYS=365
+      - INDEX_LIMIT=16
+      - INDEX_QUERY_TIMEOUT=1
     volumes:
       - ${DATADIR:-${MULTIDIR:-./data}}:/data
 
