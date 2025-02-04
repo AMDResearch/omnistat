@@ -152,9 +152,9 @@ results = [x for result in results if result != None for x in result]
 job_index = {}
 for job_id, first, last, num_nodes in results:
     if job_id in job_index:
-        first = min(first, jobs[jobid][0])
-        last = max(last, jobs[jobid][1])
-        num_nodes = max(num_nodes, jobs[jobid][2])
+        first = min(first, job_index[job_id][0])
+        last = max(last, job_index[job_id][1])
+        num_nodes = max(num_nodes, job_index[job_id][2])
     job_index[job_id] = (first, last, num_nodes)
 
 # Tranform data to be used in Grafana.
