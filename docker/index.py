@@ -131,9 +131,9 @@ async def scan_database(address, days, step, limit, timeout):
 parser = argparse.ArgumentParser()
 parser.add_argument("--address", type=str, default="localhost:9090")
 parser.add_argument("--days", type=int, default=365)
-parser.add_argument("--step", type=int, default=5)
+parser.add_argument("--step", type=int, default=30)
 parser.add_argument("--limit", type=int, default=16)
-parser.add_argument("--timeout", type=float, default=1)
+parser.add_argument("--timeout", type=float, default=5)
 args = parser.parse_args()
 
 start_time = time.time()

@@ -255,9 +255,9 @@ fi
 omnistat-index \
     --address ${TARGET_ADDRESS} \
     --days ${INDEX_DAYS:-365} \
-    --step ${INDEX_STEP:-5} \
+    --step ${INDEX_STEP:-30} \
     --limit ${INDEX_LIMIT:-16} \
-    --timeout ${INDEX_QUERY_TIMEOUT:-1} &
+    --timeout ${INDEX_QUERY_TIMEOUT:-5} &
 index_pid=$!
 
 wait_for_url $INDEX_URL $INDEX_INTERVAL $INDEX_TIMEOUT

@@ -10,12 +10,20 @@ services:
     environment:
       - DATADIR=${DATADIR:-}
       - MULTIDIR=${MULTIDIR:-}
+      # Timeout for Victoria Metrics start, in seconds.
       - VICTORIA_TIMEOUT=30
+      # Timeout for Victoria Metrics stop and lock release, in seconds.
       - VICTORIA_LOCK_TIMEOUT=30
+      # How long to retain samples in the database.
       - VICTORIA_RETENTION_PERIOD=5y
+      # Number of days that will be scanned for indexing purposes.
       - INDEX_DAYS=365
+      # Indexing query resolution, in seconds.
+      - INDEX_STEP=30
+      # Number of concurrent indexing queries.
       - INDEX_LIMIT=16
-      - INDEX_QUERY_TIMEOUT=1
+      # Timeout for each indexing query, in seconds.
+      - INDEX_QUERY_TIMEOUT=5
     volumes:
       - ${DATADIR:-${MULTIDIR:-./data}}:/data
 
