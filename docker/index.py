@@ -23,7 +23,6 @@ import time
 
 import aiohttp
 
-
 SCAN_JOBS_QUERY = "sum by (jobid) (rmsjob_info{})"
 
 
