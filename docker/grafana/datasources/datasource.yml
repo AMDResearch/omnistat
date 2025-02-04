@@ -8,3 +8,7 @@ datasources:
   isDefault: true
   access: proxy
   editable: true
+- name: Infinity
+  type: yesoreyeram-infinity-datasource
+  uid: infinity
+  url: http://omnistat:9091

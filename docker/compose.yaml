@@ -25,6 +25,7 @@ services:
     ports:
       - 3000:3000
     restart: unless-stopped
+    attach: false
     environment:
       - GF_LOG_MODE=file
       - GF_LOG_LEVEL=error
@@ -38,6 +39,7 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Editor
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/index.json
+      - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
     volumes:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
