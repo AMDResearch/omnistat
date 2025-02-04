@@ -161,6 +161,10 @@ merge_databases() {
     local num_databases
     local db_name
 
+    local start_time=$(date +%s)
+    local end_time
+    local elapsed_time
+
     start_victoria $TARGET_ADDRESS $TARGET_DIR
     target_pid=$?
     if [ $target_pid -eq 0 ]; then
@@ -218,7 +222,9 @@ merge_databases() {
         check_victoria_lock $i
     done
 
-    echo "Loaded $num_databases new database(s)"
+    end_time=$(date +%s)
+    elapsed_time=$((end_time - start_time))
+    echo "Loaded $num_databases new databases in $elapsed_time seconds"
 
     # Shutdown target Victoria Metrics
     kill -SIGINT $target_pid
