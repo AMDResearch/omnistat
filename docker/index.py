@@ -173,11 +173,12 @@ for job_id, (start, end, num_nodes) in job_index.items():
         }
     )
 
-print(f"Scanned database in {end_time - start_time:.3f} seconds")
-print(f"  Number of successful queries: {num_success} (out of {num_queries})")
-print(f"  Number of jobs in the database: {len(job_data)}")
+print(f"Scanned database in {end_time - start_time:.2f} seconds")
+print(f".. Number of jobs in the last {args.days} days: {len(job_data)}")
+if num_fail > 0:
+    print(f".. Warning: {num_fail} out of {num_queries} queries failed")
+sys.stdout.flush()
 
-print("Starting job index", flush=True)
 server_address = ("", 9091)
 handler = JobIndexHandler(job_data)
 httpd = http.server.HTTPServer(server_address, handler)
