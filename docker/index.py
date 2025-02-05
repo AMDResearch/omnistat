@@ -167,7 +167,7 @@ for job_id, (start, end, num_nodes) in job_index.items():
             "Job ID": job_id,
             "Number of nodes": num_nodes,
             "Date": start * 1000,
-            "Duration (m)": float(end - start) / 60,
+            "Duration": end - start,
             "from": (start - args.step) * 1000,
             "to": (end + args.step) * 1000,
         }
