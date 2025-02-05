@@ -95,6 +95,18 @@
                         "value" : true
                      }
                   ]
+               },
+               {
+                  "matcher" : {
+                     "id" : "byName",
+                     "options" : "Duration"
+                  },
+                  "properties" : [
+                     {
+                        "id" : "unit",
+                        "value" : "s"
+                     }
+                  ]
                }
             ]
          },
@@ -153,15 +165,14 @@
                   },
                   "includeByName" : {},
                   "indexByName" : {
+                     "Date" : 2,
+                     "Duration" : 3,
                      "Job ID" : 0,
                      "Number of nodes" : 1,
-                     "Date" : 2,
-                     "Duration (m)" : 3,
                      "from" : 4,
                      "to" : 5
                   },
-                  "renameByName" : {
-                  }
+                  "renameByName" : {}
                }
             },
             {
@@ -183,7 +194,7 @@
    "preload" : false,
    "refresh" : "",
    "schemaVersion" : 40,
-   "tags": [
+   "tags" : [
       "omnistat"
    ],
    "templating" : {
