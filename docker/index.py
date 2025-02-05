@@ -157,17 +157,19 @@ for job_id, first, last, num_nodes in results:
         num_nodes = max(num_nodes, job_index[job_id][2])
     job_index[job_id] = (first, last, num_nodes)
 
-# Tranform data to be used in Grafana.
+# Tranform data to be used in Grafana; timestamps are expected to be
+# milliseconds. Lowercase keys are hidden from the table and only used
+# internally.
 job_data = []
 for job_id, (start, end, num_nodes) in job_index.items():
     job_data.append(
         {
             "Job ID": job_id,
-            "Time": start,
-            "Start": start - args.step,
-            "End": end + args.step,
-            "Duration": end - start,
             "Number of nodes": num_nodes,
+            "Date": start * 1000,
+            "Duration (m)": float(end - start) / 60,
+            "from": (start - args.step) * 1000,
+            "to": (end + args.step) * 1000,
         }
     )
 
