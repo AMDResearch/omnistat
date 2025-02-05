@@ -23,8 +23,6 @@ import time
 
 import aiohttp
 
-SCAN_JOBS_QUERY = "sum by (jobid) (rmsjob_info{})"
-
 
 class JobIndexHandler(http.server.BaseHTTPRequestHandler):
     """
@@ -53,12 +51,11 @@ class JobIndexHandler(http.server.BaseHTTPRequestHandler):
 
 async def scan_query(session, address, start, end, step, timeout):
     """
-    Asynchronous PromQL query range to scan jobs in the given database.
+    Asynchronous PromQL query to scan jobs in the given database.
 
     Args:
         session: aiohttp client session.
         address (str): Address of the Prometheus server.
-        query (str): Prometheus expression query string.
         start (int): Start timestamp.
         end (int): Stop timestamp.
         step (int): Query resolution in seconds.
@@ -70,7 +67,7 @@ async def scan_query(session, address, start, end, step, timeout):
     """
     url = f"http://{address}/api/v1/query_range"
     params = {
-        "query": SCAN_JOBS_QUERY,
+        "query": "sum by (jobid) (rmsjob_info{})",
         "start": start,
         "end": end,
         "step": step,
