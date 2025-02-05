@@ -280,5 +280,4 @@ fi
 
 echo "Omnistat dashboard ready: http://localhost:3000"
 
-wait $victoria_pid $index_pid
-exit 0
+wait -n $victoria_pid $index_pid
