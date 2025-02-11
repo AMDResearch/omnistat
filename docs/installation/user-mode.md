@@ -149,13 +149,19 @@ a Docker environment that will automatically launch the required services
 locally. That includes Victoria Metrics to read and query the stored data, and
 Grafana as visualization platform to display time series and other metrics.
 
-To explore results:
-
-1. Copy Omnistat database collected in usermode to the `./data` directory. All
-   the contents of the `victoria_datadir` path (defined in the Omnistat
-   configuration) need to be copied, typically resulting in the following
-   hierarchy:
+1. Download the latest Omnistat release and proceed to the `docker` directory
+   within Omnistat.
+   ```shell-session
+   [user@login]$ REPO=https://github.com/AMDResearch/omnistat
+   [user@login]$ curl -OLJ ${REPO}/archive/refs/tags/v{__VERSION__}.tar.gz
+   [user@login]$ tar xfz omnistat-{__VERSION__}.tar.gz
+   [user@login]$ cd omnistat-v{__VERSION__}/docker
    ```
+2. Copy Omnistat database collected in usermode to the `./data` directory.
+   All the contents of the `victoria_datadir` configuration option (or
+   `OMNISTAT_VICTORIA_DATADIR` environment variable) need to be copied,
+   typically resulting in the following hierarchy:
+   ```text
    ./data/cache/
    ./data/data/
    ./data/flock.lock
@@ -164,22 +170,72 @@ To explore results:
    ./data/snapshots/
    ./data/tmp/
    ```
-2. Start services:
+3. Start Docker environment.
    ```shell-session
    [user@login]$ docker compose up
    ```
-   Services will run with the same user and group ID as the owner and group of
-   the `./data` directory. It's also possible to use a different database
-   directory by setting `DATADIR`:
+   This command will download the appropriate Docker images and prepare the
+   environment to visualize Omnistat data. If everything works as expected, it
+   will eventually show the following sort of output:
+   ```text
+   Attaching to omnistat
+   omnistat  | Executing as user 1000:1000
+   omnistat  | Starting Victoria Metrics using ./data
+   omnistat  | Scanned database in 0.19 seconds
+   omnistat  | .. Number of jobs in the last 365 days: 1
+   omnistat  | Omnistat dashboard ready: http://localhost:3000
+   ```
+   Services run with the same user and group ID as the owner and group of
+   the `./data` directory.
+   It's also possible to use a different database directory by setting
+   `DATADIR`:
    ```shell-session
    [user@login]$ DATADIR=/path/to/data docker compose up
    ```
 4. Access Grafana dashboard at [http://localhost:3000](http://localhost:3000).
-   Note that starting Grafana can take a few seconds.
-5. Stop services:
+5. Press `Ctrl+C` to stop the Docker environment. And optionally, to
+   completely remove the containers:
+
    ```shell-session
    [user@login]$ docker compose down
    ```
+
+### Combining Omnistat databases
+
+To work with multiple Omnistat traces at the same time, these need to be
+merged into a single database. Omnistat's Docker environment provides an
+option to trigger a merge operation when using the `MULTIDIR` instead of
+`DATADIR`. When starting the Docker environment, databases under the directory
+pointed by `MULTIDIR` will be loaded into a common database that will be used
+to visualize all the data.
+
+1. As an example, the following `collection` directory contains two Omnistat
+   databases under the `data-{0,1}` subdirectories:
+   ```text
+   ./collection/data-0/
+   ./collection/data-1/
+   ```
+2. Start the services with the `MULTIDIR` variable to merge multiple
+   databases:
+   ```shell-session
+   [user@login]$ MULTIDIR=./collection docker compose up
+   ```
+3. While the services are stared, a new database named `_merged` will be
+   created automatically:
+   ```text
+   ./collection/data-0/
+   ./collection/data-1/
+   ./collection/_merged/
+   ```
+   And once the merged database is ready, all the information from `data-0`
+   and `data-1` will be visible in the local Grafana dashboard at
+   [http://localhost:3000](http://localhost:3000).
+
+It's also possible to copy new databases to the same directory at a later
+time. To merge a new database, simply stop the Docker Compose environment and
+start it again with the same `docker compose up`. Only newly copied
+directories will be loaded into the merged database.
+
 
 ## Exporting time series data
 

@@ -14,12 +14,14 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
  - `omnistat-index`: List all jobs in the stored database.
  - `omnistat-job`: View details for a single job.
 
-### Deploy
+For more information on how to use this Docker Compose environment, please
+refer to the [Exploring results with a local Docker
+environment][https://amdresearch.github.io/omnistat/installation/user-mode.html#exploring-results-with-a-local-docker-environment]
+section of the documentation.
 
-1. Copy Omnistat database collected in usermode to a local directory. All the
-   contents of the `victoria_datadir` path (defined in the Omnistat
-   configuration) need to be copied, typically resulting in the
-   following hierarchy:
+### Quick Deployment Guide
+
+1. Copy Omnistat database collected in usermode to a local directory.
    ```
    data/cache/
    data/data/
@@ -33,24 +35,13 @@ connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
    ```
    DATADIR=./path/to/data docker compose up
    ```
-   Services will run with the same user and group ID as the owner and group of
-   the data directory. If `DATADIR` is not set, it will default to `./data`.
-3. Access Grafana dashboard at http://localhost:3000. Note that starting
-   Grafana can take a few seconds.
-4. Stop services:
-   ```
-   docker compose down
-   ```
+3. Access Grafana dashboard at http://localhost:3000.
 
 ### Combining Omnistat databases
 
 To work with multiple Omnistat databases at the same time: create a directory,
 copy the desired Omnistat databases as subdirectories, and start services with
-the `MULTIDIR` variable pointing to new directory.
-
-When starting the Docker Compose environment, all the databases under the
-`$MULTIDIR` directory will be loaded into a common database that will be used
-to visualize all the data.
+the `MULTIDIR` variable pointing to the new directory.
 
 1. As an example, the following `collection` directory contains two Omnistat
    databases under the `data-{0,1}` subdirectories:
@@ -73,8 +64,3 @@ to visualize all the data.
    And once the merged database is ready, all the information from `data-0`
    and `data-1` will be visible in the local Grafana dashboard at
    http://localhost:3000.
-
-It's also possible to copy new databases to the same directory at a later
-time. To merge a new database, simply stop the Docker Compose environment and
-start it again with the same `docker compose up`. Only newly copied
-directories will be loaded into the merged database.
