@@ -10,7 +10,7 @@ Two different services are required to view Omnistat data:
    other metrics.
 
 This environment will automatically launch containers, configure both services,
-connect Grafana and Victoria Metrics, and pre-load a couple of dashboards:
+connect Grafana and Victoria Metrics, and pre-load two dashboards:
  - `omnistat-index`: List all jobs in the stored database.
  - `omnistat-job`: View details for a single job.
 
@@ -61,6 +61,6 @@ the `MULTIDIR` variable pointing to the new directory.
    collection/data-1/
    collection/_merged/
    ```
-   And once the merged database is ready, all the information from `data-0`
+   Once the merged database is ready, all the information from `data-0`
    and `data-1` will be visible in the local Grafana dashboard at
    http://localhost:3000.
