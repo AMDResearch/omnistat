@@ -54,7 +54,7 @@ the `MULTIDIR` variable pointing to the new directory.
    ```
    MULTIDIR=./path/to/collection docker compose up
    ```
-3. While the services are stared, a new database named `_merged` will be
+3. While the services are started, a new database named `_merged` will be
    created:
    ```
    collection/data-0/
