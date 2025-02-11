@@ -148,7 +148,7 @@ yellow need to be customized for the local installation path.
 To explore results previously gathered via Omnistat user-mode execution, we provide
 a Docker environment that will automatically launch the required data exploration services
 locally. This containerized environment includes Victoria Metrics to read and query
-the stored data, and Grafana as visualization platform to display time series and
+the stored data, and Grafana as a visualization platform to display time series and
 other metrics. The following steps outline the general process to visualize user-mode results locally:
 
 1. Download the latest Omnistat release and proceed to the `docker` directory
