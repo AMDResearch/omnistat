@@ -1,0 +1,39 @@
+# Docker Compose environment for pull-based usermode Omnistat using Prometheus.
+#
+# Requires setting the PROMETHEUS_USER variable before starting:
+#  $ export PROMETHEUS_USER="$(id -u):$(id -g)"
+#  $ docker compose up
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=1y'
+      - '--query.max-samples=500000000'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ./prometheus-data:/prometheus
+    user: "${PROMETHEUS_USER}"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Editor
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/json-models/index.prometheus.json
+    volumes:
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources-prometheus:/etc/grafana/provisioning/datasources
+      - ./grafana/json-models:/etc/grafana/provisioning/json-models
