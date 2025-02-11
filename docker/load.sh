@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# omnsitat-load -- Load data and start Victoria Metrics server
+# omnistat-load -- Load data and start Victoria Metrics server
 #
 # If the DATADIR variable is set, start Victoria Metrics to serve data under
 # the /data directory. If the MULTIDIR variable is set, the /data directory
@@ -30,11 +30,11 @@ if [ -n "$MULTIDIR" ]; then
     HOST_DIR=$MULTIDIR/$MERGED_NAME
 fi
 
-# Adress of the main Victoria Metrics server.
+# Address of the main Victoria Metrics server.
 TARGET_ADDRESS=localhost:9090
 TARGET_PORT=$(echo $TARGET_ADDRESS | awk -F':' '{print $2}')
 
-# Adress to export Victoria Metrics data from source databases when using
+# Address to export Victoria Metrics data from source databases when using
 # MULTIDIR.
 SOURCE_ADDRESS=localhost:8428
 
@@ -46,7 +46,7 @@ VICTORIA_BIN=/victoria-metrics-prod
 VICTORIA_RETENTION_PERIOD=${VICTORIA_RETENTION_PERIOD:-3y}
 VICTORIA_ARGS="-retentionPeriod=$VICTORIA_RETENTION_PERIOD -loggerLevel=ERROR"
 
-# Checks to ensure services are ready. Timeouts and intervals are seconds.
+# Checks to ensure services are ready. Timeouts and intervals are in seconds.
 # Victoria Metrics interval and timeout is also used during database merging,
 # not just for setting up the final service.
 VICTORIA_URL=http://omnistat:9090/-/healthy
