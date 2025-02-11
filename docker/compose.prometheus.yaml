@@ -1,4 +1,9 @@
-# Docker Compose environment for pull-based usermode Omnistat using Prometheus.
+# Docker Compose environment for pull-based usermode Omnistat using Prometheus
+#
+# Data collected with Omnistat is expected to be available under
+# `./prometheus-data`. The entire `datadir` defined in the Omnistat
+# configuration needs to be copied (e.g. a `data` directory should be present
+# under `./prometheus-data`).
 #
 # Requires setting the PROMETHEUS_USER variable before starting:
 #  $ export PROMETHEUS_USER="$(id -u):$(id -g)"
