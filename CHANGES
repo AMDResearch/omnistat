@@ -1,4 +1,4 @@
-Version 1.3 (12 Feb 2025)
+Version 1.3 (17 Feb 2025)
 
   * expand documentation to include developer's guide (#155)
   * add startup check for valid numa core binding (#153)
