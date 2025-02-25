@@ -299,6 +299,8 @@ class ROCMSMI(Collector):
         self.registerGPUMetric(self.__prefix + "vram_busy_percentage", "gauge", "Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
+        # power cap
+        self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)" )
 
         return
 
@@ -414,5 +416,12 @@ class ROCMSMI(Collector):
             metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
+
+            # --
+            # power cap
+            metric = self.__prefix + "power_cap_watts"
+            ret = self.__libsmi.rsmi_dev_power_cap_get (device, 0x0, ctypes.byref(power))
+            # rsmi value in microwatts -> convert to watt
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
 
         return
