@@ -368,6 +368,8 @@ class ROCMSMI(Collector):
                         self.registerGPUMetric(
                             metric, "gauge", "number of uncorrectable RAS events for %s block (count)" % key
                         )
+        # power cap
+        self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)" )
 
         return
 
@@ -496,5 +498,11 @@ class ROCMSMI(Collector):
                     self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(
                         ras_counts.uncorrectable_err
                     )
+            # --
+            # power cap
+            metric = self.__prefix + "power_cap_watts"
+            ret = self.__libsmi.rsmi_dev_power_cap_get (device, 0x0, ctypes.byref(power))
+            # rsmi value in microwatts -> convert to watt
+            self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
 
         return
