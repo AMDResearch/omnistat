@@ -332,7 +332,7 @@ class ROCMSMI(Collector):
         self.registerGPUMetric(self.__prefix + "vram_busy_percentage", "gauge", "Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
-        # RAS events
+        # RAS counts
         self.registerGPUMetric(self.__prefix + "ras_umc_correctable_count", "gauge", "number of correctable RAS events for UMC block (count)")
         self.registerGPUMetric(self.__prefix + "ras_umc_uncorrectable_count", "gauge", "number of uncorrectable RAS events for UMC block (count)")
 
