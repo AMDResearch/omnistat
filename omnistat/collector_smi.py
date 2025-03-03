@@ -124,6 +124,39 @@ class rsmi_temperature_type_t(IntEnum):
     RSMI_TEMP_TYPE_HBM_2 = 5
     RSMI_TEMP_TYPE_HBM_3 = 6
 
+class rsmi_temperature_type_t(IntEnum):
+    RSMI_TEMP_TYPE_EDGE = 0
+    RSMI_TEMP_TYPE_JUNCTION = 1
+    RSMI_TEMP_TYPE_VRAM = 2
+    RSMI_TEMP_TYPE_HBM_0 = 3
+    RSMI_TEMP_TYPE_HBM_1 = 4
+    RSMI_TEMP_TYPE_HBM_2 = 5
+    RSMI_TEMP_TYPE_HBM_3 = 6
+
+class rsmi_gpu_block_t(IntEnum):
+    RSMI_GPU_BLOCK_INVALID = 0x0000000000000000
+    RSMI_GPU_BLOCK_FIRST = 0x0000000000000001
+    RSMI_GPU_BLOCK_UMC = RSMI_GPU_BLOCK_FIRST
+    RSMI_GPU_BLOCK_SDMA = 0x0000000000000002
+    RSMI_GPU_BLOCK_GFX = 0x0000000000000004
+    RSMI_GPU_BLOCK_MMHUB = 0x0000000000000008
+    RSMI_GPU_BLOCK_ATHUB = 0x0000000000000010
+    RSMI_GPU_BLOCK_PCIE_BIF = 0x0000000000000020
+    RSMI_GPU_BLOCK_HDP = 0x0000000000000040
+    RSMI_GPU_BLOCK_XGMI_WAFL = 0x0000000000000080
+    RSMI_GPU_BLOCK_DF = 0x0000000000000100
+    RSMI_GPU_BLOCK_SMN = 0x0000000000000200
+    RSMI_GPU_BLOCK_SEM = 0x0000000000000400
+    RSMI_GPU_BLOCK_MP0 = 0x0000000000000800
+    RSMI_GPU_BLOCK_MP1 = 0x0000000000001000
+    RSMI_GPU_BLOCK_FUSE = 0x0000000000002000
+    RSMI_GPU_BLOCK_LAST = RSMI_GPU_BLOCK_FUSE
+    RSMI_GPU_BLOCK_RESERVED = 0x8000000000000000
+
+class rsmi_error_count_t(ctypes.Structure):
+    _fields_ = [('correctable_err', ctypes.c_uint64),
+                ('uncorrectable_err', ctypes.c_uint64)]    
+
 
 # --
 
@@ -299,6 +332,27 @@ class ROCMSMI(Collector):
         self.registerGPUMetric(self.__prefix + "vram_busy_percentage", "gauge", "Memory controller activity (%)")
         # utilization
         self.registerGPUMetric(self.__prefix + "utilization_percentage", "gauge", "GPU use (%)")
+        # RAS events
+        self.registerGPUMetric(self.__prefix + "ras_umc_correctable_count", "gauge", "number of correctable RAS events for UMC block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_umc_uncorrectable_count", "gauge", "number of uncorrectable RAS events for UMC block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_sdma_correctable_count", "gauge", "number of correctable RAS events for SDMA block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_sdma_uncorrectable_count", "gauge", "number of uncorrectable RAS events for SDMA block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_gfx_correctable_count", "gauge", "number of correctable RAS events for GFX block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_gfx_uncorrectable_count", "gauge", "number of uncorrectable RAS events for GFX block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_mmhub_correctable_count", "gauge", "number of correctable RAS events for MMHUB block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_mmhub_uncorrectable_count", "gauge", "number of uncorrectable RAS events for MMHUB block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_pcie_bif_correctable_count", "gauge", "number of correctable RAS events for PCIE_BIF block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_pcie_bif_uncorrectable_count", "gauge", "number of uncorrectable RAS events for PCIE_BIF block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_hdp_correctable_count", "gauge", "number of correctable RAS events for HDP block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_hdp_uncorrectable_count", "gauge", "number of uncorrectable RAS events for HDP block (count)")
+
+        self.registerGPUMetric(self.__prefix + "ras_xgmi_wafl_correctable_count", "gauge", "number of correctable RAS events for XGMI_WAFL block (count)")
+        self.registerGPUMetric(self.__prefix + "ras_xgmi_wafl_uncorrectable_count", "gauge", "number of uncorrectable RAS events for XGMI_WAFL block (count)")                
 
         return
 
@@ -345,6 +399,7 @@ class ROCMSMI(Collector):
         pcie_sent = ctypes.c_uint64(0)
         pcie_received = ctypes.c_uint64(0)
         pcie_max_pkt_sz = ctypes.c_uint64(0)
+        ras_counts = rsmi_error_count_t()
 
         for i in range(self.__num_gpus):
 
@@ -414,5 +469,44 @@ class ROCMSMI(Collector):
             metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
             self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
+
+            # --
+            # RAS counts
+
+            metric_base = self.__prefix + "ras_umc_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_UMC, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+            metric_base = self.__prefix + "ras_sdma_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_SDMA, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+            metric_base = self.__prefix + "ras_gfx_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_GFX, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+            metric_base = self.__prefix + "ras_mmhub_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_MMHUB, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+
+            metric_base = self.__prefix + "ras_pcie_bif_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_PCIE_BIF, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+            metric_base = self.__prefix + "ras_hdp_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_HDP, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+
+            metric_base = self.__prefix + "ras_xgmi_wafl_"
+            ret = self.__libsmi.rsmi_dev_ecc_count_get(device, rsmi_gpu_block_t.RSMI_GPU_BLOCK_XGMI_WAFL, ctypes.byref(ras_counts))
+            self.__GPUmetrics[metric_base + "correctable_count"].labels(card=gpuLabel).set(ras_counts.correctable_err)
+            self.__GPUmetrics[metric_base + "uncorrectable_count"].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)                                                            
 
         return
