@@ -52,6 +52,9 @@ app = Flask(__name__)
 terminateFlagEvent = threading.Event()
 dataDeliveredEvent = threading.Event()
 
+fomData = []
+fomLock = threading.Lock()
+
 
 def push_to_victoria_metrics(metrics_data_list, victoria_url):
     logging.info("Pushing local node telemetry to VictoriaMetrics endpoint -> %s" % victoria_url)
@@ -181,6 +184,8 @@ class Standalone:
         mem_mb_base = utils.getMemoryUsageMB()
         base_start_time = time.perf_counter()
         push_thread = None
+        fom_check_frequency_secs = 5
+        fom_check_duration = 0.0
 
         # ---
         # main sampling loop
@@ -214,9 +219,27 @@ class Standalone:
                     except:
                         pass
 
+                # periodically check for FOM data
+                if fom_check_duration > fom_check_frequency_secs:
+                    logging.info("Checking on fom data...")
+                    fom_check_duration = 0.0
+                    if fomData:
+                        with fomLock:
+                            for entry in fomData:
+                                entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
+                                self.__dataVM.append(entry)
+                            logging.info("Registered %i samples of FOM data" % len(fomData))
+#                            print(self.__dataVM)
+                            fomData.clear()
+
+#                    rocm_fom{instance="t003-004",name="Unknown"} 0.0 1740523467256
+#                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
+
+
                 self.sleep_microsecs(interval_microsecs)
                 # time.sleep(interval_secs)
                 push_check_duration += time.perf_counter() - start_time
+                fom_check_duration += time.perf_counter() - start_time
 
         except KeyboardInterrupt:
             logging.info("")
@@ -302,6 +325,22 @@ def terminate():
 def forbidden(e):
     return jsonify(error="Access denied"), 403
 
+@app.route("/fom", methods=['POST'])
+def figureOfMerit():
+    """Endpoint that can be used by user to provide application figure of merit"""
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        timestamp_msecs = int(datetime.now(timezone.utc).timestamp() * 1000.0)
+        value = data.get('value')
+        with fomLock:
+            fomData.append({"name":name,"value":value,"timestamp_msecs":timestamp_msecs})
+                            #[value,timestamp_msecs])
+        print("Name = %s, value = %f" % (name,value))
+        return jsonify({"status": "ok"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 @app.route("/metrics")
 def heartbeat():
