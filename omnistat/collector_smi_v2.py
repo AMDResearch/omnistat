@@ -111,6 +111,7 @@ class AMDSMI(Collector):
         self.__GPUMetrics = {}
         self.__metricMapping = {}
         self.__dumpMappedMetricsOnly = True
+        self.__eccBlocks = {}
         # verify minimum version met
         check_min_version("24.5.2")
 
@@ -178,6 +179,34 @@ class AMDSMI(Collector):
         self.__GPUMetrics["vram_used_percentage"] = Gauge(
             self.__prefix + "vram_used_percentage", "VRAM Memory in Use (%)", labelnames=["card"]
         )
+
+        # Register RAS ECC related metrics
+        for block in smi.AmdSmiGpuBlock:
+            if block == smi.AmdSmiGpuBlock.INVALID:
+                continue
+            logging.debug("Checking on %s ECC status.." % block)
+            status = smi.amdsmi_get_gpu_ecc_status(self.__devices[0], block)
+            if status == smi.AmdSmiRasErrState.ENABLED:
+                # check if queryable
+                try:
+                    status = smi.amdsmi_get_gpu_ecc_count(self.__devices[0],block)
+                    key = "%s" % block
+                    key = key.removeprefix("AmdSmiGpuBlock.").lower()
+                    self.__eccBlocks[key] = (block)
+                    metric = "ras_%s_correctable_count" % key
+                    self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
+                        "number of correctable RAS events for %s block (count)" % key, labelnames=["card"]
+                    )
+                    metric = "ras_%s_uncorrectable_count" % key
+                    self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
+                        "number of uncorrectable RAS events for %s block (count)" % key, labelnames=["card"]
+                    )
+                    metric = "ras_%s_deferred_count" % key
+                    self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
+                        "number of deferred RAS events for %s block (count)" % key, labelnames=["card"]
+                    )
+                except:
+                    logging.debug("Skipping RAS definition for %s" % block)
 
         # Cache valid primary temperature location and register with location label
         dev0 = self.__devices[0]
@@ -266,6 +295,14 @@ class AMDSMI(Collector):
                 self.__GPUMetrics["temperature_memory_celsius"].labels(
                     card=cardId, location=self.__temp_memory_location_name
                 ).set(hbm_temperature)
+
+            # RAS counts
+            for key, block in self.__eccBlocks.items():
+                ecc_error_counts = smi.amdsmi_get_gpu_ecc_count(device,block)
+                metric = "ras_%s_correctable_count" % key
+                self.__GPUMetrics["ras_%s_correctable_count" % key].labels(card=cardId).set(ecc_error_counts['correctable_count'])
+                self.__GPUMetrics["ras_%s_uncorrectable_count" % key].labels(card=cardId).set(ecc_error_counts['uncorrectable_count'])
+                self.__GPUMetrics["ras_%s_deferred_count" % key].labels(card=cardId).set(ecc_error_counts['deferred_count'])
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
