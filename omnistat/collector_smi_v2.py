@@ -30,15 +30,15 @@ collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following
 example highlights example metrics:
 
-amdsmi_vram_total_bytes{card="0"} 3.4342961152e+010
-amdsmi_temperature_celsius{card="0",location="edge"} 42.0
-amdsmi_temperature_memory_celsius{card="0",location="hbm_0"} 46.0
-amdsmi_utilization_percentage{card="0"} 0.0
-amdsmi_vram_used_percentage{card="0"} 0.0
-amdsmi_vram_busy_percentage{card="0"} 22.0
-amdsmi_average_socket_power_watts{card="0"} 35.0
-amdsmi_mlck_clock_mhz{card="0"} 1200.0
-amdsmi_slck_clock_mhz{card="0"} 300.0
+rocm_vram_total_bytes{card="0"} 3.4342961152e+010
+rocm_temperature_celsius{card="0",location="edge"} 42.0
+rocm_temperature_memory_celsius{card="0",location="hbm_0"} 46.0
+rocm_utilization_percentage{card="0"} 0.0
+rocm_vram_used_percentage{card="0"} 0.0
+rocm_vram_busy_percentage{card="0"} 22.0
+rocm_average_socket_power_watts{card="0"} 35.0
+rocm_mlck_clock_mhz{card="0"} 1200.0
+rocm_slck_clock_mhz{card="0"} 300.0
 """
 
 import logging
@@ -66,6 +66,11 @@ def get_gpu_metrics(device):
             continue
         # Average of list values
         elif type(v) is list:
+            if any(isinstance(item,list) for item in v):
+                # Filter list of lists
+                result[k] = 0
+                continue
+
             v = [x for x in v if type(x) not in [bool, str]]
             if not v:
                 # Filter empty lists
