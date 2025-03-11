@@ -10,7 +10,7 @@ from omnistat.collector_base import Collector
 
 class rocprofiler_counter_value_t(ctypes.Structure):
     _fields_ = [
-        ("value", ctypes.c_uint64),
+        ("value", ctypes.c_double),
     ]
 
 
