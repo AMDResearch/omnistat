@@ -20,8 +20,9 @@ basis). Relevant target metrics include:
 * High-bandwidth memory (HBM) usage
 * GPU power
 * GPU temperature
-* GPU clock frequency (Mhz)
-* GPU memory clock frequency (Mhz)
+* GPU clock frequency
+* GPU memory clock frequency
+* GPU block error counts
 * GPU throttling events
 
 The data can be scraped for detailed visualization and analysis via a
