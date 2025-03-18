@@ -490,7 +490,11 @@ class ROCMSMI(Collector):
             if self.__ecc_ras_monitoring:
                 for key, block in self.__eccBlocks.items():
                     ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block, ctypes.byref(ras_counts))
-                    self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(card=gpuLabel).set(ras_counts.correctable_err)
-                    self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+                    self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(card=gpuLabel).set(
+                        ras_counts.correctable_err
+                    )
+                    self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(
+                        ras_counts.uncorrectable_err
+                    )
 
         return
