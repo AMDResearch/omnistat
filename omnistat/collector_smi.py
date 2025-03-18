@@ -124,6 +124,7 @@ class rsmi_temperature_type_t(IntEnum):
     RSMI_TEMP_TYPE_HBM_2 = 5
     RSMI_TEMP_TYPE_HBM_3 = 6
 
+
 class rsmi_temperature_type_t(IntEnum):
     RSMI_TEMP_TYPE_EDGE = 0
     RSMI_TEMP_TYPE_JUNCTION = 1
@@ -133,9 +134,8 @@ class rsmi_temperature_type_t(IntEnum):
     RSMI_TEMP_TYPE_HBM_2 = 5
     RSMI_TEMP_TYPE_HBM_3 = 6
 
+
 class rsmi_gpu_block_t(IntEnum):
-#    RSMI_GPU_BLOCK_INVALID = 0x0000000000000000
-#    RSMI_GPU_BLOCK_FIRST = 0x0000000000000001
     RSMI_GPU_BLOCK_UMC = 0x0000000000000001
     RSMI_GPU_BLOCK_SDMA = 0x0000000000000002
     RSMI_GPU_BLOCK_GFX = 0x0000000000000004
@@ -150,8 +150,7 @@ class rsmi_gpu_block_t(IntEnum):
     RSMI_GPU_BLOCK_MP0 = 0x0000000000000800
     RSMI_GPU_BLOCK_MP1 = 0x0000000000001000
     RSMI_GPU_BLOCK_FUSE = 0x0000000000002000
-#    RSMI_GPU_BLOCK_LAST = RSMI_GPU_BLOCK_FUSE
-#    RSMI_GPU_BLOCK_RESERVED = 0x8000000000000000
+
 
 class rsmi_ras_err_state_t(ctypes.c_int):
     RSMI_RAS_ERR_STATE_NONE = 0
@@ -164,16 +163,16 @@ class rsmi_ras_err_state_t(ctypes.c_int):
     RSMI_RAS_ERR_STATE_LAST = RSMI_RAS_ERR_STATE_ENABLED
     RSMI_RAS_ERR_STATE_INVALID = 0xFFFFFFFF
 
+
 class rsmi_error_count_t(ctypes.Structure):
-    _fields_ = [('correctable_err', ctypes.c_uint64),
-                ('uncorrectable_err', ctypes.c_uint64)]    
+    _fields_ = [("correctable_err", ctypes.c_uint64), ("uncorrectable_err", ctypes.c_uint64)]
 
 
 # --
 
 
 class ROCMSMI(Collector):
-    def __init__(self, runtimeConfig = None):
+    def __init__(self, runtimeConfig=None):
         logging.debug("Initializing ROCm SMI data collector")
         self.__prefix = "rocm_"
         self.__schema = 1.0
@@ -182,7 +181,7 @@ class ROCMSMI(Collector):
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
         self.__eccBlocks = {}
 
-        rocm_path=runtimeConfig["collector_rocm_path"]
+        rocm_path = runtimeConfig["collector_rocm_path"]
 
         # load smi runtime
         smi_lib = rocm_path + "/lib/librocm_smi64.so"
@@ -353,18 +352,22 @@ class ROCMSMI(Collector):
             ras_counts = rsmi_error_count_t()
             for block in rsmi_gpu_block_t:
                 # check if RAS enabled for this block
-                self.__libsmi.rsmi_dev_ecc_status_get(device,block, ctypes.byref(state))
+                self.__libsmi.rsmi_dev_ecc_status_get(device, block, ctypes.byref(state))
                 if state.value == rsmi_ras_err_state_t.RSMI_RAS_ERR_STATE_ENABLED:
                     # check if RAS counts available for this block
-                    ret = self.__libsmi.rsmi_dev_ecc_count_get(device,block,ctypes.byref(ras_counts))
+                    ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block, ctypes.byref(ras_counts))
                     if ret == 0:
                         key = "%s" % block
                         key = key.removeprefix("rsmi_gpu_block_t.RSMI_GPU_BLOCK_").lower()
-                        self.__eccBlocks[key] = (block)
+                        self.__eccBlocks[key] = block
                         metric = self.__prefix + "ras_%s_correctable_count" % key
-                        self.registerGPUMetric(metric, "gauge", "number of correctable RAS events for %s block (count)" % key)
+                        self.registerGPUMetric(
+                            metric, "gauge", "number of correctable RAS events for %s block (count)" % key
+                        )
                         metric = self.__prefix + "ras_%s_uncorrectable_count" % key
-                        self.registerGPUMetric(metric, "gauge", "number of uncorrectable RAS events for %s block (count)" % key)
+                        self.registerGPUMetric(
+                            metric, "gauge", "number of uncorrectable RAS events for %s block (count)" % key
+                        )
 
         return
 
@@ -486,9 +489,8 @@ class ROCMSMI(Collector):
             # RAS counts
             if self.__ecc_ras_monitoring:
                 for key, block in self.__eccBlocks.items():
-                    i=0
                     ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block, ctypes.byref(ras_counts))
-                    # self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(card=gpuLabel).set(ras_counts.correctable_err)
-                    # self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
+                    self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(card=gpuLabel).set(ras_counts.correctable_err)
+                    self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(ras_counts.uncorrectable_err)
 
         return
