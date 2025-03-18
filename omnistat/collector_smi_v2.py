@@ -66,7 +66,7 @@ def get_gpu_metrics(device):
             continue
         # Average of list values
         elif type(v) is list:
-            if any(isinstance(item,list) for item in v):
+            if any(isinstance(item, list) for item in v):
                 # Filter list of lists
                 result[k] = 0
                 continue
@@ -100,7 +100,7 @@ def check_min_version(minVersion):
 
 
 class AMDSMI(Collector):
-    def __init__(self, runtimeConfig = None):
+    def __init__(self, runtimeConfig=None):
         logging.debug("Initializing AMD SMI data collector")
         self.__prefix = "rocm_"
         self.__schema = 1.0
@@ -191,21 +191,27 @@ class AMDSMI(Collector):
                 if status == smi.AmdSmiRasErrState.ENABLED:
                     # check if queryable
                     try:
-                        status = smi.amdsmi_get_gpu_ecc_count(self.__devices[0],block)
+                        status = smi.amdsmi_get_gpu_ecc_count(self.__devices[0], block)
                         key = "%s" % block
                         key = key.removeprefix("AmdSmiGpuBlock.").lower()
-                        self.__eccBlocks[key] = (block)
+                        self.__eccBlocks[key] = block
                         metric = "ras_%s_correctable_count" % key
-                        self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
-                            "number of correctable RAS events for %s block (count)" % key, labelnames=["card"]
+                        self.__GPUMetrics[metric] = Gauge(
+                            self.__prefix + metric,
+                            "number of correctable RAS events for %s block (count)" % key,
+                            labelnames=["card"],
                         )
                         metric = "ras_%s_uncorrectable_count" % key
-                        self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
-                            "number of uncorrectable RAS events for %s block (count)" % key, labelnames=["card"]
+                        self.__GPUMetrics[metric] = Gauge(
+                            self.__prefix + metric,
+                            "number of uncorrectable RAS events for %s block (count)" % key,
+                            labelnames=["card"],
                         )
                         metric = "ras_%s_deferred_count" % key
-                        self.__GPUMetrics[metric] = Gauge(self.__prefix + metric, 
-                            "number of deferred RAS events for %s block (count)" % key, labelnames=["card"]
+                        self.__GPUMetrics[metric] = Gauge(
+                            self.__prefix + metric,
+                            "number of deferred RAS events for %s block (count)" % key,
+                            labelnames=["card"],
                         )
                     except:
                         logging.debug("Skipping RAS definition for %s" % block)
@@ -301,11 +307,17 @@ class AMDSMI(Collector):
             # RAS counts
             if self.__ecc_ras_monitoring:
                 for key, block in self.__eccBlocks.items():
-                    ecc_error_counts = smi.amdsmi_get_gpu_ecc_count(device,block)
+                    ecc_error_counts = smi.amdsmi_get_gpu_ecc_count(device, block)
                     metric = "ras_%s_correctable_count" % key
-                    self.__GPUMetrics["ras_%s_correctable_count" % key].labels(card=cardId).set(ecc_error_counts['correctable_count'])
-                    self.__GPUMetrics["ras_%s_uncorrectable_count" % key].labels(card=cardId).set(ecc_error_counts['uncorrectable_count'])
-                    self.__GPUMetrics["ras_%s_deferred_count" % key].labels(card=cardId).set(ecc_error_counts['deferred_count'])
+                    self.__GPUMetrics["ras_%s_correctable_count" % key].labels(card=cardId).set(
+                        ecc_error_counts["correctable_count"]
+                    )
+                    self.__GPUMetrics["ras_%s_uncorrectable_count" % key].labels(card=cardId).set(
+                        ecc_error_counts["uncorrectable_count"]
+                    )
+                    self.__GPUMetrics["ras_%s_deferred_count" % key].labels(card=cardId).set(
+                        ecc_error_counts["deferred_count"]
+                    )
 
             # other stats available via get_gpu_metrics
             metrics = get_gpu_metrics(device)
