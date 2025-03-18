@@ -80,6 +80,7 @@ class Monitor:
         self.runtimeConfig["collector_enable_events"] = config["omnistat.collectors"].getboolean("enable_events", False)
         self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8001)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
+        self.runtimeConfig["collector_ras_ecc"] = config["omnistat.collectors"].getboolean("enable_ras_ecc", True)
 
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
         # convert comma-separated string into list
@@ -127,11 +128,11 @@ class Monitor:
         if self.runtimeConfig["collector_enable_rocm_smi"]:
             from omnistat.collector_smi import ROCMSMI
 
-            self.__collectors.append(ROCMSMI(rocm_path=self.runtimeConfig["collector_rocm_path"]))
+            self.__collectors.append(ROCMSMI(runtimeConfig=self.runtimeConfig))
         if self.runtimeConfig["collector_enable_amd_smi"]:
             from omnistat.collector_smi_v2 import AMDSMI
 
-            self.__collectors.append(AMDSMI())
+            self.__collectors.append(AMDSMI(runtimeConfig=self.runtimeConfig))
         if self.runtimeConfig["collector_enable_amd_smi_process"]:
             from omnistat.collector_smi_process import AMDSMIProcess
 
