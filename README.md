@@ -25,9 +25,9 @@ basis). Relevant target metrics include:
 * GPU block error counts
 * GPU throttling events
 * Inventory information
- ** ROCm driver version
- ** GPU type
- ** GPU vBIOS version
+  * ROCm driver version
+  * GPU type
+  * GPU vBIOS version
 
 The data can be scraped for detailed visualization and analysis via a
 combination of [Prometheus](https://prometheus.io/) /
