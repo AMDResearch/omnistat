@@ -98,7 +98,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -154,9 +154,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "uniqueValues"
-          ],
+          "calcs": [],
           "fields": "/^type$/",
           "values": false
         },
@@ -165,7 +163,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -243,7 +241,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -319,7 +317,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -388,7 +386,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -465,7 +463,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -541,7 +539,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "8.5.3",
       "targets": [
         {
           "datasource": {
@@ -572,16 +570,19 @@
           },
           "custom": {
             "fillOpacity": 70,
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
             "lineWidth": 1,
             "spanNulls": false
           },
           "mappings": [
+            {
+              "options": {
+                "1": {
+                  "index": 1,
+                  "text": "Allocated"
+                }
+              },
+              "type": "value"
+            },
             {
               "options": {
                 "match": "nan",
@@ -600,10 +601,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -611,7 +608,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 24,
         "x": 0,
         "y": 9
@@ -621,29 +618,30 @@
       "options": {
         "alignValue": "left",
         "legend": {
-          "displayMode": "list",
+          "displayMode": "hidden",
           "placement": "bottom",
           "showLegend": false
         },
         "mergeValues": true,
         "rowHeight": 0.9,
-        "showValue": "auto",
+        "showValue": "never",
         "tooltip": {
-          "mode": "multi",
+          "hideZeros": false,
+          "mode": "none",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.6.0-83314",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${source}"
+            "uid": "rjpu9PXSz"
           },
           "editorMode": "code",
-          "expr": "count by (job,instance,jobid) (rmsjob_info{instance=\"$instance\"})",
+          "expr": "count by (job,instance,jobid) (rmsjob_info{instance=\"$instance\",jobid!=\"\"})",
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "{{jobid}}",
           "range": true,
           "refId": "A"
         }
@@ -651,16 +649,19 @@
       "title": "Allocation Summary",
       "transformations": [
         {
+          "disabled": true,
           "id": "seriesToRows",
           "options": {}
         },
         {
+          "disabled": true,
           "id": "extractFields",
           "options": {
             "source": "Metric"
           }
         },
         {
+          "disabled": true,
           "id": "organize",
           "options": {
             "excludeByName": {
@@ -678,13 +679,22 @@
           }
         },
         {
+          "disabled": true,
           "id": "calculateField",
           "options": {
             "alias": "Job",
             "binary": {
-              "left": "jobid",
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "jobid"
+                }
+              },
               "operator": "*",
-              "right": "1"
+              "reducer": "sum",
+              "right": {
+                "fixed": "1"
+              }
             },
             "cumulative": {
               "field": "jobid",
@@ -704,303 +714,208 @@
       "type": "state-timeline"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
-      },
-      "id": 9,
-      "panels": [],
-      "title": "GPU - Utilization",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "scaleDistribution": {
-              "type": "linear"
-            }
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
         "y": 15
       },
-      "id": 6,
-      "options": {
-        "calculate": false,
-        "cellGap": 1,
-        "cellValues": {
-          "decimals": 0,
-          "unit": "percent"
-        },
-        "color": {
-          "exponent": 0.5,
-          "fill": "dark-orange",
-          "max": 100,
-          "min": 0,
-          "mode": "scheme",
-          "reverse": false,
-          "scale": "exponential",
-          "scheme": "RdYlGn",
-          "steps": 64
-        },
-        "exemplars": {
-          "color": "rgba(255,0,255,0.7)"
-        },
-        "filterValues": {
-          "le": 1e-09
-        },
-        "legend": {
-          "show": true
-        },
-        "rowsFrame": {
-          "layout": "auto"
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "single",
-          "showColorScale": false,
-          "yHistogram": false
-        },
-        "yAxis": {
-          "axisPlacement": "left",
-          "reverse": false
-        }
-      },
-      "pluginVersion": "11.3.0-76576",
-      "targets": [
+      "id": 9,
+      "panels": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${source}"
           },
-          "editorMode": "code",
-          "expr": "rocm_utilization_percentage{instance=\"$instance\"}",
-          "instant": false,
-          "legendFormat": "GPU ID {{card}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "GPU Utilization Heatmap",
-      "type": "heatmap"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 100,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 29,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          },
-          "unit": "percent"
+          "pluginVersion": "11.3.0-76576",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "(rocm_utilization_percentage{instance=\"$instance\"})",
+              "instant": false,
+              "legendFormat": "GPU ID {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utlization (%)",
+          "type": "timeseries"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 24
-      },
-      "id": 29,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.3.0-76576",
-      "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${source}"
           },
-          "editorMode": "code",
-          "expr": "(rocm_utilization_percentage{instance=\"$instance\"})",
-          "instant": false,
-          "legendFormat": "GPU ID {{card}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "GPU Utlization (%)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${source}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMax": 100,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "blue",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
           },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMax": 100,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 25
+          },
+          "id": 107,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
             },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "blue",
-                "value": null
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 33
-      },
-      "id": 107,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.3.0-76576",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "editorMode": "code",
-          "expr": "rocm_vram_used_percentage{instance=\"$instance\"}",
-          "instant": false,
-          "legendFormat": "GPU ID {{card}}",
-          "range": true,
-          "refId": "A"
+          "pluginVersion": "11.3.0-76576",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "rocm_vram_used_percentage{instance=\"$instance\"}",
+              "instant": false,
+              "legendFormat": "GPU ID {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Memory Utlization (%)",
+          "type": "timeseries"
         }
       ],
-      "title": "GPU Memory Utlization (%)",
-      "type": "timeseries"
+      "title": "GPU - Utilization",
+      "type": "row"
     },
     {
       "collapsed": true,
@@ -1008,7 +923,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 16
       },
       "id": 40,
       "panels": [
@@ -1024,15 +939,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1041,7 +952,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1063,7 +973,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -1083,7 +994,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 43
+            "y": 17
           },
           "id": 102,
           "options": {
@@ -1131,15 +1042,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1148,7 +1055,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1170,7 +1076,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -1190,7 +1097,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 100
+            "y": 26
           },
           "id": 129,
           "options": {
@@ -1238,15 +1145,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1255,7 +1158,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1277,7 +1179,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1289,7 +1192,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 109
+            "y": 35
           },
           "id": 101,
           "options": {
@@ -1337,15 +1240,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1354,7 +1253,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1376,7 +1274,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1388,7 +1287,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 118
+            "y": 44
           },
           "id": 114,
           "options": {
@@ -1436,15 +1335,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1453,7 +1348,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1475,7 +1369,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   }
                 ]
               },
@@ -1487,7 +1382,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 126
+            "y": 52
           },
           "id": 115,
           "options": {
@@ -1533,7 +1428,395 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 17
+      },
+      "id": 131,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
+          "id": 133,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "rjpu9PXSz"
+              },
+              "editorMode": "code",
+              "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Correctable Errors by GPU ID",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
+          "id": 134,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "rjpu9PXSz"
+              },
+              "editorMode": "code",
+              "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Uncorrectable Errors by GPU ID",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 26
+          },
+          "id": 135,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "rjpu9PXSz"
+              },
+              "editorMode": "code",
+              "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Correctable Errors by Block",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "rocm_ras_(.*)_correctable_count",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 26
+          },
+          "id": 136,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "rjpu9PXSz"
+              },
+              "editorMode": "code",
+              "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Uncorrectable Errors by Block",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "rocm_ras_(.*)_uncorrectable_count",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU - RAS",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
       },
       "id": 116,
       "panels": [
@@ -1549,13 +1832,9 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1564,7 +1843,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1602,7 +1880,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 35
           },
           "id": 119,
           "options": {
@@ -1648,15 +1926,11 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "axisSoftMax": 100,
                 "axisSoftMin": 0,
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1665,7 +1939,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1704,7 +1977,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 52
+            "y": 43
           },
           "id": 120,
           "options": {
@@ -1748,7 +2021,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 19
       },
       "id": 117,
       "panels": [
@@ -1764,13 +2037,9 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1779,7 +2048,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1817,7 +2085,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 343
+            "y": 18
           },
           "id": 121,
           "options": {
@@ -1875,7 +2143,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 20
       },
       "id": 118,
       "panels": [
@@ -1891,13 +2159,9 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1906,7 +2170,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1945,7 +2208,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 78
+            "y": 107
           },
           "id": 122,
           "options": {
@@ -2013,13 +2276,9 @@
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
-                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -2028,7 +2287,6 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -2067,7 +2325,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 115
           },
           "id": 123,
           "options": {
@@ -2133,7 +2391,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 21
       },
       "id": 110,
       "panels": [
@@ -2149,9 +2407,7 @@
               },
               "custom": {
                 "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
+                "displayMode": "auto",
                 "inspect": false
               },
               "mappings": [],
@@ -2159,7 +2415,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2187,7 +2444,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 394
+            "y": 108
           },
           "id": 111,
           "options": {
@@ -2203,7 +2460,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "8.5.3",
           "targets": [
             {
               "datasource": {
@@ -2291,7 +2548,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 22
       },
       "id": 98,
       "panels": [
@@ -2307,9 +2564,7 @@
               },
               "custom": {
                 "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
+                "displayMode": "auto",
                 "filterable": true,
                 "inspect": false
               },
@@ -2318,7 +2573,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2437,7 +2693,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 403
+            "y": 23
           },
           "id": 99,
           "interval": "5s",
@@ -2454,7 +2710,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "8.5.3",
           "targets": [
             {
               "datasource": {
@@ -2619,9 +2875,8 @@
       "type": "row"
     }
   ],
-  "preload": false,
   "refresh": "",
-  "schemaVersion": 40,
+  "schemaVersion": 36,
   "tags": [
     "omnistat"
   ],
@@ -2630,6 +2885,7 @@
       {
         "hide": 2,
         "includeAll": false,
+        "multi": false,
         "name": "source",
         "options": [],
         "query": "prometheus",
@@ -2651,8 +2907,10 @@
         },
         "definition": "label_values(rocm_num_gpus,instance)",
         "description": "",
+        "hide": 0,
         "includeAll": false,
         "label": "Node",
+        "multi": false,
         "name": "instance",
         "options": [],
         "query": {
@@ -2661,14 +2919,15 @@
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "/(?<value>(?<text>[\\w\\-\\.]+):[\\d]+)/",
+          "regex": "/(?<value>(?<text>[\\w\\-\\.]+):[\\d]+)/",
+        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-2d",
     "to": "now"
   },
   "timepicker": {
