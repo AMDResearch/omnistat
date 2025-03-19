@@ -1,41 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_GRAFANACLOUD-KOOMIE-PROM",
-      "label": "grafanacloud-koomie-prom",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.6.0-84491.patch1-84812"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -67,7 +30,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "description": "Aggregating all RAS events in each node. Only showing blocks/nodes with errors. A panel with \"No data\" indicates no errors have been reported during the selected time window.",
       "fieldConfig": {
@@ -153,7 +116,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -166,7 +129,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -180,7 +143,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -194,7 +157,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -208,7 +171,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -222,7 +185,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -236,7 +199,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -263,7 +226,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "description": "Aggregating all RAS events in each node. Only showing blocks/nodes with errors.  A panel with \"No data\" indicates no errors have been reported during the selected time window.\n",
       "fieldConfig": {
@@ -349,7 +312,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -362,7 +325,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -376,7 +339,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -390,7 +353,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -404,7 +367,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -418,7 +381,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -432,7 +395,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -459,7 +422,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "fieldConfig": {
         "defaults": {
@@ -540,7 +503,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_correctable_count\"})",
@@ -555,7 +518,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "description": "",
       "fieldConfig": {
@@ -637,7 +600,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_uncorrectable_count\"})",
@@ -652,7 +615,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "description": "A panel with \"No data\" indicates no errors have been reported during the selected time window.",
       "fieldConfig": {
@@ -714,7 +677,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_correctable_count\"})",
@@ -791,7 +754,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+        "uid": "${source}"
       },
       "description": "A panel with \"No data\" indicates no errors have been reported during the selected time window.",
       "fieldConfig": {
@@ -853,7 +816,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_GRAFANACLOUD-KOOMIE-PROM}"
+            "uid": "${source}"
           },
           "editorMode": "code",
           "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_uncorrectable_count\"})",
@@ -934,14 +897,13 @@
   "templating": {
     "list": [
       {
-        "current": {},
         "hide": 2,
         "includeAll": false,
         "name": "source",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
-        "regex": "Prometheus-m2m-oci",
+        "regex": "",
         "type": "datasource"
       }
     ]
