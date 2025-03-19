@@ -29,11 +29,15 @@ collected.
   - [Job Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-job.json):
     provides detailed time-series data, load distribution, and other metrics for
     a single job.
+
 - *Standalone* dashboards are meant to work without a resource manager.
   - [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
     provides an overview of the system and cluster-level telemetry.
   - [Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-node.json):
     detailed metrics for a single node in the cluster.
+
+- *RAS* dashboards are meant to summarize RAS events collected across the cluster.
+  - [RAS Summary](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/ras-summary.json): provides an overview of RAS GPU counters across all hosts (with or without resource manager integration).
 
 
 ## Grafana server
