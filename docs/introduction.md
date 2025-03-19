@@ -18,8 +18,10 @@ Omnistat provides a set of utilities to aid cluster administrators or individual
 * High-bandwidth memory (HBM) usage
 * GPU power
 * GPU temperature(s)
-* GPU clock frequency (Mhz)
-* GPU memory clock frequency (Mhz)
+* GPU clock frequency
+* GPU memory clock frequency
+* RAS information:
+  * Error counts per GPU block
 * Inventory information:
   * ROCm driver version
   * GPU type

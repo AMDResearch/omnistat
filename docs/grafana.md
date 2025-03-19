@@ -37,7 +37,7 @@ collected.
     detailed metrics for a single node in the cluster.
 
 - *RAS* dashboards are meant to summarize RAS events collected across the cluster.
-  - [RAS Summary](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/ras-summary.json): provides an overview of RAS GPU counters across all hosts (with or without resource manager integration).
+  - [RAS Summary](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/ras-summary.json): provides an overview of RAS GPU counters across all hosts (with or without resource manager integration). Can be used in combination with RMS-based Node Dashboard above to isolate RAS events to specific hosts and user jobs.
 
 
 ## Grafana server
