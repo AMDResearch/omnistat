@@ -232,9 +232,6 @@ class Standalone:
 #                            print(self.__dataVM)
                             fomData.clear()
 
-#                    rocm_fom{instance="t003-004",name="Unknown"} 0.0 1740523467256
-#                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
-
 
                 self.sleep_microsecs(interval_microsecs)
                 # time.sleep(interval_secs)
@@ -249,6 +246,21 @@ class Standalone:
         # ---
 
         duration_secs = time.perf_counter() - base_start_time
+
+        if fomData:
+            logging.info("Final check on fom data...")
+            with fomLock:
+                for entry in fomData:
+                    entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
+                    self.__dataVM.append(entry)
+                logging.info("Registered %i samples of FOM data" % len(fomData))
+                fomData.clear()
+            dataToPush = self.__dataVM
+            push_thread = threading.Thread(
+                target=push_to_victoria_metrics, args=(dataToPush, self.__victoriaURL)
+            )
+            push_thread.start()
+            self.__dataVM = []
 
         if push_thread is not None and push_thread.is_alive():
             logging.info("Last metric push from polling loop is still running - blocking till complete.")
