@@ -22,7 +22,7 @@ collected.
   SLURM.
   - [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-global.json):
     provides an overview of the system, cluster-level telemetry for allocated
-    and unallocated nodes, and job indices.
+    and unallocated nodes, RAS counters, and job indices.
   - [Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/rms-node.json):
     job allocation timeline and detailed metrics for a single node in the
     cluster.
@@ -32,12 +32,10 @@ collected.
 
 - *Standalone* dashboards are meant to work without a resource manager.
   - [Global Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-global.json):
-    provides an overview of the system and cluster-level telemetry.
+    provides an overview of the system, cluster-level telemetry, and RAS
+    counters.
   - [Node Dashboard](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/standalone-node.json):
     detailed metrics for a single node in the cluster.
-
-- *RAS* dashboards are meant to summarize RAS events collected across the cluster.
-  - [RAS Summary](https://github.com/AMDResearch/omnistat/blob/main/grafana/json-models/ras-summary.json): provides an overview of RAS GPU counters across all hosts (with or without resource manager integration). Can be used in combination with RMS-based Node Dashboard above to isolate RAS events to specific hosts and user jobs.
 
 
 ## Grafana server
