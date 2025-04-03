@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 107,
+  "id": 15,
   "links": [
     {
       "asDropdown": false,
@@ -98,7 +98,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -165,7 +165,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -243,7 +243,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -319,7 +319,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -388,7 +388,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -465,7 +465,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -541,7 +541,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -629,11 +629,12 @@
         "rowHeight": 0.9,
         "showValue": "auto",
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -784,7 +785,7 @@
           "reverse": false
         }
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -879,12 +880,13 @@
           "sortDesc": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -979,12 +981,13 @@
           "sortDesc": false
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76576",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1096,12 +1099,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1190,7 +1194,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 100
+            "y": 60
           },
           "id": 129,
           "options": {
@@ -1203,12 +1207,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1289,7 +1294,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 109
+            "y": 69
           },
           "id": 101,
           "options": {
@@ -1302,12 +1307,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1388,7 +1394,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 118
+            "y": 78
           },
           "id": 114,
           "options": {
@@ -1401,12 +1407,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1487,7 +1494,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 126
+            "y": 86
           },
           "id": 115,
           "options": {
@@ -1500,12 +1507,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1586,7 +1594,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 134
+            "y": 94
           },
           "id": 108,
           "interval": "1s",
@@ -1600,12 +1608,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1635,6 +1644,422 @@
         "w": 24,
         "x": 0,
         "y": 43
+      },
+      "id": 131,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 204
+          },
+          "id": 130,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Correctable Errors by GPU ID",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 204
+          },
+          "id": 132,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Uncorrectable Errors by GPU ID",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 212
+          },
+          "id": 133,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Correctable Errors by Block",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "rocm_ras_(.*)_correctable_count",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 212
+          },
+          "id": 134,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
+              "legendFormat": "{{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Uncorrectable Errors by Block",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "rocm_ras_(.*)_uncorrectable_count",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU - Reliability, Availability, and Serviceability (RAS)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 44
       },
       "id": 116,
       "panels": [
@@ -1687,8 +2112,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1703,7 +2127,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 303
           },
           "id": 119,
           "options": {
@@ -1788,8 +2212,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1805,7 +2228,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 52
+            "y": 311
           },
           "id": 120,
           "options": {
@@ -1849,7 +2272,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 45
       },
       "id": 117,
       "panels": [
@@ -1918,7 +2341,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 343
+            "y": 602
           },
           "id": 121,
           "options": {
@@ -1976,7 +2399,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 46
       },
       "id": 118,
       "panels": [
@@ -2029,8 +2452,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2046,7 +2468,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 78
+            "y": 337
           },
           "id": 122,
           "options": {
@@ -2151,8 +2573,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2168,7 +2589,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 345
           },
           "id": 123,
           "options": {
@@ -2234,7 +2655,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 47
       },
       "id": 110,
       "panels": [
@@ -2288,7 +2709,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 394
+            "y": 48
           },
           "id": 111,
           "options": {
@@ -2304,7 +2725,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2392,7 +2813,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 48
       },
       "id": 98,
       "panels": [
@@ -2538,7 +2959,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 403
+            "y": 662
           },
           "id": 99,
           "interval": "5s",

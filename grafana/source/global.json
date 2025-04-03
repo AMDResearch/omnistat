@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 102,
+  "id": 13,
   "links": [
     {
       "asDropdown": false,
@@ -110,7 +110,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -179,7 +179,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -255,7 +255,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -331,7 +331,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -403,7 +403,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -474,7 +474,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -551,7 +551,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -627,7 +627,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -699,7 +699,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -770,7 +770,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -843,7 +843,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -929,7 +929,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1020,7 +1020,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 14
+            "y": 931
           },
           "id": 110,
           "options": {
@@ -1139,7 +1139,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 14
+            "y": 931
           },
           "id": 112,
           "options": {
@@ -1263,7 +1263,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 682
+            "y": 1599
           },
           "id": 113,
           "options": {
@@ -1390,7 +1390,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 682
+            "y": 1599
           },
           "id": 140,
           "options": {
@@ -1537,7 +1537,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 688
+            "y": 1605
           },
           "id": 139,
           "options": {
@@ -1768,7 +1768,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 11138
+            "y": 12055
           },
           "id": 99,
           "interval": "5s",
@@ -2038,7 +2038,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 1959
+            "y": 2876
           },
           "id": 12,
           "options": {
@@ -2208,7 +2208,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 1959
+            "y": 2876
           },
           "id": 20,
           "options": {
@@ -2375,7 +2375,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 2387
+            "y": 3304
           },
           "id": 21,
           "options": {
@@ -2580,7 +2580,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 2387
+            "y": 3304
           },
           "id": 22,
           "options": {
@@ -2800,7 +2800,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 12848
+            "y": 13765
           },
           "id": 28,
           "options": {
@@ -3083,7 +3083,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2866
+            "y": 3783
           },
           "id": 23,
           "options": {
@@ -3218,7 +3218,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 19
+            "y": 96
           },
           "id": 26,
           "options": {
@@ -3229,12 +3229,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -3302,7 +3303,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 137
+            "y": 753
           },
           "id": 6,
           "options": {
@@ -3346,7 +3347,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -3436,7 +3437,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 146
+            "y": 762
           },
           "id": 29,
           "options": {
@@ -3544,7 +3545,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 146
+            "y": 762
           },
           "id": 103,
           "options": {
@@ -3674,7 +3675,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 937
           },
           "id": 102,
           "options": {
@@ -3790,7 +3791,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 29
+            "y": 946
           },
           "id": 38,
           "options": {
@@ -3906,7 +3907,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 29
+            "y": 946
           },
           "id": 39,
           "options": {
@@ -4022,7 +4023,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 38
+            "y": 955
           },
           "id": 109,
           "options": {
@@ -4144,7 +4145,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2869
+            "y": 98
           },
           "id": 106,
           "options": {
@@ -4157,12 +4158,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4252,7 +4254,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 3214
+            "y": 392
           },
           "id": 119,
           "options": {
@@ -4265,12 +4267,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4360,7 +4363,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 3223
+            "y": 401
           },
           "id": 104,
           "options": {
@@ -4468,7 +4471,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 3223
+            "y": 401
           },
           "id": 105,
           "options": {
@@ -4590,7 +4593,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 212
+            "y": 99
           },
           "id": 124,
           "options": {
@@ -4603,12 +4606,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4698,7 +4702,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 221
+            "y": 375
           },
           "id": 125,
           "options": {
@@ -4711,12 +4715,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4822,7 +4827,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 6139
+            "y": 23
           },
           "id": 123,
           "options": {
@@ -4835,12 +4840,13 @@
               "sortDesc": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4899,13 +4905,14 @@
                   }
                 ]
               }
-            }
+            },
+            "overrides": []
           },
           "gridPos": {
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 6148
+            "y": 56
           },
           "id": 108,
           "options": {
@@ -4920,7 +4927,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "editorMode": "code",
@@ -4986,6 +4993,923 @@
         "w": 24,
         "x": 0,
         "y": 23
+      },
+      "id": 141,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Aggregating all RAS events in each node. Only showing blocks/nodes with errors. A panel with \"No data\" indicates no errors have been reported during the selected time window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Events/m",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "id": 142,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_umc_correctable_count[1m])) > 0",
+              "instant": false,
+              "legendFormat": "UMC: {{instance}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_sdma_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "SDMA: {{instance}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_gfx_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "GFX: {{instance}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_mmhub_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "MMHUB: {{instance}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_pcie_bif_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "PCIE BIF: {{instance}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_hdp_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "HDP: {{instance}}",
+              "range": true,
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_xgmi_wafl_correctable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "XGMI WAFL: {{instance}}",
+              "range": true,
+              "refId": "G"
+            }
+          ],
+          "title": "Nodes with Non-zero Rate of Correctable Errors (errors/min)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*): (.*):(.*)",
+                "renamePattern": "$2 ($1)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Aggregating all RAS events in each node. Only showing blocks/nodes with errors.  A panel with \"No data\" indicates no errors have been reported during the selected time window.\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Events/m",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 24
+          },
+          "id": 143,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_umc_uncorrectable_count[1m])) > 0",
+              "instant": false,
+              "legendFormat": "UMC: {{instance}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_sdma_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "SDMA: {{instance}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_gfx_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "GFX: {{instance}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_mmhub_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "MMHUB: {{instance}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_pcie_bif_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "PCIE BIF: {{instance}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_hdp_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "HDP: {{instance}}",
+              "range": true,
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance) (delta(rocm_ras_xgmi_wafl_uncorrectable_count[1m])) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "XGMI WAFL: {{instance}}",
+              "range": true,
+              "refId": "G"
+            }
+          ],
+          "title": "Nodes with Non-zero Rate of Uncorrectable Errors (errors/min)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*): (.*):(.*)",
+                "renamePattern": "$2 ($1)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 144,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_correctable_count\"})",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "History of Correctable Errors per Node",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 145,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_uncorrectable_count\"})",
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "History of Uncorrectable Errors per Node",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "A panel with \"No data\" indicates no errors have been reported during the selected time window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "links": [
+                {
+                  "title": "Node dashboard",
+                  "url": "d/fdxiufe2bkyrkd-source/node-source?orgId=1&var-instance=${__value.raw}&${__url_time_range}"
+                }
+              ],
+              "mappings": [
+                {
+                  "options": {
+                    "pattern": "(.*):(.*)",
+                    "result": {
+                      "index": 0,
+                      "text": "$1"
+                    }
+                  },
+                  "type": "regex"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 40
+          },
+          "id": 146,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_correctable_count\"})",
+              "format": "table",
+              "hide": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Nodes with Correctable Errors",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Value": {
+                    "aggregations": [
+                      "max"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "instance": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Value (max)": "Max Count",
+                  "instance": "Node"
+                }
+              }
+            },
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "greater",
+                      "options": {
+                        "value": 0
+                      }
+                    },
+                    "fieldName": "Max Count"
+                  }
+                ],
+                "match": "any",
+                "type": "include"
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Max Count"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "A panel with \"No data\" indicates no errors have been reported during the selected time window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "links": [
+                {
+                  "title": "Node dashboard",
+                  "url": "d/fdxiufe2bkyrkd-source/node-source?orgId=1&var-instance=${__value.raw}&${__url_time_range}"
+                }
+              ],
+              "mappings": [
+                {
+                  "options": {
+                    "pattern": "(.*):(.*)",
+                    "result": {
+                      "index": 0,
+                      "text": "$1"
+                    }
+                  },
+                  "type": "regex"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 40
+          },
+          "id": 147,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) ({__name__=~\"rocm_ras_.+_uncorrectable_count\"})",
+              "format": "table",
+              "hide": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Nodes with Uncorrectable Errors",
+          "transformations": [
+            {
+              "id": "groupBy",
+              "options": {
+                "fields": {
+                  "Value": {
+                    "aggregations": [
+                      "max"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "instance": {
+                    "aggregations": [],
+                    "operation": "groupby"
+                  }
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Value (max)": "Max Count",
+                  "instance": "Node"
+                }
+              }
+            },
+            {
+              "id": "filterByValue",
+              "options": {
+                "filters": [
+                  {
+                    "config": {
+                      "id": "greater",
+                      "options": {
+                        "value": 0
+                      }
+                    },
+                    "fieldName": "Max Count"
+                  }
+                ],
+                "match": "any",
+                "type": "include"
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Max Count"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "GPU - Reliability, Availability, and Serviceability (RAS)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 24
       },
       "id": 36,
       "panels": [
@@ -5053,7 +5977,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1967
+            "y": 2884
           },
           "id": 35,
           "options": {
@@ -5160,7 +6084,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2031
+            "y": 2948
           },
           "id": 65,
           "options": {
@@ -5267,7 +6191,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2031
+            "y": 2948
           },
           "id": 66,
           "options": {
@@ -5320,7 +6244,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 25
       },
       "id": 117,
       "panels": [
@@ -5391,7 +6315,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2873
+            "y": 3790
           },
           "id": 118,
           "options": {
@@ -5498,7 +6422,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2961
+            "y": 3878
           },
           "id": 134,
           "options": {
@@ -5551,7 +6475,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 26
       },
       "id": 120,
       "panels": [
@@ -5620,7 +6544,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2281
+            "y": 3198
           },
           "id": 92,
           "options": {
@@ -5733,7 +6657,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2289
+            "y": 3206
           },
           "id": 135,
           "options": {
@@ -5842,7 +6766,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2289
+            "y": 3206
           },
           "id": 136,
           "options": {
@@ -5896,7 +6820,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 27
       },
       "id": 116,
       "panels": [
@@ -5965,7 +6889,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1970
+            "y": 2887
           },
           "id": 121,
           "options": {
@@ -6086,7 +7010,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1978
+            "y": 2895
           },
           "id": 137,
           "options": {
@@ -6194,7 +7118,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1978
+            "y": 2895
           },
           "id": 138,
           "options": {
@@ -6247,7 +7171,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "id": 67,
       "panels": [
@@ -6316,7 +7240,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1987
+            "y": 2904
           },
           "id": 115,
           "options": {
@@ -6437,7 +7361,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1995
+            "y": 2912
           },
           "id": 96,
           "options": {
@@ -6545,7 +7469,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1995
+            "y": 2912
           },
           "id": 94,
           "options": {
@@ -6653,7 +7577,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2003
+            "y": 2920
           },
           "id": 93,
           "options": {
@@ -6761,7 +7685,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2003
+            "y": 2920
           },
           "id": 95,
           "options": {
