@@ -65,6 +65,9 @@ class Monitor:
         self.runtimeConfig["collector_enable_amd_smi"] = config["omnistat.collectors"].getboolean(
             "enable_amd_smi", False
         )
+        self.runtimeConfig["collector_enable_networking"] = config["omnistat.collectors"].getboolean(
+            "enable_networking", True
+        )
 
         # verify only one SMI collector is enabled
         if self.runtimeConfig["collector_enable_rocm_smi"] and self.runtimeConfig["collector_enable_amd_smi"]:
@@ -124,6 +127,10 @@ class Monitor:
         return
 
     def initMetrics(self):
+
+        if self.runtimeConfig["collector_enable_networking"]:
+            from omnistat.collector_network import NETWORK
+            self.__collectors.append(NETWORK())
 
         if self.runtimeConfig["collector_enable_rocm_smi"]:
             from omnistat.collector_smi import ROCMSMI
