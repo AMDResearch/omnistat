@@ -253,7 +253,7 @@ class Standalone:
                 for entry in fomData:
                     entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
                     self.__dataVM.append(entry)
-                logging.info("Registered %i samples of FOM data" % len(fomData))
+                logging.info("Registered %i additional samples of FOM data" % len(fomData))
                 fomData.clear()
             dataToPush = self.__dataVM
             push_thread = threading.Thread(
@@ -347,8 +347,7 @@ def figureOfMerit():
         value = data.get('value')
         with fomLock:
             fomData.append({"name":name,"value":value,"timestamp_msecs":timestamp_msecs})
-                            #[value,timestamp_msecs])
-        print("Name = %s, value = %f" % (name,value))
+            #logging.info("Name = %s, value = %f" % (name,value))
         return jsonify({"status": "ok"}), 200
     
     except Exception as e:
