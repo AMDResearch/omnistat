@@ -38,3 +38,19 @@ the `--replace-name` flag as follows:
 ```
 ./scripts/filter-dashboard -i json-models/rms-global.json --exclude-metrics node_ --replace-name RMS:RMSNoNode
 ```
+
+## Synchronize Dashboards
+
+The `sync-dashboard` script can be used to keep track of remote dashboards and
+update them when new versions are available. It supports two operations: 1)
+downloading dashboards from a remote Grafana server to a local directory, and
+2) uploading dashboards from a local directory to a remote Grafana server.
+
+It requires a Grafana API token, which can be generated using a [Grafana
+Service Account](https://grafana.com/docs/grafana/latest/administration/service-accounts/).
+Set the `GRAFANA_API_TOKEN` environment variable with the token.
+For example:
+
+```
+GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboard --grafana-url "https://grafana.example.com" download
+```
