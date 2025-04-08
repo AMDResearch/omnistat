@@ -78,6 +78,8 @@ class UserBasedMonitoring:
             self.__rms = "slurm"
         elif "FLUX_URI" in os.environ:
             self.__rms = "flux"
+        elif "PBS_JOBID" in os.environ:
+            self.__rms = "pbs"
         else:
             utils.error("Unknown/unsupported resource manager")
         logging.info("RMS detected = %s" % self.__rms)
