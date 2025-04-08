@@ -115,8 +115,12 @@ def main():
         jobData["RMS_JOB_PARTITION"] = os.getenv("PBS_QUEUE")
         nodefile=os.environ.get("PBS_NODEFILE")
         with open (nodefile) as f:
-            num_nodes = {line.strip() for line in f}
-        jobData["RMS_JOB_NUM_NODES"] = num_nodes
+            nodes = {line.strip() for line in f}
+        jobData["RMS_JOB_NUM_NODES"] = len(nodes)
+        if "INTERACTIVE" in os.getenv("PBS_ENVIRONMENT"):
+            jobData["RMS_JOB_BATCHMODE"] = 0
+        else:
+            jobData["RMS_JOB_BATCHMODE"] = 1
 
     else:
         print("ERROR: Unknown or undetected resource manager. Verify running in active job")
