@@ -106,6 +106,18 @@ def main():
             step = os.getenv("FLUX_JOB_ID")
         jobData["RMS_STEP_ID"] = step
 
+    elif "PBS_JOBID" in os.environ:
+        jobData["RMS_TYPE"] = "pbs"
+        id_raw = os.getenv("PBS_JOBID")
+        jobid = id_raw.split('.')[0] if '.' in id_raw else id_raw
+        jobData["RMS_JOB_ID"] = jobid
+        jobData["RMS_JOB_USER"] = os.getenv("PBS_O_LOGNAME")
+        jobData["RMS_JOB_PARTITION"] = os.getenv("PBS_QUEUE")
+        nodefile=os.environ.get("PBS_NODEFILE")
+        with open (nodefile) as f:
+            num_nodes = {line.strip() for line in f}
+        jobData["RMS_JOB_NUM_NODES"] = num_nodes
+
     else:
         print("ERROR: Unknown or undetected resource manager. Verify running in active job")
         sys.exit(1)
