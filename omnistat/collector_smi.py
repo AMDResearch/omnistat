@@ -42,6 +42,7 @@ rocm_utilization_percentage{card="0"} 0.0
 """
 
 import ctypes
+import getpass
 import logging
 import os
 import sys
@@ -383,7 +384,7 @@ class ROCMSMI(Collector):
             logging.error("Ignoring duplicate metric name addition: %s" % (metricName))
             return
         if type == "gauge":
-            labelnames = ["card"]
+            labelnames = ["card", "user"]
             if labelExtra:
                 for entry in labelExtra:
                     labelnames.append(entry)
@@ -416,6 +417,8 @@ class ROCMSMI(Collector):
         pcie_max_pkt_sz = ctypes.c_uint64(0)
         ras_counts = rsmi_error_count_t()
 
+        user = getpass.getuser()
+
         for i in range(self.__num_gpus):
 
             device = ctypes.c_uint32(i)
@@ -427,7 +430,7 @@ class ROCMSMI(Collector):
             ret = self.__libsmi.rsmi_dev_temp_metric_get(
                 device, self.__temp_location_index, temp_metric, ctypes.byref(temperature)
             )
-            self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_location_name).set(
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user, location=self.__temp_location_name).set(
                 temperature.value / 1000.0
             )
 
@@ -438,9 +441,9 @@ class ROCMSMI(Collector):
                 ret = self.__libsmi.rsmi_dev_temp_metric_get(
                     device, self.__temp_memory_location_index, temp_metric, ctypes.byref(temperature)
                 )
-                self.__GPUmetrics[metric].labels(card=gpuLabel, location=self.__temp_memory_location_name).set(
-                    temperature.value / 1000.0
-                )
+                self.__GPUmetrics[metric].labels(
+                    card=gpuLabel, user=user, location=self.__temp_memory_location_name
+                ).set(temperature.value / 1000.0)
 
             # --
             # average socket power [micro Watts, converted to Watts]
@@ -450,51 +453,51 @@ class ROCMSMI(Collector):
             else:
                 ret = self.__libsmi.rsmi_dev_power_get(device, ctypes.byref(power), ctypes.byref(power_type))
             if ret == 0:
-                self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000.0)
+                self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(power.value / 1000000.0)
             else:
-                self.__GPUmetrics[metric].labels(card=gpuLabel).set(0.0)
+                self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(0.0)
 
             # --
             # clock speeds [Hz, converted to megaHz]
             metric = self.__prefix + "sclk_clock_mhz"
             ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_system_clock, ctypes.byref(freq))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(freq.frequency[freq.current] / 1000000.0)
 
             metric = self.__prefix + "mclk_clock_mhz"
             ret = self.__libsmi.rsmi_dev_gpu_clk_freq_get(device, freq_mem_clock, ctypes.byref(freq))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(freq.frequency[freq.current] / 1000000.0)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(freq.frequency[freq.current] / 1000000.0)
 
             # --
             # gpu memory [total_vram in bytes]
             metric = self.__prefix + "vram_total_bytes"
             ret = self.__libsmi.rsmi_dev_memory_total_get(device, 0x0, ctypes.byref(vram_total))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_total.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(vram_total.value)
 
             metric = self.__prefix + "vram_used_percentage"
             ret = self.__libsmi.rsmi_dev_memory_usage_get(device, 0x0, ctypes.byref(vram_used))
             percentage = round(100.0 * vram_used.value / vram_total.value, 4)
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(percentage)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(percentage)
 
             metric = self.__prefix + "vram_busy_percentage"
             ret = self.__libsmi.rsmi_dev_memory_busy_percent_get(device, ctypes.byref(vram_busy))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(vram_busy.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(vram_busy.value)
 
             # --
             # utilization
             metric = self.__prefix + "utilization_percentage"
             ret = self.__libsmi.rsmi_dev_busy_percent_get(device, ctypes.byref(utilization))
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(utilization.value)
+            self.__GPUmetrics[metric].labels(card=gpuLabel, user=user).set(utilization.value)
 
             # --
             # RAS counts
             if self.__ecc_ras_monitoring:
                 for key, block in self.__eccBlocks.items():
                     ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block, ctypes.byref(ras_counts))
-                    self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(card=gpuLabel).set(
-                        ras_counts.correctable_err
-                    )
-                    self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(card=gpuLabel).set(
-                        ras_counts.uncorrectable_err
-                    )
+                    self.__GPUmetrics[self.__prefix + "ras_%s_correctable_count" % key].labels(
+                        card=gpuLabel, user=user
+                    ).set(ras_counts.correctable_err)
+                    self.__GPUmetrics[self.__prefix + "ras_%s_uncorrectable_count" % key].labels(
+                        card=gpuLabel, user=user
+                    ).set(ras_counts.uncorrectable_err)
 
         return
