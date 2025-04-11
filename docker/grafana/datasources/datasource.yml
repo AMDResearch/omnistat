@@ -4,11 +4,11 @@ datasources:
 - name: Prometheus
   type: prometheus
   uid: prometheus
-  url: http://omnistat:9090
+  url: http://proxy:9091
   isDefault: true
   access: proxy
   editable: true
 - name: Infinity
   type: yesoreyeram-infinity-datasource
   uid: infinity
-  url: http://omnistat:9091
+  url: http://omnistat:9099
