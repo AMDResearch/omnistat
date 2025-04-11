@@ -199,7 +199,7 @@ if num_fail > 0:
     print(f".. Warning: {num_fail} out of {num_queries} queries failed")
 sys.stdout.flush()
 
-server_address = ("", 9091)
+server_address = ("", 9099)
 handler = JobIndexHandler(job_data)
 httpd = http.server.HTTPServer(server_address, handler)
 httpd.serve_forever()
