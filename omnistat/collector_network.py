@@ -33,7 +33,9 @@ import json
 import logging
 import os
 import platform
+import re
 import sys
+from pathlib import Path
 
 from prometheus_client import Gauge
 
@@ -47,6 +49,7 @@ class NETWORK(Collector):
         self.__prefix = "network_"
         self.__nic_rx_data_paths = {}
         self.__nic_tx_data_paths = {}
+        self.__slingshot_buckets = {}
         self.__metrics = {}
 
 
@@ -80,7 +83,41 @@ class NETWORK(Collector):
             description="Transmitted (bytes)"
             self.__tx_metric = Gauge(self.__prefix + metricName,description,labelnames=["interface"])
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))                        
-            
+
+        base = "/sys"
+        device_pattern = "class/cxi/cxi*"
+        file_pattern = "device/telemetry/hni_*_ok*"
+        bucket_pattern = "hni_(tx|rx)_ok_(\d+)[_to]*(\d+)?"
+
+        for device in Path(base).glob(device_pattern):
+            device_name = device.name
+            device_id = int(device_name[3:])
+            self.__slingshot_buckets[device_id] = {}
+            for bucket in device.glob(file_pattern):
+                bucket_name = bucket.name
+                match = re.match(bucket_pattern, bucket_name)
+                if not match:
+                    continue
+
+                kind = match.group(1)
+                min_size = match.group(2)
+
+                if not kind in self.__slingshot_buckets[device_id]:
+                    self.__slingshot_buckets[device_id][kind] = {}
+
+                self.__slingshot_buckets[device_id][kind][int(min_size)] = bucket
+
+        if len(self.__slingshot_buckets) > 0:
+            metricName="slingshot_rx_bytes"
+            description="Slingshot Received (bytes)"
+            self.__slingshot_rx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
+            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
+
+            metricName="slingshot_tx_bytes"
+            description="Slingshot Transmitted (bytes)"
+            self.__slingshot_tx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
+            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
+
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
@@ -102,5 +139,24 @@ class NETWORK(Collector):
                     self.__tx_metric.labels(interface=nic).set(data)
             except:
                 pass             
+
+        # Slingshot
+        for device_id, kinds in self.__slingshot_buckets.items():
+            for kind, sizes in kinds.items():
+                total = 0
+                for size, file in sizes.items():
+                    try:
+                        with open(file, 'r') as f:
+                            data = f.read().strip()
+                            fields = data.split("@")
+                            count = int(fields[0])
+                            total += (count * size)
+                    except:
+                        pass
+
+                if kind == "tx":
+                    self.__slingshot_tx_metric.labels(interface=device_id).set(total)
+                elif kind == "rx":
+                    self.__slingshot_rx_metric.labels(interface=device_id).set(total)
 
         return
