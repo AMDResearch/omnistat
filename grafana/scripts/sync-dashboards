@@ -58,6 +58,10 @@ def download_dashboard(grafana_url, api_token, dashboard_uid, dashboard_name, sa
     data = response.json()
     dashboard_data = data["dashboard"]
     dashboard_data["version"] = 1
+    if "templating" in dashboard_data and "list" in dashboard_data["templating"]:
+        for var in dashboard_data["templating"]["list"]:
+            if "current" in var:
+                del var["current"]
 
     os.makedirs(save_dir, exist_ok=True)
     file_path = os.path.join(save_dir, f"{dashboard_name}.json")
