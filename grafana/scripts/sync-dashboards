@@ -67,6 +67,7 @@ def download_dashboard(grafana_url, api_token, dashboard_uid, dashboard_name, sa
     file_path = os.path.join(save_dir, f"{dashboard_name}.json")
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(dashboard_data, f, indent=2)
+        f.write("\n")
 
     print(f"Dashboard {dashboard_name} successfully downloaded to {file_path}")
 
