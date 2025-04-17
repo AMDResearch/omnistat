@@ -37,6 +37,7 @@ services:
       - "-header-name=X-Grafana-User"
       - "-upstream=http://omnistat:9090"
       - "-insecure-listen-address=:9091"
+      - "-enable-label-apis"
 
   grafana:
     image: grafana/grafana
