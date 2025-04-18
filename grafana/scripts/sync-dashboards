@@ -164,12 +164,9 @@ if __name__ == "__main__":
 
             # If dashboard exists in the remote Grafana server, upload it to
             # using the same dashboard ID and folder ID as the existing dashboard.
-            if (
-                uid in remote_dashboard_info
-                and "id" in remote_dashboard_info[uid]
-                and "folder" in remote_dashboard_info[uid]
-            ):
+            if uid in remote_dashboard_info and "id" in remote_dashboard_info[uid]:
                 dashboard_id = remote_dashboard_info[uid]["id"]
-                folder_id = remote_dashboard_info[uid]["folderId"]
+                if "folderId" in remote_dashboard_info[uid]:
+                    folder_id = remote_dashboard_info[uid]["folderId"]
 
             upload_dashboard(grafana_url, api_token, path, dashboard_id, folder_id)
