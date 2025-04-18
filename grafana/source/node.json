@@ -3144,9 +3144,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 40,
-  "tags": [
-    "omnistat"
-  ],
+  "tags": [],
   "templating": {
     "list": [
       {
