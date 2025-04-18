@@ -94,7 +94,7 @@ def push_to_victoria_metrics(metrics_data_list, victoria_url):
             return
 
         if response.status_code != 200:
-            logging.warn(f"[WARN] Unexpected return code from VM endpoint: {endpoint} = {response.status_code}")
+            logging.warning(f"[WARN] Unexpected return code from VM endpoint: {endpoint} = {response.status_code}")
 
     return
 

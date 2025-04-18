@@ -83,7 +83,7 @@ def gpu_index_mapping_based_on_guids(guidMapping, expectedNumGPUs):
     kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
     logging.info("GPU topology indexing: Scanning devices from %s" % kfd_nodes)
     if not os.path.isdir(kfd_nodes):
-        logging.warn("--> directory not found")
+        logging.warning("--> directory not found")
         return pass_through_indexing(expectedNumGPUs)
 
     devices = os.listdir(kfd_nodes)
@@ -103,11 +103,11 @@ def gpu_index_mapping_based_on_guids(guidMapping, expectedNumGPUs):
                 tmpMapping[guid] = numGPUs
                 numGPUs += 1
         else:
-            logging.warn("Unable to access expected file (%s)" % file)
+            logging.warning("Unable to access expected file (%s)" % file)
             return pass_through_indexing(expectedNumGPUs)
 
     if numGPUs != expectedNumGPUs:
-        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
+        logging.warning("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
         return pass_through_indexing(expectedNumGPUs)
 
     gpuMappingOrder = {}
@@ -116,7 +116,7 @@ def gpu_index_mapping_based_on_guids(guidMapping, expectedNumGPUs):
         if id in tmpMapping:
             gpuMappingOrder[gpuIndex] = str(tmpMapping[id])
         else:
-            logging.warn("--> unable to resolve gpu location_id=%s" % id)
+            logging.warning("--> unable to resolve gpu location_id=%s" % id)
             return pass_through_indexing(expectedNumGPUs)
 
     logging.info("--> Mapping: %s" % gpuMappingOrder)
@@ -137,7 +137,7 @@ def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
     kfd_nodes = "/sys/class/kfd/kfd/topology/nodes"
     logging.info("GPU topology indexing: Scanning devices from %s" % kfd_nodes)
     if not os.path.isdir(kfd_nodes):
-        logging.warn("--> directory not found")
+        logging.warning("--> directory not found")
         return pass_through_indexing(expectedNumGPUs)
 
     devices = os.listdir(kfd_nodes)
@@ -161,11 +161,11 @@ def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
                 tmpMapping[location_id] = numGPUs
                 numGPUs += 1
         else:
-            logging.warn("Unable to access expected file (%s)" % file)
+            logging.warning("Unable to access expected file (%s)" % file)
             return pass_through_indexing(expectedNumGPUs)
 
     if numGPUs != expectedNumGPUs:
-        logging.warn("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
+        logging.warning("--> did not detect expected number of GPUs in sysfs (%i vs %i)" % (numGPUs, expectedNumGPUs))
         return pass_through_indexing(expectedNumGPUs)
 
     gpuMappingOrder = {}
@@ -173,7 +173,7 @@ def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
         if id in tmpMapping:
             gpuMappingOrder[gpuIndex] = str(tmpMapping[id])
         else:
-            logging.warn("--> unable to resolve gpu location_id=%s" % id)
+            logging.warning("--> unable to resolve gpu location_id=%s" % id)
             return pass_through_indexing(expectedNumGPUs)
 
     logging.info("--> Mapping: %s" % gpuMappingOrder)

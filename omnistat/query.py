@@ -321,10 +321,10 @@ class queryMetrics:
         assert self.stepNodes > 0
         assert self.totalNodes > 0
         if self.totalNodes != self.jobinfo["num_nodes"]:
-            logging.warn("")
-            logging.warn("[WARNING]: telemetry data not collected for all nodes assigned to this job")
-            logging.warn("--> # assigned hosts     = %i" % self.jobinfo["num_nodes"])
-            logging.warn("--> # of hosts with data = %i" % self.totalNodes)
+            logging.warning("")
+            logging.warning("[WARNING]: telemetry data not collected for all nodes assigned to this job")
+            logging.warning("--> # assigned hosts     = %i" % self.jobinfo["num_nodes"])
+            logging.warning("--> # of hosts with data = %i" % self.totalNodes)
 
     def metric_host_max_sum(self, values):
         """Determine host with <maximum> sum of all provided samples"""
