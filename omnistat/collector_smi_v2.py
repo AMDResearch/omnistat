@@ -50,7 +50,7 @@ import packaging.version
 from prometheus_client import Gauge
 
 from omnistat.collector_base import Collector
-from omnistat.utils import convert_bdf_to_gpuid, gpu_index_mapping_based_on_bdfs
+from omnistat.utils import gpu_index_mapping_based_on_guids
 
 
 def get_gpu_metrics(device):
@@ -114,7 +114,7 @@ class AMDSMI(Collector):
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
         self.__eccBlocks = {}
         # verify minimum version met
-        check_min_version("24.5.2")
+        check_min_version("24.7.1")
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
@@ -134,12 +134,11 @@ class AMDSMI(Collector):
         numGPUs_metric.set(self.__num_gpus)
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
-        bdfMapping = {}
+        guidMapping = {}
         for index, device in enumerate(self.__devices):
-            bdf = smi.amdsmi_get_gpu_device_bdf(device)
-            bdf_id = smi.amdsmi_get_gpu_bdf_id(device)
-            bdfMapping[index] = convert_bdf_to_gpuid(bdf)
-        self.__indexMapping = gpu_index_mapping_based_on_bdfs(bdfMapping, self.__num_gpus)
+            kfd_info = smi.amdsmi_get_gpu_kfd_info(device)
+            guidMapping[index] = kfd_info["kfd_id"]
+        self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
         # version info metric
         version_metric = Gauge(
