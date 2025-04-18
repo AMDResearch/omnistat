@@ -31,7 +31,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 4,
   "links": [
     {
       "asDropdown": false,
@@ -6230,7 +6230,9 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 40,
-  "tags": [],
+  "tags": [
+    "omnistat"
+  ],
   "templating": {
     "list": [
       {
