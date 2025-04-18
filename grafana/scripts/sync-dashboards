@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+# -------------------------------------------------------------------------------
+# MIT License
+#
+# Copyright (c) 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# -------------------------------------------------------------------------------
+#
+# sync-dashboard - Synchronize local dashboards with remote Grafana server
+#
+# Script to ease the synchronization of dashboards using the Grafana API.
+# Requires an API token, which needs to be set using the GRAFANA_API_TOKEN
+# environment variable.
+#
+# Available sync operations:
+#  - download: Retrieve dashboard from remote Grafana server and store as JSON
+#    in a local directory.
+#  - upload: Send dashboard JSON in local directory to remote Grafana server.
+#    New dashboards not present in the server will be located in the root folder;
+#    existing dashboards preserve folder.
+
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+import requests
+
+
+def download_dashboard(grafana_url, api_token, dashboard_uid, dashboard_name, save_dir):
+    url = f"{grafana_url}/api/dashboards/uid/{dashboard_uid}"
+    headers = {"Authorization": f"Bearer {api_token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        print(f"Failed to download dashboard {dashboard_uid}")
+        print(f".. Status: {response.status_code}, {response.text}")
+        return
+
+    data = response.json()
+    dashboard_data = data["dashboard"]
+    dashboard_data["id"] = None
+    dashboard_data["version"] = 1
+    if "templating" in dashboard_data and "list" in dashboard_data["templating"]:
+        for var in dashboard_data["templating"]["list"]:
+            if "current" in var and "type" in var and var["type"] != "interval":
+                del var["current"]
+
+    os.makedirs(save_dir, exist_ok=True)
+    file_path = os.path.join(save_dir, f"{dashboard_name}.json")
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(dashboard_data, f, indent=2)
+        f.write("\n")
+
+    print(f"Dashboard {dashboard_name} successfully downloaded to {file_path}")
+
+
+def upload_dashboard(grafana_url, api_token, dashboard_path, dashboard_id, folder_id):
+    url = f"{grafana_url}/api/dashboards/db"
+    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+
+    name = dashboard_path.stem
+
+    with open(dashboard_path, "r", encoding="utf-8") as f:
+        dashboard_data = json.load(f)
+
+    dashboard_data["id"] = dashboard_id
+
+    payload = {
+        "dashboard": dashboard_data,
+        "folderId": folder_id,
+        "overwrite": True,
+    }
+
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code != 200:
+        print(f"Failed to upload dashboard {name} (dashboard {dashboard_id}, folder {folder_id})")
+        print(f".. Status: {response.status_code}, {response.text}")
+        return
+
+    print(f"Dashboard {name} uploaded successfully (dashboard ID {dashboard_id}, folder ID {folder_id})")
+
+
+def get_dashboard_info(grafana_url, api_token):
+    url = f"{grafana_url}/api/search"
+    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+    params = {"type": "dash-db"}
+
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code != 200:
+        print(f"Error: failed to query dashboards")
+        print(f".. Status: {response.status_code}, {response.text}")
+        sys.exit(1)
+
+    dashboards = response.json()
+    dashboard_info = {i["uid"]: i for i in dashboards}
+    return dashboard_info
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Synchronize Grafana dashboards.")
+    parser.add_argument("--grafana-url", help="URL of the remote Grafana server.", required=True)
+    parser.add_argument(
+        "--dashboards-dir",
+        help="Local directory with JSON dashboard to synchronize.",
+        default="./json-models",
+    )
+    parser.add_argument("action", choices=["upload", "download"], help="Direction of the synchronization.")
+    args = parser.parse_args()
+
+    if not os.path.isdir(args.dashboards_dir):
+        print(f"Error: failed to find dashboards; {args.dashboards_dir} not a directory")
+        sys.exit(0)
+
+    if "GRAFANA_API_TOKEN" not in os.environ:
+        print(f"Error: GRAFANA_API_TOKEN environment variable not set")
+        sys.exit(0)
+
+    grafana_url = args.grafana_url
+    dashboards_dir = args.dashboards_dir
+    api_token = os.environ["GRAFANA_API_TOKEN"]
+
+    # Map UIDs of local dashboards to filesystem paths.
+    local_dashboard_info = {}
+    for path in Path(dashboards_dir).glob("*.json"):
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+        if "uid" in data:
+            local_dashboard_info[data["uid"]] = path
+
+    print(f"Synchronizing {len(local_dashboard_info)} dashboards")
+
+    if args.action == "download":
+        for uid, path in local_dashboard_info.items():
+            name = path.stem
+            download_dashboard(grafana_url, api_token, uid, name, dashboards_dir)
+    elif args.action == "upload":
+        remote_dashboard_info = get_dashboard_info(grafana_url, api_token)
+
+        for uid, path in local_dashboard_info.items():
+            # By default, new dashboards not present in the remote Grafana
+            # server need a null dashboard ID and are added to the root folder
+            # (always ID 0).
+            dashboard_id = None
+            folder_id = 0
+
+            # If dashboard exists in the remote Grafana server, upload it to
+            # using the same dashboard ID and folder ID as the existing dashboard.
+            if uid in remote_dashboard_info and "id" in remote_dashboard_info[uid]:
+                dashboard_id = remote_dashboard_info[uid]["id"]
+                if "folderId" in remote_dashboard_info[uid]:
+                    folder_id = remote_dashboard_info[uid]["folderId"]
+
+            upload_dashboard(grafana_url, api_token, path, dashboard_id, folder_id)

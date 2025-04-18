@@ -38,3 +38,33 @@ the `--replace-name` flag as follows:
 ```
 ./scripts/filter-dashboard -i json-models/rms-global.json --exclude-metrics node_ --replace-name RMS:RMSNoNode
 ```
+
+## Synchronize Dashboards
+
+The `sync-dashboards` script can be used to keep track of remote dashboards and
+update them when new versions are available. It can perform two operations:
+ 1. **Download** dashboards from a remote Grafana server to a local directory.
+ 2. **Upload** dashboards from a local directory to a remote Grafana server.
+
+The script requires a Grafana API token, which can be generated using a [Grafana
+Service Account](https://grafana.com/docs/grafana/latest/administration/service-accounts/).
+Set the `GRAFANA_API_TOKEN` environment variable with the token before running
+the script.
+
+For example, to download dashboards from a remote Grafana server, use the
+following command:
+```
+GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboards --grafana-url "https://grafana.example.com" download
+```
+
+> [!NOTE]
+> - Ensure the `GRAFANA_API_TOKEN` is securely stored and accessible only to
+>   authorized users.
+> - Replace `command-to-get-secret-token` with the actual command or method to
+>   retrieve your API token.
+
+By default, `sync-dashboards` will synchronize the `source` directory. To
+synchronize a different directory, use the `--dashboards-dir` flag:
+```
+GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboards --grafana-url "https://grafana.example.com" --dashboards-dir ./json-models/ download
+```
