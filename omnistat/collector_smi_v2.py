@@ -25,7 +25,7 @@
 """amd-smi based data collector
 
 Implements a number of prometheus gauge metrics based on GPU data collected from
-amd-smi library.  The ROCm runtime must be pre-installed to use this data
+the amd-smi library interface.  The ROCm runtime must be pre-installed to use this data
 collector. This data collector gathers statistics on a per GPU basis and exposes
 metrics with "amdsmi_{metric_name}" with labels for each GPU number. The following
 example highlights example metrics:
@@ -53,37 +53,6 @@ from omnistat.collector_base import Collector
 from omnistat.utils import gpu_index_mapping_based_on_guids
 
 
-def get_gpu_metrics(device):
-    result = smi.amdsmi_get_gpu_metrics_info(device)
-    for k, v in result.items():
-        if type(v) is str:
-            # Filter 'N/A' values introduced by rocm 6.1
-            result[k] = 0
-            continue
-        elif type(v) is bool:
-            # Filter boolean values introduced by rocm 6.1
-            result[k] = 0
-            continue
-        # Average of list values
-        elif type(v) is list:
-            if any(isinstance(item, list) for item in v):
-                # Filter list of lists
-                result[k] = 0
-                continue
-
-            v = [x for x in v if type(x) not in [bool, str]]
-            if not v:
-                # Filter empty lists
-                result[k] = 0
-                continue
-            v = int(statistics.mean(v))
-            result[k] = v
-        # Bigger than signed 64-bit integer
-        if v >= 9223372036854775807 or v <= -9223372036854775808:
-            result[k] = 0
-    return result
-
-
 def check_min_version(minVersion):
     localVer = smi.amdsmi_get_lib_version()
     localVerString = ".".join([str(localVer["year"]), str(localVer["major"]), str(localVer["minor"])])
@@ -99,6 +68,13 @@ def check_min_version(minVersion):
         logging.info("--> library version = %s" % vloc)
 
 
+def is_positive_int(s):
+    try:
+        return int(s) > 0
+    except:
+        return False
+
+
 class AMDSMI(Collector):
     def __init__(self, runtimeConfig=None):
         logging.debug("Initializing AMD SMI data collector")
@@ -110,11 +86,19 @@ class AMDSMI(Collector):
         self.__devices = []
         self.__GPUMetrics = {}
         self.__metricMapping = {}
-        self.__dumpMappedMetricsOnly = True
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
         self.__eccBlocks = {}
         # verify minimum version met
         check_min_version("24.7.1")
+
+    def get_gpu_metrics(self, device):
+        """Make GPU metric query and return dict of tracked metrics"""
+
+        tracked_metrics = {}
+        result = smi.amdsmi_get_gpu_metrics_info(device)
+        for smiName, metricName in self.__metricMapping.items():
+            tracked_metrics[metricName] = result[smiName]
+        return tracked_metrics
 
     def registerMetrics(self):
         """Query number of devices and register metrics of interest"""
@@ -160,17 +144,6 @@ class AMDSMI(Collector):
             version_metric.labels(
                 card=gpuLabel, driver_ver=gpuDriverVer, vbios=vbios, type=devtype, schema=self.__schema
             ).set(1)
-
-        # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
-        self.__metricMapping = {
-            # core GPU metric definitions
-            "average_gfx_activity": "utilization_percentage",
-            "vram_total": "vram_total_bytes",
-            "average_socket_power": "average_socket_power_watts",
-            "current_gfxclks": "sclk_clock_mhz",
-            "average_uclk_frequency": "mclk_clock_mhz",
-            "average_umc_activity": "vram_busy_percentage",
-        }
 
         # Register memory related metrics
         self.__GPUMetrics["vram_total_bytes"] = Gauge(
@@ -253,22 +226,51 @@ class AMDSMI(Collector):
                 self.__prefix + "temperature_memory_celsius", "HBM Temperature (C)", labelnames=["card", "location"]
             )
 
+        # Define mapping from amdsmi variable names to omnistat metric, incuding units where appropriate
+        self.__metricMapping = {
+            # core GPU metric definitions
+            "average_gfx_activity": "utilization_percentage",
+            "average_uclk_frequency": "mclk_clock_mhz",
+            "average_umc_activity": "vram_busy_percentage",
+        }
+
+        # additional mappings: depending on architecture, amdsmi reports clock frequencies and socket power
+        # via different keys - check here to determine metric availability and log the source as a label
+        metric_check = {}
+        metric_check["sclk_clock_mhz"] = ["average_gfxclk_frequency", "current_gfxclk"]
+        metric_check["average_socket_power_watts"] = ["average_socket_power", "current_socket_power"]
+        metric_check["mclk_clock_mhz"] = ["average_uclk_frequency", "current_uclk"]
+
+        dev0 = self.__devices[0]
+        metrics = smi.amdsmi_get_gpu_metrics_info(dev0)
+        self.__source_labels = {}
+
+        for desired_metric in metric_check:
+            found = None
+            for key in metric_check[desired_metric]:
+                if is_positive_int(metrics[key]):
+                    self.__metricMapping[key] = desired_metric
+                    self.__source_labels[desired_metric] = key
+                    found = key
+                    break
+            if not found:
+                logging.error("--> Unable to determine valid data for %s" % desired_metric)
+                logging.error("")
+                sys.exit(4)
+            else:
+                logging.info("--> Using mapping %s -> %s " % (desired_metric, found))
+                self.__GPUMetrics[self.__prefix + desired_metric] = Gauge(
+                    self.__prefix + desired_metric, f"{metric}", labelnames=["card", "source"]
+                )
+
         # Register remaining metrics of interest available from get_gpu_metrics()
         for idx, device in enumerate(self.__devices):
-
-            metrics = get_gpu_metrics(device)
-
-            for metric, value in metrics.items():
-                if self.__metricMapping.get(metric):
-                    metric = self.__metricMapping.get(metric)
-                elif self.__dumpMappedMetricsOnly is True:
-                    continue
+            metrics = self.get_gpu_metrics(device)
+            for metric in metrics:
                 metric_name = self.__prefix + metric
-
                 # add Gauge metric only once
                 if metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
-
         return
 
     def updateMetrics(self):
@@ -281,14 +283,24 @@ class AMDSMI(Collector):
             # map GPU index
             cardId = self.__indexMapping[idx]
 
-            # gpu memory-related stats
+            #  stats available via get_gpu_metrics
+            metrics = self.get_gpu_metrics(device)
+
+            for metricName, value in metrics.items():
+                metric = self.__GPUMetrics[self.__prefix + metricName]
+                if metricName in self.__source_labels:
+                    metric.labels(card=cardId, source=self.__source_labels[metricName]).set(value)
+                else:
+                    metric.labels(card=cardId).set(value)
+
+            # additional gpu memory-related stats
             device_total_vram = smi.amdsmi_get_gpu_memory_total(device, smi.AmdSmiMemoryType.VRAM)
             self.__GPUMetrics["vram_total_bytes"].labels(card=cardId).set(device_total_vram)
             vram_used_bytes = smi.amdsmi_get_gpu_memory_usage(device, smi.AmdSmiMemoryType.VRAM)
             percentage = round(100.0 * vram_used_bytes / device_total_vram, 4)
             self.__GPUMetrics["vram_used_percentage"].labels(card=cardId).set(percentage)
 
-            # temperature-related stats
+            # additional temperature-related stats
             temperature = smi.amdsmi_get_temp_metric(
                 device, self.__temp_location_index, smi.AmdSmiTemperatureMetric.CURRENT
             )
@@ -318,14 +330,4 @@ class AMDSMI(Collector):
                         ecc_error_counts["deferred_count"]
                     )
 
-            # other stats available via get_gpu_metrics
-            metrics = get_gpu_metrics(device)
-            for metric, value in metrics.items():
-                if self.__metricMapping.get(metric):
-                    metric = self.__metricMapping.get(metric)
-                elif self.__dumpMappedMetricsOnly is True:
-                    continue
-                metric = self.__GPUMetrics[self.__prefix + metric]
-                # Set metric
-                metric.labels(card=cardId).set(value)
         return
