@@ -118,8 +118,27 @@ class UserBasedMonitoring:
             utils.error("Unsupported RMS.")
 
     def startVictoriaServer(self):
-        logging.info("Starting VictoriaMetrics server on localhost")
+
         section = "omnistat.usermode"
+
+        # noop if using an external server
+        use_external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
+        if use_external_victoria:
+            logging.info("Pushing data to external VictoriaMetrics server")
+            self.__external_victoria = True
+            self.__external_victoria_endpoint = self.runtimeConfig[section].get("external_victoria_endpoint")
+            self.__external_victoria_port = self.runtimeConfig[section].get("external_victoria_port")
+            logging.info("--> external host = %s" % self.__external_victoria_endpoint)
+            logging.info("--> external port = %s" % self.__external_victoria_port)
+            self.__external_proxy = None
+            if self.runtimeConfig.has_option(section, "external_proxy"):
+                self.__external_proxy = self.runtimeConfig[section].get("external_proxy")
+                logging.info("--> external proxy = %s" % self.__external_proxy)
+            return
+        else:
+            self.__external_victoria = False
+            logging.info("Starting VictoriaMetrics server on localhost")
+
         vm_binary = self.runtimeConfig[section].get("victoria_binary")
         vm_datadir = self.runtimeConfig[section].get("victoria_datadir", "data_prom", vars=os.environ)
 
@@ -270,9 +289,15 @@ class UserBasedMonitoring:
                 os.remove("./exporter.log")
             logging.info("[exporter]: Standalone sampling interval = %s" % self.scrape_interval)
             hostname = platform.node().split(".", 1)[0]
-            cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {hostname} --log exporter.log"
+
+            if self.__external_victoria:
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {self.__external_victoria_endpoint} --port {self.__external_victoria_port} --log exporter.log"
+            else:
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {hostname} --log exporter.log"
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
+
+        logging.info("[exporter]: %s" % cmd)
 
         if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
             corebinding = int(os.getenv("OMNISTAT_EXPORTER_COREBINDING"))
@@ -346,9 +371,13 @@ class UserBasedMonitoring:
             # except:
             #     logging.info("Exception thrown launching parallel ssh client")
 
+            additional_env = ""
+            if self.__external_proxy:
+                additional_env = f"http_proxy={self.__external_proxy}"
+
             # trying local ssh client implementation
             launch_results = utils.execute_ssh_parallel(
-                command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",
+                command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'",
                 hostnames=self.__hosts,
                 max_concurrent=128,
                 ssh_timeout=100,
