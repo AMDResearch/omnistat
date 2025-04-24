@@ -93,12 +93,11 @@ class UserBasedMonitoring:
         who have proxy settings in their runtime environment to access the outside world.
         """
 
-        os.environ.pop("http_proxy",None)
-        os.environ.pop("https_proxy",None)
-        os.environ.pop("all_proxy",None)
+        os.environ.pop("http_proxy", None)
+        os.environ.pop("https_proxy", None)
+        os.environ.pop("all_proxy", None)
 
         return
-
 
     def getRMSHosts(self):
         if self.__rms == "slurm":
@@ -136,7 +135,7 @@ class UserBasedMonitoring:
         section = "omnistat.usermode"
 
         # noop if using an external server
-        use_external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
+        use_external_victoria = self.runtimeConfig[section].getboolean("external_victoria", False)
         self.__external_proxy = None
 
         if use_external_victoria:
@@ -392,6 +391,7 @@ class UserBasedMonitoring:
             if self.__external_proxy:
                 additional_env = f"http_proxy={self.__external_proxy}"
 
+<<<<<<< HEAD
             # trying local ssh client implementation
             launch_results = utils.execute_ssh_parallel(
                 command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'",
@@ -401,6 +401,15 @@ class UserBasedMonitoring:
                 max_retries=3,
                 retry_delay=5,
             )
+=======
+            try:
+                output = client.run_command(
+                    f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'",
+                    stop_on_errors=False,
+                )
+            except:
+                logging.info("Exception thrown launching parallel ssh client")
+>>>>>>> 19c0400 (apply formatting)
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
