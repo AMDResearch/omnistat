@@ -129,6 +129,10 @@ class Standalone:
         logflask = logging.getLogger("werkzeug")
         logflask.setLevel(logging.ERROR)
 
+        # default labels applied to all metrics from this host
+        self.__labelDefaults = self.__instanceLabel + "," + self.__userLabel
+        logging.debug("Default metric labels = %s" % self.__labelDefaults)
+
         # verify victoriaURL is operational and ready to receive queries (poll for a bit if necessary)
         failed = True
         delay_start = 0.05
@@ -176,7 +180,10 @@ class Standalone:
                 if prefix and not metric.name.startswith(prefix):
                     continue
                 for sample in metric.samples:
-                    labels = self.__instanceLabel
+                    if sample.name == "rmsjob_info":
+                        labels = self.__instanceLabel
+                    else:
+                        labels = self.__labelDefaults
                     if sample.labels:
                         for key, value in sample.labels.items():
                             labels += ',%s="%s"' % (key, value)
