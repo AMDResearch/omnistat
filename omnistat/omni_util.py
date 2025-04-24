@@ -86,6 +86,20 @@ class UserBasedMonitoring:
 
         return
 
+    def disableProxies(self):
+        """
+        Used to disable any inherited proxies in cases where expected communication
+        is only local between compute nodes. Necessary to avoid problems imposed by users
+        who have proxy settings in their runtime environment to access the outside world.
+        """
+
+        os.environ.pop("http_proxy",None)
+        os.environ.pop("https_proxy",None)
+        os.environ.pop("all_proxy",None)
+
+        return
+
+
     def getRMSHosts(self):
         if self.__rms == "slurm":
             hostlist = os.getenv("SLURM_JOB_NODELIST", None)
@@ -123,6 +137,8 @@ class UserBasedMonitoring:
 
         # noop if using an external server
         use_external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
+        self.__external_proxy = None
+
         if use_external_victoria:
             logging.info("Pushing data to external VictoriaMetrics server")
             self.__external_victoria = True
@@ -130,7 +146,7 @@ class UserBasedMonitoring:
             self.__external_victoria_port = self.runtimeConfig[section].get("external_victoria_port")
             logging.info("--> external host = %s" % self.__external_victoria_endpoint)
             logging.info("--> external port = %s" % self.__external_victoria_port)
-            self.__external_proxy = None
+
             if self.runtimeConfig.has_option(section, "external_proxy"):
                 self.__external_proxy = self.runtimeConfig[section].get("external_proxy")
                 logging.info("--> external proxy = %s" % self.__external_proxy)
@@ -283,6 +299,7 @@ class UserBasedMonitoring:
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
 
         self.rmsDetection()
+        self.disableProxies()
 
         if victoriaMode:
             if os.path.exists("./exporter.log"):
@@ -297,7 +314,7 @@ class UserBasedMonitoring:
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
-        logging.info("[exporter]: %s" % cmd)
+        logging.debug("[exporter]: %s" % cmd)
 
         if "OMNISTAT_EXPORTER_COREBINDING" in os.environ:
             corebinding = int(os.getenv("OMNISTAT_EXPORTER_COREBINDING"))
@@ -312,7 +329,7 @@ class UserBasedMonitoring:
             numa_command_string = " ".join(numa_command)
             cmd = f"{numa_command_string} {cmd}"
         else:
-            logging.info("Skipping exporter corebinding")
+            logging.info("[exporter]: Skipping exporter corebinding")
 
         if self.__hosts:
             logging.info("[exporter]: Saving RMS job state locally to compute hosts...")
@@ -457,6 +474,7 @@ class UserBasedMonitoring:
 
     def stopExporters(self, victoriaMode=False):
         self.rmsDetection()
+        self.disableProxies()
 
         logging.info("Stopping %i exporters" % len(self.__hosts))
 
