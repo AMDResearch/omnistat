@@ -105,12 +105,18 @@ class Standalone:
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
         self.__instanceLabel = 'instance="%s"' % self.__hostname
+        self.__userLabel = 'user="%s"' % getpass.getuser()
+
         self.__victoriaURL = f"http://{args.endpoint}:{args.port}"
         self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
         if self.__pushFrequencyMins < 1:
             logging.error("")
             logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
             sys.exit(1)
+
+        # default labels applied to all metrics from this host
+        self.__labelDefaults = self.__instanceLabel + "," + self.__userLabel
+        logging.debug("Default metric labels = %s" % self.__labelDefaults)
 
         # verify victoriaURL is operational and ready to receive queries (poll for a bit if necessary)
         failed = True
@@ -158,15 +164,15 @@ class Standalone:
                 if prefix and not metric.name.startswith(prefix):
                     continue
                 for sample in metric.samples:
-                    # labels = 'instance="%s"' % self.__hostname
-                    labels = self.__instanceLabel
+                    if sample.name == "rmsjob_info":
+                        labels = self.__instanceLabel
+                    else:
+                        labels = self.__labelDefaults
                     if sample.labels:
                         for key, value in sample.labels.items():
                             labels += ',%s="%s"' % (key, value)
                     entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
                     self.__dataVM.append(entry)
-                    # if token == "rmsjob_annotations":
-                    #     print("%s: %s" % (timestamp, sample.value))
 
     def polling(self, monitor, interval_secs):
         """main polling function"""
