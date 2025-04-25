@@ -1049,7 +1049,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 60
+            "y": 116
           },
           "id": 129,
           "options": {
@@ -1149,7 +1149,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 69
+            "y": 125
           },
           "id": 101,
           "options": {
@@ -1249,7 +1249,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 78
+            "y": 134
           },
           "id": 114,
           "options": {
@@ -1349,7 +1349,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 86
+            "y": 142
           },
           "id": 115,
           "options": {
@@ -1463,7 +1463,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 204
+            "y": 260
           },
           "id": 130,
           "options": {
@@ -1559,7 +1559,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 204
+            "y": 260
           },
           "id": 132,
           "options": {
@@ -1655,7 +1655,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 212
+            "y": 268
           },
           "id": 133,
           "options": {
@@ -1760,7 +1760,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 212
+            "y": 268
           },
           "id": 134,
           "options": {
@@ -1880,7 +1880,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 303
+            "y": 359
           },
           "id": 119,
           "options": {
@@ -1981,7 +1981,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 311
+            "y": 367
           },
           "id": 120,
           "options": {
@@ -2094,7 +2094,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 602
+            "y": 658
           },
           "id": 121,
           "options": {
@@ -2205,7 +2205,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2221,7 +2222,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 337
+            "y": 47
           },
           "id": 122,
           "options": {
@@ -2232,12 +2233,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2326,7 +2328,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2342,7 +2345,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 345
+            "y": 63
           },
           "id": 123,
           "options": {
@@ -2353,12 +2356,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76576",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2462,7 +2466,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 48
+            "y": 104
           },
           "id": 111,
           "options": {
@@ -2586,6 +2590,7 @@
         "type": "constant"
       },
       {
+        "allowCustomValue": true,
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
