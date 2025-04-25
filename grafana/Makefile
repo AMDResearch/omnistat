@@ -10,7 +10,7 @@ all: $(RMS) $(STANDALONE)
 
 json-models/rms-%.json: source/%.json
 	./scripts/filter-dashboard --input $< \
-		--exclude-metrics rocm_throttle_events \
+		--exclude-metrics rocm_throttle_events network_rx_bytes network_tx_bytes \
 		--replace-name Source:RMS > $@
 
 json-models/standalone-%.json: json-models/rms-%.json
