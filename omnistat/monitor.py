@@ -130,6 +130,7 @@ class Monitor:
 
         if self.runtimeConfig["collector_enable_networking"]:
             from omnistat.collector_network import NETWORK
+
             self.__collectors.append(NETWORK())
 
         if self.runtimeConfig["collector_enable_rocm_smi"]:
