@@ -3046,6 +3046,7 @@
   "templating": {
     "list": [
       {
+        "allowCustomValue": false,
         "hide": 2,
         "includeAll": false,
         "name": "source",
