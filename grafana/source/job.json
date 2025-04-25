@@ -1279,7 +1279,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "#EAB839",
@@ -1319,7 +1320,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1391,7 +1392,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1435,12 +1437,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1475,7 +1478,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red"
+                "color": "red",
+                "value": null
               },
               {
                 "color": "#EAB839",
@@ -1515,7 +1519,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -1597,7 +1601,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1656,12 +1661,13 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.3.0-76537",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
@@ -2013,7 +2019,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 741
+            "y": 816
           },
           "id": 90,
           "interval": "$interval",
@@ -2095,7 +2101,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 910
+            "y": 27
           },
           "id": 88,
           "interval": "$interval",
@@ -2151,7 +2157,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2205,7 +2211,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 910
+            "y": 27
           },
           "id": 89,
           "interval": "$interval",
@@ -2261,7 +2267,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2339,7 +2345,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2355,7 +2362,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 921
+            "y": 54
           },
           "id": 91,
           "interval": "$interval",
@@ -2367,12 +2374,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2449,7 +2457,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 28
+            "y": 63
           },
           "id": 28,
           "interval": "$interval",
@@ -2511,7 +2519,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 28
+            "y": 63
           },
           "id": 86,
           "interval": "$interval",
@@ -2624,7 +2632,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 676
+            "y": 751
           },
           "id": 29,
           "interval": "$interval",
@@ -2686,7 +2694,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 676
+            "y": 751
           },
           "id": 31,
           "interval": "$interval",
@@ -2827,7 +2835,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 684
+            "y": 759
           },
           "id": 24,
           "interval": "$interval",
@@ -3048,7 +3056,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 29
+            "y": 64
           },
           "id": 52,
           "interval": "$interval",
@@ -3249,7 +3257,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 54
+            "y": 129
           },
           "id": 97,
           "interval": "$interval",
@@ -3485,7 +3493,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 54
+            "y": 129
           },
           "id": 98,
           "interval": "$interval",
@@ -3664,7 +3672,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 63
+            "y": 138
           },
           "id": 95,
           "interval": "$interval",
@@ -3887,7 +3895,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 333
+            "y": 408
           },
           "id": 54,
           "interval": "$interval",
@@ -4091,7 +4099,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 333
+            "y": 408
           },
           "id": 99,
           "interval": "$interval",
@@ -4254,7 +4262,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 342
+            "y": 417
           },
           "id": 100,
           "interval": "$interval",
@@ -4415,7 +4423,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4431,7 +4440,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 448
+            "y": 66
           },
           "id": 33,
           "interval": "$interval",
@@ -4443,12 +4452,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4514,7 +4524,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4530,7 +4541,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 456
+            "y": 74
           },
           "id": 104,
           "interval": "$interval",
@@ -4542,12 +4553,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4613,7 +4625,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4629,7 +4642,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 464
+            "y": 82
           },
           "id": 22,
           "interval": "$interval",
@@ -4641,12 +4654,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4712,7 +4726,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4728,7 +4743,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 472
+            "y": 90
           },
           "id": 25,
           "interval": "$interval",
@@ -4740,12 +4755,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4811,7 +4827,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4827,7 +4844,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 472
+            "y": 90
           },
           "id": 23,
           "interval": "$interval",
@@ -4839,12 +4856,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4940,7 +4958,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 497
+            "y": 572
           },
           "id": 43,
           "interval": "$interval",
@@ -5048,7 +5066,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 497
+            "y": 572
           },
           "id": 48,
           "interval": "$interval",
@@ -5170,7 +5188,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 506
+            "y": 581
           },
           "id": 49,
           "interval": "$interval",
@@ -5269,7 +5287,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 506
+            "y": 581
           },
           "id": 51,
           "interval": "$interval",
@@ -5366,7 +5384,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5394,12 +5413,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -5474,7 +5494,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5502,12 +5523,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -5523,6 +5545,226 @@
             }
           ],
           "title": "Ethernet Bandwidth - Transmitted",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 42
+          },
+          "id": 105,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(network_rx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Ethernet Bandwidth - Received (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 42
+          },
+          "id": 106,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(network_tx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Ethernet Bandwidth - Transmitted (Omnistat)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -5612,7 +5854,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1281
+            "y": 1356
           },
           "id": 102,
           "interval": "$interval",
@@ -5720,7 +5962,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1281
+            "y": 1356
           },
           "id": 103,
           "interval": "$interval",
@@ -5842,7 +6084,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1290
+            "y": 1365
           },
           "id": 46,
           "interval": "$interval",
@@ -5950,7 +6192,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1290
+            "y": 1365
           },
           "id": 45,
           "interval": "$interval",
@@ -6111,7 +6353,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1729
+            "y": 1804
           },
           "id": 56,
           "interval": "$interval",
