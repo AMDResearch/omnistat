@@ -179,6 +179,7 @@ class ROCMSMI(Collector):
         self.__minSMIVersionRequired = (7, 0, 0)
         self.__minROCmVersion = "6.1.0"
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
+        self.__power_cap_monitoring = runtimeConfig["collector_power_capping"]
         self.__eccBlocks = {}
 
         rocm_path = runtimeConfig["collector_rocm_path"]
@@ -369,7 +370,8 @@ class ROCMSMI(Collector):
                             metric, "gauge", "number of uncorrectable RAS events for %s block (count)" % key
                         )
         # power cap
-        self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)" )
+        if self.__power_cap_monitoring:
+            self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)" )
 
         return
 
@@ -500,9 +502,10 @@ class ROCMSMI(Collector):
                     )
             # --
             # power cap
-            metric = self.__prefix + "power_cap_watts"
-            ret = self.__libsmi.rsmi_dev_power_cap_get (device, 0x0, ctypes.byref(power))
-            # rsmi value in microwatts -> convert to watt
-            self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
+            if self.__power_cap_monitoring:
+                metric = self.__prefix + "power_cap_watts"
+                ret = self.__libsmi.rsmi_dev_power_cap_get (device, 0x0, ctypes.byref(power))
+                # rsmi value in microwatts -> convert to watt
+                self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
 
         return
