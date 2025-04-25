@@ -271,6 +271,12 @@ class AMDSMI(Collector):
                 # add Gauge metric only once
                 if metric_name not in self.__GPUMetrics.keys():
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
+
+        # Register power capping setting
+        self.__GPUMetrics["power_cap_watts"] = Gauge(
+            self.__prefix + "power_cap_watts", "Max power cap of device (W)", labelnames=["card"]
+        )
+
         return
 
     def updateMetrics(self):
@@ -329,5 +335,8 @@ class AMDSMI(Collector):
                     self.__GPUMetrics["ras_%s_deferred_count" % key].labels(card=cardId).set(
                         ecc_error_counts["deferred_count"]
                     )
+            # power-capping
+            power_info = smi.amdsmi_get_power_cap_info(device)
+            self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info['power_cap']/ 1000000)
 
         return
