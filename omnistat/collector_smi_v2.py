@@ -87,6 +87,7 @@ class AMDSMI(Collector):
         self.__GPUMetrics = {}
         self.__metricMapping = {}
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
+        self.__power_cap_monitoring = runtimeConfig["collector_power_capping"]
         self.__eccBlocks = {}
         # verify minimum version met
         check_min_version("24.7.1")
@@ -273,9 +274,10 @@ class AMDSMI(Collector):
                     self.__GPUMetrics[metric_name] = Gauge(metric_name, f"{metric}", labelnames=["card"])
 
         # Register power capping setting
-        self.__GPUMetrics["power_cap_watts"] = Gauge(
-            self.__prefix + "power_cap_watts", "Max power cap of device (W)", labelnames=["card"]
-        )
+        if self.__power_cap_monitoring:
+            self.__GPUMetrics["power_cap_watts"] = Gauge(
+                self.__prefix + "power_cap_watts", "Max power cap of device (W)", labelnames=["card"]
+            )
 
         return
 
@@ -336,7 +338,8 @@ class AMDSMI(Collector):
                         ecc_error_counts["deferred_count"]
                     )
             # power-capping
-            power_info = smi.amdsmi_get_power_cap_info(device)
-            self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info['power_cap']/ 1000000)
+            if self.__power_cap_monitoring:
+                power_info = smi.amdsmi_get_power_cap_info(device)
+                self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info['power_cap']/ 1000000)
 
         return
