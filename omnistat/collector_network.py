@@ -50,13 +50,12 @@ class NETWORK(Collector):
         self.__nic_rx_data_paths = {}
         self.__nic_tx_data_paths = {}
         self.__slingshot_buckets = {}
-        self.__metrics = {}
 
 
     def registerMetrics(self):
         """Register metrics of interest"""
 
-        # scan local NICs 
+        # scan local NICs
         base_path = "/sys/class/net"
         for entry in os.listdir(base_path):
             if entry == "lo":
@@ -69,7 +68,7 @@ class NETWORK(Collector):
 
                 tx_path = os.path.join("%s/statistics/tx_bytes" % nic_dir)
                 if os.path.isfile(tx_path) and os.path.getsize(tx_path) > 0:
-                    self.__nic_tx_data_paths[entry] = (tx_path)                    
+                    self.__nic_tx_data_paths[entry] = (tx_path)
 
         if len(self.__nic_rx_data_paths) > 0:
             logging.debug(self.__nic_rx_data_paths)
@@ -82,7 +81,7 @@ class NETWORK(Collector):
             metricName="tx_bytes"
             description="Transmitted (bytes)"
             self.__tx_metric = Gauge(self.__prefix + metricName,description,labelnames=["interface"])
-            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))                        
+            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
 
         base = "/sys"
         device_pattern = "class/cxi/cxi*"
@@ -121,7 +120,7 @@ class NETWORK(Collector):
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
-        
+
         # Received
         for nic, path in  self.__nic_rx_data_paths.items():
             try:
@@ -138,7 +137,7 @@ class NETWORK(Collector):
                     data = int(f.read().strip())
                     self.__tx_metric.labels(interface=nic).set(data)
             except:
-                pass             
+                pass
 
         # Slingshot
         for device_id, kinds in self.__slingshot_buckets.items():
