@@ -24,9 +24,8 @@
 
 """Network monitoring
 
-Implements a prometheus info metric to track network traffic data for interface
-exposed in /sys/class/net
-
+Implements a prometheus info metric to track network traffic data for interfaces
+exposed under /sys/class/net and /sys/class/cxi.
 """
 
 import json
@@ -46,114 +45,138 @@ from omnistat.collector_base import Collector
 class NETWORK(Collector):
     def __init__(self, annotations=False, jobDetection=None):
         logging.debug("Initializing networking data collector")
+
         self.__prefix = "network_"
-        self.__nic_rx_data_paths = {}
-        self.__nic_tx_data_paths = {}
-        self.__slingshot_buckets = {}
+
+        # Files to check for IP devices.
+        self.__net_rx_data_paths = {}
+        self.__net_tx_data_paths = {}
+
+        # Files to check for for slingshot (CXI) devices.
+        self.__cxi_rx_data_paths = {}
+        self.__cxi_tx_data_paths = {}
 
     def registerMetrics(self):
         """Register metrics of interest"""
 
-        # scan local NICs
-        base_path = "/sys/class/net"
-        for entry in os.listdir(base_path):
-            if entry == "lo":
+        # Standard IP (/sys/class/net): store data paths to sysfs
+        # statistics files for local NICs, indexed by interface ID. For
+        # example, for Rx bandwidth:
+        #   __net_rx_data_paths = {
+        #       "eth0": "/sys/class/net/eth0/statistics/rx_bytes"
+        #   }
+        for nic in Path("/sys/class/net").iterdir():
+            if not nic.is_dir():
                 continue
-            nic_dir = os.path.join(base_path, entry)
-            if os.path.isdir(nic_dir):
-                rx_path = os.path.join("%s/statistics/rx_bytes" % nic_dir)
-                if os.path.isfile(rx_path) and os.path.getsize(rx_path) > 0:
-                    self.__nic_rx_data_paths[entry] = rx_path
 
-                tx_path = os.path.join("%s/statistics/tx_bytes" % nic_dir)
-                if os.path.isfile(tx_path) and os.path.getsize(tx_path) > 0:
-                    self.__nic_tx_data_paths[entry] = tx_path
+            nic_name = nic.name
+            if nic_name == "lo":
+                continue
 
-        if len(self.__nic_rx_data_paths) > 0:
-            logging.debug(self.__nic_rx_data_paths)
-            metricName = "rx_bytes"
-            description = "Received (bytes)"
-            self.__rx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
-            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
+            rx_path = nic / "statistics/rx_bytes"
+            if rx_path.is_file() and rx_path.stat().st_size > 0:
+                self.__net_rx_data_paths[nic_name] = rx_path
 
-        if len(self.__nic_tx_data_paths) > 0:
-            metricName = "tx_bytes"
-            description = "Transmitted (bytes)"
-            self.__tx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
-            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
+            tx_path = nic / "statistics/tx_bytes"
+            if tx_path.is_file() and tx_path.stat().st_size > 0:
+                self.__net_tx_data_paths[nic_name] = tx_path
 
-        base = "/sys"
-        device_pattern = "class/cxi/cxi*"
-        file_pattern = "device/telemetry/hni_*_ok*"
-        bucket_pattern = "hni_(tx|rx)_ok_(\d+)[_to]*(\d+)?"
+        # Slingshot CXI traffic (/sys/class/cxi): store data paths to bucketed
+        # telemetry files, indexed by interface ID and minimum size of the
+        # bucket. For example, for Rx bandwidth:
+        #   __cxi_rx_data_paths = {
+        #       "cxi0": {
+        #           27: "/sys/class/cxi/cx0/device/telemetry/hni_rx_ok_27",
+        #           35: "/sys/class/cxi/cx0/device/telemetry/hni_rx_ok_35",
+        #           36: "/sys/class/cxi/cx0/device/telemetry/hni_rx_ok_36_to_63",
+        #           64: "/sys/class/cxi/cx0/device/telemetry/hni_rx_ok_64",
+        #           ...
+        #           8192: "/sys/class/cxi/cx0/device/telemetry/hni_rx_ok_8192_to_max",
+        #       }
+        #   }
+        cxi_base_path = Path("/sys/class/cxi")
+        cxi_glob_pattern = "device/telemetry/hni_*_ok*"
+        cxi_re_pattern = "hni_(tx|rx)_ok_(\d+)[_to]*(\d+)?"
+        cxi_data_paths = {
+            "rx": self.__cxi_rx_data_paths,
+            "tx": self.__cxi_tx_data_paths,
+        }
 
-        for device in Path(base).glob(device_pattern):
-            device_name = device.name
-            device_id = int(device_name[3:])
-            self.__slingshot_buckets[device_id] = {}
-            for bucket in device.glob(file_pattern):
-                bucket_name = bucket.name
-                match = re.match(bucket_pattern, bucket_name)
+        cxi_nics = []
+        if cxi_base_path.is_dir():
+            cxi_nics = cxi_base_path.iterdir()
+
+        for nic in cxi_nics:
+            if not nic.is_dir():
+                continue
+
+            nic_name = nic.name
+            self.__cxi_rx_data_paths[nic_name] = {}
+            self.__cxi_tx_data_paths[nic_name] = {}
+
+            for bucket in nic.glob(cxi_glob_pattern):
+                match = re.match(cxi_re_pattern, bucket.name)
                 if not match:
                     continue
 
                 kind = match.group(1)
-                min_size = match.group(2)
+                min_size = int(match.group(2))
+                cxi_data_paths[kind][nic_name][min_size] = bucket
 
-                if not kind in self.__slingshot_buckets[device_id]:
-                    self.__slingshot_buckets[device_id][kind] = {}
+        # Register Prometheus metrics for Rx and Tx. Devices are identified by
+        # device class and interface name. For example, the Prometheus metric
+        # for Rx bytes in the standard network device eth0:
+        #   network_rx_bytes{device_class="net",interface="eth0"}
+        labels = ["device_class", "interface"]
 
-                self.__slingshot_buckets[device_id][kind][int(min_size)] = bucket
+        if len(self.__net_rx_data_paths) > 0 or len(self.__cxi_rx_data_paths) > 0:
+            logging.debug(self.__net_rx_data_paths)
+            metric = self.__prefix + "rx_bytes"
+            description = "Network received (bytes)"
+            self.__rx_metric = Gauge(metric, description, labelnames=labels)
+            logging.info(f"--> [registered] {metric} -> {description} (gauge)")
 
-        if len(self.__slingshot_buckets) > 0:
-            metricName = "slingshot_rx_bytes"
-            description = "Slingshot Received (bytes)"
-            self.__slingshot_rx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
-            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
-
-            metricName = "slingshot_tx_bytes"
-            description = "Slingshot Transmitted (bytes)"
-            self.__slingshot_tx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
-            logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
+        if len(self.__net_tx_data_paths) > 0 or len(self.__cxi_tx_data_paths) > 0:
+            logging.debug(self.__net_tx_data_paths)
+            metric = self.__prefix + "tx_bytes"
+            description = "Network transmitted (bytes)"
+            self.__tx_metric = Gauge(metric, description, labelnames=labels)
+            logging.info(f"--> [registered] {metric} -> {description} (gauge)")
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
 
-        # Received
-        for nic, path in self.__nic_rx_data_paths.items():
-            try:
-                with open(path, "r") as f:
-                    data = int(f.read().strip())
-                    self.__rx_metric.labels(interface=nic).set(data)
-            except:
-                pass
+        net_data = [
+            (self.__net_rx_data_paths, self.__rx_metric),
+            (self.__net_tx_data_paths, self.__tx_metric),
+        ]
 
-        # Transmitted
-        for nic, path in self.__nic_tx_data_paths.items():
-            try:
-                with open(path, "r") as f:
-                    data = int(f.read().strip())
-                    self.__tx_metric.labels(interface=nic).set(data)
-            except:
-                pass
+        for data_paths, metric in net_data:
+            for nic, path in data_paths.items():
+                try:
+                    with open(path, "r") as f:
+                        data = int(f.read().strip())
+                        metric.labels(device_class="net", interface=nic).set(data)
+                except:
+                    pass
 
-        # Slingshot
-        for device_id, kinds in self.__slingshot_buckets.items():
-            for kind, sizes in kinds.items():
+        cxi_data = [
+            (self.__cxi_rx_data_paths, self.__rx_metric),
+            (self.__cxi_tx_data_paths, self.__tx_metric),
+        ]
+
+        for data_paths, metric in cxi_data:
+            for nic, buckets in data_paths.items():
                 total = 0
-                for size, file in sizes.items():
+                for size, path in buckets.items():
                     try:
-                        with open(file, "r") as f:
+                        with open(path, "r") as f:
                             data = f.read().strip()
                             fields = data.split("@")
                             count = int(fields[0])
                             total += count * size
                     except:
                         pass
-
-                if kind == "tx":
-                    self.__slingshot_tx_metric.labels(interface=device_id).set(total)
-                elif kind == "rx":
-                    self.__slingshot_rx_metric.labels(interface=device_id).set(total)
+                metric.labels(device_class="cxi", interface=nic).set(total)
 
         return
