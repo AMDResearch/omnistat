@@ -81,7 +81,7 @@ class NETWORK(Collector):
             if tx_path.is_file() and tx_path.stat().st_size > 0:
                 self.__net_tx_data_paths[nic_name] = tx_path
 
-        # Slingshot CXI traffic (/sys/class/cxi): store data paths to bucketed
+        # Slingshot CXI traffic (/sys/class/cxi): store data paths to binned
         # telemetry files, indexed by interface ID and minimum size of the
         # bucket. For example, for Rx bandwidth:
         #   __cxi_rx_data_paths = {
@@ -165,6 +165,9 @@ class NETWORK(Collector):
             (self.__cxi_tx_data_paths, self.__tx_metric),
         ]
 
+        # For CXI, estimate lower bound of the total amount of bytes:
+        # aggregate values from all buckets using the minimum packet size of
+        # each bucket.
         for data_paths, metric in cxi_data:
             for nic, buckets in data_paths.items():
                 total = 0
