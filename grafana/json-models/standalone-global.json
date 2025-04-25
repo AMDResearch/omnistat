@@ -722,7 +722,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 931
+            "y": 1051
           },
           "id": 110,
           "options": {
@@ -841,7 +841,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 931
+            "y": 1051
           },
           "id": 112,
           "options": {
@@ -965,7 +965,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 1599
+            "y": 1719
           },
           "id": 113,
           "options": {
@@ -1092,7 +1092,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 1599
+            "y": 1719
           },
           "id": 140,
           "options": {
@@ -1239,7 +1239,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1605
+            "y": 1725
           },
           "id": 139,
           "options": {
@@ -1393,7 +1393,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 96
+            "y": 216
           },
           "id": 26,
           "options": {
@@ -1478,7 +1478,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 753
+            "y": 873
           },
           "id": 6,
           "options": {
@@ -1634,7 +1634,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 937
+            "y": 1057
           },
           "id": 102,
           "options": {
@@ -1750,7 +1750,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 955
+            "y": 1075
           },
           "id": 109,
           "options": {
@@ -1872,7 +1872,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 98
+            "y": 218
           },
           "id": 106,
           "options": {
@@ -1981,7 +1981,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 392
+            "y": 512
           },
           "id": 119,
           "options": {
@@ -2104,7 +2104,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 99
+            "y": 219
           },
           "id": 124,
           "options": {
@@ -2213,7 +2213,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 375
+            "y": 495
           },
           "id": 125,
           "options": {
@@ -2728,7 +2728,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 152
           },
           "id": 144,
           "options": {
@@ -2834,7 +2834,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 152
           },
           "id": 145,
           "options": {
@@ -2931,7 +2931,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 40
+            "y": 160
           },
           "id": 146,
           "options": {
@@ -3081,7 +3081,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 40
+            "y": 160
           },
           "id": 147,
           "options": {
@@ -3254,7 +3254,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2884
+            "y": 3004
           },
           "id": 35,
           "options": {
@@ -3378,7 +3378,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3790
+            "y": 3910
           },
           "id": 118,
           "options": {
@@ -3485,7 +3485,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3878
+            "y": 3998
           },
           "id": 134,
           "options": {
@@ -3607,7 +3607,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3198
+            "y": 3318
           },
           "id": 92,
           "options": {
@@ -3720,7 +3720,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3206
+            "y": 3326
           },
           "id": 135,
           "options": {
@@ -3829,7 +3829,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3206
+            "y": 3326
           },
           "id": 136,
           "options": {
@@ -3936,7 +3936,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3952,7 +3953,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2887
+            "y": 28
           },
           "id": 121,
           "options": {
@@ -3963,12 +3964,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -3996,7 +3998,7 @@
               "refId": "B"
             }
           ],
-          "title": "Aggregate Ethernet Bandwidth",
+          "title": "Aggregate Ethernet Bandwidth (Node Exporter)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -4057,7 +4059,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4073,7 +4076,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2895
+            "y": 36
           },
           "id": 137,
           "options": {
@@ -4084,12 +4087,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4104,7 +4108,7 @@
               "refId": "A"
             }
           ],
-          "title": "Ethernet Bandwidth - Received",
+          "title": "Ethernet Bandwidth - Received (Node Exporter)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -4165,7 +4169,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4181,7 +4186,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2895
+            "y": 36
           },
           "id": 138,
           "options": {
@@ -4192,12 +4197,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4212,7 +4218,7 @@
               "refId": "A"
             }
           ],
-          "title": "Ethernet Bandwidth - Transmitted",
+          "title": "Ethernet Bandwidth - Transmitted (Node Exporter)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -4303,7 +4309,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2904
+            "y": 3024
           },
           "id": 115,
           "options": {
