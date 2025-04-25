@@ -51,7 +51,6 @@ class NETWORK(Collector):
         self.__nic_tx_data_paths = {}
         self.__slingshot_buckets = {}
 
-
     def registerMetrics(self):
         """Register metrics of interest"""
 
@@ -60,7 +59,7 @@ class NETWORK(Collector):
         for entry in os.listdir(base_path):
             if entry == "lo":
                 continue
-            nic_dir = os.path.join(base_path,entry)
+            nic_dir = os.path.join(base_path, entry)
             if os.path.isdir(nic_dir):
                 rx_path = os.path.join("%s/statistics/rx_bytes" % nic_dir)
                 if os.path.isfile(rx_path) and os.path.getsize(rx_path) > 0:
@@ -68,19 +67,19 @@ class NETWORK(Collector):
 
                 tx_path = os.path.join("%s/statistics/tx_bytes" % nic_dir)
                 if os.path.isfile(tx_path) and os.path.getsize(tx_path) > 0:
-                    self.__nic_tx_data_paths[entry] = (tx_path)
+                    self.__nic_tx_data_paths[entry] = tx_path
 
         if len(self.__nic_rx_data_paths) > 0:
             logging.debug(self.__nic_rx_data_paths)
-            metricName="rx_bytes"
-            description="Received (bytes)"
-            self.__rx_metric = Gauge(self.__prefix + metricName,description,labelnames=["interface"])
+            metricName = "rx_bytes"
+            description = "Received (bytes)"
+            self.__rx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
 
         if len(self.__nic_tx_data_paths) > 0:
-            metricName="tx_bytes"
-            description="Transmitted (bytes)"
-            self.__tx_metric = Gauge(self.__prefix + metricName,description,labelnames=["interface"])
+            metricName = "tx_bytes"
+            description = "Transmitted (bytes)"
+            self.__tx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
 
         base = "/sys"
@@ -107,33 +106,32 @@ class NETWORK(Collector):
                 self.__slingshot_buckets[device_id][kind][int(min_size)] = bucket
 
         if len(self.__slingshot_buckets) > 0:
-            metricName="slingshot_rx_bytes"
-            description="Slingshot Received (bytes)"
+            metricName = "slingshot_rx_bytes"
+            description = "Slingshot Received (bytes)"
             self.__slingshot_rx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
 
-            metricName="slingshot_tx_bytes"
-            description="Slingshot Transmitted (bytes)"
+            metricName = "slingshot_tx_bytes"
+            description = "Slingshot Transmitted (bytes)"
             self.__slingshot_tx_metric = Gauge(self.__prefix + metricName, description, labelnames=["interface"])
             logging.info("--> [registered] %s -> %s (gauge)" % (metricName, description))
-
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
 
         # Received
-        for nic, path in  self.__nic_rx_data_paths.items():
+        for nic, path in self.__nic_rx_data_paths.items():
             try:
-                with open(path, 'r') as f:
+                with open(path, "r") as f:
                     data = int(f.read().strip())
                     self.__rx_metric.labels(interface=nic).set(data)
             except:
                 pass
 
         # Transmitted
-        for nic, path in  self.__nic_tx_data_paths.items():
+        for nic, path in self.__nic_tx_data_paths.items():
             try:
-                with open(path, 'r') as f:
+                with open(path, "r") as f:
                     data = int(f.read().strip())
                     self.__tx_metric.labels(interface=nic).set(data)
             except:
@@ -145,11 +143,11 @@ class NETWORK(Collector):
                 total = 0
                 for size, file in sizes.items():
                     try:
-                        with open(file, 'r') as f:
+                        with open(file, "r") as f:
                             data = f.read().strip()
                             fields = data.split("@")
                             count = int(fields[0])
-                            total += (count * size)
+                            total += count * size
                     except:
                         pass
 
