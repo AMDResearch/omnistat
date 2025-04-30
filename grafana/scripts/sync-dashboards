@@ -45,9 +45,8 @@ from pathlib import Path
 import requests
 
 
-def download_dashboard(grafana_url, api_token, dashboard_uid, dashboard_name, save_dir):
+def download_dashboard(grafana_url, headers, dashboard_uid, dashboard_name, save_dir):
     url = f"{grafana_url}/api/dashboards/uid/{dashboard_uid}"
-    headers = {"Authorization": f"Bearer {api_token}"}
 
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
@@ -73,9 +72,9 @@ def download_dashboard(grafana_url, api_token, dashboard_uid, dashboard_name, sa
     print(f"Dashboard {dashboard_name} successfully downloaded to {file_path}")
 
 
-def upload_dashboard(grafana_url, api_token, dashboard_path, dashboard_id, folder_id):
+def upload_dashboard(grafana_url, headers, dashboard_path, dashboard_id, folder_id):
     url = f"{grafana_url}/api/dashboards/db"
-    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+    headers["Content-Type"] = "application/json"
 
     name = dashboard_path.stem
 
@@ -99,9 +98,9 @@ def upload_dashboard(grafana_url, api_token, dashboard_path, dashboard_id, folde
     print(f"Dashboard {name} uploaded successfully (dashboard ID {dashboard_id}, folder ID {folder_id})")
 
 
-def get_dashboard_info(grafana_url, api_token):
+def get_dashboard_info(grafana_url, headers):
     url = f"{grafana_url}/api/search"
-    headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}
+    headers["Content-Type"] = "application/json"
     params = {"type": "dash-db"}
 
     response = requests.get(url, headers=headers, params=params)
@@ -118,6 +117,7 @@ def get_dashboard_info(grafana_url, api_token):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Synchronize Grafana dashboards.")
     parser.add_argument("--grafana-url", help="URL of the remote Grafana server.", required=True)
+    parser.add_argument("--org-id", help="Grafana organization ID", type=int, default=1)
     parser.add_argument(
         "--dashboards-dir",
         help="Local directory with JSON dashboard to synchronize.",
@@ -138,6 +138,11 @@ if __name__ == "__main__":
     dashboards_dir = args.dashboards_dir
     api_token = os.environ["GRAFANA_API_TOKEN"]
 
+    headers = {
+        "Authorization": f"Bearer {api_token}",
+        "X-Grafana-Org-Id": f"{args.org_id}",
+    }
+
     # Map UIDs of local dashboards to filesystem paths.
     local_dashboard_info = {}
     for path in Path(dashboards_dir).glob("*.json"):
@@ -151,9 +156,9 @@ if __name__ == "__main__":
     if args.action == "download":
         for uid, path in local_dashboard_info.items():
             name = path.stem
-            download_dashboard(grafana_url, api_token, uid, name, dashboards_dir)
+            download_dashboard(grafana_url, headers, uid, name, dashboards_dir)
     elif args.action == "upload":
-        remote_dashboard_info = get_dashboard_info(grafana_url, api_token)
+        remote_dashboard_info = get_dashboard_info(grafana_url, headers)
 
         for uid, path in local_dashboard_info.items():
             # By default, new dashboards not present in the remote Grafana
@@ -169,4 +174,4 @@ if __name__ == "__main__":
                 if "folderId" in remote_dashboard_info[uid]:
                     folder_id = remote_dashboard_info[uid]["folderId"]
 
-            upload_dashboard(grafana_url, api_token, path, dashboard_id, folder_id)
+            upload_dashboard(grafana_url, headers, path, dashboard_id, folder_id)
