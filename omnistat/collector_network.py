@@ -56,6 +56,10 @@ class NETWORK(Collector):
         self.__cxi_rx_data_paths = {}
         self.__cxi_tx_data_paths = {}
 
+        # Files to check for for infiniband devices.
+        self.__ib_rx_data_paths = {}
+        self.__ib_tx_data_paths = {}
+
     def registerMetrics(self):
         """Register metrics of interest"""
 
@@ -123,20 +127,54 @@ class NETWORK(Collector):
                 min_size = int(match.group(2))
                 cxi_data_paths[kind][nic_name][min_size] = bucket
 
+        # Infiniband traffic (/sys/class/infiniband): store data paths to
+        # counters, indexed by interface ID and port ID. For example, for Rx
+        # bandwidth:
+        #   __infiniband_rx_data_paths = {
+        #       "mlx5_0:1": "sys/class/infiniband/mlx5_0/ports/1/counters/port_rcv_data",
+        #       "mlx5_1:1": "sys/class/infiniband/mlx5_1/ports/1/counters/port_rcv_data",
+        #       }
+        #   }
+        ib_base_path = Path("/sys/class/infiniband")
+
+        ib_nics = []
+        if ib_base_path.is_dir():
+            ib_nics = ib_base_path.iterdir()
+
+        for nic in ib_nics:
+            if not nic.is_dir():
+                continue
+
+            ports = nic / "ports"
+            for port in ports.iterdir():
+                nic_name = f"{nic.name}:{port.name}"
+
+                rx_path = port / "counters" / "port_rcv_data"
+                if rx_path.is_file() and rx_path.stat().st_size > 0:
+                    self.__ib_rx_data_paths[nic_name] = rx_path
+
+                tx_path = port / "counters" / "port_xmit_data"
+                if tx_path.is_file() and tx_path.stat().st_size > 0:
+                    self.__ib_tx_data_paths[nic_name] = tx_path
+
         # Register Prometheus metrics for Rx and Tx. Devices are identified by
         # device class and interface name. For example, the Prometheus metric
         # for Rx bytes in the standard network device eth0:
         #   network_rx_bytes{device_class="net",interface="eth0"}
         labels = ["device_class", "interface"]
 
-        if len(self.__net_rx_data_paths) > 0 or len(self.__cxi_rx_data_paths) > 0:
+        rx_data_paths = [self.__net_rx_data_paths, self.__cxi_rx_data_paths, self.__ib_rx_data_paths]
+        num_rx = sum([len(x) for x in rx_data_paths])
+        if num_rx > 0:
             logging.debug(self.__net_rx_data_paths)
             metric = self.__prefix + "rx_bytes"
             description = "Network received (bytes)"
             self.__rx_metric = Gauge(metric, description, labelnames=labels)
             logging.info(f"--> [registered] {metric} -> {description} (gauge)")
 
-        if len(self.__net_tx_data_paths) > 0 or len(self.__cxi_tx_data_paths) > 0:
+        tx_data_paths = [self.__net_tx_data_paths, self.__cxi_tx_data_paths, self.__ib_tx_data_paths]
+        num_tx = sum([len(x) for x in tx_data_paths])
+        if num_tx > 0:
             logging.debug(self.__net_tx_data_paths)
             metric = self.__prefix + "tx_bytes"
             description = "Network transmitted (bytes)"
@@ -181,5 +219,19 @@ class NETWORK(Collector):
                     except:
                         pass
                 metric.labels(device_class="cxi", interface=nic).set(total)
+
+        ib_data = [
+            (self.__ib_rx_data_paths, self.__rx_metric),
+            (self.__ib_tx_data_paths, self.__tx_metric),
+        ]
+
+        for data_paths, metric in ib_data:
+            for nic, path in data_paths.items():
+                try:
+                    with open(path, "r") as f:
+                        data = int(f.read().strip())
+                        metric.labels(device_class="infiniband", interface=nic).set(data)
+                except:
+                    pass
 
         return
