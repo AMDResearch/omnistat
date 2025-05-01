@@ -66,5 +66,5 @@ GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboards --gra
 By default, `sync-dashboards` will synchronize the `source` directory. To
 synchronize a different directory, use the `--dashboards-dir` flag:
 ```
-GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboards --grafana-url "https://grafana.example.com" --dashboards-dir ./json-models/ download
+GRAFANA_API_TOKEN=$(command-to-get-secret-token) ./scripts/sync-dashboards --grafana-url "https://grafana.example.com" --dashboards-dir ./json-models/system/ download
 ```

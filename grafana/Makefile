@@ -3,17 +3,17 @@
 SOURCE_ALL = $(shell find source/ -name '*.json')
 SOURCE_SYSTEM = $(shell find source/ -name '*.json' ! -name 'job*.json')
 
-RMS = $(SOURCE_ALL:source/%=json-models/rms-%)
-STANDALONE = $(SOURCE_SYSTEM:source/%=json-models/standalone-%)
+RMS = $(SOURCE_ALL:source/%=json-models/system/rms-%)
+STANDALONE = $(SOURCE_SYSTEM:source/%=json-models/system/standalone-%)
 
 all: $(RMS) $(STANDALONE)
 
-json-models/rms-%.json: source/%.json
+json-models/system/rms-%.json: source/%.json
 	./scripts/filter-dashboard --input $< \
 		--exclude-metrics rocm_throttle_events network_rx_bytes network_tx_bytes \
 		--replace-name Source:RMS > $@
 
-json-models/standalone-%.json: json-models/rms-%.json
+json-models/system/standalone-%.json: json-models/rms-%.json
 	./scripts/filter-dashboard --input $< \
 		--exclude-metrics rmsjob_ \
 		--exclude-links Job \
