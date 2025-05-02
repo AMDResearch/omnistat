@@ -2897,7 +2897,7 @@
               "links": [
                 {
                   "title": "Node dashboard",
-                  "url": "d/fdxiufe2bkyrkd-standalone/node-standalone?orgId=1&var-instance=${__value.raw}&${__url_time_range}"
+                  "url": "d/fdxiufe2bkyrkd-standalone/node-standalone?var-instance=${__value.raw}&${__url_time_range}"
                 }
               ],
               "mappings": [
@@ -3047,7 +3047,7 @@
               "links": [
                 {
                   "title": "Node dashboard",
-                  "url": "d/fdxiufe2bkyrkd-standalone/node-standalone?orgId=1&var-instance=${__value.raw}&${__url_time_range}"
+                  "url": "d/fdxiufe2bkyrkd-standalone/node-standalone?var-instance=${__value.raw}&${__url_time_range}"
                 }
               ],
               "mappings": [
