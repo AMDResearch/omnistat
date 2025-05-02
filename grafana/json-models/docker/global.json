@@ -70,7 +70,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -186,10 +187,10 @@
         ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 13,
         "w": 24,
         "x": 0,
-        "y": 12239
+        "y": 15
       },
       "id": 99,
       "interval": "5s",
@@ -206,7 +207,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "11.3.0-75826",
+      "pluginVersion": "11.5.2",
       "targets": [
         {
           "datasource": {
