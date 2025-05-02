@@ -2988,7 +2988,7 @@
                     "value": [
                       {
                         "title": "",
-                        "url": "/d/fdqo0h2s2drswe-source/job-source?orgId=1&var-jobid=${__value.raw}&${__url_time_range}"
+                        "url": "/d/fdqo0h2s2drswe-source/job-source?var-jobid=${__value.raw}&${__url_time_range}"
                       }
                     ]
                   }
