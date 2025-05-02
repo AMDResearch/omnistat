@@ -2259,8 +2259,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4672,8 +4671,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4924,8 +4922,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5056,8 +5053,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5297,8 +5293,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5441,8 +5436,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5682,8 +5676,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5827,8 +5820,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6068,8 +6060,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6229,16 +6220,25 @@
         "type": "query"
       },
       {
-        "auto": false,
-        "auto_count": 30,
-        "auto_min": "10s",
-        "current": {
-          "text": "5s",
-          "value": "5s"
-        },
+        "includeAll": false,
         "label": "Resolution",
         "name": "interval",
         "options": [
+          {
+            "selected": false,
+            "text": "0.1s",
+            "value": "0.1s"
+          },
+          {
+            "selected": false,
+            "text": "0.5s",
+            "value": "0.5s"
+          },
+          {
+            "selected": false,
+            "text": "1s",
+            "value": "1s"
+          },
           {
             "selected": true,
             "text": "5s",
@@ -6260,9 +6260,8 @@
             "value": "60s"
           }
         ],
-        "query": "5s,15s,30s,60s",
-        "refresh": 2,
-        "type": "interval"
+        "query": "0.1s,0.5s,1s,5s,15s,30s,60s",
+        "type": "custom"
       },
       {
         "hide": 2,
