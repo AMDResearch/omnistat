@@ -6261,7 +6261,12 @@
           }
         ],
         "query": "0.1s,0.5s,1s,5s,15s,30s,60s",
-        "type": "custom"
+        "type": "custom",
+        "current": {
+          "selected": true,
+          "text": "1s",
+          "value": "1s"
+        }
       },
       {
         "hide": 2,
