@@ -7795,6 +7795,10 @@
         "type": "query"
       },
       {
+        "current": {
+          "text": "5s",
+          "value": "5s"
+        },
         "includeAll": false,
         "label": "Resolution",
         "name": "interval",

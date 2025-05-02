@@ -60,7 +60,7 @@ def download_dashboard(grafana_url, headers, dashboard_uid, dashboard_name, save
     dashboard_data["version"] = 1
     if "templating" in dashboard_data and "list" in dashboard_data["templating"]:
         for var in dashboard_data["templating"]["list"]:
-            if "current" in var and "type" in var and var["type"] != "interval":
+            if "current" in var and "type" in var and var["name"] != "interval":
                 del var["current"]
 
     os.makedirs(save_dir, exist_ok=True)
