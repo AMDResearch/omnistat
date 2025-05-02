@@ -176,7 +176,6 @@ if args.default_interval:
     for i, var in enumerate(dashboard["templating"]["list"]):
         if "name" in var and var["name"] == "interval":
             dashboard["templating"]["list"][i]["current"] = {
-                "selected": True,
                 "text": args.default_interval,
                 "value": args.default_interval,
             }
