@@ -1100,7 +1100,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 26
+            "y": 145
           },
           "id": 27,
           "interval": "$interval",
@@ -1210,7 +1210,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 26
+            "y": 145
           },
           "id": 87,
           "interval": "$interval",
@@ -1360,7 +1360,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 816
+            "y": 935
           },
           "id": 90,
           "interval": "$interval",
@@ -1442,7 +1442,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 27
+            "y": 146
           },
           "id": 88,
           "interval": "$interval",
@@ -1552,7 +1552,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 27
+            "y": 146
           },
           "id": 89,
           "interval": "$interval",
@@ -1686,8 +1686,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1703,7 +1702,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 54
+            "y": 173
           },
           "id": 91,
           "interval": "$interval",
@@ -1798,7 +1797,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 63
+            "y": 182
           },
           "id": 28,
           "interval": "$interval",
@@ -1860,7 +1859,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 63
+            "y": 182
           },
           "id": 86,
           "interval": "$interval",
@@ -1973,7 +1972,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 751
+            "y": 870
           },
           "id": 29,
           "interval": "$interval",
@@ -2035,7 +2034,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 751
+            "y": 870
           },
           "id": 31,
           "interval": "$interval",
@@ -2176,7 +2175,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 759
+            "y": 878
           },
           "id": 24,
           "interval": "$interval",
@@ -2273,7 +2272,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -2397,7 +2397,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 64
+            "y": 183
           },
           "id": 52,
           "interval": "$interval",
@@ -2409,12 +2409,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "multi",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2598,7 +2599,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 129
+            "y": 248
           },
           "id": 97,
           "interval": "$interval",
@@ -2834,7 +2835,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 129
+            "y": 248
           },
           "id": 98,
           "interval": "$interval",
@@ -3013,7 +3014,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 138
+            "y": 257
           },
           "id": 95,
           "interval": "$interval",
@@ -3236,7 +3237,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 408
+            "y": 527
           },
           "id": 54,
           "interval": "$interval",
@@ -3440,7 +3441,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 408
+            "y": 527
           },
           "id": 99,
           "interval": "$interval",
@@ -3603,7 +3604,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 417
+            "y": 536
           },
           "id": 100,
           "interval": "$interval",
@@ -3764,8 +3765,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3781,7 +3781,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 66
+            "y": 185
           },
           "id": 33,
           "interval": "$interval",
@@ -3865,8 +3865,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3882,7 +3881,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 74
+            "y": 193
           },
           "id": 104,
           "interval": "$interval",
@@ -3966,8 +3965,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3983,7 +3981,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 82
+            "y": 201
           },
           "id": 22,
           "interval": "$interval",
@@ -4067,8 +4065,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4084,7 +4081,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 90
+            "y": 209
           },
           "id": 25,
           "interval": "$interval",
@@ -4168,8 +4165,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4185,7 +4181,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 90
+            "y": 209
           },
           "id": 23,
           "interval": "$interval",
@@ -4283,8 +4279,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4300,7 +4295,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 42
+            "y": 161
           },
           "id": 105,
           "interval": "$interval",
@@ -4393,8 +4388,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4410,7 +4404,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 42
+            "y": 161
           },
           "id": 106,
           "interval": "$interval",
@@ -4572,7 +4566,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1804
+            "y": 1923
           },
           "id": 56,
           "interval": "$interval",
@@ -4657,6 +4651,1556 @@
         }
       ],
       "title": "Annotations",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 111,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Range"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Elapsed Time"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "ms"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Number of Nodes"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "First"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": false
+                  },
+                  {
+                    "id": "unit",
+                    "value": "dateTimeAsIso"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Last"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "First"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Start Time"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 38
+          },
+          "id": 107,
+          "interval": "$interval",
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 0,
+            "showHeader": true
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "timestamp(count by (jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))*1000",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "count by (jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0)",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Job Steps",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "includeTimeField": false,
+                "labelsToFields": false,
+                "mode": "seriesToRows",
+                "reducers": [
+                  "first",
+                  "last",
+                  "range"
+                ]
+              },
+              "topic": "series"
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "max"
+                ]
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "string",
+                    "targetField": "Field"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": false,
+                    "field": "First"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Range"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Elapsed Time"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "ms"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Job Step"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 38
+          },
+          "id": 112,
+          "interval": "$interval",
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Field",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 100
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "datasource",
+                "uid": "-- Dashboard --"
+              },
+              "panelId": 107,
+              "refId": "A",
+              "withTransforms": true
+            }
+          ],
+          "title": "Elapsed Time",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "First": true,
+                  "Last": true,
+                  "Last *": true,
+                  "Max": true,
+                  "Range": false
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Max"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "First"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 46
+          },
+          "id": 108,
+          "interval": "$interval",
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobstep) ((rocm_utilization_percentage) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "max by (jobstep) ((rocm_utilization_percentage) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "timestamp(count by (jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "GPU Utilization per Job Step",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "mean"
+                ]
+              },
+              "topic": "series"
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {}
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "C"
+              },
+              "id": "reduce",
+              "options": {
+                "includeTimeField": false,
+                "mode": "seriesToRows",
+                "reducers": [
+                  "first"
+                ]
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "string",
+                    "targetField": "Field"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "First"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Job Step"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Max"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 46
+          },
+          "id": 113,
+          "interval": "$interval",
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Field",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "datasource",
+                "uid": "-- Dashboard --"
+              },
+              "panelId": 108,
+              "refId": "A",
+              "withTransforms": true
+            }
+          ],
+          "title": "GPU Utilization",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "First": true
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Max"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "First"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 54
+          },
+          "id": 109,
+          "interval": "$interval",
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobstep) ((rocm_vram_used_percentage) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "max by (jobstep) ((rocm_vram_used_percentage) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "timestamp(count by (jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "GPU Memory Utilization per Job Step",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "mean"
+                ]
+              },
+              "topic": "series"
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {}
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "C"
+              },
+              "id": "reduce",
+              "options": {
+                "includeTimeField": false,
+                "mode": "seriesToRows",
+                "reducers": [
+                  "first"
+                ]
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "string",
+                    "targetField": "Field"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "First"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Job Step"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Max"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 54
+          },
+          "id": 115,
+          "interval": "$interval",
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Field",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "datasource",
+                "uid": "-- Dashboard --"
+              },
+              "panelId": 109,
+              "refId": "A",
+              "withTransforms": true
+            }
+          ],
+          "title": "GPU Memory Utilization",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "First": true
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "watt"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Max"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "watt"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "First"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 62
+          },
+          "id": 110,
+          "interval": "$interval",
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 1,
+            "showHeader": true
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (jobstep) ((rocm_average_socket_power_watts) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "max by (jobstep) ((rocm_average_socket_power_watts) * on (instance) group_left(jobid,jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "timestamp(count by (jobstep) (rmsjob_info{jobid=\"$jobid\",jobstep!=\"-1\"} > 0))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "C"
+            }
+          ],
+          "title": "GPU Power per Job Step",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "mean"
+                ]
+              },
+              "topic": "series"
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "B"
+              },
+              "id": "reduce",
+              "options": {}
+            },
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "C"
+              },
+              "id": "reduce",
+              "options": {
+                "includeTimeField": false,
+                "mode": "seriesToRows",
+                "reducers": [
+                  "first"
+                ]
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "convertFieldType",
+              "options": {
+                "conversions": [
+                  {
+                    "destinationType": "string",
+                    "targetField": "Field"
+                  }
+                ],
+                "fields": {}
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "First"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "datasource",
+            "uid": "-- Dashboard --"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "string"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Field"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Job Step"
+                  },
+                  {
+                    "id": "custom.axisLabel",
+                    "value": "Job Step"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Mean"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "watt"
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "Average"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Max"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "watt"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 62
+          },
+          "id": 114,
+          "interval": "$interval",
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "orientation": "auto",
+            "showValue": "auto",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Field",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "datasource",
+                "uid": "-- Dashboard --"
+              },
+              "panelId": 110,
+              "refId": "A",
+              "withTransforms": true
+            }
+          ],
+          "title": "Average GPU Power",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "First": true
+                },
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "barchart"
+        }
+      ],
+      "title": "Job Steps - Summary",
       "type": "row"
     }
   ],
