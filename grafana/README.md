@@ -9,16 +9,22 @@ the `source` directory. *Source* dashboards include supersets of panels, which
 can be filtered out using the `filter-dashboard` script.
 
 The following table shows a list of the sample pre-generated dashboards are
-distributed with Omnistat, along with their supported panels:
+distributed with Omnistat, along with their supported metrics:
 
-| Dashboard    | ROCm                   | RMS                | Node Exporter          |
-| :---:        | :---:                  | :---:              | :---:                  |
-| `source`     | :heavy_check_mark:[^1] | :heavy_check_mark: | :heavy_check_mark:[^2] |
-| `rms`        | :heavy_check_mark:     | :heavy_check_mark: | :heavy_check_mark:[^2] |
-| `standalone` | :heavy_check_mark:     |                    | :heavy_check_mark:[^2] |
+| Dashboard           | ROCm                   | RMS                | Node Exporter          |
+| :---:               | :---:                  | :---:              | :---:                  |
+| `source`            | :heavy_check_mark:[^1] | :heavy_check_mark: | :heavy_check_mark:[^2] |
+| `system/rms`        | :heavy_check_mark:     | :heavy_check_mark: | :heavy_check_mark:[^2] |
+| `system/standalone` | :heavy_check_mark:     |                    | :heavy_check_mark:[^2] |
+| `user`[^3]          | :heavy_check_mark:     | :heavy_check_mark: | :heavy_check_mark:[^2] |
+| `docker`[^4]        | :heavy_check_mark:     | :heavy_check_mark: |                        |
 
 [^1]: Includes throttling events (experimental).
 [^2]: Includes CPU, memory, IO, ethernet, and IB panels.
+[^3]: User dashboards are meant to be used in multi-user Grafana instances
+      with RMS enabled to allow users access to their own data.
+[^4]: Docker dashboards are meant to be used in local Docker-based Grafana
+      instances to access local data collected in usermode.
 
 ## Generate Custom Dashboards
 
@@ -28,7 +34,7 @@ can be used to generate a dashboard with support for ROCm and RMS metrics,
 excluding panels that use metrics from Node Exporter:
 
 ```
-./scripts/filter-dashboard -i json-models/rms-global.json --exclude-metrics node_
+./scripts/filter-dashboard -i json-models/system/rms-global.json --exclude-metrics node_
 ```
 
 Note that dashboard variants cannot be imported into the same Grafana instance
@@ -36,7 +42,7 @@ with the same name.  If loading multiple dashboard variants is important, use
 the `--replace-name` flag as follows:
 
 ```
-./scripts/filter-dashboard -i json-models/rms-global.json --exclude-metrics node_ --replace-name RMS:RMSNoNode
+./scripts/filter-dashboard -i json-models/system/rms-global.json --exclude-metrics node_ --replace-name RMS:RMSNoNode
 ```
 
 ## Synchronize Dashboards
