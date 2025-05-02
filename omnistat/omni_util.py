@@ -371,18 +371,22 @@ class UserBasedMonitoring:
                     host_ok = False
                     for iter in range(1, 25):
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            result = s.connect_ex((host, int(port)))
-                            if result == 0:
-                                numAvail = numAvail + 1
-                                hosts_ok.append(host)
-                                logging.debug("Exporter on %s ok" % host)
-                                host_ok = True
+                            try: 
+                                result = s.connect_ex((host, int(port)))
+
+                                if result == 0:
+                                    numAvail = numAvail + 1
+                                    hosts_ok.append(host)
+                                    logging.debug("Exporter on %s ok" % host)
+                                    host_ok = True
+                                    break
+                                else:
+                                    delay = delay_start * iter
+                                    logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
+                                    time.sleep(delay)
+                                s.close()
+                            except Exception as e:
                                 break
-                            else:
-                                delay = delay_start * iter
-                                logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
-                                time.sleep(delay)
-                            s.close()
 
                     if not host_ok:
                         logging.error("Missing exporter on %s (%s)" % (host, result))
