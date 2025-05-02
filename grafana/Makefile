@@ -3,12 +3,12 @@
 SOURCE_ALL = $(shell find source/ -name '*.json')
 SOURCE_SYSTEM = $(shell find source/ -name '*.json' ! -name 'job*.json')
 SOURCE_USER = $(shell find source/ -name '*.json' ! -name 'node*.json')
-SOURCE_DOCKER = $(shell find source/ -name '*.json' ! -name 'node*.json')
+SOURCE_DOCKER = $(shell find source/ -name 'job*.json')
 
 RMS = $(SOURCE_ALL:source/%=json-models/system/rms-%)
 STANDALONE = $(SOURCE_SYSTEM:source/%=json-models/system/standalone-%)
 USER = $(SOURCE_USER:source/%=json-models/user/%)
-DOCKER = $(SOURCE_USER:source/%=json-models/docker/%)
+DOCKER = $(SOURCE_DOCKER:source/%=../docker/grafana/json-models/%)
 
 all: $(RMS) $(STANDALONE) $(USER) $(DOCKER)
 
@@ -34,9 +34,10 @@ json-models/user/job.json: source/job.json
 	./scripts/filter-dashboard --input $< \
 		--replace-name Source:User > $@
 
-# Dashboards used in the local docker-based Grafana are the same as the
-# user-level dashboards, excluding panels that use node-exporter metrics since
+# The job dashboard used in the local docker-based Grafana is the same as the
+# user-level dashboard, excluding panels that use node-exporter metrics since
 # those are not included in usermode executions.
-json-models/docker/%.json: json-models/user/%.json
+../docker/grafana/json-models/%.json: json-models/user/%.json
 	./scripts/filter-dashboard --input $< \
-		--exclude-metrics node_ > $@
+		--exclude-metrics node_ \
+		--exclude-links Global > $@
