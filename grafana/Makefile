@@ -40,4 +40,5 @@ json-models/user/job.json: source/job.json
 ../docker/grafana/json-models/%.json: json-models/user/%.json
 	./scripts/filter-dashboard --input $< \
 		--exclude-metrics node_ \
-		--exclude-links Global > $@
+		--exclude-links Global \
+		--default-interval 1s > $@
