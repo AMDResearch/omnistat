@@ -88,6 +88,7 @@ parser.add_argument(
 )
 parser.add_argument("-l", "--exclude-links", help="Exclude links with this name", nargs="*", required=False, default=[])
 parser.add_argument("-n", "--replace-name", help="Replace dashboard title and uid", required=False, type=str)
+parser.add_argument("--expand-rows", help="Expand all collapsible rows", action="store_true", default=False)
 args = parser.parse_args()
 
 # Patterns to include/exclude panels and links.
@@ -153,6 +154,22 @@ for i, panel in enumerate(panels):
 
     if not empty:
         dashboard["panels"].append(panel)
+
+# To expand all rows, we check for collapsed panels and manually move their
+# subpanels to the root list of panels.
+if args.expand_rows:
+    panels = dashboard.get("panels", [])
+    dashboard["panels"] = []
+    for panel in panels:
+        if "collapsed" in panel and panel["collapsed"] == True:
+            subpanels = panel["panels"]
+            panel["panels"] = []
+            panel["collapsed"] = False
+            dashboard["panels"].append(panel)
+            for subpanel in subpanels:
+                dashboard["panels"].append(subpanel)
+        else:
+            dashboard["panels"].append(panel)
 
 links = dashboard.get("links", [])
 dashboard["links"] = []
