@@ -32,6 +32,7 @@ import ctypes
 import logging
 import os
 import platform
+import pwd
 import signal
 import sys
 import threading
@@ -103,7 +104,10 @@ class Standalone:
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
         self.__instanceLabel = 'instance="%s"' % self.__hostname
-        self.__userLabel = 'user="%s"' % getpass.getuser()
+
+        # cache user name for metric labels
+        uid = os.getuid()
+        self.__userLabel = 'user="%s"' % pwd.getpwuid(uid).pw_name
 
         self.__victoriaURL = f"http://{args.endpoint}:{args.port}"
         self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
