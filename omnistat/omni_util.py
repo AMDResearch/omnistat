@@ -25,7 +25,6 @@
 
 import argparse
 import concurrent.futures
-import getpass
 import importlib.resources
 import logging
 import os
@@ -54,6 +53,7 @@ class UserBasedMonitoring:
         self.timeout = 5  # default scrape timeout in seconds
         self.__hosts = None
         self.__RMS_Detected = False
+        self.__victoriaModeSetup_initialized = False
 
     def setup(self, configFileArgument):
         self.configFile = utils.findConfigFile(configFileArgument)
@@ -89,6 +89,38 @@ class UserBasedMonitoring:
         self.__RMS_Detected = True
 
         return
+
+    def victoriaModeSetup(self):
+        """
+        Initialize VictoraMetrics settings and cache for use by startserver and
+        startexporter methods.
+        """
+        if self.__victoriaModeSetup_initialized:
+            logging.debug("Skipping VictoriaMetrics setup - already initialized")
+            return
+
+        section = "omnistat.usermode"
+
+        self.__external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
+        if self.__external_victoria:
+            logging.info("External VictoriaMetrics server requested")
+            self.__external_victoria_endpoint = self.runtimeConfig[section].get("external_victoria_endpoint")
+            self.__external_victoria_port = self.runtimeConfig[section].get("external_victoria_port")
+            logging.info("--> external host = %s" % self.__external_victoria_endpoint)
+            logging.info("--> external port = %s" % self.__external_victoria_port)
+
+            if self.runtimeConfig.has_option(section, "external_proxy"):
+                self.__external_proxy = self.runtimeConfig[section].get("external_proxy")
+                logging.info("--> external proxy = %s" % self.__external_proxy)
+            else:
+                self.__external_proxy = None
+        else:
+            logging.info("Local VictoriaMetrics server requested")
+
+        self.__victoriaModeSetup_initialized = True
+
+        return
+
 
     def disableProxies(self):
         """
@@ -133,24 +165,13 @@ class UserBasedMonitoring:
 
         section = "omnistat.usermode"
 
+        self.victoriaModeSetup()
+
         # noop if using an external server
-        use_external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
-        self.__external_proxy = None
-
-        if use_external_victoria:
+        if self.__external_victoria:
             logging.info("Pushing data to external VictoriaMetrics server")
-            self.__external_victoria = True
-            self.__external_victoria_endpoint = self.runtimeConfig[section].get("external_victoria_endpoint")
-            self.__external_victoria_port = self.runtimeConfig[section].get("external_victoria_port")
-            logging.info("--> external host = %s" % self.__external_victoria_endpoint)
-            logging.info("--> external port = %s" % self.__external_victoria_port)
-
-            if self.runtimeConfig.has_option(section, "external_proxy"):
-                self.__external_proxy = self.runtimeConfig[section].get("external_proxy")
-                logging.info("--> external proxy = %s" % self.__external_proxy)
             return
         else:
-            self.__external_victoria = False
             logging.info("Starting VictoriaMetrics server on localhost")
 
         vm_binary = self.runtimeConfig[section].get("victoria_binary")
@@ -298,6 +319,7 @@ class UserBasedMonitoring:
 
         self.rmsDetection()
         self.disableProxies()
+        self.victoriaModeSetup()
 
         if victoriaMode:
             if os.path.exists("./exporter.log"):
