@@ -22,6 +22,7 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
+import concurrent.futures
 import configparser
 import importlib.resources
 import logging
@@ -30,6 +31,8 @@ import resource
 import shutil
 import subprocess
 import sys
+import time
+
 from importlib.metadata import version
 from pathlib import Path
 
@@ -369,3 +372,121 @@ def displayVersion(version):
     print("-" * 40)
     print("Omnistat version: %s" % version)
     print("-" * 40)
+
+
+def execute_ssh_command_nohup(
+    hostname: str,
+    command: str,
+    max_retries: int,
+    retry_delay: float,
+    ssh_timeout: float,
+    outputDir: str,
+) -> list[bool, str]:
+    """
+    Executes a single command on a remote host via ssh with nohup for launching background processes.
+
+    Returns:
+        list containing [success_status, output_filename]
+    """
+
+    attempt = 1
+    while attempt <= max_retries:
+        try:
+            outfile = outputDir + f"/omnistat_launch_{hostname}_try{attempt}.log"
+            nohup_command = f"nohup {command} > {outfile} 2>&1 &"
+            ssh_command = ["ssh", hostname, nohup_command]
+
+            logging.debug(f"[pssh] {ssh_command}")
+
+            # Run SSH command
+            process = subprocess.run(ssh_command, capture_output=True, text=True, timeout=ssh_timeout)
+
+            if process.returncode == 0:
+                return True, outfile
+            else:
+                error = process.stderr or process.stdout
+                logging.warning(f"[pssh] try {attempt} of {max_retries} failed for {hostname}: {error.rstrip()}")
+                attempt += 1
+
+        except subprocess.TimeoutExpired as e:
+            logging.warning(
+                f"[pssh] try {attempt} of {max_retries} timed out for {hostname} (timeout= {ssh_timeout} secs)"
+            )
+            attempt += 1
+
+        except Exception as e:
+            logging.warning(f"[pssh] try {attempt} of {max_retries} failed for {hostname}: {str(e)}")
+            attempt += 1
+
+        if attempt > max_retries:
+            logging.warning(f"[pssh] Max retries reached for {hostname}")
+            return False, outfile
+
+        time.sleep(retry_delay)
+
+    return False, None
+
+
+def execute_ssh_parallel(
+    command: str,
+    hostnames: list[str],
+    max_concurrent: int = 10,
+    max_retries: int = 3,
+    retry_delay: float = 2.0,
+    ssh_timeout: float = 10.0,
+    outputDir: str = "/tmp",
+) -> dict:
+    """
+    Spawn commands on remote servers with nohup on multiple hosts in parallel using native ssh client.
+
+     Returns:
+         Dictionary of "status" and "output_filename" for each hostname
+    """
+
+    results = {}
+
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_concurrent) as executor:
+        future_to_host = {
+            executor.submit(
+                execute_ssh_command_nohup,
+                host,
+                command,
+                max_retries,
+                retry_delay,
+                ssh_timeout,
+                outputDir,
+            ): host
+            for host in hostnames
+        }
+
+        # Collect results as they complete
+        for future in concurrent.futures.as_completed(future_to_host):
+            host = future_to_host[future]
+            try:
+                success, outFile = future.result()
+                results[host] = {"status": success, "output_filename": outFile}
+
+                # file_path = Path(outFile)
+                # if file_path.is_file():
+                #     results[host] = {"status": success, "output_filename": outFile}
+                # else:
+                #     results[host] = {"status": success, "output_filename": None}
+
+                if success:
+                    logging.debug(f"[pssh] successfully launched ssh command on {host}")
+                else:
+                    logging.error(f"[pssh] Failed to launch ssh command on {host}")
+                    if file_path.is_file():
+                        output = file_path.read_text()
+                        logging.warning(output)
+
+            except Exception as e:
+                logging.error("[pssh] Unknown error executing command on %s: %s", host, str(e))
+                results[host] = {"status": False, "output_filename": None}
+
+        logging.info("[pssh] All launch commands executed.")
+
+    return results

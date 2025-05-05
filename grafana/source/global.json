@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 13,
+  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -3328,7 +3328,7 @@
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1e-9
+              "le": 1e-09
             },
             "legend": {
               "show": true
@@ -4877,7 +4877,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "grafanacloud-prom"
+            "uid": "${source}"
           },
           "fieldConfig": {
             "defaults": {
@@ -7736,9 +7736,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 40,
-  "tags": [
-    "omnistat"
-  ],
+  "tags": [],
   "templating": {
     "list": [
       {

@@ -28,9 +28,7 @@
 # --> provides a flask endpoint to terminate data collection (http://host:port/shutdown)
 
 import argparse
-import copy
 import ctypes
-import getpass
 import logging
 import os
 import platform
@@ -266,6 +264,7 @@ class Standalone:
         time.sleep(0.5)
 
         logging.info("Terminating execution...")
+        logging.shutdown()
         os.kill(os.getpid(), signal.SIGTERM)
         return
 
@@ -294,12 +293,17 @@ def terminate():
 
     # spin loop till notice recieved that last data was pushed
     maxChecks = 0
+    if "SAMPLING_INTERVAL" in app.config:
+        interval = app.config["SAMPLING_INTERVAL"]
+    else:
+        interval = 5.0
+    wait_interval = max(1,interval / 2.0)
     while not dataDeliveredEvent.isSet():
-        logging.debug("waiting for data delivery event...")
+        logging.debug("waiting for data delivery event...(%.2f secs)" % wait_interval)
         maxChecks += 1
-        if maxChecks > 100:
+        if maxChecks > 10:
             break
-        time.sleep(0.1)
+        time.sleep(wait_interval)
 
     return jsonify({"message": "Shutting down..."}), 200
 
@@ -334,6 +338,8 @@ def main():
         logging.error("")
         logging.error("[ERROR]: Please set sampling interval to be >= 5 millisecs (%s)" % args.interval)
         exit(1)
+
+    app.config["SAMPLING_INTERVAL"] = args.interval
 
     caching = Standalone(args, config)
 

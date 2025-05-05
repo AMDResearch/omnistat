@@ -24,6 +24,7 @@
 # -------------------------------------------------------------------------------
 
 import argparse
+import concurrent.futures
 import getpass
 import importlib.resources
 import logging
@@ -49,7 +50,7 @@ from omnistat import utils
 class UserBasedMonitoring:
     def __init__(self):
         logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
-        self.scrape_interval = 30  # default scrape interval in seconds
+        self.scrape_interval = 10  # default scrape interval in seconds
         self.timeout = 5  # default scrape timeout in seconds
         self.__hosts = None
         self.__RMS_Detected = False
@@ -357,18 +358,21 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel via ssh")
 
-            client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
+            # client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
+            # try:
+            #     output = client.run_command(
+            #         f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
+            #     )
+            # except:
+            #     logging.info("Exception thrown launching parallel ssh client")
 
             additional_env = ""
             if self.__external_proxy:
-                additional_env = f"http_proxy={self.__external_proxy}"
+                additional_env = f"http_proxy={self.__external_proxy}"            
 
-            try:
-                output = client.run_command(
-                    f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'", stop_on_errors=False
-                )
-            except:
-                logging.info("Exception thrown launching parallel ssh client")
+            # trying local ssh client implementation
+            launch_results  = utils.execute_ssh_parallel(command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'",
+                                            hostnames=self.__hosts,max_concurrent=128,ssh_timeout=100,max_retries=3,retry_delay=5)
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
@@ -392,18 +396,22 @@ class UserBasedMonitoring:
                     host_ok = False
                     for iter in range(1, 25):
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            result = s.connect_ex((host, int(port)))
-                            if result == 0:
-                                numAvail = numAvail + 1
-                                hosts_ok.append(host)
-                                logging.debug("Exporter on %s ok" % host)
-                                host_ok = True
+                            try: 
+                                result = s.connect_ex((host, int(port)))
+
+                                if result == 0:
+                                    numAvail = numAvail + 1
+                                    hosts_ok.append(host)
+                                    logging.debug("Exporter on %s ok" % host)
+                                    host_ok = True
+                                    break
+                                else:
+                                    delay = delay_start * iter
+                                    logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
+                                    time.sleep(delay)
+                                s.close()
+                            except Exception as e:
                                 break
-                            else:
-                                delay = delay_start * iter
-                                logging.debug("Retrying %s (sleeping for %.2f sec)" % (host, delay))
-                                time.sleep(delay)
-                            s.close()
 
                     if not host_ok:
                         logging.error("Missing exporter on %s (%s)" % (host, result))
@@ -426,19 +434,38 @@ class UserBasedMonitoring:
 
         return
 
+    def stopSingleExporters(self,host,port,timeout=120):
+        logging.info("Stopping exporter for host -> %s" % host)
+        cmd = ["curl", f"{host}:{port}/shutdown"]
+        logging.debug("-> running command: %s" % cmd)
+        t1 = time.perf_counter()
+        utils.runShellCommand(cmd, timeout=timeout)
+        t2 = time.perf_counter()
+
+        return t2 - t1
+
     def stopExporters(self, victoriaMode=False):
         self.rmsDetection()
         self.disableProxies()
 
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        for host in self.__hosts:
-            logging.info("Stopping exporter for host -> %s" % host)
-            cmd = ["curl", f"{host}:{port}/shutdown"]
-            logging.debug("-> running command: %s" % cmd)
-            timeout = 10
-            if victoriaMode:
-                timeout = 120
-            utils.runShellCommand(cmd, timeout=timeout)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=256) as executor:
+            future_to_host = {
+                executor.submit(
+                    self.stopSingleExporters,
+                    host,
+                    port,
+                ): host
+                for host in self.__hosts
+            }
+
+        # Collect results as they complete
+        for future in concurrent.futures.as_completed(future_to_host):
+            host = future_to_host[future]
+            timing = future.result()
+            logging.info("--> %s required %.2f secs to shutdown" % (host, timing))
+
         return
 
     def verifyNumaCommand(self, coreid):
@@ -483,7 +510,7 @@ def main():
     parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
     parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
-    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=30)")
+    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=10)")
     parser.add_argument(
         "--push",
         help="Initiate data collection in push mode with VictoriaMetrics",

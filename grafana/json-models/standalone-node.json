@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 15,
+  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -2564,9 +2564,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 40,
-  "tags": [
-    "omnistat"
-  ],
+  "tags": [],
   "templating": {
     "list": [
       {
@@ -2603,7 +2601,7 @@
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "/(?<value>(?<text>[\\w\\-\\.]+):[\\d]+)/",
+        "regex": "/(?<value>(?<text>\\S+):[\\d]+)/",
         "sort": 1,
         "type": "query"
       }
