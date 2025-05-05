@@ -326,8 +326,7 @@ class UserBasedMonitoring:
 
             # trying local ssh client implementation
             launch_results  = utils.execute_ssh_parallel(command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",
-                                            hostnames=self.__hosts)
-
+                                            hostnames=self.__hosts,max_concurrent=128,ssh_timeout=100,max_retries=3,retry_delay=5)
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
