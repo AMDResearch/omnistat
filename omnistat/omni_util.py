@@ -456,7 +456,7 @@ class UserBasedMonitoring:
         return
 
     def stopSingleExporters(self,host,port,timeout=120):
-        logging.info("Stopping exporter for host -> %s" % host)
+        logging.debug("Stopping exporter for host -> %s" % host)
         cmd = ["curl", f"{host}:{port}/shutdown"]
         logging.debug("-> running command: %s" % cmd)
         t1 = time.perf_counter()
@@ -468,6 +468,8 @@ class UserBasedMonitoring:
     def stopExporters(self, victoriaMode=False):
         self.rmsDetection()
         self.disableProxies()
+
+        logging.info("Stopping %i exporters" % len(self.__hosts))
 
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
 
@@ -482,10 +484,23 @@ class UserBasedMonitoring:
             }
 
         # Collect results as they complete
+        min_time = float('inf')
+        max_time = float('-inf')
+        avg_time = 0.0
+        count = 0
+
         for future in concurrent.futures.as_completed(future_to_host):
             host = future_to_host[future]
             timing = future.result()
-            logging.info("--> %s required %.2f secs to shutdown" % (host, timing))
+            avg_time += timing
+            count += 1
+            logging.debug("--> %s required %.2f secs to shutdown" % (host, timing))
+            if timing < min_time:
+                min_time = timing
+            if timing > max_time:
+                max_time = timing
+
+        logging.info("--> average time to shutdown = %.2f secs (min=%.2f, max=%.2f)" % (avg_time / count, min_time, max_time))
 
         return
 
