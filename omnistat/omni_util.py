@@ -82,6 +82,8 @@ class UserBasedMonitoring:
             self.__rms = "slurm"
         elif "FLUX_URI" in os.environ:
             self.__rms = "flux"
+        elif "PBS_JOBID" in os.environ:
+            self.__rms = "pbs"
         else:
             utils.error("Unknown/unsupported resource manager")
         logging.info("RMS detected = %s" % self.__rms)
@@ -157,6 +159,12 @@ class UserBasedMonitoring:
                 return
             else:
                 utils.error("Unable to detect assigned Flux hosts.")
+        elif self.__rms == "pbs":
+            nodefile = os.environ.get("PBS_NODEFILE")
+            with open(nodefile) as f:
+                nodes_uniq = {line.strip() for line in f}
+            self.__hosts = [name.split('.')[0] for name in nodes_uniq]
+            return
         else:
             utils.error("Unsupported RMS.")
 
@@ -341,6 +349,7 @@ class UserBasedMonitoring:
                 "[exporter]: Overriding corebinding setting using OMNISTAT_EXPORTER_COREBINDING=%i" % corebinding
             )
 
+
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present on all nodes.
         numa_command = self.verifyNumaCommand(corebinding)
@@ -376,8 +385,14 @@ class UserBasedMonitoring:
                     % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
                 ]
                 utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
+            elif self.__rms == "pbs":
+                if "PBS_JOBID" in os.environ:
+                    # need jobid set on some systems for ssh access
+                    jobid=os.environ.get("PBS_JOBID")
+                    cmd = f"PBS_JOBID={jobid} {cmd}"
 
             logging.info("Launching exporters in parallel via ssh")
+
 
             # client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
             # try:
@@ -394,6 +409,15 @@ class UserBasedMonitoring:
             # trying local ssh client implementation
             launch_results  = utils.execute_ssh_parallel(command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {additional_env} {cmd}'",
                                             hostnames=self.__hosts,max_concurrent=128,ssh_timeout=100,max_retries=3,retry_delay=5)
+
+#            client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
+#            try:
+#                output = client.run_command(
+#                    f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
+#                )
+#            except Exception as e:
+#                logging.info("Exception thrown launching parallel ssh client")
+
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
