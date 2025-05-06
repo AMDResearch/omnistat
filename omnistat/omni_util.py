@@ -109,8 +109,6 @@ class UserBasedMonitoring:
             if self.runtimeConfig.has_option(section, "external_proxy"):
                 self.__external_proxy = self.runtimeConfig[section].get("external_proxy")
                 logging.info("--> external proxy = %s" % self.__external_proxy)
-            else:
-                self.__external_proxy = None
         else:
             logging.info("Local VictoriaMetrics server requested")
 
