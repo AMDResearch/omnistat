@@ -5640,7 +5640,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(network_rx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
+              "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -5749,7 +5749,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum by (instance) (rate(network_tx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
+              "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,

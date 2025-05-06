@@ -2617,7 +2617,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "sum(rate(network_rx_bytes{device_class=\"net\",instance=\"$instance\"}[$__rate_interval]))",
+              "expr": "sum(rate(omnistat_network_rx_bytes{device_class=\"net\",instance=\"$instance\"}[$__rate_interval]))",
               "instant": false,
               "legendFormat": "Received",
               "range": true,

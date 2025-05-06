@@ -14,7 +14,7 @@ all: $(RMS) $(STANDALONE) $(USER) $(DOCKER)
 
 json-models/system/rms-%.json: source/%.json
 	./scripts/filter-dashboard --input $< \
-		--exclude-metrics rocm_throttle_events network_rx_bytes network_tx_bytes \
+		--exclude-metrics rocm_throttle_events omnistat_network \
 		--replace-name Source:RMS > $@
 
 json-models/system/standalone-%.json: json-models/system/rms-%.json
