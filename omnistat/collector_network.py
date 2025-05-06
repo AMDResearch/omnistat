@@ -131,8 +131,8 @@ class NETWORK(Collector):
         # counters, indexed by interface ID and port ID. For example, for Rx
         # bandwidth:
         #   __infiniband_rx_data_paths = {
-        #       "mlx5_0:1": "sys/class/infiniband/mlx5_0/ports/1/counters/port_rcv_data",
-        #       "mlx5_1:1": "sys/class/infiniband/mlx5_1/ports/1/counters/port_rcv_data",
+        #       "mlx5_0:1": "/sys/class/infiniband/mlx5_0/ports/1/counters/port_rcv_data",
+        #       "mlx5_1:1": "/sys/class/infiniband/mlx5_1/ports/1/counters/port_rcv_data",
         #       }
         #   }
         ib_base_path = Path("/sys/class/infiniband")
@@ -230,7 +230,9 @@ class NETWORK(Collector):
                 try:
                     with open(path, "r") as f:
                         data = int(f.read().strip())
-                        metric.labels(device_class="infiniband", interface=nic).set(data)
+                        # Counters for infiniband are reported as "octets divided by 4";
+                        # multiply to collect the expected value in bytes.
+                        metric.labels(device_class="infiniband", interface=nic).set(data * 4)
                 except:
                     pass
 
