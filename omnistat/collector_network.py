@@ -46,7 +46,7 @@ class NETWORK(Collector):
     def __init__(self, annotations=False, jobDetection=None):
         logging.debug("Initializing networking data collector")
 
-        self.__prefix = "network_"
+        self.__prefix = "omnistat_network_"
 
         # Files to check for IP devices.
         self.__net_rx_data_paths = {}
