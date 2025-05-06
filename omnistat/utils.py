@@ -487,6 +487,6 @@ def execute_ssh_parallel(
                 logging.error("[pssh] Unknown error executing command on %s: %s", host, str(e))
                 results[host] = {"status": False, "output_filename": None}
 
-        logging.info("[pssh] All launch commands executed.")
+        logging.info("[pssh] All launch commands executed")
 
     return results
