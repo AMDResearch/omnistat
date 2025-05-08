@@ -1166,8 +1166,8 @@
             {
               "id": "renameByRegex",
               "options": {
-                "regex": "(.*):(.*), (.*)",
-                "renamePattern": "$1/$3"
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$1/$2"
               }
             }
           ],
@@ -1276,8 +1276,8 @@
             {
               "id": "renameByRegex",
               "options": {
-                "regex": "(.*):(.*), (.*)",
-                "renamePattern": "$1/$3"
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$1/$2"
               }
             }
           ],
@@ -1384,8 +1384,8 @@
             {
               "id": "renameByRegex",
               "options": {
-                "regex": "(.*):(.*), (.*)",
-                "renamePattern": "GPU: $1/$3"
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "GPU: $1/$2"
               }
             }
           ],
