@@ -10,3 +10,4 @@ docker/prometheus-data/
 !docker/data/README.md
 omnistat.egg-info/
 test/slurm-job-user.sh
+grafana/json-models/user/
