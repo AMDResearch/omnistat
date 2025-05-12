@@ -28,6 +28,7 @@ basis). Relevant target metrics include:
   * ROCm driver version
   * GPU type
   * GPU vBIOS version
+* Host network traffic (rx and tx)
 
 The data can be scraped for detailed visualization and analysis via a
 combination of [Prometheus](https://prometheus.io/) /
