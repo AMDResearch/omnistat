@@ -294,6 +294,9 @@ class UserBasedMonitoring:
 
         if self.__hosts:
             logging.info("[exporter]: Saving RMS job state locally to compute hosts...")
+            detection_file = self.runtimeConfig["omnistat.collectors.rms"].get(
+                "job_detection_file", "/tmp/omni_rmsjobinfo"
+            )
             if self.__rms == "slurm":
                 numNodes = os.getenv("SLURM_JOB_NUM_NODES")
                 srun_cmd = [
@@ -303,8 +306,7 @@ class UserBasedMonitoring:
                     "%s" % sys.executable,
                     "%s/omnistat-rms-env" % self.binDir,
                     "--nostep",
-                    "%s"
-                    % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                    "%s" % detection_file,
                 ]
                 utils.runShellCommand(srun_cmd, timeout=35, exit_on_error=True)
             elif self.__rms == "flux":
@@ -314,8 +316,7 @@ class UserBasedMonitoring:
                     "%s" % sys.executable,
                     "%s/omnistat-rms-env" % self.binDir,
                     "--nostep",
-                    "%s"
-                    % self.runtimeConfig["omnistat.collectors.rms"].get("job_detection_file", "/tmp/omni_rmsjobinfo"),
+                    "%s" % detection_file,
                 ]
                 utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
             elif self.__rms == "pbs":
@@ -329,7 +330,7 @@ class UserBasedMonitoring:
                 )
 
                 results = utils.execute_ssh_parallel(
-                    command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {pbs_vars} {sys.executable} {self.binDir}/omnistat-rms-env'",
+                    command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {pbs_vars} {sys.executable} {self.binDir}/omnistat-rms-env --nostep {detection_file}'",
                     hostnames=self.__hosts,
                     max_concurrent=128,
                     ssh_timeout=15,
