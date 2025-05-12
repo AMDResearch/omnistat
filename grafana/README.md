@@ -8,7 +8,7 @@ Dashboard variants are automatically generated from *source* available under
 the `source` directory. *Source* dashboards include supersets of panels, which
 can be filtered out using the `filter-dashboard` script.
 
-The following table shows a list of the sample pre-generated dashboards are
+The following table shows a list of the sample pre-generated dashboards
 distributed with Omnistat, along with their supported metrics:
 
 | Dashboard           | ROCm                   | RMS                | Node Exporter          |
