@@ -319,10 +319,24 @@ class UserBasedMonitoring:
                 ]
                 utils.runShellCommand(flux_cmd, timeout=35, exit_on_error=True)
             elif self.__rms == "pbs":
-                if "PBS_JOBID" in os.environ:
-                    # need jobid set on some systems for ssh access
-                    jobid = os.environ.get("PBS_JOBID")
-                    cmd = f"PBS_JOBID={jobid} {cmd}"
+                # cache pbs vars needed for rms-env query
+                pbs_vars = (
+                    f"PBS_JOBID={os.getenv('PBS_JOBID')} "
+                    f"PBS_O_LOGNAME={os.getenv('PBS_O_LOGNAME')} "
+                    f"PBS_QUEUE={os.getenv('PBS_QUEUE')} "
+                    f"PBS_NODEFILE={os.getenv('PBS_NODEFILE')} "
+                    f"PBS_ENVIRONMENT={os.getenv('PBS_ENVIRONMENT')}"
+                )
+
+                results = utils.execute_ssh_parallel(
+                    command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {pbs_vars} {sys.executable} {self.binDir}/omnistat-rms-env'",
+                    hostnames=self.__hosts,
+                    max_concurrent=128,
+                    ssh_timeout=15,
+                    max_retries=2,
+                    retry_delay=5,
+                )
+                time.sleep(1)
 
             logging.info("Launching exporters in parallel via ssh")
 
