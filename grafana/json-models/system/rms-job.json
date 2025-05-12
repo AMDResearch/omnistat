@@ -1731,7 +1731,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 29
       },
       "id": 81,
       "panels": [
@@ -1759,7 +1759,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 145
+            "y": 177
           },
           "id": 27,
           "interval": "$interval",
@@ -1869,7 +1869,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 145
+            "y": 177
           },
           "id": 87,
           "interval": "$interval",
@@ -2019,7 +2019,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 935
+            "y": 967
           },
           "id": 90,
           "interval": "$interval",
@@ -2073,7 +2073,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 30
       },
       "id": 82,
       "panels": [
@@ -2101,7 +2101,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 146
+            "y": 178
           },
           "id": 88,
           "interval": "$interval",
@@ -2211,7 +2211,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 146
+            "y": 178
           },
           "id": 89,
           "interval": "$interval",
@@ -2361,7 +2361,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 173
+            "y": 205
           },
           "id": 91,
           "interval": "$interval",
@@ -2416,7 +2416,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 31
       },
       "id": 15,
       "panels": [
@@ -2456,7 +2456,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 182
+            "y": 214
           },
           "id": 28,
           "interval": "$interval",
@@ -2518,7 +2518,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 182
+            "y": 214
           },
           "id": 86,
           "interval": "$interval",
@@ -2631,7 +2631,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 870
+            "y": 902
           },
           "id": 29,
           "interval": "$interval",
@@ -2693,7 +2693,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 870
+            "y": 902
           },
           "id": 31,
           "interval": "$interval",
@@ -2834,7 +2834,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 878
+            "y": 910
           },
           "id": 24,
           "interval": "$interval",
@@ -2879,7 +2879,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 32
       },
       "id": 53,
       "panels": [
@@ -3055,7 +3055,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 183
+            "y": 215
           },
           "id": 52,
           "interval": "$interval",
@@ -3257,7 +3257,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 248
+            "y": 280
           },
           "id": 97,
           "interval": "$interval",
@@ -3493,7 +3493,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 248
+            "y": 280
           },
           "id": 98,
           "interval": "$interval",
@@ -3672,7 +3672,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 257
+            "y": 289
           },
           "id": 95,
           "interval": "$interval",
@@ -3780,7 +3780,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 29
+        "y": 33
       },
       "id": 96,
       "panels": [
@@ -3895,7 +3895,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 527
+            "y": 559
           },
           "id": 54,
           "interval": "$interval",
@@ -4099,7 +4099,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 527
+            "y": 559
           },
           "id": 99,
           "interval": "$interval",
@@ -4262,7 +4262,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 536
+            "y": 568
           },
           "id": 100,
           "interval": "$interval",
@@ -4371,7 +4371,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 34
       },
       "id": 21,
       "panels": [
@@ -4439,7 +4439,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 185
+            "y": 217
           },
           "id": 33,
           "interval": "$interval",
@@ -4539,7 +4539,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 193
+            "y": 225
           },
           "id": 104,
           "interval": "$interval",
@@ -4639,7 +4639,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 201
+            "y": 233
           },
           "id": 22,
           "interval": "$interval",
@@ -4739,7 +4739,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 209
+            "y": 241
           },
           "id": 25,
           "interval": "$interval",
@@ -4839,7 +4839,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 209
+            "y": 241
           },
           "id": 23,
           "interval": "$interval",
@@ -4885,7 +4885,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 35
       },
       "id": 44,
       "panels": [
@@ -4953,7 +4953,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 691
+            "y": 723
           },
           "id": 43,
           "interval": "$interval",
@@ -5061,7 +5061,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 691
+            "y": 723
           },
           "id": 48,
           "interval": "$interval",
@@ -5116,7 +5116,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 36
       },
       "id": 84,
       "panels": [
@@ -5184,7 +5184,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 700
+            "y": 732
           },
           "id": 49,
           "interval": "$interval",
@@ -5283,7 +5283,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 700
+            "y": 732
           },
           "id": 51,
           "interval": "$interval",
@@ -5328,7 +5328,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 37
       },
       "id": 101,
       "panels": [
@@ -5380,7 +5380,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5396,7 +5397,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 153
+            "y": 34
           },
           "id": 40,
           "interval": "$interval",
@@ -5489,7 +5490,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5505,7 +5507,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 153
+            "y": 34
           },
           "id": 42,
           "interval": "$interval",
@@ -5560,7 +5562,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 38
       },
       "id": 41,
       "panels": [
@@ -5612,7 +5614,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5628,7 +5631,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1475
+            "y": 35
           },
           "id": 102,
           "interval": "$interval",
@@ -5640,12 +5643,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -5720,7 +5724,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5736,7 +5741,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1475
+            "y": 35
           },
           "id": 103,
           "interval": "$interval",
@@ -5748,12 +5753,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -5781,7 +5787,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "Network Bandwidth - Infiniband - Nodes",
+      "title": "Network Bandwidth - High Performance Interconnect - Nodes",
       "type": "row"
     },
     {
@@ -5790,7 +5796,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 39
       },
       "id": 83,
       "panels": [
@@ -5858,7 +5864,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1484
+            "y": 1516
           },
           "id": 46,
           "interval": "$interval",
@@ -5966,7 +5972,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1484
+            "y": 1516
           },
           "id": 45,
           "interval": "$interval",
@@ -6020,7 +6026,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 40
       },
       "id": 57,
       "panels": [
@@ -6127,7 +6133,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1923
+            "y": 1955
           },
           "id": 56,
           "interval": "$interval",
@@ -6220,7 +6226,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 41
       },
       "id": 111,
       "panels": [
@@ -6351,7 +6357,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 38
+            "y": 70
           },
           "id": 107,
           "interval": "$interval",
@@ -6546,7 +6552,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 38
+            "y": 70
           },
           "id": 112,
           "interval": "$interval",
@@ -6705,7 +6711,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 46
+            "y": 78
           },
           "id": 108,
           "interval": "$interval",
@@ -6933,7 +6939,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 46
+            "y": 78
           },
           "id": 113,
           "interval": "$interval",
@@ -7088,7 +7094,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 54
+            "y": 86
           },
           "id": 109,
           "interval": "$interval",
@@ -7316,7 +7322,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 54
+            "y": 86
           },
           "id": 115,
           "interval": "$interval",
@@ -7472,7 +7478,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 62
+            "y": 94
           },
           "id": 110,
           "interval": "$interval",
@@ -7696,7 +7702,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 62
+            "y": 94
           },
           "id": 114,
           "interval": "$interval",
