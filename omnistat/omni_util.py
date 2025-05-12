@@ -115,7 +115,7 @@ class UserBasedMonitoring:
             nodefile = os.environ.get("PBS_NODEFILE")
             with open(nodefile) as f:
                 nodes_uniq = {line.strip() for line in f}
-            self.__hosts = [name.split('.')[0] for name in nodes_uniq]
+            self.__hosts = [name.split(".")[0] for name in nodes_uniq]
             return
         else:
             utils.error("Unsupported RMS.")
@@ -283,7 +283,6 @@ class UserBasedMonitoring:
                 "[exporter]: Overriding corebinding setting using OMNISTAT_EXPORTER_COREBINDING=%i" % corebinding
             )
 
-
         # Assume environment is the same across nodes; if numactl is present
         # here, we expect it to be present on all nodes.
         numa_command = self.verifyNumaCommand(corebinding)
@@ -322,7 +321,7 @@ class UserBasedMonitoring:
             elif self.__rms == "pbs":
                 if "PBS_JOBID" in os.environ:
                     # need jobid set on some systems for ssh access
-                    jobid=os.environ.get("PBS_JOBID")
+                    jobid = os.environ.get("PBS_JOBID")
                     cmd = f"PBS_JOBID={jobid} {cmd}"
 
             logging.info("Launching exporters in parallel via ssh")
