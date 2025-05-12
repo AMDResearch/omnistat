@@ -1020,7 +1020,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 1124
+            "y": 1380
           },
           "id": 110,
           "options": {
@@ -1139,7 +1139,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 1124
+            "y": 1380
           },
           "id": 112,
           "options": {
@@ -1263,7 +1263,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 1792
+            "y": 2048
           },
           "id": 113,
           "options": {
@@ -1390,7 +1390,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 1792
+            "y": 2048
           },
           "id": 140,
           "options": {
@@ -1537,7 +1537,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1798
+            "y": 2054
           },
           "id": 139,
           "options": {
@@ -1649,8 +1649,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2039,7 +2038,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 3069
+            "y": 3325
           },
           "id": 12,
           "options": {
@@ -2209,7 +2208,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 3069
+            "y": 3325
           },
           "id": 20,
           "options": {
@@ -2376,7 +2375,7 @@
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 3497
+            "y": 3753
           },
           "id": 21,
           "options": {
@@ -2581,7 +2580,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 3497
+            "y": 3753
           },
           "id": 22,
           "options": {
@@ -2801,7 +2800,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 13958
+            "y": 14214
           },
           "id": 28,
           "options": {
@@ -3084,7 +3083,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 3976
+            "y": 4232
           },
           "id": 23,
           "options": {
@@ -3219,7 +3218,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 289
+            "y": 545
           },
           "id": 26,
           "options": {
@@ -3304,7 +3303,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 946
+            "y": 1202
           },
           "id": 6,
           "options": {
@@ -3438,7 +3437,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 955
+            "y": 1211
           },
           "id": 29,
           "options": {
@@ -3546,7 +3545,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 955
+            "y": 1211
           },
           "id": 103,
           "options": {
@@ -3676,7 +3675,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1130
+            "y": 1386
           },
           "id": 102,
           "options": {
@@ -3792,7 +3791,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1139
+            "y": 1395
           },
           "id": 38,
           "options": {
@@ -3908,7 +3907,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1139
+            "y": 1395
           },
           "id": 39,
           "options": {
@@ -4024,7 +4023,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1148
+            "y": 1404
           },
           "id": 109,
           "options": {
@@ -4146,7 +4145,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 291
+            "y": 547
           },
           "id": 106,
           "options": {
@@ -4255,7 +4254,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 585
+            "y": 841
           },
           "id": 119,
           "options": {
@@ -4364,7 +4363,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 594
+            "y": 850
           },
           "id": 104,
           "options": {
@@ -4472,7 +4471,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 594
+            "y": 850
           },
           "id": 105,
           "options": {
@@ -4594,7 +4593,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 292
+            "y": 548
           },
           "id": 124,
           "options": {
@@ -4703,7 +4702,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 568
+            "y": 824
           },
           "id": 125,
           "options": {
@@ -4828,7 +4827,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 32
+            "y": 288
           },
           "id": 123,
           "options": {
@@ -4913,7 +4912,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 249
+            "y": 505
           },
           "id": 108,
           "options": {
@@ -5062,7 +5061,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 33
+            "y": 289
           },
           "id": 142,
           "options": {
@@ -5258,7 +5257,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 33
+            "y": 289
           },
           "id": 143,
           "options": {
@@ -5452,7 +5451,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 225
+            "y": 481
           },
           "id": 144,
           "options": {
@@ -5558,7 +5557,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 225
+            "y": 481
           },
           "id": 145,
           "options": {
@@ -5655,7 +5654,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 233
+            "y": 489
           },
           "id": 146,
           "options": {
@@ -5805,7 +5804,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 233
+            "y": 489
           },
           "id": 147,
           "options": {
@@ -5978,7 +5977,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3077
+            "y": 3333
           },
           "id": 35,
           "options": {
@@ -6085,7 +6084,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3141
+            "y": 3397
           },
           "id": 65,
           "options": {
@@ -6192,7 +6191,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3141
+            "y": 3397
           },
           "id": 66,
           "options": {
@@ -6300,7 +6299,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6316,7 +6316,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3983
+            "y": 26
           },
           "id": 118,
           "options": {
@@ -6327,12 +6327,13 @@
               "showLegend": false
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -6423,7 +6424,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 4071
+            "y": 194
           },
           "id": 134,
           "options": {
@@ -6545,7 +6546,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3391
+            "y": 3647
           },
           "id": 92,
           "options": {
@@ -6658,7 +6659,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3399
+            "y": 3655
           },
           "id": 135,
           "options": {
@@ -6767,7 +6768,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3399
+            "y": 3655
           },
           "id": 136,
           "options": {
@@ -6874,7 +6875,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6890,7 +6892,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 37
+            "y": 28
           },
           "id": 121,
           "options": {
@@ -6996,7 +6998,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7012,7 +7015,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 45
+            "y": 36
           },
           "id": 137,
           "options": {
@@ -7105,7 +7108,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7121,7 +7125,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 45
+            "y": 36
           },
           "id": 138,
           "options": {
@@ -7214,7 +7218,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7230,7 +7235,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 53
+            "y": 44
           },
           "id": 148,
           "options": {
@@ -7336,7 +7341,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7352,7 +7358,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 61
+            "y": 52
           },
           "id": 149,
           "options": {
@@ -7445,7 +7451,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7461,7 +7468,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 61
+            "y": 52
           },
           "id": 150,
           "options": {
@@ -7568,7 +7575,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7584,7 +7592,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3097
+            "y": 29
           },
           "id": 115,
           "options": {
@@ -7595,12 +7603,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -7689,7 +7698,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7705,7 +7715,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3105
+            "y": 37
           },
           "id": 96,
           "options": {
@@ -7716,12 +7726,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -7797,7 +7808,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7813,7 +7825,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3105
+            "y": 37
           },
           "id": 94,
           "options": {
@@ -7824,12 +7836,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -7905,7 +7918,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7921,7 +7935,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3113
+            "y": 45
           },
           "id": 93,
           "options": {
@@ -7932,12 +7946,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -8013,7 +8028,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -8029,7 +8045,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3113
+            "y": 45
           },
           "id": 95,
           "options": {
@@ -8040,12 +8056,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-75826",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -8071,9 +8088,572 @@
             }
           ],
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 53
+          },
+          "id": 151,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(sum by (instance) (rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval])))",
+              "instant": false,
+              "legendFormat": "Received",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum(sum by (instance) (rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval])))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "Transmitted",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Aggregate High Performance Interconnect Bandwidth (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 61
+          },
+          "id": 152,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) group_left(jobid,user) rmsjob_info{jobid=~\"^\\\\d+\"}",
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "High Performance Interconnect Bandwidth - Received - Allocated Nodes (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 61
+          },
+          "id": 153,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) group_left(jobid,user) rmsjob_info{jobid=\"\"}",
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "High Performance Interconnect Bandwidth - Received - Unallocated Nodes (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 69
+          },
+          "id": 154,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) group_left(jobid,user) rmsjob_info{jobid=~\"^\\\\d+\"}",
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "High Performance Interconnect Bandwidth - Transmitted - Allocated Nodes (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "binBps"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 69
+          },
+          "id": 155,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) group_left(jobid,user) rmsjob_info{jobid=\"\"}",
+              "instant": false,
+              "legendFormat": "Node: {{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "High Performance Interconnect Bandwidth - Transmitted - Unallocated Nodes (Omnistat)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "timeseries"
         }
       ],
-      "title": "Network - Infiniband Bandwidth",
+      "title": "Network - High Performance Interconnect Bandwidth",
       "type": "row"
     }
   ],
