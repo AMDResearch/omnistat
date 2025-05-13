@@ -1,3 +1,42 @@
+# -------------------------------------------------------------------------------
+# MIT License
+#
+# Copyright (c) 2023 - 2025 Advanced Micro Devices, Inc. All Rights Reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# -------------------------------------------------------------------------------
+
+"""Hardware counter collection using device mode with rocprofiler
+
+Implements collection of user-requested hardware counters. The ROCm
+runtime must be pre-installed to use this data collector. This data
+collector gathers counters on a per GPU basis and exposes metrics
+with a "rocprofiler" prefix with individual cards denotes by labels. The
+following example highlights example metrics for card 0:
+
+rocprofiler_SQ_WAVES{card="0"} 0.0
+rocprofiler_SQ_INSTS{card="0"} 0.0
+rocprofiler_TOTAL_64_OPS{card="0"} 0.0
+rocprofiler_SQ_INSTS_VALU{card="0"} 0.0
+rocprofiler_TA_BUSY_avr{card="0"} 0.0
+"""
+
 import ctypes
 import logging
 import os
