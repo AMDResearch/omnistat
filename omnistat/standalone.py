@@ -114,6 +114,14 @@ class Standalone:
             logging.error("")
             logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
             sys.exit(1)
+        self.__fomCheckFrequencySecs = config["omnistat.usermode"].getint("fom_check_frequency_secs", 10)
+        if self.__fomCheckFrequencySecs < 5:
+            logging.error("")
+            logging.error("[ERROR]: Please set fom_check_freqeuncy_secs  >= 5 seconds (%s)" % self.__fomCheckFrequencySecs)
+            sys.exit(1)
+
+        logflask = logging.getLogger('werkzeug')
+        logflask.setLevel(logging.ERROR)
 
         # verify victoriaURL is operational and ready to receive queries (poll for a bit if necessary)
         failed = True
@@ -141,6 +149,7 @@ class Standalone:
             logging.warning("[WARN]: Please verify server is running and accessible from this host.")
 
         logging.info("Cached data will be pushed every %i minute(s)" % self.__pushFrequencyMins)
+        logging.info("Figure-of-merit (FOM) data will be checked for every %i seconds" % self.__fomCheckFrequencySecs)
 
         # Init glibc for usleep access
         self.__libc = ctypes.CDLL("libc.so.6")
@@ -175,6 +184,7 @@ class Standalone:
         """main polling function"""
 
         num_samples = 0
+        num_fom_samples = 0
         sample_duration = 0
         num_pushes = 0
         push_check_duration = 0.0
@@ -184,7 +194,6 @@ class Standalone:
         mem_mb_base = utils.getMemoryUsageMB()
         base_start_time = time.perf_counter()
         push_thread = None
-        fom_check_frequency_secs = 5
         fom_check_duration = 0.0
 
         # ---
@@ -219,22 +228,18 @@ class Standalone:
                     except:
                         pass
 
-                # periodically check for FOM data
-                if fom_check_duration > fom_check_frequency_secs:
-                    logging.info("Checking on fom data...")
+                # periodically check for figure-of-merit (FOM) data
+                if fom_check_duration > self.__fomCheckFrequencySecs:
+                    logging.debug("Checking on FOM data...")
                     fom_check_duration = 0.0
                     if fomData:
                         with fomLock:
                             for entry in fomData:
                                 entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
                                 self.__dataVM.append(entry)
-                            logging.info("Registered %i samples of FOM data" % len(fomData))
-#                            print(self.__dataVM)
+                            logging.info("Registered %i sample(s) of FOM data" % len(fomData))
+                            num_fom_samples += len(fomData)
                             fomData.clear()
-
-#                    rocm_fom{instance="t003-004",name="Unknown"} 0.0 1740523467256
-#                    entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
-
 
                 self.sleep_microsecs(interval_microsecs)
                 # time.sleep(interval_secs)
@@ -254,6 +259,16 @@ class Standalone:
             logging.info("Last metric push from polling loop is still running - blocking till complete.")
             push_thread.join()
             logging.info("Ready for final data dump after previous metric push complete.")
+
+        # check for any remaining FOM data
+        if fomData:
+            with fomLock:
+                for entry in fomData:
+                    entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
+                    self.__dataVM.append(entry)
+                logging.info("Registered %i sample(s) of FOM data" % len(fomData))
+                num_fom_samples += len(fomData)
+                fomData.clear()
 
         if len(self.__dataVM) > 0:
             logging.info("Initiating final data push...")
@@ -275,6 +290,8 @@ class Standalone:
             logging.info("--> Data collection duration   = %.4f (secs)" % duration_secs)
         logging.info("--> Base memory use at start   = %.3f MB" % mem_mb_base)
         logging.info("--> Memory growth at stop      = %.3f MB" % (utils.getMemoryUsageMB() - mem_mb_base))
+        if num_samples > 0:
+            logging.info("--> Total # of FOM samples     = %i" % num_fom_samples)
 
         # deliver event to shutdown procedure
         logging.debug("setting shutdown delivery event")
@@ -336,7 +353,6 @@ def figureOfMerit():
         with fomLock:
             fomData.append({"name":name,"value":value,"timestamp_msecs":timestamp_msecs})
                             #[value,timestamp_msecs])
-        print("Name = %s, value = %f" % (name,value))
         return jsonify({"status": "ok"}), 200
     
     except Exception as e:
@@ -374,7 +390,6 @@ def main():
     @app.before_request
     def restrict_ips():
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
-        logging.info(allowed_ips)
         if "0.0.0.0" in allowed_ips:
             return
         elif request.remote_addr not in allowed_ips:
