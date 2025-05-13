@@ -16,19 +16,22 @@ job. Omnistat infrastructure can aid in the collection of key
 telemetry from AMD Instinct™ accelerators (on a per-GPU
 basis). Relevant target metrics include:
 
-* GPU utilization (occupancy)
+* GPU utilization
 * High-bandwidth memory (HBM) usage
 * GPU power
 * GPU temperature
 * GPU clock frequency
 * GPU memory clock frequency
-* GPU block error counts
-* GPU throttling events
 * Inventory information
   * ROCm driver version
   * GPU type
   * GPU vBIOS version
-* Host network traffic (rx and tx)
+* RAS information [optional]:
+  * Error counts per GPU block
+* GPU power caps [optional]
+* GPU throttling events [optional]
+* Host network traffic (rx and tx) [optional]
+
 
 The data can be scraped for detailed visualization and analysis via a
 combination of [Prometheus](https://prometheus.io/) /

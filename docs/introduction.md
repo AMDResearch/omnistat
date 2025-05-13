@@ -14,19 +14,21 @@ Welcome to the documentation area for the **Omnistat** project.  Use the navigat
 
 Omnistat provides a set of utilities to aid cluster administrators or individual application developers to aggregate scale-out system metrics via low-overhead sampling across all hosts in a cluster or, alternatively on a subset of hosts associated with a specific user job. At its core, Omnistat was designed to aid collection of key telemetry from AMD Instinct(tm) accelerators (on a per-GPU basis). Relevant target metrics include:
 
-* GPU utilization (occupancy)
+* GPU utilization
 * High-bandwidth memory (HBM) usage
 * GPU power
-* GPU temperature(s)
+* GPU temperature
 * GPU clock frequency
 * GPU memory clock frequency
-* RAS information:
-  * Error counts per GPU block
 * Inventory information:
   * ROCm driver version
   * GPU type
   * GPU vBIOS version
-* Host network traffic (rx and tx)
+* RAS information [optional]:
+  * Error counts per GPU block
+* GPU power caps [optional]
+* GPU throttling events [optional]
+* Host network traffic (rx and tx) [optional]
 
 To enable scalable collection of these metrics, Omnistat provides a python-based [Prometheus](https://prometheus.io) client that supplies instantaneous metric values on-demand for periodic polling by a companion Prometheus server (or a [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics) server).
 
