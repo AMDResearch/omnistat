@@ -172,15 +172,12 @@ class Standalone:
                 if prefix and not metric.name.startswith(prefix):
                     continue
                 for sample in metric.samples:
-                    # labels = 'instance="%s"' % self.__hostname
                     labels = self.__instanceLabel
                     if sample.labels:
                         for key, value in sample.labels.items():
                             labels += ',%s="%s"' % (key, value)
                     entry = "%s{%s} %s %i" % (sample.name, labels, sample.value, timestamp_millisecs)
                     self.__dataVM.append(entry)
-                    # if token == "rmsjob_annotations":
-                    #     print("%s: %s" % (timestamp, sample.value))
 
     def polling(self, monitor, interval_secs):
         """main polling function"""
@@ -238,7 +235,7 @@ class Standalone:
                         with fomLock:
                             for entry in fomData:
                                 entry = '%s{instance="%s",name="%s"} %s %i' % (
-                                    "fom",
+                                    "omnistat_fom",
                                     self.__hostname,
                                     entry["name"],
                                     entry["value"],
@@ -273,7 +270,7 @@ class Standalone:
             with fomLock:
                 for entry in fomData:
                     entry = '%s{instance="%s",name="%s"} %s %i' % (
-                        "fom",
+                        "omnistat_fom",
                         self.__hostname,
                         entry["name"],
                         entry["value"],
