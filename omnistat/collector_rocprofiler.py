@@ -152,6 +152,6 @@ class rocprofiler(Collector):
             for j, name in enumerate(self.__names):
                 array = self.__values[i]
                 value = array[j].value.value
-                self.__metric.labels(card=i,counter=name).set(value)
+                self.__metric.labels(card=i, counter=name).set(value)
 
         return
