@@ -84,7 +84,9 @@ class Monitor:
         self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8001)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
         self.runtimeConfig["collector_ras_ecc"] = config["omnistat.collectors"].getboolean("enable_ras_ecc", True)
-        self.runtimeConfig["collector_power_capping"] = config["omnistat.collectors"].getboolean("enable_power_cap", False)
+        self.runtimeConfig["collector_power_capping"] = config["omnistat.collectors"].getboolean(
+            "enable_power_cap", False
+        )
 
         allowed_ips = config["omnistat.collectors"].get("allowed_ips", "127.0.0.1")
         # convert comma-separated string into list
