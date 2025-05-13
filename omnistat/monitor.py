@@ -110,8 +110,9 @@ class Monitor:
             if config.has_option("omnistat.collectors.rms", "host_skip"):
                 self.runtimeConfig["rms_collector_host_skip"] = config["omnistat.collectors.rms"]["host_skip"]
 
-        if config.has_option("omniwatch.collectors.rocprofiler", "metrics"):
-            self.runtimeConfig["rocprofiler_metrics"] = config["omniwatch.collectors.rocprofiler"]["metrics"].split(",")
+        self.runtimeConfig["rocprofiler_metrics"] = []
+        if config.has_option("omnistat.collectors.rocprofiler", "metrics"):
+            self.runtimeConfig["rocprofiler_metrics"] = config["omnistat.collectors.rocprofiler"]["metrics"].split(",")
 
         # defined global prometheus metrics
         self.__globalMetrics = {}
