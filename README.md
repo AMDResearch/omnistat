@@ -26,11 +26,13 @@ basis). Relevant target metrics include:
   * ROCm driver version
   * GPU type
   * GPU vBIOS version
-* RAS information [optional]:
-  * Error counts per GPU block
-* GPU power caps [optional]
-* GPU throttling events [optional]
-* Host network traffic (rx and tx) [optional]
+
+#### Additional optional metrics:
+
+* RAS information (error counts per GPU block)
+* GPU power caps
+* GPU throttling events
+* Host network traffic (rx and tx)
 
 
 The data can be scraped for detailed visualization and analysis via a
