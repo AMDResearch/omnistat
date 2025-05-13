@@ -117,10 +117,12 @@ class Standalone:
         self.__fomCheckFrequencySecs = config["omnistat.usermode"].getint("fom_check_frequency_secs", 10)
         if self.__fomCheckFrequencySecs < 5:
             logging.error("")
-            logging.error("[ERROR]: Please set fom_check_freqeuncy_secs  >= 5 seconds (%s)" % self.__fomCheckFrequencySecs)
+            logging.error(
+                "[ERROR]: Please set fom_check_freqeuncy_secs  >= 5 seconds (%s)" % self.__fomCheckFrequencySecs
+            )
             sys.exit(1)
 
-        logflask = logging.getLogger('werkzeug')
+        logflask = logging.getLogger("werkzeug")
         logflask.setLevel(logging.ERROR)
 
         # verify victoriaURL is operational and ready to receive queries (poll for a bit if necessary)
@@ -235,7 +237,13 @@ class Standalone:
                     if fomData:
                         with fomLock:
                             for entry in fomData:
-                                entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
+                                entry = '%s{instance="%s",name="%s"} %s %i' % (
+                                    "fom",
+                                    self.__hostname,
+                                    entry["name"],
+                                    entry["value"],
+                                    entry["timestamp_msecs"],
+                                )
                                 self.__dataVM.append(entry)
                             logging.info("Registered %i sample(s) of FOM data" % len(fomData))
                             num_fom_samples += len(fomData)
@@ -264,7 +272,13 @@ class Standalone:
         if fomData:
             with fomLock:
                 for entry in fomData:
-                    entry = "%s{instance=\"%s\",name=\"%s\"} %s %i" % ("fom",self.__hostname,entry["name"],entry["value"],entry["timestamp_msecs"])
+                    entry = '%s{instance="%s",name="%s"} %s %i' % (
+                        "fom",
+                        self.__hostname,
+                        entry["name"],
+                        entry["value"],
+                        entry["timestamp_msecs"],
+                    )
                     self.__dataVM.append(entry)
                 logging.info("Registered %i sample(s) of FOM data" % len(fomData))
                 num_fom_samples += len(fomData)
@@ -342,21 +356,22 @@ def terminate():
 def forbidden(e):
     return jsonify(error="Access denied"), 403
 
-@app.route("/fom", methods=['POST'])
+
+@app.route("/fom", methods=["POST"])
 def figureOfMerit():
     """Endpoint that can be used by user to provide application figure of merit"""
     try:
         data = request.get_json()
-        name = data.get('name')
+        name = data.get("name")
         timestamp_msecs = int(datetime.now(timezone.utc).timestamp() * 1000.0)
-        value = data.get('value')
+        value = data.get("value")
         with fomLock:
-            fomData.append({"name":name,"value":value,"timestamp_msecs":timestamp_msecs})
-                            #[value,timestamp_msecs])
+            fomData.append({"name": name, "value": value, "timestamp_msecs": timestamp_msecs})
         return jsonify({"status": "ok"}), 200
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
 
 @app.route("/metrics")
 def heartbeat():

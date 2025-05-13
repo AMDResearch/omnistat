@@ -340,6 +340,6 @@ class AMDSMI(Collector):
             # power-capping
             if self.__power_cap_monitoring:
                 power_info = smi.amdsmi_get_power_cap_info(device)
-                self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info['power_cap']/ 1000000)
+                self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info["power_cap"] / 1000000)
 
         return
