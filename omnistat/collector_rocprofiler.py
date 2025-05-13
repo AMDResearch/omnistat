@@ -26,15 +26,16 @@
 
 Implements collection of user-requested hardware counters. The ROCm
 runtime must be pre-installed to use this data collector. This data
-collector gathers counters on a per GPU basis and exposes metrics
-with a "rocprofiler" prefix with individual cards denotes by labels. The
-following example highlights example metrics for card 0:
+collector gathers counters on a per GPU basis and exposes them using the
+"omnistat_rocprofiler" metric, with individual cards and counter names
+denoted by labels. The following sample highlights example counters
+under the "omnistat_rocprofiler" counter for card 0:
 
-rocprofiler_SQ_WAVES{card="0"} 0.0
-rocprofiler_SQ_INSTS{card="0"} 0.0
-rocprofiler_TOTAL_64_OPS{card="0"} 0.0
-rocprofiler_SQ_INSTS_VALU{card="0"} 0.0
-rocprofiler_TA_BUSY_avr{card="0"} 0.0
+omnistat_rocprofiler{card="0",counter="SQ_WAVES"} 0.0
+omnistat_rocprofiler{card="0",counter="SQ_INSTS"} 0.0
+omnistat_rocprofiler{card="0",counter="TOTAL_64_OPS"} 0.0
+omnistat_rocprofiler{card="0",counter="SQ_INSTS_VALU"} 0.0
+omnistat_rocprofiler{card="0",counter="TA_BUSY_avr"} 0.0
 """
 
 import ctypes
@@ -70,6 +71,10 @@ class rocprofiler(Collector):
     def __init__(self, rocm_path, metric_names):
         logging.debug("Initializing rocprofiler data collector")
 
+        if metric_names == None or len(metric_names) == 0:
+            logging.error("ERROR: Unexpected list of metrics.")
+            sys.exit(4)
+
         hip_lib = rocm_path + "/lib/libamdhip64.so"
         rocprofiler_lib = rocm_path + "/lib/librocprofiler64v2.so"
 
@@ -99,8 +104,7 @@ class rocprofiler(Collector):
         self.__num_gpus = num_gpus.value
         self.__names = metric_names
 
-        # List of Prometheus gauges, one for each metric
-        self.__metrics = []
+        self.__metric = None
 
         # Lists indexed by GPU ID:
         #  __sessions: stores rocprofiler device mode sessions
@@ -129,11 +133,9 @@ class rocprofiler(Collector):
         logging.info("--> rocprofiler initialized")
 
     def registerMetrics(self):
-        prefix = f"rocprofiler_"
-        for metric in self.__names:
-            metric_name = prefix + metric
-            self.__metrics.append(Gauge(metric_name, "", labelnames=["card"]))
-            logging.info("--> [registered] %s (gauge)" % (metric_name))
+        metric_name = f"omnistat_rocprofiler"
+        self.__metric = Gauge(metric_name, "Performance counter data from rocprofiler", labelnames=["card", "counter"])
+        logging.info("--> [registered] %s (gauge)" % (metric_name))
 
         for i in range(self.__num_gpus):
             self.__librocprofiler.rocprofiler_device_profiling_session_start(self.__sessions[i])
@@ -147,9 +149,9 @@ class rocprofiler(Collector):
             self.__librocprofiler.rocprofiler_device_profiling_session_start(self.__sessions[i])
 
         for i in range(self.__num_gpus):
-            for j in range(len(self.__names)):
+            for j, name in enumerate(self.__names):
                 array = self.__values[i]
                 value = array[j].value.value
-                self.__metrics[j].labels(card=i).set(value)
+                self.__metric.labels(card=i,counter=name).set(value)
 
         return
