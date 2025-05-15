@@ -348,7 +348,7 @@ def terminate():
         interval = app.config["SAMPLING_INTERVAL"]
     else:
         interval = 5.0
-    wait_interval = max(1,interval / 2.0)
+    wait_interval = max(1, interval / 2.0)
     while not dataDeliveredEvent.isSet():
         logging.debug("waiting for data delivery event...(%.2f secs)" % wait_interval)
         maxChecks += 1
