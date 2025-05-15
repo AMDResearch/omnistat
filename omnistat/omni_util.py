@@ -98,7 +98,7 @@ class UserBasedMonitoring:
 
         section = "omnistat.usermode"
 
-        self.__external_victoria = self.runtimeConfig[section].getboolean("external_victoria",False)
+        self.__external_victoria = self.runtimeConfig[section].getboolean("external_victoria", False)
         if self.__external_victoria:
             logging.info("External VictoriaMetrics server requested")
             self.__external_victoria_endpoint = self.runtimeConfig[section].get("external_victoria_endpoint")
@@ -115,7 +115,6 @@ class UserBasedMonitoring:
         self.__victoriaModeSetup_initialized = True
 
         return
-
 
     def disableProxies(self):
         """
