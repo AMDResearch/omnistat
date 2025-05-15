@@ -40,10 +40,6 @@ from pathlib import Path
 
 import yaml
 
-# Use libssh instead of the default libssh2 to avoid issues with certain keys
-# and newer versions of SSH.
-from pssh.clients.ssh.parallel import ParallelSSHClient
-
 from omnistat import utils
 
 
