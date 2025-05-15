@@ -121,6 +121,7 @@ def main():
             jobData["RMS_JOB_BATCHMODE"] = 0
         else:
             jobData["RMS_JOB_BATCHMODE"] = 1
+        jobData["RMS_STEP_ID"] = -1
 
     else:
         print("ERROR: Unknown or undetected resource manager. Verify running in active job")
