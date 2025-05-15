@@ -351,8 +351,14 @@ class UserBasedMonitoring:
             #     logging.info("Exception thrown launching parallel ssh client")
 
             # trying local ssh client implementation
-            launch_results  = utils.execute_ssh_parallel(command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",
-                                            hostnames=self.__hosts,max_concurrent=128,ssh_timeout=100,max_retries=3,retry_delay=5)
+            launch_results = utils.execute_ssh_parallel(
+                command=f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'",
+                hostnames=self.__hosts,
+                max_concurrent=128,
+                ssh_timeout=100,
+                max_retries=3,
+                retry_delay=5,
+            )
 
             # verify exporter available on all nodes...
             if len(self.__hosts) <= 8:
@@ -376,7 +382,7 @@ class UserBasedMonitoring:
                     host_ok = False
                     for iter in range(1, 25):
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            try: 
+                            try:
                                 result = s.connect_ex((host, int(port)))
 
                                 if result == 0:
@@ -414,7 +420,7 @@ class UserBasedMonitoring:
 
         return
 
-    def stopSingleExporters(self,host,port,timeout=120):
+    def stopSingleExporters(self, host, port, timeout=120):
         logging.info("Stopping exporter for host -> %s" % host)
         cmd = ["curl", f"{host}:{port}/shutdown"]
         logging.debug("-> running command: %s" % cmd)
