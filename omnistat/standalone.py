@@ -107,14 +107,11 @@ class Standalone:
         self.__dataVM = []
         self.__hostname = platform.node().split(".", 1)[0]
         self.__instanceLabel = 'instance="%s"' % self.__hostname
-<<<<<<< HEAD
-=======
 
         # cache user name for metric labels
         uid = os.getuid()
         self.__userLabel = 'user="%s"' % pwd.getpwuid(uid).pw_name
 
->>>>>>> f0cb87e (use pwd package to ascertain userid as opposed to getpass to avoid)
         self.__victoriaURL = f"http://{args.endpoint}:{args.port}"
         self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
         if self.__pushFrequencyMins < 1:
