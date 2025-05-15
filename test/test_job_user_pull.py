@@ -132,7 +132,7 @@ class TestJobUser:
             f"{num_nodes} of {num_nodes} exporters available",
             "User mode data collectors: SUCCESS",
             "Stopping prometheus server on localhost",
-            "Stopping exporter for host -> node",
+            f"Stopping {num_nodes} exporters",
         ]
 
         for pattern in patterns:
