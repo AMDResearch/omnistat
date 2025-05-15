@@ -844,26 +844,42 @@ class queryMetrics:
 
         return
 
-    def export(self, output_file):
-        """Export time series for all metrics/nodes/GPUs as a CSV file
+    def export_metrics(self, output_file, metrics, pivot_labels):
+        """Export time series for given metrics as a CSV file.
+
+        Organize columns hierarchically, aligning timestamps and allowing
+        access to values by the labels provided as "pivot_labels". For
+        example, for ROCm metrics we use the metric -> instance -> card
+        hierarchy as follows:
+         | metric              | rocm_utilization_percentage   |
+         | instance            | node01        | node02        |
+         | card                | 0     | 1     | 0     | 1     |
+         | timestamp           |       |       |       |       |
+         | ------------------- | ----- | ----- | ----- | ----- |
+         | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
+         | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
+         | ...                 | ...   | ...   | ...   | ...   |
 
         Args:
             output_file (string): path to output CSV file
+            metrics (list): list of metrics to export
+            pivot_labels (list): list of labels to use for hierarchical indexing
         """
 
-        index = ["timestamp", "instance", "card"]
-        pivot_labels = ["instance", "card"]
+        index = ["timestamp"] + pivot_labels
 
         metric_dfs = []
-        for metric in self.metrics:
-            metric_name = metric["metric"]
+        for metric in metrics:
             metric_data = self.prometheus.custom_query_range(
                 '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
-                % (metric_name, self.jobID, self.jobstepQuery),
+                % (metric, self.jobID, self.jobstepQuery),
                 self.start_time,
                 self.end_time,
                 step=self.interval,
             )
+
+            if len(metric_data) == 0:
+                continue
 
             metric_df = MetricRangeDataFrame(metric_data)
 
@@ -874,18 +890,7 @@ class queryMetrics:
             for label in extra_labels:
                 metric_df = metric_df.drop(label, axis=1)
 
-            # Organize columns hierarchically, aligning timestamps and
-            # allowing access to values by metric -> instance -> card.
-            # Example:
-            #  | metric              | rocm_utilization_percentage   |
-            #  | instance            | node01        | node02        |
-            #  | card                | 0     | 1     | 0     | 1     |
-            #  | timestamp           |       |       |       |       |
-            #  | ------------------- | ----- | ----- | ----- | ----- |
-            #  | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
-            #  | 2025-01-01 10:00:00 | 100.0 | 100.0 | 100.0 | 100.0 |
-            #  | ...                 | ...   | ...   | ...   | ...   |
-            metric_df = metric_df.rename(columns={"value": metric_name})
+            metric_df = metric_df.rename(columns={"value": metric})
             metric_df = metric_df.set_index(index, drop=True)
             metric_df = metric_df.unstack(pivot_labels)
             metric_df.columns = metric_df.columns.set_names("metric", level=0)
@@ -893,8 +898,9 @@ class queryMetrics:
 
             metric_dfs.append(metric_df)
 
-        df = pandas.concat(metric_dfs, axis=1)
-        df.to_csv(output_file)
+        if len(metric_dfs) > 0:
+            df = pandas.concat(metric_dfs, axis=1)
+            df.to_csv(output_file)
 
 
 def main():
@@ -908,7 +914,7 @@ def main():
     parser.add_argument("--output", help="location for stdout report")
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
     parser.add_argument("--pdf", help="generate PDF report")
-    parser.add_argument("--export", help="export entire time-series in CSV format")
+    parser.add_argument("--export", help="export metric time-series in CSV format", nargs="?", default=None, const="./")
     args = parser.parse_args()
 
     # logger config
@@ -933,7 +939,32 @@ def main():
         query.dumpFile(args.pdf)
 
     if args.export:
-        query.export(args.export)
+        export_prefix = "omnistat-"
+        export_path = Path(args.export)
+
+        if export_path.exists() and not export_path.is_dir():
+            utils.error(f"--export argument should be be an existing or new directory directory")
+
+        export_path.mkdir(exist_ok=True)
+
+        exports = {
+            "rocm": (
+                [x["metric"] for x in query.metrics],
+                ["instance", "card"],
+            ),
+            "network": (
+                ["omnistat_network_rx_bytes", "omnistat_network_tx_bytes"],
+                ["instance", "device_class", "interface"],
+            ),
+            "rocprofiler": (
+                ["omnistat_rocprofiler"],
+                ["instance", "card", "counter"],
+            ),
+        }
+
+        for name, (metrics, labels) in exports.items():
+            export_file = f"{export_path}/{export_prefix}{name}.csv"
+            query.export_metrics(export_file, metrics, labels)
 
 
 if __name__ == "__main__":
