@@ -902,6 +902,31 @@ class queryMetrics:
             df = pandas.concat(metric_dfs, axis=1)
             df.to_csv(output_file)
 
+    def export(self, export_path):
+        export_prefix = "omnistat-"
+
+        # Map files to be generated for different subsets of metrics. Values
+        # are tuples containing 1) a list of metrics, and 2) a list of labels
+        # to be used for hierarchical indexing.
+        exports = {
+            "rocm": (
+                [x["metric"] for x in self.metrics],
+                ["instance", "card"],
+            ),
+            "network": (
+                ["omnistat_network_rx_bytes", "omnistat_network_tx_bytes"],
+                ["instance", "device_class", "interface"],
+            ),
+            "rocprofiler": (
+                ["omnistat_rocprofiler"],
+                ["instance", "card", "counter"],
+            ),
+        }
+
+        for name, (metrics, labels) in exports.items():
+            export_file = f"{export_path}/{export_prefix}{name}.csv"
+            self.export_metrics(export_file, metrics, labels)
+
 
 def main():
 
@@ -939,33 +964,12 @@ def main():
         query.dumpFile(args.pdf)
 
     if args.export:
-        export_prefix = "omnistat-"
         export_path = Path(args.export)
-
         if export_path.exists() and not export_path.is_dir():
             utils.error(f"--export argument should be be an existing or new directory directory")
 
         export_path.mkdir(exist_ok=True)
-
-        exports = {
-            "rocm": (
-                [x["metric"] for x in query.metrics],
-                ["instance", "card"],
-            ),
-            "network": (
-                ["omnistat_network_rx_bytes", "omnistat_network_tx_bytes"],
-                ["instance", "device_class", "interface"],
-            ),
-            "rocprofiler": (
-                ["omnistat_rocprofiler"],
-                ["instance", "card", "counter"],
-            ),
-        }
-
-        for name, (metrics, labels) in exports.items():
-            export_file = f"{export_path}/{export_prefix}{name}.csv"
-            query.export_metrics(export_file, metrics, labels)
-
+        query.export(export_path)
 
 if __name__ == "__main__":
     main()
