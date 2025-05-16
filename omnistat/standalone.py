@@ -312,7 +312,7 @@ class Standalone:
             logging.info("--> Data collection duration   = %.4f (secs)" % duration_secs)
         logging.info("--> Base memory use at start   = %.3f MB" % mem_mb_base)
         logging.info("--> Memory growth at stop      = %.3f MB" % (utils.getMemoryUsageMB() - mem_mb_base))
-        if num_samples > 0:
+        if num_fom_samples > 0:
             logging.info("--> Total # of FOM samples     = %i" % num_fom_samples)
 
         # deliver event to shutdown procedure
