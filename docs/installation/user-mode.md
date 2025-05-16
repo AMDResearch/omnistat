@@ -102,7 +102,7 @@ yellow need to be customized for the local installation path.
 
     # Run application(s) as normal
     srun <options> ./a.out
-    
+
     # End of job -  stop data collection, generate summary and store collected data by jobid
     ${OMNISTAT_DIR}/omnistat-usermode --stopexporters
     ${OMNISTAT_DIR}/omnistat-query --job ${SLURM_JOB_ID} --interval 10
@@ -248,14 +248,30 @@ directories will be loaded into the merged database.
 
 To explore and process raw Omnistat data without relying on the Docker
 environment or a Prometheus/VictoriaMetrics server, the `omnistat-query` tool
-has an option to export all time series data to a CSV file.
+has an option to export all time series data to CSV files.
 
 ```eval_rst
 .. code-block:: bash
    :caption: Using the export option in `omnistat-query`
 
-   ${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1 --export data.csv
+   ${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1 --export
   ```
+
+```{note}
+Exported CSV files are stored in the current directory by default. The
+`--export` flag accepts an optional argument to write CSV files to a different
+location. For example, `--export export-data` will store CSV files under the
+`export-data` directory.
+```
+
+The export functionality will generate one or more CSV files, depending on
+which collectors enabled in the Omnistat configuration, as outlined in the
+following table.
+
+| File                   | Collector               | Description                                                      |
+| :--------------------- | :---------------------: | :--------------------------------------------------------------- |
+| `omnistat-rocm.csv`    | `rocm_smi` or `amd_smi` | GPU utilization and telemetry. Indexed by: node, GPU ID.         |
+| `omnistat-network.csv` | `network`               | Network bandwidth. Indexed by: node, network type, interface ID. |
 
 Exported data can be easily loaded as a data frame using tools like Pandas for
 further processing.
@@ -266,7 +282,7 @@ further processing.
 
    import pandas
 
-   df = pandas.read_csv("data.csv", header=[0, 1, 2], index_col=0)
+   df = pandas.read_csv("omnistat-rocm.csv", header=[0, 1, 2], index_col=0)
 
    # Select a single metric
    df["rocm_utilization_percentage"]
@@ -289,7 +305,7 @@ further processing.
    import pandas
    import matplotlib.pyplot as plt
 
-   df = pandas.read_csv("data.csv", header=[0, 1, 2], index_col=0)
+   df = pandas.read_csv("omnistat-rocm.csv", header=[0, 1, 2], index_col=0)
    df.index = pandas.to_datetime(df.index)
 
    # Create a new dataframe with node averages
