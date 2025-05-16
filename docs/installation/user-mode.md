@@ -249,29 +249,23 @@ directories will be loaded into the merged database.
 To explore and process raw Omnistat data without relying on the Docker
 environment or a Prometheus/VictoriaMetrics server, the `omnistat-query` tool
 has an option to export all time series data to CSV files.
-
-```eval_rst
-.. code-block:: bash
-   :caption: Using the export option in `omnistat-query`
-
-   ${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1 --export
-  ```
-
-```{note}
-Exported CSV files are stored in the current directory by default. The
-`--export` flag accepts an optional argument to write CSV files to a different
-location. For example, `--export export-data` will store CSV files under the
-`export-data` directory.
+```bash
+${OMNISTAT_DIR}/omnistat-query --job ${jobid} --interval 1 --export
 ```
 
+Exported CSV files are stored in the current directory by default. The
+`--export` flag accepts an optional argument to write CSV files to a different
+location. For example, `--export export-data` will store exported CSV files
+under the `export-data` directory.
+
 The export functionality will generate one or more CSV files, depending on
-which collectors enabled in the Omnistat configuration, as outlined in the
+which collectors are enabled in the Omnistat configuration, as outlined in the
 following table.
 
-| File                   | Collector               | Description                                                      |
-| :--------------------- | :---------------------: | :--------------------------------------------------------------- |
-| `omnistat-rocm.csv`    | `rocm_smi` or `amd_smi` | GPU utilization and telemetry. Indexed by: node, GPU ID.         |
-| `omnistat-network.csv` | `network`               | Network bandwidth. Indexed by: node, network type, interface ID. |
+| File                   | Collector               | Description                    |
+| :--------------------- | :---------------------: | :----------------------------- |
+| `omnistat-rocm.csv`    | `rocm_smi` or `amd_smi` | GPU utilization and telemetry. |
+| `omnistat-network.csv` | `network`               | Network bandwidth.             |
 
 Exported data can be easily loaded as a data frame using tools like Pandas for
 further processing.
