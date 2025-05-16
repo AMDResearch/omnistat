@@ -1,3 +1,16 @@
+Version 1.5 (16 May 2025)
+
+* added job tracking support for the PBS resource manager (in addition to SLURM, Flux) (#162)
+* updated logic for GPU index detection (#164)
+* add user-mode capability to push data directly to external VictoriaMetrics instance (#166)
+* introduce network collector to gather transmit/receive rates on local network devices on a per-NIC
+  basis - includes support for Slingshot CXI and InfiniBand high-speed interconnects (#167)
+* numerous dashboard enhancements and management improvements (#160, #161, #168)
+* add power-capping metrics and ability for applications to supply their own figure-of-merit during
+  user-mode via a REST API (#169)
+* introduce embedded parallel-ssh utility to support user-mode data collection on wider range of
+  production systems (#170)
+
 Version 1.4 (19 Mar 2025)
 
   * include new metrics to track GPU RAS counters along with example dashboard updates (#158)
