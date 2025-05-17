@@ -1,4 +1,4 @@
-Version 1.5 (16 May 2025)
+Version 1.5 (17 May 2025)
 
   * added job tracking support for the PBS resource manager (in addition to SLURM, Flux) (#162)
   * updated logic for GPU index detection (#164)
