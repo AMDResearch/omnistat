@@ -47,6 +47,7 @@ import os
 import re
 import sys
 from enum import IntEnum
+from pathlib import Path
 
 from prometheus_client import CollectorRegistry, Gauge, generate_latest
 
@@ -253,7 +254,7 @@ class ROCMSMI(Collector):
         self.__num_gpus = numDevices.value
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
-        guidMapping = {}
+        self.__guidMapping = {}
         nodeMapping = {}
         guid = ctypes.c_int64(0)
         node = ctypes.c_int32(0)
@@ -262,13 +263,13 @@ class ROCMSMI(Collector):
 
             ret = self.__libsmi.rsmi_dev_guid_get(device, ctypes.byref(guid))
             assert ret == 0
-            guidMapping[i] = guid.value
+            self.__guidMapping[i] = guid.value
 
             ret = self.__libsmi.rsmi_dev_node_id_get(device, ctypes.byref(node))
             assert ret == 0
             nodeMapping[i] = node.value
 
-        self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
+        self.__indexMapping = gpu_index_mapping_based_on_guids(self.__guidMapping, self.__num_gpus)
 
         # version info metric
         version_metric = Gauge(
@@ -408,6 +409,8 @@ class ROCMSMI(Collector):
                     logging.error("ERROR: Failed to read node properties file {path}.")
                     sys.exit(4)
 
+            self.registerGPUMetric(self.__prefix + "compute_unit_occupancy", "gauge", "Compute unit occupancy")
+
         return
 
     def updateMetrics(self):
@@ -458,6 +461,7 @@ class ROCMSMI(Collector):
         for i in range(self.__num_gpus):
 
             device = ctypes.c_uint32(i)
+            guid = self.__guidMapping[i]
             gpuLabel = self.__indexMapping[i]
 
             # --
@@ -543,8 +547,20 @@ class ROCMSMI(Collector):
                 # rsmi value in microwatts -> convert to watt
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
 
+            # --
+            # CU occupancy
             if self.__cu_occupancy_monitoring:
                 metric = self.__prefix + "num_compute_units"
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(self.__num_compute_units[i])
+
+                metric = self.__prefix + "compute_unit_occupancy"
+                cu_base_path = Path("/sys/class/kfd/kfd/proc/")
+                cu_file_pattern = f"*/stats_{guid}/cu_occupancy"
+                cu_occupancy = 0
+                for cu_file in list(cu_base_path.glob(cu_file_pattern)):
+                    with open(cu_file, "r") as f:
+                        data = f.read().strip()
+                    cu_occupancy += int(data)
+                self.__GPUmetrics[metric].labels(card=gpuLabel).set(cu_occupancy)
 
         return
