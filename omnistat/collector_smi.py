@@ -44,6 +44,7 @@ rocm_utilization_percentage{card="0"} 0.0
 import ctypes
 import logging
 import os
+import re
 import sys
 from enum import IntEnum
 
@@ -180,6 +181,7 @@ class ROCMSMI(Collector):
         self.__minROCmVersion = "6.1.0"
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
         self.__power_cap_monitoring = runtimeConfig["collector_power_capping"]
+        self.__cu_occupancy_monitoring = runtimeConfig["collector_cu_occupancy"]
         self.__eccBlocks = {}
 
         rocm_path = runtimeConfig["collector_rocm_path"]
@@ -252,12 +254,20 @@ class ROCMSMI(Collector):
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         guidMapping = {}
+        nodeMapping = {}
         guid = ctypes.c_int64(0)
+        node = ctypes.c_int32(0)
         for i in range(self.__num_gpus):
             device = ctypes.c_uint32(i)
+
             ret = self.__libsmi.rsmi_dev_guid_get(device, ctypes.byref(guid))
             assert ret == 0
             guidMapping[i] = guid.value
+
+            ret = self.__libsmi.rsmi_dev_node_id_get(device, ctypes.byref(node))
+            assert ret == 0
+            nodeMapping[i] = node.value
+
         self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
         # version info metric
@@ -371,6 +381,32 @@ class ROCMSMI(Collector):
         # power cap
         if self.__power_cap_monitoring:
             self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)")
+
+        # If CU occupancy is enabled, measure the number of CUs once when
+        # registering metrics.
+        if self.__cu_occupancy_monitoring:
+            self.registerGPUMetric(self.__prefix + "num_compute_units", "gauge", "Number of compute units")
+            self.__num_compute_units = {}
+            pattern = re.compile(r"^(simd_count|simd_per_cu)\s+(\d+)", re.MULTILINE)
+            for i in range(self.__num_gpus):
+                node = nodeMapping[i]
+                path = f"/sys/class/kfd/kfd/topology/nodes/{node}/properties"
+                try:
+                    with open(path, "r") as f:
+                        data = f.read()
+
+                    simd_values = {}
+                    matches = pattern.finditer(data)
+                    for match in matches:
+                        key = match.group(1)
+                        value = int(match.group(2))
+                        simd_values[key] = value
+
+                    num_compute_units = simd_values["simd_count"] / simd_values["simd_per_cu"]
+                    self.__num_compute_units[i] = num_compute_units
+                except:
+                    logging.error("ERROR: Failed to read node properties file {path}.")
+                    sys.exit(4)
 
         return
 
@@ -506,5 +542,9 @@ class ROCMSMI(Collector):
                 ret = self.__libsmi.rsmi_dev_power_cap_get(device, 0x0, ctypes.byref(power))
                 # rsmi value in microwatts -> convert to watt
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(power.value / 1000000)
+
+            if self.__cu_occupancy_monitoring:
+                metric = self.__prefix + "num_compute_units"
+                self.__GPUmetrics[metric].labels(card=gpuLabel).set(self.__num_compute_units[i])
 
         return
