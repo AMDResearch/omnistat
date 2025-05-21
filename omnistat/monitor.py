@@ -84,7 +84,9 @@ class Monitor:
         self.runtimeConfig["collector_port"] = config["omnistat.collectors"].get("port", 8001)
         self.runtimeConfig["collector_rocm_path"] = config["omnistat.collectors"].get("rocm_path", "/opt/rocm")
         self.runtimeConfig["collector_ras_ecc"] = config["omnistat.collectors"].getboolean("enable_ras_ecc", True)
-        self.runtimeConfig["collector_cu_occupancy"] = config["omnistat.collectors"].getboolean("enable_cu_occupancy", False)
+        self.runtimeConfig["collector_cu_occupancy"] = config["omnistat.collectors"].getboolean(
+            "enable_cu_occupancy", False
+        )
         self.runtimeConfig["collector_power_capping"] = config["omnistat.collectors"].getboolean(
             "enable_power_cap", False
         )
