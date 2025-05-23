@@ -353,14 +353,13 @@ class ROCMSMI(Collector):
             ras_counts = rsmi_error_count_t()
             for block in rsmi_gpu_block_t:
                 # check if RAS enabled for this block
-                self.__libsmi.rsmi_dev_ecc_status_get(device, block, ctypes.byref(state))
+                self.__libsmi.rsmi_dev_ecc_status_get(device, block.value, ctypes.byref(state))
                 if state.value == rsmi_ras_err_state_t.RSMI_RAS_ERR_STATE_ENABLED:
                     # check if RAS counts available for this block
-                    ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block, ctypes.byref(ras_counts))
+                    ret = self.__libsmi.rsmi_dev_ecc_count_get(device, block.value, ctypes.byref(ras_counts))
                     if ret == 0:
-                        key = "%s" % block
-                        key = key.removeprefix("rsmi_gpu_block_t.RSMI_GPU_BLOCK_").lower()
-                        self.__eccBlocks[key] = block
+                        key = block.name.removeprefix("RSMI_GPU_BLOCK_").lower()
+                        self.__eccBlocks[key] = block.value
                         metric = self.__prefix + "ras_%s_correctable_count" % key
                         self.registerGPUMetric(
                             metric, "gauge", "number of correctable RAS events for %s block (count)" % key
