@@ -34,8 +34,6 @@ system_name = My Snazzy System
 
 [omnistat.usermode]
 
-ssh_key = ~/.ssh/id_rsa
-
 # settings for pushing data to external victoria-metrics instance (enabled via external_victoria = True)
 
 external_victoria = False
@@ -50,7 +48,6 @@ victoria_datadir = data_prom
 victoria_logfile = vic_server.log
 
 
-
 ## Bind user-mode Omnistat monitor and VictoriaMetrics to specific cores.
 ## Requires numactl. When these options are not set, no binding is enforced.
 ##
@@ -59,3 +56,7 @@ victoria_logfile = vic_server.log
 
 # exporter_corebinding = 0
 # victoria_corebinding = 1
+
+## SSH key to launch user-mode Omnistat. For backward compatibility with
+## older versions of Omnistat; no longer needed with v1.5 or later.
+ssh_key = ~/.ssh/id_rsa
