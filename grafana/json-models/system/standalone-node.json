@@ -921,7 +921,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "blue"
+                    "color": "blue",
+                    "value": null
                   },
                   {
                     "color": "#56A64B",
@@ -1049,7 +1050,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 140
+            "y": 68
           },
           "id": 129,
           "options": {
@@ -1149,7 +1150,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 149
+            "y": 77
           },
           "id": 101,
           "options": {
@@ -1249,7 +1250,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 158
+            "y": 86
           },
           "id": 114,
           "options": {
@@ -1349,7 +1350,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 166
+            "y": 94
           },
           "id": 115,
           "options": {
@@ -1448,7 +1449,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1463,7 +1465,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 284
+            "y": 44
           },
           "id": 130,
           "options": {
@@ -1488,7 +1490,7 @@
               },
               "editorMode": "code",
               "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
-              "legendFormat": "{{card}}",
+              "legendFormat": "GPU ID {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1544,7 +1546,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1559,7 +1562,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 284
+            "y": 44
           },
           "id": 132,
           "options": {
@@ -1584,7 +1587,7 @@
               },
               "editorMode": "code",
               "expr": "sum by (card) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
-              "legendFormat": "{{card}}",
+              "legendFormat": "GPU ID {{card}}",
               "range": true,
               "refId": "A"
             }
@@ -1640,7 +1643,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1655,7 +1659,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 292
+            "y": 52
           },
           "id": 133,
           "options": {
@@ -1680,7 +1684,7 @@
               },
               "editorMode": "code",
               "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_correctable_count\",instance=\"$instance\"})",
-              "legendFormat": "{{card}}",
+              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
@@ -1745,7 +1749,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -1760,7 +1765,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 292
+            "y": 52
           },
           "id": 134,
           "options": {
@@ -1785,7 +1790,7 @@
               },
               "editorMode": "code",
               "expr": "sum by (__name__) ({__name__=~\"rocm_ras_.+_uncorrectable_count\",instance=\"$instance\"})",
-              "legendFormat": "{{card}}",
+              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
@@ -1880,7 +1885,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 383
+            "y": 598
           },
           "id": 119,
           "options": {
@@ -1981,7 +1986,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 391
+            "y": 606
           },
           "id": 120,
           "options": {
@@ -2094,7 +2099,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 682
+            "y": 897
           },
           "id": 121,
           "options": {
@@ -2205,8 +2210,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2222,7 +2226,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 47
+            "y": 262
           },
           "id": 122,
           "options": {
@@ -2328,8 +2332,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2345,7 +2348,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 55
+            "y": 270
           },
           "id": 123,
           "options": {
@@ -2466,7 +2469,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 128
+            "y": 343
           },
           "id": 111,
           "options": {
