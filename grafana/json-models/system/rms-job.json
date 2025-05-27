@@ -1759,7 +1759,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 177
+            "y": 82
           },
           "id": 27,
           "interval": "$interval",
@@ -1815,7 +1815,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -1869,7 +1869,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 177
+            "y": 82
           },
           "id": 87,
           "interval": "$interval",
@@ -1925,7 +1925,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2003,7 +2003,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2019,7 +2020,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 967
+            "y": 93
           },
           "id": 90,
           "interval": "$interval",
@@ -2031,12 +2032,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2101,7 +2103,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 178
+            "y": 1086
           },
           "id": 88,
           "interval": "$interval",
@@ -2211,7 +2213,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 178
+            "y": 1086
           },
           "id": 89,
           "interval": "$interval",
@@ -2361,7 +2363,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 205
+            "y": 1113
           },
           "id": 91,
           "interval": "$interval",
@@ -2456,7 +2458,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 214
+            "y": 1122
           },
           "id": 28,
           "interval": "$interval",
@@ -2518,7 +2520,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 214
+            "y": 1122
           },
           "id": 86,
           "interval": "$interval",
@@ -2631,7 +2633,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 902
+            "y": 1810
           },
           "id": 29,
           "interval": "$interval",
@@ -2693,7 +2695,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 902
+            "y": 1810
           },
           "id": 31,
           "interval": "$interval",
@@ -2834,7 +2836,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 910
+            "y": 1818
           },
           "id": 24,
           "interval": "$interval",
@@ -3055,7 +3057,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 215
+            "y": 1123
           },
           "id": 52,
           "interval": "$interval",
@@ -3257,7 +3259,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 280
+            "y": 1188
           },
           "id": 97,
           "interval": "$interval",
@@ -3493,7 +3495,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 280
+            "y": 1188
           },
           "id": 98,
           "interval": "$interval",
@@ -3672,7 +3674,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 289
+            "y": 1197
           },
           "id": 95,
           "interval": "$interval",
@@ -3895,7 +3897,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 559
+            "y": 1467
           },
           "id": 54,
           "interval": "$interval",
@@ -4099,7 +4101,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 559
+            "y": 1467
           },
           "id": 99,
           "interval": "$interval",
@@ -4262,7 +4264,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 568
+            "y": 1476
           },
           "id": 100,
           "interval": "$interval",
@@ -4439,7 +4441,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 217
+            "y": 1125
           },
           "id": 33,
           "interval": "$interval",
@@ -4539,7 +4541,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 225
+            "y": 1133
           },
           "id": 104,
           "interval": "$interval",
@@ -4639,7 +4641,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 233
+            "y": 1141
           },
           "id": 22,
           "interval": "$interval",
@@ -4739,7 +4741,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 241
+            "y": 1149
           },
           "id": 25,
           "interval": "$interval",
@@ -4839,7 +4841,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 241
+            "y": 1149
           },
           "id": 23,
           "interval": "$interval",
@@ -4886,6 +4888,414 @@
         "w": 24,
         "x": 0,
         "y": 35
+      },
+      "id": 122,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Only showing GPUs and blocks with errors. A panel with \"No data\" indicates no errors have been reported during the selected time window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Events/m",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 44
+          },
+          "id": 120,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_umc_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "instant": false,
+              "legendFormat": "UMC, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_sdma_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "SDMA, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_gfx_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "GFX, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_mmhub_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "MMHUB, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_pcie_bif_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "PCIE BIF, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_hdp_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "HDP, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_xgmi_wafl_correctable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "XGMI WAFL, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "G"
+            }
+          ],
+          "title": "GPUs with Non-zero Rate of Correctable Errors (errors/min)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.+), ([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$2/$3 ($1)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Only showing GPUs and blocks with errors. A panel with \"No data\" indicates no errors have been reported during the selected time window.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "Events/m",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 44
+          },
+          "id": 121,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_umc_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "instant": false,
+              "legendFormat": "UMC, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_sdma_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "SDMA, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_gfx_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "GFX, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_mmhub_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "MMHUB, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_pcie_bif_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "PCIE BIF, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "E"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_hdp_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "HDP, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "F"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum by (instance,card) (delta(rocm_ras_xgmi_wafl_uncorrectable_count[1m] * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})) > 0",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "XGMI WAFL, {{instance}}, {{card}}",
+              "range": true,
+              "refId": "G"
+            }
+          ],
+          "title": "GPUs with Non-zero Rate of Uncorrectable Errors (errors/min)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.+), ([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$2/$3 ($1)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU Reliability, Availability, and Serviceability (RAS) - GPUs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
       },
       "id": 44,
       "panels": [
@@ -4953,7 +5363,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 723
+            "y": 1631
           },
           "id": 43,
           "interval": "$interval",
@@ -5061,7 +5471,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 723
+            "y": 1631
           },
           "id": 48,
           "interval": "$interval",
@@ -5116,7 +5526,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "id": 84,
       "panels": [
@@ -5184,7 +5594,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 732
+            "y": 1640
           },
           "id": 49,
           "interval": "$interval",
@@ -5283,7 +5693,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 732
+            "y": 1640
           },
           "id": 51,
           "interval": "$interval",
@@ -5328,7 +5738,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 38
       },
       "id": 101,
       "panels": [
@@ -5397,7 +5807,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 34
+            "y": 914
           },
           "id": 40,
           "interval": "$interval",
@@ -5507,7 +5917,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 34
+            "y": 914
           },
           "id": 42,
           "interval": "$interval",
@@ -5562,7 +5972,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 39
       },
       "id": 41,
       "panels": [
@@ -5614,8 +6024,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5631,7 +6040,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 113
           },
           "id": 102,
           "interval": "$interval",
@@ -5724,8 +6133,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5741,7 +6149,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 113
           },
           "id": 103,
           "interval": "$interval",
@@ -5796,7 +6204,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 40
       },
       "id": 83,
       "panels": [
@@ -5864,7 +6272,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1516
+            "y": 2424
           },
           "id": 46,
           "interval": "$interval",
@@ -5972,7 +6380,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1516
+            "y": 2424
           },
           "id": 45,
           "interval": "$interval",
@@ -6026,7 +6434,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 41
       },
       "id": 57,
       "panels": [
@@ -6133,7 +6541,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1955
+            "y": 2863
           },
           "id": 56,
           "interval": "$interval",
@@ -6226,7 +6634,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 42
       },
       "id": 111,
       "panels": [
@@ -6357,7 +6765,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 70
+            "y": 978
           },
           "id": 107,
           "interval": "$interval",
@@ -6552,7 +6960,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 70
+            "y": 978
           },
           "id": 112,
           "interval": "$interval",
@@ -6711,7 +7119,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 78
+            "y": 986
           },
           "id": 108,
           "interval": "$interval",
@@ -6939,7 +7347,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 78
+            "y": 986
           },
           "id": 113,
           "interval": "$interval",
@@ -7094,7 +7502,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 86
+            "y": 994
           },
           "id": 109,
           "interval": "$interval",
@@ -7322,7 +7730,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 86
+            "y": 994
           },
           "id": 115,
           "interval": "$interval",
@@ -7478,7 +7886,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 94
+            "y": 1002
           },
           "id": 110,
           "interval": "$interval",
@@ -7702,7 +8110,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 94
+            "y": 1002
           },
           "id": 114,
           "interval": "$interval",
