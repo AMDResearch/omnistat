@@ -36,8 +36,6 @@ system_name = ORNL Frontier
 
 [omnistat.usermode]
 
-ssh_key = ~/.ssh/id_rsa
-
 victoria_binary = /autofs/nccs-svm1_sw/crusher/amdsw/omnistat/victoria-metrics-linux-amd64-v1.109.0/victoria-metrics-prod
 victoria_datadir = /lustre/orion/%(SLURM_JOB_ACCOUNT)s/scratch/%(USER)s/omnistat/%(SLURM_JOB_ID)s
 victoria_logfile = vic_server.log
@@ -58,3 +56,7 @@ prometheus_logfile = prom_server.log
 
 #exporter_corebinding = 0
 #victoria_corebinding = 95
+
+## SSH key to launch user-mode Omnistat. For backward compatibility with
+## older versions of Omnistat; no longer needed with v1.5 or later.
+ssh_key = ~/.ssh/id_rsa
