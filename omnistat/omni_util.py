@@ -319,7 +319,6 @@ class UserBasedMonitoring:
 
     def startExporters(self, victoriaMode=False):
         port = self.runtimeConfig["omnistat.collectors"].get("port", "8001")
-        ssh_key = self.runtimeConfig["omnistat.usermode"].get("ssh_key", "~/.ssh/id_rsa")
         corebinding = self.runtimeConfig["omnistat.usermode"].getint("exporter_corebinding", None)
 
         self.rmsDetection()

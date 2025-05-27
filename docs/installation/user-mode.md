@@ -70,7 +70,6 @@ For user-mode execution, Omnistat includes additional options in the `[omnistast
     job_detection_file = /tmp/omni_rmsjobinfo_user
 
     [omnistat.usermode]
-    ssh_key = ~/.ssh/id_rsa
     victoria_binary = /path/to/victoria-metrics
     victoria_datadir = data_prom
     victoria_logfile = vic_server.log
