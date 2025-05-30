@@ -333,9 +333,9 @@ class UserBasedMonitoring:
             hostname = platform.node().split(".", 1)[0]
 
             if self.__external_victoria:
-                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushfreq {self.push_frequency} --endpoint {self.__external_victoria_endpoint} --port {self.__external_victoria_port} --log exporter.log"
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushinterval {self.push_frequency} --endpoint {self.__external_victoria_endpoint} --port {self.__external_victoria_port} --log exporter.log"
             else:
-                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushfreq {self.push_frequency} --endpoint {hostname} --log exporter.log"
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushinterval {self.push_frequency} --endpoint {hostname} --log exporter.log"
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
@@ -572,8 +572,8 @@ def main():
     parser.add_argument("--stopexporters", help="stop data exporters", action="store_true")
     parser.add_argument("--start", help="start all necessary user-based monitoring services", action="store_true")
     parser.add_argument("--stop", help="stop all user-based monitoring services", action="store_true")
-    parser.add_argument("--interval", type=float, help="data sampling interval in secs (default=10)")
-    parser.add_argument("--pushfreq", type=float, help="data push frequency (in minutes)", default=5.0)
+    parser.add_argument("--interval", type=float, help="data sampling frequency in secs (default=10)")
+    parser.add_argument("--pushinterval", type=float, help="data push frequency in minutes (default=5)", default=5.0)
 
     args = parser.parse_args()
 
@@ -588,8 +588,8 @@ def main():
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
 
-    if args.pushfreq:
-        userUtils.setPushFrequency(args.pushfreq)
+    if args.pushinterval:
+        userUtils.setPushFrequency(args.pushinterval)
 
     victoriaMode = True
 

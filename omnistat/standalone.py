@@ -113,7 +113,7 @@ class Standalone:
             logging.error("[ERROR]: Please set sampling interval to be >= 5 millisecs (%s)" % args.interval)
             exit(1)
 
-        self.__pushFrequencyMins = args.pushfreq
+        self.__pushFrequencyMins = args.pushinterval
         if self.__pushFrequencyMins < 1:
             logging.error("")
             logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
@@ -343,8 +343,8 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(formatter_class=utils.HelpFormatterWide)
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
-    parser.add_argument("--interval", type=float, help="data sampling interval (in secs)", default=0.5)
-    parser.add_argument("--pushfreq", type=float, help="data push frequency (in minutes)", default=5.0)
+    parser.add_argument("--interval", type=float, help="data sampling frequency (in secs)", default=0.5)
+    parser.add_argument("--pushinterval", type=float, help="data push frequency (in minutes)", default=5.0)
     parser.add_argument("--logfile", type=str, help="redirect stdout to logfile", default=None)
     parser.add_argument("--endpoint", type=str, help="hostname of VictoriaMetrics server", default="localhost")
     parser.add_argument("--port", type=int, help="port to access VictoriaMetrics server", default=9090)
