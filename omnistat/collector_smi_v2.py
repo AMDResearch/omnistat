@@ -55,7 +55,14 @@ from omnistat.utils import gpu_index_mapping_based_on_guids
 
 def check_min_version(minVersion):
     localVer = smi.amdsmi_get_lib_version()
-    localVerString = ".".join([str(localVer["year"]), str(localVer["major"]), str(localVer["minor"])])
+    # deal with evolving API
+    if "year" in localVer:
+        localVerString = ".".join([str(localVer["year"]), str(localVer["major"]), str(localVer["minor"])])
+    elif "major" in localVer and "release" in localVer:
+        localVerString = ".".join([str(localVer["major"]), str(localVer["minor"]), str(localVer["release"])])
+    else:
+        logging.error("ERROR: Unable to determine amdsmi library version")
+        sys.exit(4)
     vmin = packaging.version.Version(minVersion)
     vloc = packaging.version.Version(localVerString)
     if vloc < vmin:
