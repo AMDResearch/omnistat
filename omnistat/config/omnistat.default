@@ -36,9 +36,6 @@ system_name = My Snazzy System
 
 ssh_key = ~/.ssh/id_rsa
 
-# how often to push cached data to remote victoria-metrics server
-push_frequency_mins = 5
-
 # settings for pushing data to external victoria-metrics instance (enabled via external_victoria = True)
 
 external_victoria = False
