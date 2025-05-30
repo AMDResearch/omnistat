@@ -226,7 +226,7 @@ class UserBasedMonitoring:
         logging.info("Server start command: %s" % command)
         utils.runBGProcess(command, outputFile=vm_logfile, envAdds=envAddition)
 
-    def startPromServer(self, victoriaMode=False):
+    def startPromServer(self, victoriaMode=True):
 
         if victoriaMode:
             self.startVictoriaServer()
@@ -582,12 +582,6 @@ def main():
     parser.add_argument("--stop", help="stop all user-based monitoring services", action="store_true")
     parser.add_argument("--interval", type=float, help="data sampling interval in secs (default=10)")
     parser.add_argument("--pushfreq", type=float, help="data push frequency (in minutes)", default=5.0)
-    parser.add_argument(
-        "--push",
-        help="Initiate data collection in push mode with VictoriaMetrics",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-    )
 
     args = parser.parse_args()
 
@@ -601,10 +595,11 @@ def main():
     userUtils.setup(args.configfile)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
+
     if args.pushfreq:
         userUtils.setPushFrequency(args.pushfreq)
 
-    victoriaMode = args.push
+    victoriaMode = True
 
     if args.startserver:
         userUtils.startPromServer(victoriaMode=victoriaMode)
