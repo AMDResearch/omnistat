@@ -68,6 +68,10 @@ class UserBasedMonitoring:
         self.scrape_interval = float(interval)
         return
 
+    def setPushFrequency(self, pushfreq):
+        self.push_frequency = float(pushfreq)
+        return
+
     def rmsDetection(self):
         """Query environment to infer resource manager"""
 
@@ -329,9 +333,9 @@ class UserBasedMonitoring:
             hostname = platform.node().split(".", 1)[0]
 
             if self.__external_victoria:
-                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {self.__external_victoria_endpoint} --port {self.__external_victoria_port} --log exporter.log"
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushfreq {self.push_frequency} --endpoint {self.__external_victoria_endpoint} --port {self.__external_victoria_port} --log exporter.log"
             else:
-                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --endpoint {hostname} --log exporter.log"
+                cmd = f"nice -n 20 {sys.executable} -m omnistat.standalone --configfile={self.configFile} --interval {self.scrape_interval} --pushfreq {self.push_frequency} --endpoint {hostname} --log exporter.log"
         else:
             cmd = f"nice -n 20 {sys.executable} -m omnistat.node_monitoring --configfile={self.configFile}"
 
@@ -567,16 +571,17 @@ class UserBasedMonitoring:
 def main():
     userUtils = UserBasedMonitoring()
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--verbose", help="Increase output verbosity", action="store_true")
+    parser = argparse.ArgumentParser(formatter_class=utils.HelpFormatterWide)
+    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
-    parser.add_argument("--startserver", help="Start local prometheus server", action="store_true")
-    parser.add_argument("--stopserver", help="Stop local prometheus server", action="store_true")
-    parser.add_argument("--startexporters", help="Start data exporters", action="store_true")
-    parser.add_argument("--stopexporters", help="Stop data exporters", action="store_true")
-    parser.add_argument("--start", help="Start all necessary user-based monitoring services", action="store_true")
-    parser.add_argument("--stop", help="Stop all user-based monitoring services", action="store_true")
-    parser.add_argument("--interval", type=float, help="Monitoring sampling interval in secs (default=10)")
+    parser.add_argument("--startserver", help="start local victoria metrics server", action="store_true")
+    parser.add_argument("--stopserver", help="stop local victoria metrics server", action="store_true")
+    parser.add_argument("--startexporters", help="start data exporters", action="store_true")
+    parser.add_argument("--stopexporters", help="stop data exporters", action="store_true")
+    parser.add_argument("--start", help="start all necessary user-based monitoring services", action="store_true")
+    parser.add_argument("--stop", help="stop all user-based monitoring services", action="store_true")
+    parser.add_argument("--interval", type=float, help="data sampling interval in secs (default=10)")
+    parser.add_argument("--pushfreq", type=float, help="data push frequency (in minutes)", default=5.0)
     parser.add_argument(
         "--push",
         help="Initiate data collection in push mode with VictoriaMetrics",
@@ -596,6 +601,8 @@ def main():
     userUtils.setup(args.configfile)
     if args.interval:
         userUtils.setMonitoringInterval(args.interval)
+    if args.pushfreq:
+        userUtils.setPushFrequency(args.pushfreq)
 
     victoriaMode = args.push
 
