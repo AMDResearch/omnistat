@@ -405,14 +405,6 @@ class UserBasedMonitoring:
 
             logging.info("Launching exporters in parallel via ssh")
 
-            # client = ParallelSSHClient(self.__hosts, allow_agent=False, timeout=300, pool_size=350, pkey=ssh_key)
-            # try:
-            #     output = client.run_command(
-            #         f"sh -c 'cd {os.getcwd()} && PYTHONPATH={':'.join(sys.path)} {cmd}'", stop_on_errors=False
-            #     )
-            # except:
-            #     logging.info("Exception thrown launching parallel ssh client")
-
             additional_env = ""
             if self.__external_proxy:
                 additional_env = f"http_proxy={self.__external_proxy}"
