@@ -165,7 +165,8 @@ class Standalone:
             logging.warning("[WARN]: Unable to access VictoriaMetrics server endpoint (%s)" % self.__victoriaURL)
             logging.warning("[WARN]: Please verify server is running and accessible from this host.")
 
-        logging.info("Cached data will be pushed every %i minute(s)" % self.__pushFrequencyMins)
+        logging.info("Telemetry data will be sampled every %.4f seconds" % args.interval)
+        logging.info("Cached data will be pushed every %.1f minute(s)" % self.__pushFrequencyMins)
         logging.info("Figure-of-merit (FOM) data will be checked for every %i seconds" % self.__fomCheckFrequencySecs)
 
         # Init glibc for usleep access
