@@ -22,6 +22,7 @@
 # SOFTWARE.
 # -------------------------------------------------------------------------------
 
+import argparse
 import concurrent.futures
 import configparser
 import importlib.resources
@@ -489,3 +490,12 @@ def execute_ssh_parallel(
         logging.info("[pssh] All launch commands executed")
 
     return results
+
+
+# custom argparse help formatter to allow for wider output
+class HelpFormatterWide(argparse.HelpFormatter):
+    def __init__(self, prog):
+        super().__init__(prog, max_help_position=40)
+
+
+#        super().__init__(prog, max_help_position=40, width=120)
