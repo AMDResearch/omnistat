@@ -108,16 +108,23 @@ class Standalone:
         self.__hostname = platform.node().split(".", 1)[0]
         self.__instanceLabel = 'instance="%s"' % self.__hostname
 
+        if args.interval < 0.005:
+            logging.error("")
+            logging.error("[ERROR]: Please set sampling interval to be >= 5 millisecs (%s)" % args.interval)
+            exit(1)
+
+        self.__pushFrequencyMins = args.pushfreq
+        if self.__pushFrequencyMins < 1:
+            logging.error("")
+            logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
+            sys.exit(1)
+
         # cache user name for metric labels
         uid = os.getuid()
         self.__userLabel = 'user="%s"' % pwd.getpwuid(uid).pw_name
 
         self.__victoriaURL = f"http://{args.endpoint}:{args.port}"
-        self.__pushFrequencyMins = config["omnistat.usermode"].getint("push_frequency_mins", 5)
-        if self.__pushFrequencyMins < 1:
-            logging.error("")
-            logging.error("[ERROR]: Please set data_frequency_mins >= 1 minute (%s)" % self.__pushFrequencyMins)
-            sys.exit(1)
+
         self.__fomCheckFrequencySecs = config["omnistat.usermode"].getint("fom_check_frequency_secs", 10)
         if self.__fomCheckFrequencySecs < 5:
             logging.error("")
@@ -333,9 +340,10 @@ def parse_args():
     Returns:
         argparse.Namespace: parsed arguments
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=utils.HelpFormatterWide)
     parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
-    parser.add_argument("--interval", type=float, help="sampling frequency (in secs)", default=0.5)
+    parser.add_argument("--interval", type=float, help="data sampling interval (in secs)", default=0.5)
+    parser.add_argument("--pushfreq", type=float, help="data push frequency (in minutes)", default=5.0)
     parser.add_argument("--logfile", type=str, help="redirect stdout to logfile", default=None)
     parser.add_argument("--endpoint", type=str, help="hostname of VictoriaMetrics server", default="localhost")
     parser.add_argument("--port", type=int, help="port to access VictoriaMetrics server", default=9090)
@@ -407,12 +415,6 @@ def main():
     monitor = Monitor(config, logFile=args.logfile)
     monitor.initMetrics()
 
-    # Initialize standalone polling
-    if args.interval < 0.005:
-        logging.error("")
-        logging.error("[ERROR]: Please set sampling interval to be >= 5 millisecs (%s)" % args.interval)
-        exit(1)
-
     app.config["SAMPLING_INTERVAL"] = args.interval
 
     caching = Standalone(args, config)
@@ -426,7 +428,7 @@ def main():
         elif request.remote_addr not in allowed_ips:
             abort(403)
 
-    # Launch flask app as thread so we can respond to remote shutdown requests
+    # Launch flask app as separate thread so we can respond to remote shutdown requests
     flask_thread = threading.Thread(target=runFlask, args=[config])
     flask_thread.start()
 
