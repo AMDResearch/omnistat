@@ -74,7 +74,6 @@ For user-mode execution, Omnistat includes additional options in the `[omnistast
     victoria_binary = /path/to/victoria-metrics
     victoria_datadir = data_prom
     victoria_logfile = vic_server.log
-    push_frequency_mins = 5
   ```
 
 ## Running Jobs
