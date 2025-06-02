@@ -1,3 +1,10 @@
+Version 1.5.1 (06 June 2025)
+
+  * update RAS block enumerations for newer Python versions (#179, #180)
+  * updated RAS panels for Grafana (#182)
+  * support API change of amdsmi in ROCM 6.4 (#183)
+  * allow for override of push data frequency with `--pushinterval` (#184)
+
 Version 1.5 (17 May 2025)
 
   * added job tracking support for the PBS resource manager (in addition to SLURM, Flux) (#162)
