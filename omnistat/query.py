@@ -215,6 +215,29 @@ class queryMetrics:
         num_nodes = int(results[0]["metric"]["nodes"])
         partition = results[0]["metric"]["partition"]
 
+        # To provide more accurate timing, generate two queries with small
+        # ranges: one around the start time and the other one around the end
+        # time. The original start/end times based on the initial scan are as
+        # accurate as the scan step; the start/end times as updated here are
+        # as accurate as the interval.
+        delta = timedelta(seconds=self.scan_step * 2)
+        start_range = (start, start - delta)
+        end_range = (end - delta, end)
+
+        start_results = self.prometheus.custom_query_range(
+            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), start_range[0], start_range[1], step=self.interval
+        )
+
+        end_results = self.prometheus.custom_query_range(
+            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), end_range[0], end_range[1], step=self.interval
+        )
+
+        if len(start_results) > 0:
+            start = datetime.fromtimestamp(start_results[0]["values"][0][0])
+
+        if len(end_results) > 0:
+            end = datetime.fromtimestamp(end_results[0]["values"][-1][0])
+
         jobdata = {}
         jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
         jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
