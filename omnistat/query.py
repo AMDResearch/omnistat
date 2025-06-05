@@ -123,6 +123,36 @@ class queryMetrics:
 
         self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
 
+        # The scan step is used in the initial queries to find the start and
+        # end time of the job, as well as other details in the info metric. It
+        # can't be too low because queries have a maximum number of points per
+        # request (the default in Victoria Metrics is 30,000), and we need to
+        # potentially generate up to 365 queries to find a job in the last
+        # year (1 query/day).
+        #
+        # To remain within the maximum number of points per request, we select
+        # a scan step between 5s (17,280 points/day) and 60s (1,440
+        # points/day) depending on the interval. While it's technically
+        # possible to always use the smallest scan step, we gradually increase
+        # the step based on interval to make these queries more efficient.
+        # Our assumption is jobs with longer intervals are generally longer.
+        #
+        # Jobs with intervals under 30s require a minimum execution time to
+        # guarantee they can be located in the database:
+        #  -  5s of execution for intervals under 1s
+        #  - 15s of execution for intervals between 1s and 30s
+        #
+        # For jobs with intervals over 30s, the scan step is equal or lower
+        # than the interval, and so no minimum execution time is required.
+        if self.interval < 1:
+            self.scan_step = 5
+        elif self.interval >= 1 and self.interval < 30:
+            self.scan_step = 15
+        elif self.interval >= 30 and self.interval < 60:
+            self.scan_step = 30
+        else:
+            self.scan_step = 60
+
         # query jobinfo
         self.jobinfo = self.query_slurm_job_internal()
         if self.jobinfo["begin_date"] == "Unknown":
@@ -226,7 +256,7 @@ class queryMetrics:
             astart = aend - timedelta(days=1)
 
             results = self.prometheus.custom_query_range(
-                'max(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), astart, aend, step="1m"
+                'max(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), astart, aend, step=self.scan_step
             )
             if not lastTimestamp and len(results) > 0:
                 lastTimestamp = datetime.fromtimestamp(results[0]["values"][-1][0])
@@ -243,10 +273,9 @@ class queryMetrics:
             print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
-        # expand job window to nearest minute
-        firstTimestamp = firstTimestamp.replace(second=0, microsecond=0)
-        lastTimestamp += timedelta(minutes=1)
-        lastTimestamp = lastTimestamp.replace(second=0, microsecond=0)
+        # expand job window to nearest scan step
+        firstTimestamp -= timedelta(seconds=self.scan_step)
+        lastTimestamp += timedelta(seconds=self.scan_step)
 
         jobdata = self.query_jobinfo(firstTimestamp, lastTimestamp)
         return jobdata
@@ -298,7 +327,7 @@ class queryMetrics:
             'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % (self.jobID),
             self.start_time,
             self.end_time,
-            step=60,
+            step=self.scan_step,
         )
         self.totalNodes = len(results)
 
@@ -308,7 +337,7 @@ class queryMetrics:
                 % (self.jobID, self.jobstepQuery),
                 self.start_time,
                 self.end_time,
-                step=60,
+                step=self.scan_step,
             )
             for result in results:
                 self.hosts.append(result["metric"]["instance"])
