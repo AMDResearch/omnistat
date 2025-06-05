@@ -224,17 +224,11 @@ class queryMetrics:
         start_range = (start, start - delta)
         end_range = (end - delta, end)
 
-        start_results = self.prometheus.custom_query_range(
-            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), start_range[0], start_range[1], step=self.interval
-        )
-
-        end_results = self.prometheus.custom_query_range(
-            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), end_range[0], end_range[1], step=self.interval
-        )
-
+        start_results = self.query_range("rmsjob_info", start_range[0], start_range[1], self.interval)
         if len(start_results) > 0:
             start = datetime.fromtimestamp(start_results[0]["values"][0][0])
 
+        end_results = self.query_range("rmsjob_info", end_range[0], end_range[1], self.interval)
         if len(end_results) > 0:
             end = datetime.fromtimestamp(end_results[0]["values"][-1][0])
 
@@ -557,6 +551,11 @@ class queryMetrics:
         #     version += " (%s)" % self.sha
         print("Version = %s" % version)
         return
+
+    def query_range(self, metric_name, start, end, step):
+        query = '(%s{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery)
+        results = self.prometheus.custom_query_range(query, start, end, step=step)
+        return results
 
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
 
