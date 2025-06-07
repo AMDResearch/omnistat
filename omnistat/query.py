@@ -63,6 +63,8 @@ from omnistat import utils
 class queryMetrics:
 
     def __init__(self, versionData):
+        self.MIN_SAMPLES = 5
+
         self.timer_start = timeit.default_timer()
 
         self.config = {}
@@ -193,13 +195,14 @@ class queryMetrics:
 
         # NOOP if job is very short running
         runtime = (self.end_time - self.start_time).total_seconds()
-        if runtime < 61:
-            logging.info("--> Short duration job detected...(%.1f secs) - unsupported query." % runtime)
+        estimated_samples = runtime / self.interval
+        if estimated_samples < self.MIN_SAMPLES:
+            logging.info(f"--> Unsupported query: short job duration ({runtime:.1f}s with {self.interval}s interval).")
+            logging.info(f"--> Need at least {self.MIN_SAMPLES} samples to query.")
             sys.exit()
 
         # cache hosts assigned to job
         self.get_hosts()
-
 
     def query_jobinfo(self, start, end):
         """
