@@ -63,15 +63,41 @@ from omnistat import utils
 class queryMetrics:
 
     def __init__(self, versionData):
-
-        # initiate timer
         self.timer_start = timeit.default_timer()
 
-        self.jobID = None
+        self.config = {}
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
+
+        self.jobinfo = None
+        self.jobID = None
         self.jobStep = None
+        self.numGPUs = None
+
+        self.start_time = None
+        self.end_time = None
+        self.interval = None
+
+        self.prometheus = None
+
+        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
+        self.metrics = [
+            {
+                "metric": "rocm_utilization_percentage",
+                "title": "GPU Core Utilization",
+                "title_short": "Utilization (%)",
+            },
+            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
+            {
+                "metric": "rocm_temperature_celsius",
+                "title": "GPU Temperature (C)",
+                "title_short": "Temperature (C)",
+            },
+            {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
+            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
+        ]
+
         # self.sha = versionData["sha"]
         # self.version = versionData["version"]
         self.version = versionData
@@ -84,7 +110,6 @@ class queryMetrics:
     def read_config(self, configFileArgument):
         runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
         section = "omnistat.query"
-        self.config = {}
         self.config["system_name"] = runtimeConfig[section].get("system_name", "My Snazzy Cluster")
         self.config["prometheus_url"] = runtimeConfig[section].get("prometheus_url", "unknown")
 
@@ -175,44 +200,18 @@ class queryMetrics:
         # cache hosts assigned to job
         self.get_hosts()
 
-        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
-        self.metrics = [
-            {
-                "metric": "rocm_utilization_percentage",
-                "title": "GPU Core Utilization",
-                "title_short": "Utilization (%)",
-            },
-            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
-            {
-                "metric": "rocm_temperature_celsius",
-                "title": "GPU Temperature (C)",
-                "title_short": "Temperature (C)",
-            },
-            {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
-            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
-        ]
 
-    # Query job data info given start/stop time window
     def query_jobinfo(self, start, end):
-        duration_mins = (end - start).total_seconds() / 60
-        assert duration_mins > 0
+        """
+        Query job data info given start/stop time window.
 
-        # assemble coarsened query step based on job duration
-        if duration_mins > 60:
-            step = "1h"
-        elif duration_mins > 15:
-            step = "15m"
-        elif duration_mins > 5:
-            step = "5m"
-        else:
-            step = "15s"
+        Args:
+            start (datetime): Approximate start time of the job.
+            end (datetime): Approximate end time of the job.
 
-        # Cull job info
-        results = self.query_range("rmsjob_info{$job,$step}", start, end, step)
-        assert len(results) > 0
-
-        num_nodes = int(results[0]["metric"]["nodes"])
-        partition = results[0]["metric"]["partition"]
+        Returns:
+            dict: Job info data.
+        """
 
         # To provide more accurate timing, generate two queries with small
         # ranges: one around the start time and the other one around the end
@@ -231,16 +230,34 @@ class queryMetrics:
         if len(end_results) > 0:
             end = datetime.fromtimestamp(end_results[0]["values"][-1][0])
 
-        jobdata = {}
-        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["num_nodes"] = num_nodes
-        jobdata["partition"] = partition
+        duration_mins = (end - start).total_seconds() / 60
+        assert duration_mins > 0
 
-        # Cull number of gpus
-        results = self.query_range("rocm_num_gpus * on (instance) rmsjob_info{$job,$step}", start, end, step)
+        # assemble coarsened query step based on job duration
+        if duration_mins > 60:
+            coarse_step = "1h"
+        elif duration_mins > 15:
+            coarse_step = "15m"
+        elif duration_mins > 5:
+            coarse_step = "5m"
+        else:
+            # For short jobs, use the same step as the scan step (between 5
+            # and 60 seconds depending on interval).
+            coarse_step = self.scan_step
+
+        # Cull job info with coarse resolution
+        results = self.query_range("rmsjob_info{$job,$step}", start, end, coarse_step)
+        assert len(results) > 0
+
+        num_nodes = int(results[0]["metric"]["nodes"])
+        partition = results[0]["metric"]["partition"]
+
+        # Cull number of gpus with coarse resolution
+        results = self.query_range("rocm_num_gpus * on (instance) rmsjob_info{$job,$step}", start, end, coarse_step)
+        assert len(results) > 0
 
         num_gpus = int(results[0]["values"][0][1])
+        assert num_gpus > 0
 
         # warn if nodes do not have same gpu counts
         for node in range(len(results)):
@@ -249,8 +266,13 @@ class queryMetrics:
                 print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus, value))
                 break
 
-        assert num_gpus > 0
         self.numGPUs = num_gpus
+
+        jobdata = {}
+        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["num_nodes"] = num_nodes
+        jobdata["partition"] = partition
         return jobdata
 
     # gather relevant job data from info metric
