@@ -104,11 +104,6 @@ class queryMetrics:
         # self.version = versionData["version"]
         self.version = versionData
 
-    def __del__(self):
-        if hasattr(self, "enable_redirect"):
-            if self.enable_redirect:
-                self.output.close()
-
     def read_config(self, configFileArgument):
         runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
         section = "omnistat.query"
