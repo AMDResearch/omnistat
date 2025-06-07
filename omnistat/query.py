@@ -32,6 +32,7 @@ import sys
 import timeit
 from datetime import datetime, timedelta
 from pathlib import Path
+from string import Template
 
 import matplotlib.dates as mdates
 import matplotlib.pylab as plt
@@ -62,28 +63,50 @@ from omnistat import utils
 class queryMetrics:
 
     def __init__(self, versionData):
+        self.MIN_SAMPLES = 5
 
-        # initiate timer
         self.timer_start = timeit.default_timer()
 
-        self.jobID = None
+        self.config = {}
         self.enable_redirect = False
         self.output_file = None
         self.pdf = None
+
+        self.jobinfo = None
+        self.jobID = None
         self.jobStep = None
+        self.numGPUs = None
+
+        self.start_time = None
+        self.end_time = None
+        self.interval = None
+
+        self.prometheus = None
+
+        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
+        self.metrics = [
+            {
+                "metric": "rocm_utilization_percentage",
+                "title": "GPU Core Utilization",
+                "title_short": "Utilization (%)",
+            },
+            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
+            {
+                "metric": "rocm_temperature_celsius",
+                "title": "GPU Temperature (C)",
+                "title_short": "Temperature (C)",
+            },
+            {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
+            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
+        ]
+
         # self.sha = versionData["sha"]
         # self.version = versionData["version"]
         self.version = versionData
 
-    def __del__(self):
-        if hasattr(self, "enable_redirect"):
-            if self.enable_redirect:
-                self.output.close()
-
     def read_config(self, configFileArgument):
         runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
         section = "omnistat.query"
-        self.config = {}
         self.config["system_name"] = runtimeConfig[section].get("system_name", "My Snazzy Cluster")
         self.config["prometheus_url"] = runtimeConfig[section].get("prometheus_url", "unknown")
 
@@ -123,6 +146,36 @@ class queryMetrics:
 
         self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
 
+        # The scan step is used in the initial queries to find the start and
+        # end time of the job, as well as other details in the info metric. It
+        # can't be too low because queries have a maximum number of points per
+        # request (the default in Victoria Metrics is 30,000), and we need to
+        # potentially generate up to 365 queries to find a job in the last
+        # year (1 query/day).
+        #
+        # To remain within the maximum number of points per request, we select
+        # a scan step between 5s (17,280 points/day) and 60s (1,440
+        # points/day) depending on the interval. While it's technically
+        # possible to always use the smallest scan step, we gradually increase
+        # the step based on interval to make these queries more efficient.
+        # Our assumption is jobs with longer intervals are generally longer.
+        #
+        # Jobs with intervals under 30s require a minimum execution time to
+        # guarantee they can be located in the database:
+        #  -  5s of execution for intervals under 1s
+        #  - 15s of execution for intervals between 1s and 30s
+        #
+        # For jobs with intervals over 30s, the scan step is equal or lower
+        # than the interval, and so no minimum execution time is required.
+        if self.interval < 1:
+            self.scan_step = 5
+        elif self.interval >= 1 and self.interval < 30:
+            self.scan_step = 15
+        elif self.interval >= 30 and self.interval < 60:
+            self.scan_step = 30
+        else:
+            self.scan_step = 60
+
         # query jobinfo
         self.jobinfo = self.query_slurm_job_internal()
         if self.jobinfo["begin_date"] == "Unknown":
@@ -137,69 +190,72 @@ class queryMetrics:
 
         # NOOP if job is very short running
         runtime = (self.end_time - self.start_time).total_seconds()
-        if runtime < 61:
-            logging.info("--> Short duration job detected...(%.1f secs) - unsupported query." % runtime)
+        estimated_samples = runtime / self.interval
+        if estimated_samples < self.MIN_SAMPLES:
+            logging.info(f"--> Unsupported query: short job duration ({runtime:.1f}s with {self.interval}s interval).")
+            logging.info(f"--> Need at least {self.MIN_SAMPLES} samples to query.")
             sys.exit()
 
         # cache hosts assigned to job
         self.get_hosts()
 
-        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
-        self.metrics = [
-            {
-                "metric": "rocm_utilization_percentage",
-                "title": "GPU Core Utilization",
-                "title_short": "Utilization (%)",
-            },
-            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
-            {
-                "metric": "rocm_temperature_celsius",
-                "title": "GPU Temperature (C)",
-                "title_short": "Temperature (C)",
-            },
-            {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
-            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
-        ]
-
-    # Query job data info given start/stop time window
     def query_jobinfo(self, start, end):
+        """
+        Query job data info given start/stop time window.
+
+        Args:
+            start (datetime): Approximate start time of the job.
+            end (datetime): Approximate end time of the job.
+
+        Returns:
+            dict: Job info data.
+        """
+
+        # To provide more accurate timing, generate two queries with small
+        # ranges: one around the start time and the other one around the end
+        # time. The original start/end times based on the initial scan are as
+        # accurate as the scan step; the start/end times as updated here are
+        # as accurate as the interval.
+        delta = timedelta(seconds=self.scan_step * 2)
+        start_range = (start, start - delta)
+        end_range = (end - delta, end)
+
+        start_results = self.query_range("rmsjob_info{$job,$step}", start_range[0], start_range[1], self.interval)
+        if len(start_results) > 0:
+            start = datetime.fromtimestamp(start_results[0]["values"][0][0])
+
+        end_results = self.query_range("rmsjob_info{$job,$step}", end_range[0], end_range[1], self.interval)
+        if len(end_results) > 0:
+            end = datetime.fromtimestamp(end_results[0]["values"][-1][0])
+
         duration_mins = (end - start).total_seconds() / 60
         assert duration_mins > 0
 
         # assemble coarsened query step based on job duration
         if duration_mins > 60:
-            step = "1h"
+            coarse_step = "1h"
         elif duration_mins > 15:
-            step = "15m"
+            coarse_step = "15m"
         elif duration_mins > 5:
-            step = "5m"
+            coarse_step = "5m"
         else:
-            step = "15s"
+            # For short jobs, use the same step as the scan step (between 5
+            # and 60 seconds depending on interval).
+            coarse_step = self.scan_step
 
-        # Cull job info
-        results = self.prometheus.custom_query_range(
-            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), start, end, step=step
-        )
+        # Cull job info with coarse resolution
+        results = self.query_range("rmsjob_info{$job,$step}", start, end, coarse_step)
         assert len(results) > 0
 
         num_nodes = int(results[0]["metric"]["nodes"])
         partition = results[0]["metric"]["partition"]
 
-        jobdata = {}
-        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["num_nodes"] = num_nodes
-        jobdata["partition"] = partition
-
-        # Cull number of gpus
-        results = self.prometheus.custom_query_range(
-            '(rocm_num_gpus * on (instance) rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery),
-            start,
-            end,
-            step=step,
-        )
+        # Cull number of gpus with coarse resolution
+        results = self.query_range("rocm_num_gpus * on (instance) rmsjob_info{$job,$step}", start, end, coarse_step)
+        assert len(results) > 0
 
         num_gpus = int(results[0]["values"][0][1])
+        assert num_gpus > 0
 
         # warn if nodes do not have same gpu counts
         for node in range(len(results)):
@@ -208,8 +264,13 @@ class queryMetrics:
                 print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus, value))
                 break
 
-        assert num_gpus > 0
         self.numGPUs = num_gpus
+
+        jobdata = {}
+        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
+        jobdata["num_nodes"] = num_nodes
+        jobdata["partition"] = partition
         return jobdata
 
     # gather relevant job data from info metric
@@ -225,9 +286,7 @@ class queryMetrics:
             aend = now - timedelta(days=day)
             astart = aend - timedelta(days=1)
 
-            results = self.prometheus.custom_query_range(
-                'max(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), astart, aend, step="1m"
-            )
+            results = self.query_range("max(rmsjob_info{$job,$step})", astart, aend, self.scan_step)
             if not lastTimestamp and len(results) > 0:
                 lastTimestamp = datetime.fromtimestamp(results[0]["values"][-1][0])
                 endWindow = aend
@@ -243,10 +302,9 @@ class queryMetrics:
             print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
-        # expand job window to nearest minute
-        firstTimestamp = firstTimestamp.replace(second=0, microsecond=0)
-        lastTimestamp += timedelta(minutes=1)
-        lastTimestamp = lastTimestamp.replace(second=0, microsecond=0)
+        # expand job window to nearest scan step
+        firstTimestamp -= timedelta(seconds=self.scan_step)
+        lastTimestamp += timedelta(seconds=self.scan_step)
 
         jobdata = self.query_jobinfo(firstTimestamp, lastTimestamp)
         return jobdata
@@ -294,21 +352,20 @@ class queryMetrics:
     # Detect hosts associated with this job
     def get_hosts(self):
         self.hosts = []
-        results = self.prometheus.custom_query_range(
-            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % (self.jobID),
+        results = self.query_range(
+            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job}',
             self.start_time,
             self.end_time,
-            step=60,
+            self.scan_step,
         )
         self.totalNodes = len(results)
 
         if self.jobStep:
-            results = self.prometheus.custom_query_range(
-                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s",%s}'
-                % (self.jobID, self.jobstepQuery),
+            results = self.query_range(
+                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job,$step}',
                 self.start_time,
                 self.end_time,
-                step=60,
+                self.scan_step,
             )
             for result in results:
                 self.hosts.append(result["metric"]["instance"])
@@ -506,23 +563,49 @@ class queryMetrics:
         print("Version = %s" % version)
         return
 
+    def query_range(self, query_template, start, end, step):
+        """
+        Request a given query in the provided range. The query may optionally
+        include variables to select job ID ($job) and step ID ($step) labels,
+        and which are automatically substituted for the appropriate value.
+
+        Args:
+            query_template (str): PromQL query with substitutions.
+            start (datetime): Query start time.
+            end (datetime): Query end time.
+            step (str|float): Query resolution string with unit, or float in seconds.
+
+        Result:
+            dict: Metric data in response of the submitted query.
+        """
+        template = Template(query_template)
+        query = template.substitute(job=f'jobid="{self.jobID}"', step=self.jobstepQuery)
+        results = self.prometheus.custom_query_range(query, start, end, step=step)
+        return results
+
+    def query_job_range(self, query_template):
+        """
+        Request a given query in the job's range. The query may optionally
+        include variables to select job ID ($job) and step ID ($step) labels,
+        and which are automatically substituted for the appropriate value.
+
+        Args:
+            query_template (str): PromQL query with substitutions.
+
+        Result:
+            dict: Metric data in response of the submitted query.
+        """
+        results = self.query_range(query_template, self.start_time, self.end_time, self.interval)
+        return results
+
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
 
         if reducer is None:
-            results = self.prometheus.custom_query_range(
-                '(%s * on (instance) rmsjob_info{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s * on (instance) rmsjob_info{$job,$step}" % (metric_name)
+            results = self.query_job_range(query)
         else:
-            results = self.prometheus.custom_query_range(
-                '%s(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
-                % (reducer, metric_name, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s(%s * on (instance) rmsjob_info{$job,$step})" % (reducer, metric_name)
+            results = self.query_job_range(query)
 
         if reducer is None:
             # return lists with raw time series data from all hosts for given metric
@@ -870,13 +953,8 @@ class queryMetrics:
 
         metric_dfs = []
         for metric in metrics:
-            metric_data = self.prometheus.custom_query_range(
-                '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
-                % (metric, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s * on (instance) group_left() rmsjob_info{$job,$step}" % (metric)
+            metric_data = self.query_job_range(query)
 
             if len(metric_data) == 0:
                 continue
