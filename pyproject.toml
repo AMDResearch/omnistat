@@ -45,3 +45,5 @@ include = '\.py$'
 
 [tool.isort]
 profile = "black"
+src_paths = ["omnistat", "test"]
+known_local_folder = ["omnistat", "test"]
