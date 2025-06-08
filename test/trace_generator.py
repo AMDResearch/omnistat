@@ -25,8 +25,23 @@ class TraceGenerator:
     def add_static_load(self, load_id, num_nodes, gpu_values):
         nodes = [f"node-{i}.{load_id}.{self.job_id}" for i in range(num_nodes)]
         for node in nodes:
-            info = [f'rmsjob_info{{instance="{node}",jobid="{self.job_id}"}} 1 {t}' for t in self.times]
-            self.metrics.extend(info)
+            info_labels = [
+                f'instance="{node}"',
+                f'nodes="{num_nodes}"',
+                f'jobid="{self.job_id}"',
+                f'jobstep=""',
+                f'partition="test"',
+            ]
+            info_metric = [f'rmsjob_info{{{",".join(info_labels)}}} 1 {t}' for t in self.times]
+            self.metrics.extend(info_metric)
+
+            num_gpus = len(gpu_values)
+            num_gpus_labels = [
+                f'instance="{node}"',
+            ]
+            num_gpus_metric = [f'rocm_num_gpus{{{",".join(info_labels)}}} {num_gpus} {t}' for t in self.times]
+            self.metrics.extend(num_gpus_metric)
+
             for gpu_id, value in enumerate(gpu_values):
                 for name in GPU_METRIC_NAMES:
                     gpu_metric = [f'{name}{{instance="{node}",card="{gpu_id}"}} {value} {t}' for t in self.times]
