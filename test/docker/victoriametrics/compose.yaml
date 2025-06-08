@@ -1,0 +1,13 @@
+services:
+  victoria:
+    image: victoriametrics/victoria-metrics
+    command:
+      - '-storageDataPath=/data'
+      - '-httpListenAddr=0.0.0.0:8428'
+    volumes:
+      - data_dir:/data
+    ports:
+      - 8428:8428
+
+volumes:
+  data_dir:
