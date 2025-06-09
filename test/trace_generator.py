@@ -47,7 +47,7 @@ class TraceGenerator:
         total_num_nodes = 0
         for _, (num_nodes, _) in self.loads.items():
             total_num_nodes += num_nodes
-        assert self.num_nodes == num_nodes, "Number of nodes doesn't match load"
+        assert self.num_nodes == total_num_nodes, "Number of nodes doesn't match load"
 
         metrics = []
         for load_id, (num_nodes, gpu_values) in self.loads.items():
