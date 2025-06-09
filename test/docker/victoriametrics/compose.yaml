@@ -1,6 +1,7 @@
 services:
   victoria:
     image: victoriametrics/victoria-metrics
+    container_name: victoria-metrics
     command:
       - '-storageDataPath=/data'
       - '-httpListenAddr=0.0.0.0:8428'
