@@ -4,7 +4,7 @@ import time
 import pytest
 from prometheus_api_client import PrometheusConnect
 
-import config
+from test import config
 
 
 class TestJobSystem:
