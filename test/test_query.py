@@ -11,7 +11,7 @@ from omnistat.utils import readConfig
 from test.trace_generator import TraceGenerator
 
 test_path = Path(__file__).resolve().parent
-CONFIG_FILE = f"{test_path}/test_query.config"
+CONFIG_FILE = f"{test_path}/docker/victoriametrics/omnistat-query.config"
 
 config = readConfig(CONFIG_FILE)
 URL = config["omnistat.query"]["prometheus_url"]
