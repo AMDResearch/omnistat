@@ -3,12 +3,13 @@ import re
 import uuid
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from omnistat.query import queryMetrics
 from omnistat.standalone import push_to_victoria_metrics
 from omnistat.utils import readConfig
-from test.trace_generator import TraceGenerator
+from test.trace_generator import GPU_METRIC_NAMES, TraceGenerator
 
 test_path = Path(__file__).resolve().parent
 CONFIG_FILE = f"{test_path}/docker/victoriametrics/omnistat-query.config"
@@ -62,7 +63,7 @@ class TestQuery:
         query.set_options(jobID=job_id, interval=interval)
         query.read_config(CONFIG_FILE)
         query.setup()
-        query.gather_data(saveTimeSeries=True)
+        query.gather_data()
         query.generate_report_card()
 
         # Capture report from stdout to validate results
@@ -85,3 +86,59 @@ class TestQuery:
             assert len(values) == 8, "Unexpected number of columns in the report"
             for v in values:
                 assert float(v) == gpu_values[gpu_id], "Unexpected metric value"
+
+    # Validate stats and time series gathered from the query tool when using
+    # multiple nodes with different loads.
+    #
+    # The gpu_values_list parameter is a list of lists (one list of gpu values
+    # per node). All gpu_values are expected to have the same length (same
+    # number of GPUs in all nodes).
+    @pytest.mark.parametrize(
+        "num_nodes, gpu_values_list",
+        [
+            (2, [[0.0], [0.0]]),
+            (2, [[100.0], [0.0]]),
+            (2, [[0.0], [100.0]]),
+            (2, [[100.0], [100.0]]),
+            (2, [[25.0], [75.0]]),
+            (2, [[100.0, 0.0], [0.0, 0.0]]),
+            (4, [[20.0], [40.0], [60.0], [80.0]]),
+        ],
+    )
+    def test_multiple_loads(self, num_nodes, gpu_values_list):
+        job_id = uuid.uuid4()
+        duration = 60
+        interval = 1.0
+
+        trace = TraceGenerator(duration, interval, job_id, num_nodes)
+        for i in range(num_nodes):
+            trace.add_constant_load(f"load{i}", num_nodes=1, gpu_values=gpu_values_list[i])
+        metrics = trace.generate()
+
+        push_to_victoria_metrics(metrics, URL)
+
+        query = queryMetrics("TEST")
+        query.set_options(jobID=job_id, interval=interval)
+        query.read_config(CONFIG_FILE)
+        query.setup()
+        query.gather_data(saveTimeSeries=True)
+
+        num_gpus = len(gpu_values_list[0])
+        for gpu_values in gpu_values_list:
+            assert len(gpu_values) == num_gpus, "All nodes are require the same number of GPUs"
+
+        # Validate time series values and max/mean values from query tool,
+        # which are obtained from PromQL queries.
+        for gpu_id in range(num_gpus):
+            gpu_id_values = [gpu_values[gpu_id] for gpu_values in gpu_values_list]
+            expected_max = np.max(gpu_id_values)
+            expected_mean = np.mean(gpu_id_values)
+
+            for metric in GPU_METRIC_NAMES:
+                query_max = query.stats[f"{metric}_max"][gpu_id]
+                query_mean = query.stats[f"{metric}_mean"][gpu_id]
+                assert query_max == expected_max, f"Unexpected max value for {metric} in GPU ID {gpu_id}"
+                assert query_mean == expected_mean, f"Unexpected mean value for {metric} in GPU ID {gpu_id}"
+
+                for sample_value in query.time_series[metric][gpu_id]["values"]:
+                    assert sample_value == expected_mean, f"Unexpected sample value for {metric} in GPU ID {gpu_id}"
