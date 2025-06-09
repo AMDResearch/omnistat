@@ -1,0 +1,28 @@
+name: Query
+on:
+  push:
+    branches:  [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+jobs:
+  test:
+    name: Query Omnistat
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Start containerized environment
+        run: docker compose -f test/docker/victoriametrics/compose.yaml up -d
+      - name: Wait for Victoria Metrics
+        run: >
+          timeout 1m bash -c \
+            'until $(curl -o /dev/null --fail -s http://localhost:8248/metrics); do \
+               echo "Waiting for Victoria Metrics..."; \
+               sleep 5; \
+             done'
+      - name: Display node logs
+        run: docker logs victoria-metrics
+      - name: Install test dependencies
+        run: pip3 install -r requirements-query.txt test/requirements.txt
+      - name: Run tests
+        run: pytest -v test/test_query.py
