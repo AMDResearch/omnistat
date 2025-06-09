@@ -16,7 +16,7 @@ jobs:
       - name: Wait for Victoria Metrics
         run: >
           timeout 1m bash -c \
-            'until $(curl -o /dev/null --fail -s http://localhost:8248/metrics); do \
+            'until $(curl -o /dev/null --fail -s http://localhost:8428/metrics); do \
                echo "Waiting for Victoria Metrics..."; \
                sleep 5; \
              done'
