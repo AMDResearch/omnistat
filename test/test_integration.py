@@ -1,7 +1,8 @@
-import config
 import pytest
 import requests
 from prometheus_api_client import PrometheusConnect
+
+import config
 
 
 class TestIntegration:
