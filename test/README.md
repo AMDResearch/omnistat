@@ -55,6 +55,23 @@ file to `docker compose`:
    docker compose -f test/docker/slurm/compose.yaml -f test/docker/slurm/compose-user.yaml down -v
    ```
 
+### Deploy and Test Query Tool
+
+1. Start containers.
+   ```
+   docker compose -f test/docker/victoriametrics/compose.yaml up -d
+   ```
+
+2. Run tests with `pytest`:
+   ```
+   pytest test/test_query.py
+   ```
+
+3. Stop containers.
+   ```
+   docker compose -f test/docker/victoriametrics/compose.yaml down -v
+   ```
+
 ### Additional Information for Testing and Debugging
 
 The test environment includes a controller node (`controller`) and two compute
