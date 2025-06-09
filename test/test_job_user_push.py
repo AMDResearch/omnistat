@@ -24,7 +24,7 @@ from string import Template
 import pytest
 from prometheus_api_client import PrometheusConnect
 
-import config
+from test import config
 
 slurm_job_template = """\
 #!/bin/bash

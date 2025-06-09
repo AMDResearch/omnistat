@@ -25,7 +25,6 @@ From the root directory of the project:
 
 2. Run tests with `pytest`:
    ```
-   cd test
    pytest test/test_integration.py test/test_job_system.py
    ```
 
@@ -46,8 +45,7 @@ file to `docker compose`:
 
 2. Run tests with `pytest`:
    ```
-   cd test
-   pytest test_job_user_pull.py test_job_user_push.py
+   pytest test/test_job_user_pull.py test/test_job_user_push.py
    ```
 
 3. Stop containers.
