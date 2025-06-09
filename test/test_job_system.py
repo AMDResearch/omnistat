@@ -1,9 +1,10 @@
 import os
 import time
 
-import config
 import pytest
 from prometheus_api_client import PrometheusConnect
+
+import config
 
 
 class TestJobSystem:

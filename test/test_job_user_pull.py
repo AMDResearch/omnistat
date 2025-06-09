@@ -21,9 +21,10 @@ import subprocess
 import time
 from string import Template
 
-import config
 import pytest
 from prometheus_api_client import PrometheusConnect
+
+import config
 
 slurm_job_template = """\
 #!/bin/bash
