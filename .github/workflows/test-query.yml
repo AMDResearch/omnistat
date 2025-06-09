@@ -23,6 +23,6 @@ jobs:
       - name: Display node logs
         run: docker logs victoria-metrics
       - name: Install test dependencies
-        run: pip3 install -r requirements-query.txt -r test/requirements.txt
+        run: pip3 install -r requirements.txt -r requirements-query.txt -r test/requirements.txt
       - name: Run tests
         run: pytest -v test/test_query.py
