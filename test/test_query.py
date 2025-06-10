@@ -142,3 +142,70 @@ class TestQuery:
 
                 for sample_value in query.time_series[metric][gpu_id]["values"]:
                     assert sample_value == expected_mean, f"Unexpected sample value for {metric} in GPU ID {gpu_id}"
+
+    @pytest.mark.parametrize(
+        "duration, interval",
+        [
+            (60, 1.0),   # 60 samples
+            (60, 5.0),   # 12 samples
+            (60, 10.0),  # 6 samples
+            (90, 15.0),  # 6 samples
+            (180, 30.0), # 6 samples
+            (360, 60.0), # 6 samples
+        ],
+    )
+    def test_duration_valid(self, capsys, duration, interval):
+        job_id = uuid.uuid4()
+        num_nodes = 2
+        gpu_values = [100] * num_nodes
+
+        trace = TraceGenerator(duration, interval, job_id, num_nodes)
+        trace.add_constant_load("all", num_nodes, gpu_values)
+        metrics = trace.generate()
+
+        push_to_victoria_metrics(metrics, URL)
+
+        query = queryMetrics("TEST")
+        query.set_options(jobID=job_id, interval=interval)
+        query.read_config(CONFIG_FILE)
+        try:
+            query.setup()
+        except SystemExit:
+            captured = capsys.readouterr()
+            output = captured.out
+            print(output)
+            pytest.fail("Unexpected exit with sys.exit()")
+
+    @pytest.mark.parametrize(
+        "duration, interval",
+        [
+            (1, 0.5), # 2 samples
+            (1, 1.0), # 1 sample
+            (5, 5.0), # 1 sample
+            (5, 1.0), # 5 samples
+        ],
+    )
+    def test_duration_short(self, capsys, duration, interval):
+        job_id = uuid.uuid4()
+        num_nodes = 1
+        gpu_values = [100] * num_nodes
+
+        trace = TraceGenerator(duration, interval, job_id, num_nodes)
+        trace.add_constant_load("all", num_nodes, gpu_values)
+        metrics = trace.generate()
+
+        push_to_victoria_metrics(metrics, URL)
+
+        query = queryMetrics("TEST")
+        query.set_options(jobID=job_id, interval=interval)
+        query.read_config(CONFIG_FILE)
+        with pytest.raises(SystemExit) as exit_info:
+            query.setup()
+        assert exit_info.type == SystemExit
+        assert exit_info.value.code == 1
+
+        # Capture and validate expected error message for short jobs
+        captured = capsys.readouterr()
+        output = captured.out
+        pattern = f"no monitoring data found for job={job_id}"
+        assert re.search(pattern, output) != None, f"Unexpected output: {output}"
