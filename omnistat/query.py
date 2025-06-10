@@ -151,30 +151,9 @@ class queryMetrics:
         # can't be too low because queries have a maximum number of points per
         # request (the default in Victoria Metrics is 30,000), and we need to
         # potentially generate up to 365 queries to find a job in the last
-        # year (1 query/day).
-        #
-        # To remain within the maximum number of points per request, we select
-        # a scan step between 5s (17,280 points/day) and 60s (1,440
-        # points/day) depending on the interval. While it's technically
-        # possible to always use the smallest scan step, we gradually increase
-        # the step based on interval to make these queries more efficient.
-        # Our assumption is jobs with longer intervals are generally longer.
-        #
-        # Jobs with intervals under 30s require a minimum execution time to
-        # guarantee they can be located in the database:
-        #  -  5s of execution for intervals under 1s
-        #  - 15s of execution for intervals between 1s and 30s
-        #
-        # For jobs with intervals over 30s, the scan step is equal or lower
-        # than the interval, and so no minimum execution time is required.
-        if self.interval < 1:
-            self.scan_step = 5
-        elif self.interval >= 1 and self.interval < 30:
-            self.scan_step = 15
-        elif self.interval >= 30 and self.interval < 60:
-            self.scan_step = 30
-        else:
-            self.scan_step = 60
+        # year (1 query/day). Default to a scan step of 30s, which requires up
+        # to 2,880 points.
+        self.scan_step = 30.0
 
         # query jobinfo
         self.jobinfo = self.query_slurm_job_internal()
