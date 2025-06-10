@@ -146,12 +146,13 @@ class TestQuery:
     @pytest.mark.parametrize(
         "duration, interval",
         [
-            (60, 1.0),   # 60 samples
-            (60, 5.0),   # 12 samples
-            (60, 10.0),  # 6 samples
-            (90, 15.0),  # 6 samples
-            (180, 30.0), # 6 samples
-            (360, 60.0), # 6 samples
+            # Job durations of at least 60s with 6 samples or more
+            (60, 1.0),
+            (60, 5.0),
+            (60, 10.0),
+            (90, 15.0),
+            (180, 30.0),
+            (360, 60.0),
         ],
     )
     def test_duration_valid(self, capsys, duration, interval):
@@ -179,10 +180,10 @@ class TestQuery:
     @pytest.mark.parametrize(
         "duration, interval",
         [
-            (1, 0.5), # 2 samples
-            (1, 1.0), # 1 sample
-            (5, 5.0), # 1 sample
-            (5, 1.0), # 5 samples
+            (1, 0.5),  # 2 samples
+            (1, 1.0),  # 1 sample
+            (5, 5.0),  # 1 sample
+            (5, 1.0),  # 5 samples
         ],
     )
     def test_duration_short(self, capsys, duration, interval):
