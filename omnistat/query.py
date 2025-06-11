@@ -151,9 +151,9 @@ class queryMetrics:
         # can't be too low because queries have a maximum number of points per
         # request (the default in Victoria Metrics is 30,000), and we need to
         # potentially generate up to 365 queries to find a job in the last
-        # year (1 query/day). Default to a scan step of 30s, which requires up
-        # to 2,880 points.
-        self.scan_step = 30.0
+        # year (1 query/day). Default to a scan step of 60s, which requires
+        # 1,440 points for a query/day.
+        self.scan_step = 60.0
 
         # query jobinfo
         self.jobinfo = self.query_slurm_job_internal()
@@ -258,7 +258,9 @@ class queryMetrics:
         firstTimestamp = None
         lastTimestamp = None
 
-        now = datetime.now()
+        # Ensure the scan to find the job ends 1 minute into the future to
+        # guarantee we are not missing any recently pushed data.
+        now = datetime.now() + timedelta(minutes=1)
 
         # loop over days starting from now to find time window covering desired job
         for day in range(365):

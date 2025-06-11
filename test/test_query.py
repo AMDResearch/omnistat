@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import uuid
@@ -180,13 +181,14 @@ class TestQuery:
     @pytest.mark.parametrize(
         "duration, interval",
         [
-            (1, 0.5),  # 2 samples
-            (1, 1.0),  # 1 sample
             (5, 5.0),  # 1 sample
-            (5, 1.0),  # 5 samples
+            (1, 1.0),  # 1 sample
+            (1, 0.5),  # 2 samples
         ],
     )
-    def test_duration_short(self, capsys, duration, interval):
+    def test_min_num_samples(self, capsys, caplog, duration, interval):
+        caplog.set_level(logging.INFO)
+
         job_id = uuid.uuid4()
         num_nodes = 1
         gpu_values = [100] * num_nodes
@@ -203,10 +205,11 @@ class TestQuery:
         with pytest.raises(SystemExit) as exit_info:
             query.setup()
         assert exit_info.type == SystemExit
-        assert exit_info.value.code == 1
+        assert exit_info.value.code == None
 
-        # Capture and validate expected error message for short jobs
-        captured = capsys.readouterr()
-        output = captured.out
-        pattern = f"no monitoring data found for job={job_id}"
-        assert re.search(pattern, output) != None, f"Unexpected output: {output}"
+        # Capture and validate expected logging message
+        assert len(caplog.records) > 1
+        record = caplog.records[-1]
+        assert record.levelname == "INFO"
+        pattern = f"Need at least [0-9]+ samples to query"
+        assert re.search(pattern, record.message) != None, f"Unexpected output: {record.message}"
