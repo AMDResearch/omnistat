@@ -147,7 +147,9 @@ class TestQuery:
     @pytest.mark.parametrize(
         "duration, interval",
         [
-            # Job durations of at least 60s with 6 samples or more
+            (5, 0.5),
+            (10, 1.0),
+            (30, 1.0),
             (60, 1.0),
             (60, 5.0),
             (60, 10.0),
@@ -175,15 +177,15 @@ class TestQuery:
         except SystemExit:
             captured = capsys.readouterr()
             output = captured.out
-            print(output)
             pytest.fail("Unexpected exit with sys.exit()")
 
     @pytest.mark.parametrize(
         "duration, interval",
         [
-            (5, 5.0),  # 1 sample
             (1, 1.0),  # 1 sample
+            (5, 5.0),  # 1 sample
             (1, 0.5),  # 2 samples
+            (60, 30.0),  # 2 samples
         ],
     )
     def test_min_num_samples(self, capsys, caplog, duration, interval):
