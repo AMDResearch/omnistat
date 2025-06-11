@@ -62,28 +62,57 @@ from omnistat import utils
 
 class QueryMetrics:
 
-    def __init__(self, versionData):
-        self.MIN_SAMPLES = 5
-
+    def __init__(self, interval, jobid, jobstep=None, configfile=None, output_file=None):
         self.timer_start = timeit.default_timer()
 
+        # Minimum number of samples required to process data and generate
+        # reports.
+        self.MIN_SAMPLES = 5
+
+        # The scan step is used in the initial queries to find the start and
+        # end time of the job, as well as other details in the info metric. It
+        # can't be too low because queries have a maximum number of points per
+        # request (the default in Victoria Metrics is 30,000), and we need to
+        # potentially generate up to 365 queries to find a job in the last
+        # year. Default to a scan step of 60s (1,440 points/day).
+        self.scan_step = 60.0
+
+        self.interval = interval
+
+        self.jobID = jobid
+        self.jobStep = jobstep
+        self.jobstepQuery = 'jobstep=~".*"'
+        if self.jobStep:
+            self.jobstepQuery = f'jobstep="{step}"'
+        logging.debug("Job step query set to -> %s" % self.jobstepQuery)
+
+        config = utils.readConfig(utils.findConfigFile(configfile))
         self.config = {}
+        self.config["system_name"] = config["omnistat.query"].get("system_name", "My Snazzy Cluster")
+        self.config["prometheus_url"] = config["omnistat.query"].get("prometheus_url", "http://localhost:9090")
+
+        self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
+
         self.enable_redirect = False
-        self.output_file = None
-        self.pdf = None
+        self.output = None
+        self.output_file = output_file
 
+        # Optionally redirect stdout to an existing file
+        if self.output_file:
+            if os.path.isfile(self.output_file):
+                self.output = open(self.output_file, "a")
+                self.enable_redirect = True
+                sys.stdout = self.output
+            else:
+                sys.exit()
+
+        # Retrieved from database queries
         self.jobinfo = None
-        self.jobID = None
-        self.jobStep = None
         self.numGPUs = None
-
         self.start_time = None
         self.end_time = None
-        self.interval = None
 
-        self.prometheus = None
-
-        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
+        # Define metrics to report on. Set 'title_short' to indicate inclusion in statistics summary.
         self.metrics = [
             {
                 "metric": "rocm_utilization_percentage",
@@ -100,62 +129,14 @@ class QueryMetrics:
             {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
         ]
 
-        # self.sha = versionData["sha"]
-        # self.version = versionData["version"]
-        self.version = versionData
-
-    def read_config(self, configFileArgument):
-        runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
-        section = "omnistat.query"
-        self.config["system_name"] = runtimeConfig[section].get("system_name", "My Snazzy Cluster")
-        self.config["prometheus_url"] = runtimeConfig[section].get("prometheus_url", "unknown")
+        self.version = utils.getVersion()
 
     def __del__(self):
         if self.enable_redirect:
             self.output.close()
 
-    def set_options(self, jobID=None, output_file=None, pdf=None, interval=None, step=None):
-        if jobID:
-            self.jobID = jobID
-        if output_file:
-            self.output_file = output_file
-        if pdf:
-            self.pdf = pdf
+    def find_job_info(self):
 
-        # define jobstep label query (either given by user or matches all job steps)
-        if step:
-            self.jobStep = step
-            self.jobstepQuery = f'jobstep="{step}"'
-        else:
-            self.jobstepQuery = 'jobstep=~".*"'
-        logging.debug("Job step query set to -> %s" % self.jobstepQuery)
-
-        self.interval = interval
-        return
-
-    def setup(self):
-
-        # (optionally) redirect stdout
-        if self.output_file:
-            if not os.path.isfile(self.output_file):
-                sys.exit()
-            else:
-                self.output = open(self.output_file, "a")
-                sys.stdout = self.output
-                self.enable_redirect = True
-
-        self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
-
-        # The scan step is used in the initial queries to find the start and
-        # end time of the job, as well as other details in the info metric. It
-        # can't be too low because queries have a maximum number of points per
-        # request (the default in Victoria Metrics is 30,000), and we need to
-        # potentially generate up to 365 queries to find a job in the last
-        # year (1 query/day). Default to a scan step of 60s, which requires
-        # 1,440 points for a query/day.
-        self.scan_step = 60.0
-
-        # query jobinfo
         self.jobinfo = self.query_slurm_job_internal()
         if self.jobinfo["begin_date"] == "Unknown":
             print("Job %s has not run yet." % self.jobID)
@@ -536,10 +517,7 @@ class QueryMetrics:
         print("--")
         print("Query interval = %.3f secs" % self.interval)
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
-        version = self.version
-        # if self.sha != "Unknown":
-        #     version += " (%s)" % self.sha
-        print("Version = %s" % version)
+        print("Version = %s" % self.version)
         return
 
     def query_range(self, query_template, start, end, step):
@@ -655,7 +633,7 @@ class QueryMetrics:
 
     #     return stats
 
-    def dumpFile(self, outputFile):
+    def generate_pdf(self, outputFile):
         doc = SimpleDocTemplate(
             outputFile,
             pagesize=letter,
@@ -894,9 +872,6 @@ class QueryMetrics:
         Story.append(Paragraph(ptext, footerStyle))
         ptext = """Query execution time = %.1f secs""" % (timeit.default_timer() - self.timer_start)
         Story.append(Paragraph(ptext, footerStyle))
-        # version = self.version
-        # if self.sha != "Unknown":
-        #     version += " (%s)" % self.sha
         ptext = """Version = %s""" % self.version
         Story.append(Paragraph(ptext, footerStyle))
         Story.append(HRFlowable(width="100%", thickness=1))
@@ -1002,23 +977,21 @@ def main():
     # logger config
     logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
-    versionData = utils.getVersion()
     if args.version:
-        utils.displayVersion(versionData)
+        version = utils.getVersion()
+        utils.displayVersion(version)
         sys.exit(0)
 
     if not args.job:
         utils.error("The following arguments are required: --job")
 
-    query = QueryMetrics(versionData)
-    query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval, step=args.step)
-    query.read_config(args.configfile)
-    query.setup()
+    query = QueryMetrics(args.interval, args.job, args.step, args.configfile, args.output)
+    query.find_job_info()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
 
     if args.pdf:
-        query.dumpFile(args.pdf)
+        query.generate_pdf(args.pdf)
 
     if args.export:
         export_path = Path(args.export)

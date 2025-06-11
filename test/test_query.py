@@ -60,10 +60,8 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = QueryMetrics("TEST")
-        query.set_options(jobID=job_id, interval=interval)
-        query.read_config(CONFIG_FILE)
-        query.setup()
+        query = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
+        query.find_job_info()
         query.gather_data()
         query.generate_report_card()
 
@@ -118,10 +116,8 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = QueryMetrics("TEST")
-        query.set_options(jobID=job_id, interval=interval)
-        query.read_config(CONFIG_FILE)
-        query.setup()
+        query = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
+        query.find_job_info()
         query.gather_data(saveTimeSeries=True)
 
         num_gpus = len(gpu_values_list[0])
@@ -169,11 +165,9 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = QueryMetrics("TEST")
-        query.set_options(jobID=job_id, interval=interval)
-        query.read_config(CONFIG_FILE)
+        query = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
         try:
-            query.setup()
+            query.find_job_info()
         except SystemExit:
             captured = capsys.readouterr()
             output = captured.out
@@ -201,11 +195,9 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = QueryMetrics("TEST")
-        query.set_options(jobID=job_id, interval=interval)
-        query.read_config(CONFIG_FILE)
+        query = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
         with pytest.raises(SystemExit) as exit_info:
-            query.setup()
+            query.find_job_info()
         assert exit_info.type == SystemExit
         assert exit_info.value.code == None
 
@@ -221,11 +213,9 @@ class TestQuery:
         job_id = uuid.uuid4()
         interval = 1.0
 
-        query = queryMetrics("TEST")
-        query.set_options(jobID=job_id, interval=interval)
-        query.read_config(CONFIG_FILE)
+        query = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
         with pytest.raises(SystemExit) as exit_info:
-            query.setup()
+            query.find_job_info()
         assert exit_info.type == SystemExit
         assert exit_info.value.code == 1
 
