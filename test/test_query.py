@@ -188,7 +188,7 @@ class TestQuery:
             (60, 30.0),  # 2 samples
         ],
     )
-    def test_min_num_samples(self, capsys, caplog, duration, interval):
+    def test_min_num_samples(self, caplog, duration, interval):
         caplog.set_level(logging.INFO)
 
         job_id = uuid.uuid4()
@@ -215,3 +215,21 @@ class TestQuery:
         assert record.levelname == "INFO"
         pattern = f"Need at least [0-9]+ samples to query"
         assert re.search(pattern, record.message) != None, f"Unexpected output: {record.message}"
+
+    def test_not_found(self, capsys):
+        # Generate non-existing job ID without generating a trace
+        job_id = uuid.uuid4()
+        interval = 1.0
+
+        query = queryMetrics("TEST")
+        query.set_options(jobID=job_id, interval=interval)
+        query.read_config(CONFIG_FILE)
+        with pytest.raises(SystemExit) as exit_info:
+            query.setup()
+        assert exit_info.type == SystemExit
+        assert exit_info.value.code == 1
+
+        # Capture expected error message
+        captured = capsys.readouterr()
+        pattern = f"no monitoring data found for job={job_id}"
+        assert re.search(pattern, captured.out) != None, f"Unexpected output: {captured.out}"
