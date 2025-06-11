@@ -60,7 +60,7 @@ from reportlab.platypus import (
 from omnistat import utils
 
 
-class queryMetrics:
+class QueryMetrics:
 
     def __init__(self, versionData):
         self.MIN_SAMPLES = 5
@@ -281,7 +281,7 @@ class queryMetrics:
             print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
-        # expand job window to nearest scan step
+        # expand job window
         firstTimestamp -= timedelta(seconds=self.scan_step)
         lastTimestamp += timedelta(seconds=self.scan_step)
 
@@ -1010,7 +1010,7 @@ def main():
     if not args.job:
         utils.error("The following arguments are required: --job")
 
-    query = queryMetrics(versionData)
+    query = QueryMetrics(versionData)
     query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval, step=args.step)
     query.read_config(args.configfile)
     query.setup()

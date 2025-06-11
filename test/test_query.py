@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from omnistat.query import queryMetrics
+from omnistat.query import QueryMetrics
 from omnistat.standalone import push_to_victoria_metrics
 from omnistat.utils import readConfig
 from test.trace_generator import GPU_METRIC_NAMES, TraceGenerator
@@ -60,7 +60,7 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = queryMetrics("TEST")
+        query = QueryMetrics("TEST")
         query.set_options(jobID=job_id, interval=interval)
         query.read_config(CONFIG_FILE)
         query.setup()
@@ -118,7 +118,7 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = queryMetrics("TEST")
+        query = QueryMetrics("TEST")
         query.set_options(jobID=job_id, interval=interval)
         query.read_config(CONFIG_FILE)
         query.setup()
@@ -169,7 +169,7 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = queryMetrics("TEST")
+        query = QueryMetrics("TEST")
         query.set_options(jobID=job_id, interval=interval)
         query.read_config(CONFIG_FILE)
         try:
@@ -201,7 +201,7 @@ class TestQuery:
 
         push_to_victoria_metrics(metrics, URL)
 
-        query = queryMetrics("TEST")
+        query = QueryMetrics("TEST")
         query.set_options(jobID=job_id, interval=interval)
         query.read_config(CONFIG_FILE)
         with pytest.raises(SystemExit) as exit_info:
