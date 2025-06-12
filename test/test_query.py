@@ -176,6 +176,7 @@ class TestQuery:
     @pytest.mark.parametrize(
         "duration, interval",
         [
+            (1, 0.5),  # 1 samples
             (1, 1.0),  # 1 sample
             (5, 5.0),  # 1 sample
             (1, 0.5),  # 2 samples
