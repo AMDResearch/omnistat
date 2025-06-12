@@ -32,6 +32,7 @@ import sys
 import timeit
 from datetime import datetime, timedelta
 from pathlib import Path
+from string import Template
 
 import matplotlib.dates as mdates
 import matplotlib.pylab as plt
@@ -59,272 +60,236 @@ from reportlab.platypus import (
 from omnistat import utils
 
 
-class queryMetrics:
+class QueryMetrics:
 
-    def __init__(self, versionData):
+    # Minimum number of samples required to process data and generate reports.
+    MIN_SAMPLES = 5
 
-        # initiate timer
+    # The database is initially scanned to identify the time range in which
+    # the job was running. The step for this initial scan can't be too low
+    # because queries have a maximum number of points per request, and we need
+    # to potentially generate up to 365 queries to find a job in the last
+    # year. Default to a scan step of 60s (1,440 points/day).
+    SCAN_STEP = 60.0
+    SCAN_DAYS = 365
+
+    # Define metrics to report on. Set 'title_short' to indicate inclusion in
+    # statistics summary.
+    METRICS = [
+        {
+            "metric": "rocm_utilization_percentage",
+            "title": "GPU Core Utilization",
+            "title_short": "Utilization (%)",
+        },
+        {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
+        {
+            "metric": "rocm_temperature_celsius",
+            "title": "GPU Temperature (C)",
+            "title_short": "Temperature (C)",
+        },
+        {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
+        {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
+    ]
+
+    def __init__(self, interval, jobid, jobstep=None, configfile=None, output_file=None):
         self.timer_start = timeit.default_timer()
 
-        self.jobID = None
-        self.enable_redirect = False
-        self.output_file = None
-        self.pdf = None
-        self.jobStep = None
-        # self.sha = versionData["sha"]
-        # self.version = versionData["version"]
-        self.version = versionData
+        self.interval = interval
 
-    def __del__(self):
-        if hasattr(self, "enable_redirect"):
-            if self.enable_redirect:
-                self.output.close()
+        self.jobID = jobid
+        self.jobStep = jobstep
+        self.jobstepQuery = 'jobstep=~".*"'
+        if self.jobStep:
+            self.jobstepQuery = f'jobstep="{step}"'
+        logging.debug("Job step query set to -> %s" % self.jobstepQuery)
 
-    def read_config(self, configFileArgument):
-        runtimeConfig = utils.readConfig(utils.findConfigFile(configFileArgument))
-        section = "omnistat.query"
+        config = utils.readConfig(utils.findConfigFile(configfile))
         self.config = {}
-        self.config["system_name"] = runtimeConfig[section].get("system_name", "My Snazzy Cluster")
-        self.config["prometheus_url"] = runtimeConfig[section].get("prometheus_url", "unknown")
+        self.config["system_name"] = config["omnistat.query"].get("system_name", "My Snazzy Cluster")
+        self.config["prometheus_url"] = config["omnistat.query"].get("prometheus_url", "http://localhost:9090")
+
+        self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
+
+        self.enable_redirect = False
+        self.output = None
+        self.output_file = output_file
+
+        # Optionally redirect stdout to an existing file
+        if self.output_file:
+            if os.path.isfile(self.output_file):
+                self.output = open(self.output_file, "a")
+                self.enable_redirect = True
+                sys.stdout = self.output
+            else:
+                sys.exit()
+
+        # Different ways to measure number of nodes:
+        #  - num_nodes: Assigned to the job by the resource manager
+        #  - num_nodes_job: Found when querying the database
+        #  - num_nodes_step: Found when querying the database for a step
+        self.num_nodes = None
+        self.num_nodes_job = None
+        self.num_nodes_step = None
+
+        self.num_gpus = None
+        self.start_time = None
+        self.end_time = None
+
+        self.hosts = None
+
+        self.version = utils.getVersion()
 
     def __del__(self):
         if self.enable_redirect:
             self.output.close()
 
-    def set_options(self, jobID=None, output_file=None, pdf=None, interval=None, step=None):
-        if jobID:
-            self.jobID = jobID
-        if output_file:
-            self.output_file = output_file
-        if pdf:
-            self.pdf = pdf
-
-        # define jobstep label query (either given by user or matches all job steps)
-        if step:
-            self.jobStep = step
-            self.jobstepQuery = f'jobstep="{step}"'
-        else:
-            self.jobstepQuery = 'jobstep=~".*"'
-        logging.debug("Job step query set to -> %s" % self.jobstepQuery)
-
-        self.interval = interval
-        return
-
-    def setup(self):
-
-        # (optionally) redirect stdout
-        if self.output_file:
-            if not os.path.isfile(self.output_file):
-                sys.exit()
-            else:
-                self.output = open(self.output_file, "a")
-                sys.stdout = self.output
-                self.enable_redirect = True
-
-        self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
-
-        # query jobinfo
-        self.jobinfo = self.query_slurm_job_internal()
-        if self.jobinfo["begin_date"] == "Unknown":
-            print("Job %s has not run yet." % self.jobID)
-            sys.exit(0)
-
-        self.start_time = datetime.strptime(self.jobinfo["begin_date"], "%Y-%m-%dT%H:%M:%S")
-        if self.jobinfo["end_date"] == "Unknown":
-            self.end_time = datetime.now()
-        else:
-            self.end_time = datetime.strptime(self.jobinfo["end_date"], "%Y-%m-%dT%H:%M:%S")
-
-        # NOOP if job is very short running
-        runtime = (self.end_time - self.start_time).total_seconds()
-        if runtime < 61:
-            logging.info("--> Short duration job detected...(%.1f secs) - unsupported query." % runtime)
-            sys.exit()
-
-        # cache hosts assigned to job
-        self.get_hosts()
-
-        # Define metrics to report on (set 'title_short' to indicate inclusion in statistics summary)
-        self.metrics = [
-            {
-                "metric": "rocm_utilization_percentage",
-                "title": "GPU Core Utilization",
-                "title_short": "Utilization (%)",
-            },
-            {"metric": "rocm_vram_used_percentage", "title": "GPU Memory Used (%)", "title_short": "Memory Use (%)"},
-            {
-                "metric": "rocm_temperature_celsius",
-                "title": "GPU Temperature (C)",
-                "title_short": "Temperature (C)",
-            },
-            {"metric": "rocm_sclk_clock_mhz", "title": "GPU Clock Frequency (MHz)"},
-            {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
-        ]
-
-    # Query job data info given start/stop time window
-    def query_jobinfo(self, start, end):
-        duration_mins = (end - start).total_seconds() / 60
-        assert duration_mins > 0
-
-        # assemble coarsened query step based on job duration
-        if duration_mins > 60:
-            step = "1h"
-        elif duration_mins > 15:
-            step = "15m"
-        elif duration_mins > 5:
-            step = "5m"
-        else:
-            step = "15s"
-
-        # Cull job info
-        results = self.prometheus.custom_query_range(
-            '(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), start, end, step=step
-        )
-        assert len(results) > 0
-
-        num_nodes = int(results[0]["metric"]["nodes"])
-        partition = results[0]["metric"]["partition"]
-
-        jobdata = {}
-        jobdata["begin_date"] = start.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["end_date"] = end.strftime("%Y-%m-%dT%H:%M:%S")
-        jobdata["num_nodes"] = num_nodes
-        jobdata["partition"] = partition
-
-        # Cull number of gpus
-        results = self.prometheus.custom_query_range(
-            '(rocm_num_gpus * on (instance) rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery),
-            start,
-            end,
-            step=step,
-        )
-
-        num_gpus = int(results[0]["values"][0][1])
-
-        # warn if nodes do not have same gpu counts
-        for node in range(len(results)):
-            value = int(results[node]["values"][0][1])
-            if value != num_gpus:
-                print("[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (num_gpus, value))
-                break
-
-        assert num_gpus > 0
-        self.numGPUs = num_gpus
-        return jobdata
-
-    # gather relevant job data from info metric
-    def query_slurm_job_internal(self):
-
-        firstTimestamp = None
-        lastTimestamp = None
-
-        now = datetime.now()
-
-        # loop over days starting from now to find time window covering desired job
-        for day in range(365):
-            aend = now - timedelta(days=day)
-            astart = aend - timedelta(days=1)
-
-            results = self.prometheus.custom_query_range(
-                'max(rmsjob_info{jobid="%s",%s})' % (self.jobID, self.jobstepQuery), astart, aend, step="1m"
-            )
-            if not lastTimestamp and len(results) > 0:
-                lastTimestamp = datetime.fromtimestamp(results[0]["values"][-1][0])
-                endWindow = aend
-                firstTimestamp = datetime.fromtimestamp(results[0]["values"][0][0])
-                continue
-            elif lastTimestamp and len(results) > 0:
-                firstTimestamp = datetime.fromtimestamp(results[0]["values"][0][0])
-                continue
-            elif lastTimestamp and len(results) == 0:
-                break
-
-        if not firstTimestamp:
+    def find_job_info(self):
+        self._estimate_range()
+        if not self.start_time:
             print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
-        # expand job window to nearest minute
-        firstTimestamp = firstTimestamp.replace(second=0, microsecond=0)
-        lastTimestamp += timedelta(minutes=1)
-        lastTimestamp = lastTimestamp.replace(second=0, microsecond=0)
+        if self.interval < QueryMetrics.SCAN_STEP:
+            self._refine_range()
 
-        jobdata = self.query_jobinfo(firstTimestamp, lastTimestamp)
-        return jobdata
+        # NOOP if job is very short running
+        runtime = (self.end_time - self.start_time).total_seconds()
+        estimated_samples = runtime / self.interval
+        if estimated_samples < QueryMetrics.MIN_SAMPLES:
+            logging.info(f"--> Unsupported query: short job duration ({runtime:.1f}s with {self.interval}s interval).")
+            logging.info(f"--> Need at least {QueryMetrics.MIN_SAMPLES} samples to query.")
+            sys.exit()
 
-    # gather relevant job data from resource manager directly
-    def query_slurm_job(self):
-        id = self.jobID
-        cmd = [
-            "sacct",
-            "-n",
-            "-P",
-            "-X",
-            "-j",
-            str(id),
-            "--format",
-            "Start,End,NNodes,Partition",
-        ]
-        path = shutil.which("sacct")
-        if path is None:
-            print("[ERROR]: unable to resolve 'sacct' binary")
-            sys.exit(1)
+        self._retrieve_info()
+        self._retrieve_hosts()
 
-        try:
-            results = subprocess.check_output(cmd, universal_newlines=True).strip()
-        except subprocess.CalledProcessError as e:
-            print("[ERROR]: unable to query resource manager for job %i" % id)
-            sys.exit(1)
+    def _estimate_range(self):
+        """
+        Scan the last SCAN_DAYS days, one day at a time, attempting to find
+        the time range in which the job was running. Sets start_time and
+        end_time accordingly if the job is found. Estimated start/end times
+        are as accurate as the scan step.
+        """
+        # Ensure the scan to find the job ends 1 minute into the future to
+        # guarantee we are not missing any recently pushed data.
+        now = datetime.now() + timedelta(minutes=1)
 
-        results = results.split("\n")
+        # Loop over days starting from now to find time window covering desired job
+        for day in range(QueryMetrics.SCAN_DAYS):
+            scan_end = now - timedelta(days=day)
+            scan_start = scan_end - timedelta(days=1)
 
-        # exit if no jobs found
-        if not results[0]:
-            print("No job found for id=%i" % id)
-            sys.exit(0)
+            results = self.query_range("max(rmsjob_info{$job,$step})", scan_start, scan_end, QueryMetrics.SCAN_STEP)
+            if not self.end_time and len(results) > 0:
+                self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
+                self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
+                continue
+            elif self.end_time and len(results) > 0:
+                self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
+                continue
+            elif self.end_time and len(results) == 0:
+                break
 
-        jobdata = {}
-        data = results[0].split("|")
-        jobdata["begin_date"] = data[0]
-        jobdata["end_date"] = data[1]
-        jobdata["num_nodes"] = data[2]
-        jobdata["partition"] = data[3]
+    def _refine_range(self):
+        """
+        Provide more accurate time range for the job by generating two
+        additional queries around the estimated start and end times. Refined
+        start/end times can be as accurate as the interval.
+        """
+        delta = timedelta(seconds=QueryMetrics.SCAN_STEP * 2)
+        start_window = (self.start_time - delta, self.start_time + delta)
+        end_window = (self.end_time - delta, self.end_time + delta)
 
-        return jobdata
+        # Force max lookback for more accurate results
+        lookback = self.interval * 2
+
+        results = self.query_range(
+            "max(rmsjob_info{$job,$step})", start_window[0], start_window[1], self.interval, lookback
+        )
+        if len(results) > 0:
+            self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
+
+        results = self.query_range(
+            "max(rmsjob_info{$job,$step})", end_window[0], end_window[1], self.interval, lookback
+        )
+        if len(results) > 0:
+            self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
+
+    def _retrieve_info(self):
+        """
+        Query job info that is expected to remain constant during the
+        execution.
+        """
+        duration_minutes = (self.end_time - self.start_time).total_seconds() / 60
+        assert duration_minutes > 0
+
+        # Select a coarser step for more efficient querying of info data since
+        # we don't need accurate timing.
+        coarse_step = "60s"
+        if duration_minutes > 60:
+            coarse_step = "1h"
+        elif duration_minutes > 15:
+            coarse_step = "15m"
+        elif duration_minutes > 5:
+            coarse_step = "5m"
+
+        # Cull job info with coarse resolution
+        results = self.query_range("rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step)
+        assert len(results) > 0
+
+        self.num_nodes = int(results[0]["metric"]["nodes"])
+
+        # Cull number of GPUs with coarse resolution
+        results = self.query_range(
+            "rocm_num_gpus * on (instance) rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step
+        )
+        assert len(results) > 0
+
+        self.num_gpus = int(results[0]["values"][0][1])
+        assert self.num_gpus > 0
+
+        # Warn if nodes do not have same GPU counts
+        for node in range(len(results)):
+            value = int(results[node]["values"][0][1])
+            if value != self.num_gpus:
+                print(
+                    "[WARNING]: compute nodes detected with differing number of GPUs (%i,%i) " % (self.num_gpus, value)
+                )
+                break
 
     # Detect hosts associated with this job
-    def get_hosts(self):
+    def _retrieve_hosts(self):
         self.hosts = []
-        results = self.prometheus.custom_query_range(
-            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s"}' % (self.jobID),
+        results = self.query_range(
+            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job}',
             self.start_time,
             self.end_time,
-            step=60,
+            QueryMetrics.SCAN_STEP,
         )
-        self.totalNodes = len(results)
+        self.num_nodes_job = len(results)
 
         if self.jobStep:
-            results = self.prometheus.custom_query_range(
-                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{jobid="%s",%s}'
-                % (self.jobID, self.jobstepQuery),
+            results = self.query_range(
+                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job,$step}',
                 self.start_time,
                 self.end_time,
-                step=60,
+                QueryMetrics.SCAN_STEP,
             )
             for result in results:
                 self.hosts.append(result["metric"]["instance"])
-            self.stepNodes = len(self.hosts)
+            self.num_nodes_step = len(self.hosts)
         else:
             for result in results:
                 self.hosts.append(result["metric"]["instance"])
-            self.stepNodes = self.totalNodes
+            self.num_nodes_step = self.num_nodes_job
 
-        assert self.stepNodes > 0
-        assert self.totalNodes > 0
-        if self.totalNodes != self.jobinfo["num_nodes"]:
+        assert self.num_nodes_job > 0
+        assert self.num_nodes_step > 0
+        if self.num_nodes_job != self.num_nodes:
             logging.warning("")
             logging.warning("[WARNING]: telemetry data not collected for all nodes assigned to this job")
-            logging.warning("--> # assigned hosts     = %i" % self.jobinfo["num_nodes"])
-            logging.warning("--> # of hosts with data = %i" % self.totalNodes)
+            logging.warning("--> # assigned hosts     = %i" % self.num_nodes)
+            logging.warning("--> # of hosts with data = %i" % self.num_nodes_job)
 
     def metric_host_max_sum(self, values):
         """Determine host with <maximum> sum of all provided samples"""
@@ -351,10 +316,10 @@ class queryMetrics:
         self.time_series = {}
         self.max_GPU_memory_avail = []
         self.gpu_energy_total_kwh = 0
-        self.energyStats_kwh = [None] * self.numGPUs
-        self.mean_util_per_gpu = [None] * self.numGPUs
+        self.energyStats_kwh = [None] * self.num_gpus
+        self.mean_util_per_gpu = [None] * self.num_gpus
 
-        for entry in self.metrics:
+        for entry in QueryMetrics.METRICS:
             metric = entry["metric"]
 
             self.stats[metric + "_min"] = []
@@ -370,7 +335,7 @@ class queryMetrics:
             # minValue =  sys.float_info.max
             # maxValue = -sys.float_info.max
 
-            for gpu in range(self.numGPUs):
+            for gpu in range(self.num_gpus):
 
                 query_metric = f'{metric}{{card="{gpu}"}}'
                 try:
@@ -458,7 +423,7 @@ class queryMetrics:
         if self.jobStep:
             print(
                 "** Report confined to job step=%s (%i of %i nodes used)"
-                % (self.jobStep, self.stepNodes, self.totalNodes)
+                % (self.jobStep, self.num_nodes_step, self.num_nodes_job)
             )
         print("-" * 70)
         print("")
@@ -469,21 +434,21 @@ class queryMetrics:
         print("GPU Statistics:")
         print("")
         print("    %6s |" % "", end="")
-        for entry in self.metrics:
+        for entry in QueryMetrics.METRICS:
             if "title_short" in entry:
                 # print("%16s |" % entry['title_short'],end='')
                 print(" %s |" % entry["title_short"].center(16), end="")
         print("")
         print("    %6s |" % "GPU #", end="")
-        for entry in self.metrics:
+        for entry in QueryMetrics.METRICS:
             if "title_short" in entry:
                 print(" %8s%8s |" % ("Max".center(6), "Mean".center(6)), end="")
         print("")
         print("    " + "-" * 84)
 
-        for card in range(self.numGPUs):
+        for card in range(self.num_gpus):
             print("    %6s |" % card, end="")
-            for entry in self.metrics:
+            for entry in QueryMetrics.METRICS:
                 if "title_short" not in entry:
                     continue
                 metric = entry["metric"]
@@ -500,29 +465,55 @@ class queryMetrics:
         print("--")
         print("Query interval = %.3f secs" % self.interval)
         print("Query execution time = %.1f secs" % (timeit.default_timer() - self.timer_start))
-        version = self.version
-        # if self.sha != "Unknown":
-        #     version += " (%s)" % self.sha
-        print("Version = %s" % version)
+        print("Version = %s" % self.version)
         return
+
+    def query_range(self, query_template, start, end, step, lookback=None):
+        """
+        Request a given query in the provided range. The query may optionally
+        include variables to select job ID ($job) and step ID ($step) labels,
+        and which are automatically substituted for the appropriate value.
+
+        Args:
+            query_template (str): PromQL query with substitutions.
+            start (datetime): Query start time.
+            end (datetime): Query end time.
+            step (str|float): Query resolution string with unit, or float in seconds.
+
+        Result:
+            dict: Metric data in response of the submitted query.
+        """
+        template = Template(query_template)
+        params = {}
+        if lookback:
+            params = {"max_lookback": lookback}
+        query = template.substitute(job=f'jobid="{self.jobID}"', step=self.jobstepQuery)
+        results = self.prometheus.custom_query_range(query, start, end, step=step, params=params)
+        return results
+
+    def query_job_range(self, query_template):
+        """
+        Request a given query in the job's range. The query may optionally
+        include variables to select job ID ($job) and step ID ($step) labels,
+        and which are automatically substituted for the appropriate value.
+
+        Args:
+            query_template (str): PromQL query with substitutions.
+
+        Result:
+            dict: Metric data in response of the submitted query.
+        """
+        results = self.query_range(query_template, self.start_time, self.end_time, self.interval)
+        return results
 
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
 
         if reducer is None:
-            results = self.prometheus.custom_query_range(
-                '(%s * on (instance) rmsjob_info{jobid="%s",%s})' % (metric_name, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s * on (instance) rmsjob_info{$job,$step}" % (metric_name)
+            results = self.query_job_range(query)
         else:
-            results = self.prometheus.custom_query_range(
-                '%s(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
-                % (reducer, metric_name, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s(%s * on (instance) rmsjob_info{$job,$step})" % (reducer, metric_name)
+            results = self.query_job_range(query)
 
         if reducer is None:
             # return lists with raw time series data from all hosts for given metric
@@ -560,7 +551,7 @@ class queryMetrics:
     #     stats["mean"] = []
     #     stats["max"] = []
 
-    #     for gpu in range(self.numGPUs):
+    #     for gpu in range(self.num_gpus):
     #         metric = "card" + str(gpu) + "_" + metricName
 
     #         # --
@@ -593,7 +584,7 @@ class queryMetrics:
 
     #     return stats
 
-    def dumpFile(self, outputFile):
+    def generate_pdf(self, outputFile):
         doc = SimpleDocTemplate(
             outputFile,
             pagesize=letter,
@@ -642,7 +633,7 @@ class queryMetrics:
         )
         data.append(["GPU", "Max", "Mean", "Max", "Mean", "Max", "Mean", "Max", "Mean", "Total"])
 
-        for gpu in range(self.numGPUs):
+        for gpu in range(self.num_gpus):
             data.append(
                 [
                     gpu,
@@ -706,11 +697,11 @@ class queryMetrics:
         Story.append(Paragraph(ptext, normal))
         Story.append(Spacer(1, 0.2 * inch))
 
-        for entry in self.metrics:
+        for entry in QueryMetrics.METRICS:
             metric = entry["metric"]
             plt.figure(figsize=(9, 2.5))
 
-            for gpu in range(self.numGPUs):
+            for gpu in range(self.num_gpus):
                 plt.plot(
                     self.time_series[metric][gpu]["time"],
                     self.time_series[metric][gpu]["values"],
@@ -747,7 +738,7 @@ class queryMetrics:
             min_energy = []
             mean_energy = []
             max_energy = []
-            for gpu in range(self.numGPUs):
+            for gpu in range(self.num_gpus):
                 labels.append("Card %i" % gpu)
                 min_energy.append(np.min(self.energyStats_kwh[gpu]))
                 max_energy.append(np.max(self.energyStats_kwh[gpu]))
@@ -756,7 +747,7 @@ class queryMetrics:
             # build max/min bars
             emax = []
             emin = []
-            for gpu in range(self.numGPUs):
+            for gpu in range(self.num_gpus):
                 emin.append(mean_energy[gpu] - min_energy[gpu])
                 emax.append(max_energy[gpu] - mean_energy[gpu])
 
@@ -800,7 +791,7 @@ class queryMetrics:
 
             # mean gpu utilization
             allgpus = []
-            for gpu in range(self.numGPUs):
+            for gpu in range(self.num_gpus):
                 allgpus += self.mean_util_per_gpu[gpu]
             allgpus.sort(reverse=True)
             plt.figure(figsize=(9, 2.5))
@@ -832,9 +823,6 @@ class queryMetrics:
         Story.append(Paragraph(ptext, footerStyle))
         ptext = """Query execution time = %.1f secs""" % (timeit.default_timer() - self.timer_start)
         Story.append(Paragraph(ptext, footerStyle))
-        # version = self.version
-        # if self.sha != "Unknown":
-        #     version += " (%s)" % self.sha
         ptext = """Version = %s""" % self.version
         Story.append(Paragraph(ptext, footerStyle))
         Story.append(HRFlowable(width="100%", thickness=1))
@@ -870,13 +858,8 @@ class queryMetrics:
 
         metric_dfs = []
         for metric in metrics:
-            metric_data = self.prometheus.custom_query_range(
-                '(%s * on (instance) group_left() rmsjob_info{jobid="%s",%s})'
-                % (metric, self.jobID, self.jobstepQuery),
-                self.start_time,
-                self.end_time,
-                step=self.interval,
-            )
+            query = "%s * on (instance) group_left() rmsjob_info{$job,$step}" % (metric)
+            metric_data = self.query_job_range(query)
 
             if len(metric_data) == 0:
                 continue
@@ -910,7 +893,7 @@ class queryMetrics:
         # to be used for hierarchical indexing.
         exports = {
             "rocm": (
-                [x["metric"] for x in self.metrics],
+                [x["metric"] for x in QueryMetrics.METRICS],
                 ["instance", "card"],
             ),
             "network": (
@@ -945,23 +928,21 @@ def main():
     # logger config
     logging.basicConfig(format="%(message)s", level=logging.INFO, stream=sys.stdout)
 
-    versionData = utils.getVersion()
     if args.version:
-        utils.displayVersion(versionData)
+        version = utils.getVersion()
+        utils.displayVersion(version)
         sys.exit(0)
 
     if not args.job:
         utils.error("The following arguments are required: --job")
 
-    query = queryMetrics(versionData)
-    query.set_options(jobID=args.job, output_file=args.output, pdf=args.pdf, interval=args.interval, step=args.step)
-    query.read_config(args.configfile)
-    query.setup()
+    query = QueryMetrics(args.interval, args.job, args.step, args.configfile, args.output)
+    query.find_job_info()
     query.gather_data(saveTimeSeries=True)
     query.generate_report_card()
 
     if args.pdf:
-        query.dumpFile(args.pdf)
+        query.generate_pdf(args.pdf)
 
     if args.export:
         export_path = Path(args.export)

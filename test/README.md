@@ -7,7 +7,7 @@ and installs the working copy of Omnistat in the container at run time. It is
 meant to help make development easier, and enables testing without relying on
 access to real clusters.
 
-### Deploy System-level Omnistat
+### Deploy and Test System-level Omnistat
 
 From the root directory of the project:
 
@@ -25,7 +25,6 @@ From the root directory of the project:
 
 2. Run tests with `pytest`:
    ```
-   cd test
    pytest test/test_integration.py test/test_job_system.py
    ```
 
@@ -34,7 +33,7 @@ From the root directory of the project:
    docker compose -f test/docker/slurm/compose.yaml down -v
    ```
 
-### Deploy User-level Omnistat
+### Deploy and Test User-level Omnistat
 
 User-level deployments are very similar and only require passing an additional
 file to `docker compose`:
@@ -46,13 +45,29 @@ file to `docker compose`:
 
 2. Run tests with `pytest`:
    ```
-   cd test
-   pytest test_job_user.py
+   pytest test/test_job_user_pull.py test/test_job_user_push.py
    ```
 
 3. Stop containers.
    ```
    docker compose -f test/docker/slurm/compose.yaml -f test/docker/slurm/compose-user.yaml down -v
+   ```
+
+### Deploy and Test Query Tool
+
+1. Start containers.
+   ```
+   docker compose -f test/docker/victoriametrics/compose.yaml up -d
+   ```
+
+2. Run tests with `pytest`:
+   ```
+   pytest test/test_query.py
+   ```
+
+3. Stop containers.
+   ```
+   docker compose -f test/docker/victoriametrics/compose.yaml down -v
    ```
 
 ### Additional Information for Testing and Debugging
