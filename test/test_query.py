@@ -224,3 +224,77 @@ class TestQuery:
         captured = capsys.readouterr()
         pattern = f"no monitoring data found for job={job_id}"
         assert re.search(pattern, captured.out) != None, f"Unexpected output: {captured.out}"
+
+    @pytest.mark.parametrize(
+        "duration, base_gpu_values, start, end, step_gpu_values",
+        [
+            (60, [0.0], 0, 30, [100.0]),  # Step in the first 30s
+            (60, [100.0], 0, 30, [0.0]),  # Step in the first 30s (empty)
+            (60, [0.0], 30, 60, [100.0]),  # Step in the last 30s
+            (60, [100.0], 30, 60, [0.0]),  # Step in the last 30s (empty)
+            # (60, [0.0], 20, 40, [100.0]),  # Step in the middle 20s
+            # (60, [100.0], 20, 40, [0.0]),  # Step in the middle 20s (empty)
+            (60, [0.0], 0, 60, [100.0]),  # Step during entire job
+            (60, [100.0], 0, 60, [0.0]),  # Step during entire job (empty)
+            # (60, [100.0, 0.0], 10, 50, [0.0, 100.0]),  # Two GPUs with different values
+        ],
+    )
+    def test_steps(self, duration, base_gpu_values, start, end, step_gpu_values):
+        job_id = uuid.uuid4()
+        interval = 1.0
+        num_nodes = 1
+
+        trace = TraceGenerator(duration, interval, job_id, num_nodes)
+        trace.add_constant_load("default", num_nodes, base_gpu_values)
+        trace.add_constant_step("default", "step", start, end, step_gpu_values)
+        metrics = trace.generate()
+
+        push_to_victoria_metrics(metrics, URL)
+
+        job = QueryMetrics(interval, job_id, configfile=CONFIG_FILE)
+        job.find_job_info()
+        job.gather_data(saveTimeSeries=True)
+
+        step = QueryMetrics(interval, job_id, jobstep="step", configfile=CONFIG_FILE)
+        step.find_job_info()
+        step.gather_data(saveTimeSeries=True)
+
+        step_duration = float(end - start)
+        step_ratio = step_duration / duration
+        nostep_ratio = 1 - step_ratio
+
+        # Validate time series values and max/mean values from query tool,
+        # which are obtained from PromQL queries.
+        num_gpus = len(base_gpu_values)
+        for gpu_id in range(num_gpus):
+            step_gpu_value = step_gpu_values[gpu_id]
+            nostep_gpu_value = base_gpu_values[gpu_id]
+            expected_job_max = np.max([step_gpu_value, nostep_gpu_value])
+            expected_job_mean = (step_ratio * step_gpu_value) + (nostep_ratio * nostep_gpu_value)
+
+            for metric in GPU_METRIC_NAMES:
+                step_max = step.stats[f"{metric}_max"][gpu_id]
+                step_mean = step.stats[f"{metric}_mean"][gpu_id]
+                assert step_max == step_gpu_value, f"Unexpected step-level max value for {metric} in GPU ID {gpu_id}"
+                assert step_mean == step_gpu_value, f"Unexpected step-level mean value for {metric} in GPU ID {gpu_id}"
+
+                if nostep_ratio > 0.0:
+                    job_max = job.stats[f"{metric}_max"][gpu_id]
+                    assert (
+                        job_max == expected_job_max
+                    ), f"Unexpected job-level max value for {metric} in GPU ID {gpu_id}"
+
+                for value in step.time_series[metric][gpu_id]["values"]:
+                    assert value == step_gpu_value, f"Unexpected sample value"
+
+                # With 1s intervals, assume index is equivalent to sample
+                # time; won't work for other intervals.
+                for i, value in enumerate(job.time_series[metric][gpu_id]["values"]):
+                    if i >= start and i < end:
+                        assert (
+                            value == step_gpu_value
+                        ), f"Unexpected sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
+                    elif i < duration:
+                        assert (
+                            value == nostep_gpu_value
+                        ), f"Unexpected sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
