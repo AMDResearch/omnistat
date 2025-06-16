@@ -100,7 +100,7 @@ class QueryMetrics:
         self.jobStep = jobstep
         self.jobstepQuery = 'jobstep=~".*"'
         if self.jobStep:
-            self.jobstepQuery = f'jobstep="{step}"'
+            self.jobstepQuery = f'jobstep="{jobstep}"'
         logging.debug("Job step query set to -> %s" % self.jobstepQuery)
 
         config = utils.readConfig(utils.findConfigFile(configfile))
