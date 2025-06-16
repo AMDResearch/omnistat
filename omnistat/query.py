@@ -234,14 +234,14 @@ class QueryMetrics:
             coarse_step = "5m"
 
         # Cull job info with coarse resolution
-        results = self.query_range("rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step)
+        results = self.query_range("rmsjob_info{$job,$step}>0", self.start_time, self.end_time, coarse_step)
         assert len(results) > 0
 
         self.num_nodes = int(results[0]["metric"]["nodes"])
 
         # Cull number of GPUs with coarse resolution
         results = self.query_range(
-            "rocm_num_gpus * on (instance) rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step
+            "rocm_num_gpus * on (instance) (rmsjob_info{$job,$step}>0)", self.start_time, self.end_time, coarse_step
         )
         assert len(results) > 0
 
@@ -261,7 +261,7 @@ class QueryMetrics:
     def _retrieve_hosts(self):
         self.hosts = []
         results = self.query_range(
-            'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job}',
+            'rocm_utilization_percentage{card="0"} * on (instance) (rmsjob_info{$job}>0)',
             self.start_time,
             self.end_time,
             QueryMetrics.SCAN_STEP,
@@ -270,7 +270,7 @@ class QueryMetrics:
 
         if self.jobStep:
             results = self.query_range(
-                'rocm_utilization_percentage{card="0"} * on (instance) rmsjob_info{$job,$step}',
+                'rocm_utilization_percentage{card="0"} * on (instance) (rmsjob_info{$job,$step}>0)',
                 self.start_time,
                 self.end_time,
                 QueryMetrics.SCAN_STEP,
@@ -509,10 +509,10 @@ class QueryMetrics:
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
 
         if reducer is None:
-            query = "%s * on (instance) rmsjob_info{$job,$step}" % (metric_name)
+            query = "%s * on (instance) (rmsjob_info{$job,$step}>0)" % (metric_name)
             results = self.query_job_range(query)
         else:
-            query = "%s(%s * on (instance) rmsjob_info{$job,$step})" % (reducer, metric_name)
+            query = "%s(%s * on (instance) (rmsjob_info{$job,$step}>0))" % (reducer, metric_name)
             results = self.query_job_range(query)
 
         if reducer is None:
