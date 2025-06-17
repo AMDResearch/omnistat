@@ -232,11 +232,11 @@ class TestQuery:
             (60, [100.0], 0, 30, [0.0]),  # Step in the first 30s (empty)
             (60, [0.0], 30, 60, [100.0]),  # Step in the last 30s
             (60, [100.0], 30, 60, [0.0]),  # Step in the last 30s (empty)
-            # (60, [0.0], 20, 40, [100.0]),  # Step in the middle 20s
-            # (60, [100.0], 20, 40, [0.0]),  # Step in the middle 20s (empty)
+            (60, [0.0], 20, 40, [100.0]),  # Step in the middle 20s
+            (60, [100.0], 20, 40, [0.0]),  # Step in the middle 20s (empty)
             (60, [0.0], 0, 60, [100.0]),  # Step during entire job
             (60, [100.0], 0, 60, [0.0]),  # Step during entire job (empty)
-            # (60, [100.0, 0.0], 10, 50, [0.0, 100.0]),  # Two GPUs with different values
+            (60, [100.0, 0.0], 10, 50, [0.0, 100.0]),  # Two GPUs with different values
         ],
     )
     def test_steps(self, duration, base_gpu_values, start, end, step_gpu_values):
@@ -293,8 +293,8 @@ class TestQuery:
                     if i >= start and i < end:
                         assert (
                             value == step_gpu_value
-                        ), f"Unexpected sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
+                        ), f"Unexpected {metric} sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
                     elif i < duration:
                         assert (
                             value == nostep_gpu_value
-                        ), f"Unexpected sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
+                        ), f"Unexpected {metric} sample value at position {i} in {job.time_series[metric][gpu_id]['values']}"
