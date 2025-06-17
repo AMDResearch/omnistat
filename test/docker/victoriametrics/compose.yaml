@@ -4,8 +4,9 @@ services:
     container_name: victoria-metrics
     command:
       - '-storageDataPath=/data'
-      - '-search.disableCache'
       - '-httpListenAddr=0.0.0.0:8428'
+      - '-search.disableCache'
+      - '-search.latencyOffset=0s'
     volumes:
       - data_dir:/data
     ports:
