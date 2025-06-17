@@ -60,6 +60,32 @@ from reportlab.platypus import (
 from omnistat import utils
 
 
+# Query job metrics from Omnistat databases to generate reports and export
+# collected metrics.
+#
+# Requirements:
+#  - Job ID must be known.
+#  - Execution must have happened in the last 365 days.
+#  - There are certain limitations to how short or how long job executions need
+#    to be to work with the query tool. For minimum job durations, require at
+#    least 5 samples to generate results. The maximum supported job durations
+#    depend on Victoria Metrics settings. The following table provides an
+#    estimate for different intervals assuming default Omnistat and Victoria
+#    Metrics configurations:
+#     --------------------------------------------------------
+#     | Interval   | Min job duration   | Max job duration   |
+#     --------------------------------------------------------
+#     |     0.01 s |                1 s |               45 m |
+#     |     0.10 s |                1 s |               45 m |
+#     |     1.00 s |                5 s |                8 h |
+#     |     5.00 s |               25 s |               40 h |
+#     |    15.00 s |               75 s |                5 d |
+#     --------------------------------------------------------
+#    Note that the maximum job duration is not a hard contraint: 1) the query
+#    tool can still be used with intervals longer than the sampling interval,
+#    and 2) Victoria Metrics can be tweaked to support longer job durations by
+#    increasing the `-search.maxPointsPerTimeseries` setting (defaults to
+#    30,000).
 class QueryMetrics:
 
     # Minimum number of samples required to process data and generate reports.
