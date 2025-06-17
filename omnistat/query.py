@@ -942,11 +942,11 @@ def main():
     # command line args (jobID is required)
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--version", help="print version info and exit", action="store_true")
-    parser.add_argument("--job", help="jobId to query")
-    parser.add_argument("--step", help="SLURM job step to restrict query interval")
-    parser.add_argument("--interval", type=float, help="sampling interval in secs (default=30)", default=30)
-    parser.add_argument("--output", help="location for stdout report")
-    parser.add_argument("--configfile", type=str, help="runtime config file", default=None)
+    parser.add_argument("--job", help="job ID to query", required=True)
+    parser.add_argument("--step", help="job step ID to restrict query range")
+    parser.add_argument("--interval", help="sampling interval in seconds (default=30)", type=float, default=30)
+    parser.add_argument("--configfile", help="Omnistat configuration file")
+    parser.add_argument("--output", help="redirect plain text report to existing file")
     parser.add_argument("--pdf", help="generate PDF report")
     parser.add_argument("--export", help="export metric time-series in CSV format", nargs="?", default=None, const="./")
     args = parser.parse_args()
@@ -958,9 +958,6 @@ def main():
         version = utils.getVersion()
         utils.displayVersion(version)
         sys.exit(0)
-
-    if not args.job:
-        utils.error("The following arguments are required: --job")
 
     query = QueryMetrics(args.interval, args.job, args.step, args.configfile, args.output)
     query.find_job_info()
