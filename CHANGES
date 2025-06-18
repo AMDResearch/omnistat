@@ -1,4 +1,4 @@
-Version 1.5.1 (06 June 2025)
+Version 1.5.1 (18 June 2025)
 
   * update RAS block enumerations for newer Python versions (#179, #180)
   * updated RAS panels for Grafana (#182)
