@@ -210,6 +210,8 @@ class UserBasedMonitoring:
             "-memory.allowedPercent=10",
             "-retentionPeriod=10y",
             "-search.disableCache",
+            "-search.latencyOffset=0",
+            "-search.maxPointsPerTimeseries=900000",
             "-httpListenAddr=:9090",
         ]
         envAddition = {}

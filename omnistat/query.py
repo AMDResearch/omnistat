@@ -70,22 +70,21 @@ from omnistat import utils
 #    to be to work with the query tool. For minimum job durations, require at
 #    least 5 samples to generate results. The maximum supported job durations
 #    depend on Victoria Metrics settings. The following table provides an
-#    estimate for different intervals assuming default Omnistat and Victoria
-#    Metrics configurations:
-#     --------------------------------------------------------
-#     | Interval   | Min job duration   | Max job duration   |
-#     --------------------------------------------------------
-#     |     0.01 s |                1 s |                5 m |
-#     |     0.10 s |                1 s |               50 m |
-#     |     1.00 s |                5 s |                8 h |
-#     |     5.00 s |               25 s |               40 h |
-#     |    15.00 s |               75 s |                5 d |
-#     --------------------------------------------------------
+#    estimate for different intervals assuming Omnistat defaults:
+#     ---------------------------------------------------------------------
+#     | Interval | Min duration | Max duration (30k) | Max duration (90k) |
+#     ---------------------------------------------------------------------
+#     |   0.01 s |          1 s |              5.0 m |             15.0 m |
+#     |   0.10 s |          1 s |              0.8 h |              2.5 h |
+#     |   1.00 s |          5 s |              8.3 h |             25.0 h |
+#     |   5.00 s |         25 s |              1.7 d |              5.2 d |
+#     |  15.00 s |         75 s |              5.2 d |             15.0 d |
+#     ---------------------------------------------------------------------
 #    Note that the maximum job duration is not a hard contraint: 1) the query
 #    tool can still be used with intervals longer than the sampling interval,
 #    and 2) Victoria Metrics can be tweaked to support longer job durations by
-#    increasing the `-search.maxPointsPerTimeseries` setting (defaults to
-#    30,000).
+#    increasing the `-search.maxPointsPerTimeseries` setting, which is 30k by
+#    default and automatically bumped up to 90k in usermode Omnistat.
 class QueryMetrics:
 
     # Minimum number of samples required to process data and generate reports.

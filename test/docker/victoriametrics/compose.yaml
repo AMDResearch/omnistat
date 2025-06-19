@@ -6,7 +6,8 @@ services:
       - '-storageDataPath=/data'
       - '-httpListenAddr=0.0.0.0:8428'
       - '-search.disableCache'
-      - '-search.latencyOffset=0s'
+      - '-search.latencyOffset=0'
+      - '-search.maxPointsPerTimeseries=900000'
     volumes:
       - data_dir:/data
     ports:
