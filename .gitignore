@@ -2,6 +2,7 @@ __pycache__
 data_prom
 .vscode
 *.log
+*.swp
 *.pdf
 *~
 build
