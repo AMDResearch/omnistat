@@ -266,7 +266,10 @@ class QueryMetrics:
 
         # Cull number of GPUs with coarse resolution
         results = self.query_range(
-            "rocm_num_gpus * on (instance) (max by (instance) (rmsjob_info{$job,$step}))", self.start_time, self.end_time, coarse_step
+            "rocm_num_gpus * on (instance) (max by (instance) (rmsjob_info{$job,$step}))",
+            self.start_time,
+            self.end_time,
+            coarse_step,
         )
         assert len(results) > 0
 
