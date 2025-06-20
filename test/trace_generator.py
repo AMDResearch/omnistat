@@ -28,8 +28,6 @@ class TraceGenerator:
 
         # Simulate time progression starting from roughly the current time:
         # generate metrics as if they happened in the past leading up to now.
-        # Keep track of one additional sample right after completing the job
-        # so the info metric can be set to 0.
         self.start_time = int(time.time()) - duration
         self.times = []
         self.to_time = {}
@@ -98,16 +96,6 @@ class TraceGenerator:
                     step_labels = common_info_labels + [f'jobstep="{step_id}"']
                     step_metric = f'rmsjob_info{{{",".join(step_labels)}}}'
                     info_samples = self._override_metric(info_samples, start, end, step_metric)
-
-                    # Ensure info metric with default step is inactive (value 0)
-                    # when other info metrics with a different step are sampled.
-                    info_samples.append((f'rmsjob_info{{{",".join(info_labels)}}}', "0", start))
-                    info_samples.append((f'rmsjob_info{{{",".join(step_labels)}}}', "0", end))
-
-                # Ensure job ends at the expected time making the info metric
-                # inactive (value 0).
-                done = self.to_time[self.duration]
-                info_samples.append((f'rmsjob_info{{{",".join(info_labels)}}}', "0", done))
 
                 samples.extend(info_samples)
 

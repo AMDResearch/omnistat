@@ -259,14 +259,14 @@ class QueryMetrics:
             coarse_step = "5m"
 
         # Cull job info with coarse resolution
-        results = self.query_range("rmsjob_info{$job,$step}>0", self.start_time, self.end_time, coarse_step)
+        results = self.query_range("rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step)
         assert len(results) > 0
 
         self.num_nodes = int(results[0]["metric"]["nodes"])
 
         # Cull number of GPUs with coarse resolution
         results = self.query_range(
-            "rocm_num_gpus * on (instance) (rmsjob_info{$job,$step}>0)", self.start_time, self.end_time, coarse_step
+            "rocm_num_gpus * on (instance) (max by (instance) (rmsjob_info{$job,$step}))", self.start_time, self.end_time, coarse_step
         )
         assert len(results) > 0
 
@@ -286,7 +286,7 @@ class QueryMetrics:
     def _retrieve_hosts(self):
         self.hosts = []
         results = self.query_range(
-            'rocm_utilization_percentage{card="0"} * on (instance) (rmsjob_info{$job}>0)',
+            'rocm_utilization_percentage{card="0"} * on (instance) (max by (instance) (rmsjob_info{$job}))',
             self.start_time,
             self.end_time,
             QueryMetrics.SCAN_STEP,
@@ -295,7 +295,7 @@ class QueryMetrics:
 
         if self.jobStep:
             results = self.query_range(
-                'rocm_utilization_percentage{card="0"} * on (instance) (rmsjob_info{$job,$step}>0)',
+                'rocm_utilization_percentage{card="0"} * on (instance) (max by (instance) (rmsjob_info{$job,$step}))',
                 self.start_time,
                 self.end_time,
                 QueryMetrics.SCAN_STEP,
@@ -528,16 +528,16 @@ class QueryMetrics:
         Result:
             dict: Metric data in response of the submitted query.
         """
-        results = self.query_range(query_template, self.start_time, self.end_time, self.interval)
+        results = self.query_range(query_template, self.start_time, self.end_time, self.interval, self.interval)
         return results
 
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
 
         if reducer is None:
-            query = "%s * on (instance) (rmsjob_info{$job,$step}>0)" % (metric_name)
+            query = "%s * on (instance) (max by (instance) (rmsjob_info{$job,$step}))" % (metric_name)
             results = self.query_job_range(query)
         else:
-            query = "%s(%s * on (instance) (rmsjob_info{$job,$step}>0))" % (reducer, metric_name)
+            query = "%s(%s * on (instance) (max by (instance) (rmsjob_info{$job,$step})))" % (reducer, metric_name)
             results = self.query_job_range(query)
 
         if reducer is None:
@@ -883,7 +883,7 @@ class QueryMetrics:
 
         metric_dfs = []
         for metric in metrics:
-            query = "%s * on (instance) group_left() rmsjob_info{$job,$step}" % (metric)
+            query = "%s * on (instance) group_left() (max by (instance) (rmsjob_info{$job,$step}))" % (metric)
             metric_data = self.query_job_range(query)
 
             if len(metric_data) == 0:
