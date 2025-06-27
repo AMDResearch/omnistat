@@ -44,7 +44,6 @@ rocm_utilization_percentage{card="0"} 0.0
 import ctypes
 import logging
 import os
-import re
 import sys
 from enum import IntEnum
 from pathlib import Path
@@ -52,7 +51,11 @@ from pathlib import Path
 from prometheus_client import CollectorRegistry, Gauge, generate_latest
 
 from omnistat.collector_base import Collector
-from omnistat.utils import gpu_index_mapping_based_on_guids
+from omnistat.utils import (
+    count_compute_units,
+    get_occupancy,
+    gpu_index_mapping_based_on_guids,
+)
 
 rsmi_clk_names_dict = {"sclk": 0x0, "fclk": 0x1, "dcefclk": 0x2, "socclk": 0x3, "mclk": 0x4}
 
@@ -254,7 +257,7 @@ class ROCMSMI(Collector):
         self.__num_gpus = numDevices.value
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
-        self.__guidMapping = {}
+        guidMapping = {}
         nodeMapping = {}
         guid = ctypes.c_int64(0)
         node = ctypes.c_int32(0)
@@ -263,13 +266,14 @@ class ROCMSMI(Collector):
 
             ret = self.__libsmi.rsmi_dev_guid_get(device, ctypes.byref(guid))
             assert ret == 0
-            self.__guidMapping[i] = guid.value
+            guidMapping[i] = guid.value
 
             ret = self.__libsmi.rsmi_dev_node_id_get(device, ctypes.byref(node))
             assert ret == 0
             nodeMapping[i] = node.value
 
-        self.__indexMapping = gpu_index_mapping_based_on_guids(self.__guidMapping, self.__num_gpus)
+        self.__guidMapping = guidMapping
+        self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
         # version info metric
         version_metric = Gauge(
@@ -386,29 +390,9 @@ class ROCMSMI(Collector):
         # If CU occupancy is enabled, measure the number of CUs once when
         # registering metrics.
         if self.__cu_occupancy_monitoring:
+            counts = count_compute_units(nodeMapping.values())
+            self.__num_compute_units = {i: counts[node] for i, node in nodeMapping.items()}
             self.registerGPUMetric(self.__prefix + "num_compute_units", "gauge", "Number of compute units")
-            self.__num_compute_units = {}
-            pattern = re.compile(r"^(simd_count|simd_per_cu)\s+(\d+)", re.MULTILINE)
-            for i in range(self.__num_gpus):
-                node = nodeMapping[i]
-                path = f"/sys/class/kfd/kfd/topology/nodes/{node}/properties"
-                try:
-                    with open(path, "r") as f:
-                        data = f.read()
-
-                    simd_values = {}
-                    matches = pattern.finditer(data)
-                    for match in matches:
-                        key = match.group(1)
-                        value = int(match.group(2))
-                        simd_values[key] = value
-
-                    num_compute_units = simd_values["simd_count"] / simd_values["simd_per_cu"]
-                    self.__num_compute_units[i] = num_compute_units
-                except:
-                    logging.error("ERROR: Failed to read node properties file {path}.")
-                    sys.exit(4)
-
             self.registerGPUMetric(self.__prefix + "compute_unit_occupancy", "gauge", "Compute unit occupancy")
 
         return
@@ -554,13 +538,7 @@ class ROCMSMI(Collector):
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(self.__num_compute_units[i])
 
                 metric = self.__prefix + "compute_unit_occupancy"
-                cu_base_path = Path("/sys/class/kfd/kfd/proc/")
-                cu_file_pattern = f"*/stats_{guid}/cu_occupancy"
-                cu_occupancy = 0
-                for cu_file in list(cu_base_path.glob(cu_file_pattern)):
-                    with open(cu_file, "r") as f:
-                        data = f.read().strip()
-                    cu_occupancy += int(data)
+                cu_occupancy = get_occupancy(guid)
                 self.__GPUmetrics[metric].labels(card=gpuLabel).set(cu_occupancy)
 
         return
