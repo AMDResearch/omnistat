@@ -28,6 +28,7 @@ import configparser
 import importlib.resources
 import logging
 import os
+import re
 import resource
 import shutil
 import subprocess
@@ -181,6 +182,68 @@ def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
 
     logging.info("--> Mapping: %s" % gpuMappingOrder)
     return gpuMappingOrder
+
+
+def count_compute_units(nodes):
+    """
+    Count the number of compute units for each one of the given GPU node IDs.
+
+    Args:
+        nodes (list): list of GPU node IDs to calculate the number of CUs for.
+
+    Returns:
+        dict: dictionary of CU counts indexed by GPU node ID.
+    """
+    base_path = Path("/sys/class/kfd/kfd/topology/nodes")
+    pattern = re.compile(r"^(simd_count|simd_per_cu)\s+(\d+)", re.MULTILINE)
+
+    compute_units = {}
+    for node in nodes:
+        # The properties file should contain simd_count and simd_per_cu
+        # values, which can be used to calculate the number of CUs. Abort the
+        # execution if there are issues opening the file or if simd values
+        # aren't available.
+        properties = base_path / f"{node}/properties"
+        try:
+            with open(properties, "r") as f:
+                data = f.read()
+
+            simd_values = {}
+            matches = pattern.finditer(data)
+            for match in matches:
+                key = match.group(1)
+                value = int(match.group(2))
+                simd_values[key] = value
+
+            compute_units[node] = simd_values["simd_count"] / simd_values["simd_per_cu"]
+        except:
+            logging.error(f"ERROR: Failed to read node properties file {properties}.")
+            sys.exit(4)
+
+    return compute_units
+
+
+def get_occupancy(guid):
+    """
+    Get aggregated CU occupancy for all the processes running in a given GPU
+    device ID (guid).
+
+    Args:
+        guid (int): GPU device ID.
+
+    Returns:
+        int: CU occupancy in number of CUs.
+    """
+    base_path = Path("/sys/class/kfd/kfd/proc")
+    file_pattern = f"*/stats_{guid}/cu_occupancy"
+
+    cu_occupancy = 0
+    for cu_file in list(base_path.glob(file_pattern)):
+        with open(cu_file, "r") as f:
+            data = f.read().strip()
+        cu_occupancy += int(data)
+
+    return cu_occupancy
 
 
 def error(message):
