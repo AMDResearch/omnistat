@@ -1351,7 +1351,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 82
+            "y": 30
           },
           "id": 27,
           "interval": "$interval",
@@ -1461,7 +1461,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 82
+            "y": 30
           },
           "id": 87,
           "interval": "$interval",
@@ -1612,7 +1612,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 93
+            "y": 273
           },
           "id": 90,
           "interval": "$interval",
@@ -1695,7 +1695,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 1086
+            "y": 2909
           },
           "id": 88,
           "interval": "$interval",
@@ -1805,7 +1805,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 1086
+            "y": 2909
           },
           "id": 89,
           "interval": "$interval",
@@ -1955,7 +1955,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1113
+            "y": 2936
           },
           "id": 91,
           "interval": "$interval",
@@ -2030,7 +2030,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2050,7 +2051,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 1122
+            "y": 1068
           },
           "id": 28,
           "interval": "$interval",
@@ -2069,7 +2070,7 @@
             "showThresholdMarkers": true,
             "sizing": "auto"
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2112,7 +2113,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 1122
+            "y": 1068
           },
           "id": 86,
           "interval": "$interval",
@@ -2168,7 +2169,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2205,7 +2206,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2225,7 +2227,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 1810
+            "y": 1076
           },
           "id": 29,
           "interval": "$interval",
@@ -2244,7 +2246,7 @@
             "showThresholdMarkers": true,
             "sizing": "auto"
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2287,7 +2289,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 1810
+            "y": 1076
           },
           "id": 31,
           "interval": "$interval",
@@ -2343,7 +2345,7 @@
               "reverse": false
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2412,7 +2414,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2428,7 +2431,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1818
+            "y": 1084
           },
           "id": 24,
           "interval": "$interval",
@@ -2440,12 +2443,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -2649,7 +2653,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1123
+            "y": 2946
           },
           "id": 52,
           "interval": "$interval",
@@ -2851,7 +2855,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1188
+            "y": 3011
           },
           "id": 97,
           "interval": "$interval",
@@ -3087,7 +3091,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1188
+            "y": 3011
           },
           "id": 98,
           "interval": "$interval",
@@ -3266,7 +3270,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1197
+            "y": 3020
           },
           "id": 95,
           "interval": "$interval",
@@ -3489,7 +3493,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1467
+            "y": 3290
           },
           "id": 54,
           "interval": "$interval",
@@ -3693,7 +3697,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1467
+            "y": 3290
           },
           "id": 99,
           "interval": "$interval",
@@ -3856,7 +3860,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1476
+            "y": 3299
           },
           "id": 100,
           "interval": "$interval",
@@ -4017,7 +4021,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4033,7 +4038,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1125
+            "y": 35
           },
           "id": 33,
           "interval": "$interval",
@@ -4117,7 +4122,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4133,7 +4139,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1133
+            "y": 83
           },
           "id": 104,
           "interval": "$interval",
@@ -4217,7 +4223,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4233,7 +4240,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1141
+            "y": 91
           },
           "id": 22,
           "interval": "$interval",
@@ -4333,7 +4340,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1149
+            "y": 99
           },
           "id": 25,
           "interval": "$interval",
@@ -4433,7 +4440,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1149
+            "y": 99
           },
           "id": 23,
           "interval": "$interval",
@@ -4470,7 +4477,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "GPU Telemetry: GPU IDs",
+      "title": "GPU Telemetry - GPU IDs",
       "type": "row"
     },
     {
@@ -4480,6 +4487,131 @@
         "w": 24,
         "x": 0,
         "y": 35
+      },
+      "id": 123,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Estimated CU occupancy based on the number of in-flight waves of all processes running in each GPU. In-flight waves are translated into number of occupied compute units based on the maximum number of waves per CU. This estimate doesn't account for how waves are distributed, and is not always a good measure of performance.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 36
+          },
+          "id": 125,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "(rocm_compute_unit_occupancy * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}) * 100 / (rocm_num_compute_units * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU CU Occupancy (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "GPU: $1/$2"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU Compute Unit Occupancy - GPUs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
       },
       "id": 122,
       "panels": [
@@ -4549,7 +4681,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 44
+            "y": 61
           },
           "id": 120,
           "options": {
@@ -4746,7 +4878,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 44
+            "y": 61
           },
           "id": 121,
           "options": {
@@ -4887,7 +5019,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 39
       },
       "id": 101,
       "panels": [
@@ -4939,8 +5071,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4956,7 +5087,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 922
+            "y": 2745
           },
           "id": 105,
           "interval": "$interval",
@@ -5049,8 +5180,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5066,7 +5196,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 922
+            "y": 2745
           },
           "id": 106,
           "interval": "$interval",
@@ -5121,7 +5251,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 40
       },
       "id": 41,
       "panels": [
@@ -5189,7 +5319,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 951
+            "y": 2774
           },
           "id": 116,
           "interval": "$interval",
@@ -5298,7 +5428,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 951
+            "y": 2774
           },
           "id": 117,
           "interval": "$interval",
@@ -5353,7 +5483,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 42
       },
       "id": 57,
       "panels": [
@@ -5460,7 +5590,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2863
+            "y": 4686
           },
           "id": 56,
           "interval": "$interval",
@@ -5553,7 +5683,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 43
       },
       "id": 111,
       "panels": [
@@ -5684,7 +5814,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 978
+            "y": 2801
           },
           "id": 107,
           "interval": "$interval",
@@ -5879,7 +6009,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 978
+            "y": 2801
           },
           "id": 112,
           "interval": "$interval",
@@ -6038,7 +6168,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 986
+            "y": 2809
           },
           "id": 108,
           "interval": "$interval",
@@ -6266,7 +6396,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 986
+            "y": 2809
           },
           "id": 113,
           "interval": "$interval",
@@ -6421,7 +6551,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 994
+            "y": 2817
           },
           "id": 109,
           "interval": "$interval",
@@ -6649,7 +6779,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 994
+            "y": 2817
           },
           "id": 115,
           "interval": "$interval",
@@ -6805,7 +6935,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1002
+            "y": 2825
           },
           "id": 110,
           "interval": "$interval",
@@ -7029,7 +7159,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1002
+            "y": 2825
           },
           "id": 114,
           "interval": "$interval",
