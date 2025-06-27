@@ -268,7 +268,7 @@ class AMDSMI(Collector):
             else:
                 logging.info("--> Using mapping %s -> %s " % (desired_metric, found))
                 self.__GPUMetrics[self.__prefix + desired_metric] = Gauge(
-                    self.__prefix + desired_metric, f"{metric}", labelnames=["card", "source"]
+                    self.__prefix + desired_metric, f"{desired_metric}", labelnames=["card", "source"]
                 )
 
         # Register remaining metrics of interest available from get_gpu_metrics()
