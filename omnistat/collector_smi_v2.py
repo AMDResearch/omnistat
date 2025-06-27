@@ -50,7 +50,11 @@ import packaging.version
 from prometheus_client import Gauge
 
 from omnistat.collector_base import Collector
-from omnistat.utils import gpu_index_mapping_based_on_guids
+from omnistat.utils import (
+    count_compute_units,
+    get_occupancy,
+    gpu_index_mapping_based_on_guids,
+)
 
 
 def check_min_version(minVersion):
@@ -95,6 +99,7 @@ class AMDSMI(Collector):
         self.__metricMapping = {}
         self.__ecc_ras_monitoring = runtimeConfig["collector_ras_ecc"]
         self.__power_cap_monitoring = runtimeConfig["collector_power_capping"]
+        self.__cu_occupancy_monitoring = runtimeConfig["collector_cu_occupancy"]
         self.__eccBlocks = {}
         # verify minimum version met
         check_min_version("24.7.1")
@@ -127,9 +132,13 @@ class AMDSMI(Collector):
 
         # determine GPU index mapping (ie. map kfd indices used by SMI lib to that of HIP_VISIBLE_DEVICES)
         guidMapping = {}
+        nodeMapping = {}
         for index, device in enumerate(self.__devices):
             kfd_info = smi.amdsmi_get_gpu_kfd_info(device)
             guidMapping[index] = kfd_info["kfd_id"]
+            nodeMapping[index] = kfd_info["node_id"]
+
+        self.__guidMapping = guidMapping
         self.__indexMapping = gpu_index_mapping_based_on_guids(guidMapping, self.__num_gpus)
 
         # version info metric
@@ -286,6 +295,17 @@ class AMDSMI(Collector):
                 self.__prefix + "power_cap_watts", "Max power cap of device (W)", labelnames=["card"]
             )
 
+        # If CU occupancy is enabled, measure the number of CUs once when registering metrics.
+        if self.__cu_occupancy_monitoring:
+            counts = count_compute_units(nodeMapping.values())
+            self.__num_compute_units = {i: counts[node] for i, node in nodeMapping.items()}
+            self.__GPUMetrics["num_compute_units"] = Gauge(
+                self.__prefix + "num_compute_units", "Number of compute units", labelnames=["card"]
+            )
+            self.__GPUMetrics["compute_unit_occupancy"] = Gauge(
+                self.__prefix + "compute_unit_occupancy", "Compute unit occupancy (# of CUs)", labelnames=["card"]
+            )
+
         return
 
     def updateMetrics(self):
@@ -297,6 +317,7 @@ class AMDSMI(Collector):
 
             # map GPU index
             cardId = self.__indexMapping[idx]
+            guid = self.__guidMapping[idx]
 
             #  stats available via get_gpu_metrics
             metrics = self.get_gpu_metrics(device)
@@ -348,5 +369,14 @@ class AMDSMI(Collector):
             if self.__power_cap_monitoring:
                 power_info = smi.amdsmi_get_power_cap_info(device)
                 self.__GPUMetrics["power_cap_watts"].labels(card=cardId).set(power_info["power_cap"] / 1000000)
+
+            # CU occupancy
+            if self.__cu_occupancy_monitoring:
+                metric = "num_compute_units"
+                self.__GPUMetrics[metric].labels(card=cardId).set(self.__num_compute_units[idx])
+
+                metric = "compute_unit_occupancy"
+                cu_occupancy = get_occupancy(guid)
+                self.__GPUMetrics[metric].labels(card=cardId).set(cu_occupancy)
 
         return
