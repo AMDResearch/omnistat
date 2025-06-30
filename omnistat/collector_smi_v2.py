@@ -295,8 +295,9 @@ class AMDSMI(Collector):
                 self.__prefix + "power_cap_watts", "Max power cap of device (W)", labelnames=["card"]
             )
 
-        # If CU occupancy is enabled, measure the number of CUs once when registering metrics.
         if self.__cu_occupancy_monitoring:
+            # Measure the number CUs in each GPU node ID (KFD internal GPU index),
+            # and map it to KFD GPU indices.
             counts = count_compute_units(nodeMapping.values())
             self.__num_compute_units = {i: counts[node] for i, node in nodeMapping.items()}
             self.__GPUMetrics["num_compute_units"] = Gauge(
@@ -372,11 +373,9 @@ class AMDSMI(Collector):
 
             # CU occupancy
             if self.__cu_occupancy_monitoring:
-                metric = "num_compute_units"
-                self.__GPUMetrics[metric].labels(card=cardId).set(self.__num_compute_units[idx])
+                self.__GPUMetrics["num_compute_units"].labels(card=cardId).set(self.__num_compute_units[idx])
 
-                metric = "compute_unit_occupancy"
                 cu_occupancy = get_occupancy(guid)
-                self.__GPUMetrics[metric].labels(card=cardId).set(cu_occupancy)
+                self.__GPUMetrics["compute_unit_occupancy"].labels(card=cardId).set(cu_occupancy)
 
         return

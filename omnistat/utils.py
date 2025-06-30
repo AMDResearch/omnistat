@@ -186,7 +186,8 @@ def gpu_index_mapping_based_on_bdfs(bdfMapping, expectedNumGPUs):
 
 def count_compute_units(nodes):
     """
-    Count the number of compute units for each one of the given GPU node IDs.
+    Count the number of compute units for each one of the given GPU node IDs
+    (KFD internal GPU indices).
 
     Args:
         nodes (list): list of GPU node IDs to calculate the number of CUs for.

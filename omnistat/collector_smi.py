@@ -387,8 +387,9 @@ class ROCMSMI(Collector):
         if self.__power_cap_monitoring:
             self.registerGPUMetric(self.__prefix + "power_cap_watts", "gauge", "Max power cap of device (W)")
 
-        # If CU occupancy is enabled, measure the number of CUs once when registering metrics.
         if self.__cu_occupancy_monitoring:
+            # Measure the number CUs in each GPU node ID (KFD internal GPU index),
+            # and map it to KFD GPU indices.
             counts = count_compute_units(nodeMapping.values())
             self.__num_compute_units = {i: counts[node] for i, node in nodeMapping.items()}
             self.registerGPUMetric(self.__prefix + "num_compute_units", "gauge", "Number of compute units")
