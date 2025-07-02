@@ -46,8 +46,10 @@ class PM_COUNTERS(Collector):
     def __init__(self, annotations=False, jobDetection=None):
         logging.debug("Initializing pm_counter data collector")
 
-        self.__prefix = "omnistat_pmcounter_"
+        self.__prefix = "omnistat_vendor_counters_"
+        # currently just supporting a single vendor
         self.__pm_counter_dir = "/sys/cray/pm_counters"
+        self.__vendor = "cray"
         self.__unit_mapping = {"W": "watts", "J": "joules"}
         self.__skipnames = ["power_cap", "startup", "freshness", "raw_scan_hz", "version", "generation", "_temp"]
         self.__gpumetrics = ["accel"]
@@ -97,7 +99,7 @@ class PM_COUNTERS(Collector):
                             gauge = definedMetrics[metric_name]
                         else:
                             description = f"GPU {match.group(3)} ({units_short})"
-                            gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card"])
+                            gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card","vendor"])
                             definedMetrics[metric_name] = gauge
                             logging.info(
                                 "--> [Registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description)
@@ -109,7 +111,7 @@ class PM_COUNTERS(Collector):
                     else:
                         metric_name = file.name
                         description = f"Node-level {metric_name} ({units_short})"
-                        gauge = Gauge(self.__prefix + metric_name, description)
+                        gauge = Gauge(self.__prefix + metric_name, description,labelnames=["vendor"])
                         metric_entry = (gauge, str(file))
                         self.__pm_files_host.append(metric_entry)
                         logging.info("--> [registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description))
@@ -124,7 +126,7 @@ class PM_COUNTERS(Collector):
             try:
                 with open(filePath, "r") as f:
                     data = f.readline().strip().split()
-                    gaugeMetric.set(float(data[0]))
+                    gaugeMetric.labels(vendor=self.__vendor).set(float(data[0]))
             except:
                 pass
 
@@ -136,7 +138,7 @@ class PM_COUNTERS(Collector):
             try:
                 with open(filePath, "r") as f:
                     data = f.readline().strip().split()
-                    gaugeMetric.labels(card=gpuIndex).set(data[0])
+                    gaugeMetric.labels(card=gpuIndex,vendor=self.__vendor).set(data[0])
 
             except:
                 pass
