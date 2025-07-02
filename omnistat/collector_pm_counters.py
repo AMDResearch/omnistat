@@ -46,7 +46,7 @@ class PM_COUNTERS(Collector):
     def __init__(self, annotations=False, jobDetection=None):
         logging.debug("Initializing pm_counter data collector")
 
-        self.__prefix = "omnistat_vendor_counters_"
+        self.__prefix = "omnistat_vendor_"
         # currently just supporting a single vendor
         self.__pm_counter_dir = "/sys/cray/pm_counters"
         self.__vendor = "cray"
