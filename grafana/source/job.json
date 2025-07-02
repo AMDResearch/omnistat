@@ -1997,350 +1997,6 @@
         "x": 0,
         "y": 29
       },
-      "id": 81,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "scaleDistribution": {
-                  "type": "linear"
-                }
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 11,
-            "w": 12,
-            "x": 0,
-            "y": 30
-          },
-          "id": 27,
-          "interval": "$interval",
-          "options": {
-            "calculate": false,
-            "calculation": {
-              "xBuckets": {
-                "mode": "count"
-              },
-              "yBuckets": {
-                "mode": "size",
-                "scale": {
-                  "type": "linear"
-                }
-              }
-            },
-            "cellGap": 1,
-            "cellValues": {
-              "unit": "percent"
-            },
-            "color": {
-              "exponent": 0.5,
-              "fill": "dark-orange",
-              "max": 100,
-              "min": 0,
-              "mode": "scheme",
-              "reverse": true,
-              "scale": "exponential",
-              "scheme": "RdYlGn",
-              "steps": 64
-            },
-            "exemplars": {
-              "color": "rgba(255,0,255,0.7)"
-            },
-            "filterValues": {
-              "le": -10
-            },
-            "legend": {
-              "show": true
-            },
-            "rowsFrame": {
-              "layout": "auto"
-            },
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "showColorScale": false,
-              "yHistogram": false
-            },
-            "yAxis": {
-              "axisLabel": "GPU (Node/ID)",
-              "axisPlacement": "left",
-              "reverse": false
-            }
-          },
-          "pluginVersion": "11.5.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "format": "time_series",
-              "instant": false,
-              "interval": "",
-              "legendFormat": "{{instance}}, {{card}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "GPU Utilization Heatmap",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "([^,:]+)(?:[:].*)?, (.+)",
-                "renamePattern": "$1/$2"
-              }
-            }
-          ],
-          "type": "heatmap"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "scaleDistribution": {
-                  "type": "linear"
-                }
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 11,
-            "w": 12,
-            "x": 12,
-            "y": 30
-          },
-          "id": 87,
-          "interval": "$interval",
-          "options": {
-            "calculate": false,
-            "calculation": {
-              "xBuckets": {
-                "mode": "count"
-              },
-              "yBuckets": {
-                "mode": "size",
-                "scale": {
-                  "type": "linear"
-                }
-              }
-            },
-            "cellGap": 1,
-            "cellValues": {
-              "unit": "percent"
-            },
-            "color": {
-              "exponent": 0.5,
-              "fill": "dark-orange",
-              "max": 100,
-              "min": 0,
-              "mode": "scheme",
-              "reverse": true,
-              "scale": "exponential",
-              "scheme": "RdYlGn",
-              "steps": 64
-            },
-            "exemplars": {
-              "color": "rgba(255,0,255,0.7)"
-            },
-            "filterValues": {
-              "le": 1e-09
-            },
-            "legend": {
-              "show": true
-            },
-            "rowsFrame": {
-              "layout": "auto"
-            },
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "showColorScale": false,
-              "yHistogram": false
-            },
-            "yAxis": {
-              "axisLabel": "GPU (Node/ID)",
-              "axisPlacement": "left",
-              "reverse": false
-            }
-          },
-          "pluginVersion": "11.5.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "avg by (instance,card) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "format": "time_series",
-              "instant": false,
-              "interval": "",
-              "legendFormat": "{{instance}}, {{card}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "GPU Memory Utilization Heatmap",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "([^,:]+)(?:[:].*)?, (.+)",
-                "renamePattern": "$1/$2"
-              }
-            }
-          ],
-          "type": "heatmap"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 24,
-            "x": 0,
-            "y": 273
-          },
-          "id": 90,
-          "interval": "$interval",
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "maxHeight": 600,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.5.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "instant": false,
-              "legendFormat": "{{instance}}, {{card}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "GPU Utilization (%)",
-          "transformations": [
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "([^,:]+)(?:[:].*)?, (.+)",
-                "renamePattern": "GPU: $1/$2"
-              }
-            }
-          ],
-          "type": "timeseries"
-        }
-      ],
-      "title": "GPU Usage - GPUs",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 30
-      },
       "id": 82,
       "panels": [
         {
@@ -2367,7 +2023,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 2909
+            "y": 5689
           },
           "id": 88,
           "interval": "$interval",
@@ -2477,7 +2133,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 2909
+            "y": 5689
           },
           "id": 89,
           "interval": "$interval",
@@ -2627,7 +2283,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2936
+            "y": 5716
           },
           "id": 91,
           "interval": "$interval",
@@ -2682,7 +2338,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 30
       },
       "id": 15,
       "panels": [
@@ -2702,8 +2358,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "#EAB839",
@@ -2723,7 +2378,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 1068
+            "y": 3848
           },
           "id": 28,
           "interval": "$interval",
@@ -2785,7 +2440,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 1068
+            "y": 3848
           },
           "id": 86,
           "interval": "$interval",
@@ -2878,8 +2533,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "#EAB839",
@@ -2899,7 +2553,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 1076
+            "y": 3856
           },
           "id": 29,
           "interval": "$interval",
@@ -2961,7 +2615,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 1076
+            "y": 3856
           },
           "id": 31,
           "interval": "$interval",
@@ -3086,8 +2740,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3103,7 +2756,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1084
+            "y": 3864
           },
           "id": 24,
           "interval": "$interval",
@@ -3149,7 +2802,946 @@
         "h": 1,
         "w": 24,
         "x": 0,
+        "y": 31
+      },
+      "id": 81,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 12,
+            "x": 0,
+            "y": 1382
+          },
+          "id": 27,
+          "interval": "$interval",
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "mode": "count"
+              },
+              "yBuckets": {
+                "mode": "size",
+                "scale": {
+                  "type": "linear"
+                }
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": "percent"
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "max": 100,
+              "min": 0,
+              "mode": "scheme",
+              "reverse": true,
+              "scale": "exponential",
+              "scheme": "RdYlGn",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": -10
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisLabel": "GPU (Node/ID)",
+              "axisPlacement": "left",
+              "reverse": false
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utilization Heatmap",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$1/$2"
+              }
+            }
+          ],
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 12,
+            "x": 12,
+            "y": 1382
+          },
+          "id": 87,
+          "interval": "$interval",
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "mode": "count"
+              },
+              "yBuckets": {
+                "mode": "size",
+                "scale": {
+                  "type": "linear"
+                }
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": "percent"
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "max": 100,
+              "min": 0,
+              "mode": "scheme",
+              "reverse": true,
+              "scale": "exponential",
+              "scheme": "RdYlGn",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1e-09
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "maxHeight": 600,
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisLabel": "GPU (Node/ID)",
+              "axisPlacement": "left",
+              "reverse": false
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "avg by (instance,card) (rocm_vram_used_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Memory Utilization Heatmap",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "$1/$2"
+              }
+            }
+          ],
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 1393
+          },
+          "id": 90,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utilization (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "GPU: $1/$2"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU Usage - GPUs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
         "y": 32
+      },
+      "id": 96,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 50,
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "pointShape": "circle",
+                "pointSize": {
+                  "fixed": 5
+                },
+                "pointStrokeWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "show": "points+lines"
+              },
+              "fieldMinMax": true,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node Index (sorted by utilization)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "pattern": "(.*):(.*)",
+                          "result": {
+                            "index": 0,
+                            "text": "$1"
+                          }
+                        },
+                        "type": "regex"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Utilization (%)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.axisSoftMin",
+                    "value": 0
+                  },
+                  {
+                    "id": "custom.axisSoftMax",
+                    "value": 100
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 1634
+          },
+          "id": 54,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "mapping": "manual",
+            "series": [
+              {
+                "frame": {
+                  "matcher": {
+                    "id": "byIndex",
+                    "options": 0
+                  }
+                },
+                "x": {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "Node Index (sorted by utilization)"
+                  }
+                },
+                "y": {
+                  "matcher": {
+                    "id": "byName",
+                    "options": "GPU Utilization (%)"
+                  }
+                }
+              }
+            ],
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Distribution of Average Utilization per Node",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Mean"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Node Index (sorted by utilization)",
+                "mode": "index",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Field": "Node",
+                  "Mean": "GPU Utilization (%)"
+                }
+              }
+            }
+          ],
+          "type": "xychart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineWidth": 1,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "fieldMinMax": true,
+              "mappings": [],
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node Index (sorted by utilization)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 0
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "pattern": "(.*):(.*)",
+                          "result": {
+                            "index": 0,
+                            "text": "$1"
+                          }
+                        },
+                        "type": "regex"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Utilization (%)"
+                },
+                "properties": []
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 12,
+            "y": 1634
+          },
+          "id": 99,
+          "interval": "$interval",
+          "options": {
+            "barRadius": 0,
+            "barWidth": 0.97,
+            "fullHighlight": false,
+            "groupWidth": 0.7,
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "orientation": "auto",
+            "showValue": "never",
+            "stacking": "none",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            },
+            "xField": "Node Index (sorted by utilization)",
+            "xTickLabelRotation": 0,
+            "xTickLabelSpacing": 0
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Distribution of Average Utilization per Node",
+          "transformations": [
+            {
+              "id": "reduce",
+              "options": {
+                "reducers": [
+                  "mean"
+                ]
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Mean"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Node Index (sorted by utilization)",
+                "mode": "index",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {},
+                "includeByName": {},
+                "indexByName": {},
+                "renameByName": {
+                  "Field": "Node",
+                  "Mean": "GPU Utilization (%)"
+                }
+              }
+            }
+          ],
+          "type": "barchart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$source"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "fieldMinMax": false,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Utilization"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "percent"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Node"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "pattern": "(.*):(.*)",
+                          "result": {
+                            "index": 0,
+                            "text": "$1"
+                          }
+                        },
+                        "type": "regex"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 12,
+            "x": 0,
+            "y": 1854
+          },
+          "id": 100,
+          "interval": "$interval",
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "frameIndex": 0,
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$source"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "format": "time_series",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Average Utilization per Node",
+          "transformations": [
+            {
+              "filter": {
+                "id": "byRefId",
+                "options": "A"
+              },
+              "id": "reduce",
+              "options": {
+                "labelsToFields": false,
+                "reducers": [
+                  "mean"
+                ]
+              },
+              "topic": "series"
+            },
+            {
+              "disabled": true,
+              "id": "extractFields",
+              "options": {
+                "keepTime": false,
+                "replace": false,
+                "source": "Field"
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Field": false,
+                  "job": true,
+                  "monitor": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Field": 0,
+                  "Mean": 5,
+                  "card": 2,
+                  "instance": 1,
+                  "job": 3,
+                  "monitor": 4
+                },
+                "renameByName": {
+                  "Field": "Node",
+                  "Mean": "Utilization",
+                  "card": "GPU ID",
+                  "instance": "Node"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "Utilization"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "GPU Usage Distribution -  Nodes",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
       },
       "id": 53,
       "panels": [
@@ -3201,7 +3793,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -3325,7 +3918,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2946
+            "y": 1635
           },
           "id": 52,
           "interval": "$interval",
@@ -3439,7 +4032,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3527,7 +4121,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 3011
+            "y": 1772
           },
           "id": 97,
           "interval": "$interval",
@@ -3562,12 +4156,13 @@
               }
             ],
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -3684,7 +4279,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3763,7 +4359,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 3011
+            "y": 1772
           },
           "id": 98,
           "interval": "$interval",
@@ -3782,6 +4378,7 @@
             "showValue": "never",
             "stacking": "none",
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             },
@@ -3789,7 +4386,7 @@
             "xTickLabelRotation": 0,
             "xTickLabelSpacing": 0
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -3890,7 +4487,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3942,7 +4540,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 3020
+            "y": 1781
           },
           "id": 95,
           "interval": "$interval",
@@ -3960,7 +4558,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -4005,6 +4603,7 @@
               "options": {
                 "excludeByName": {
                   "Field": true,
+                  "cluster": true,
                   "job": true,
                   "monitor": true
                 },
@@ -4041,598 +4640,7 @@
           "type": "table"
         }
       ],
-      "title": "GPU Usage - Distribution - GPUs",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 33
-      },
-      "id": 96,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$source"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "fillOpacity": 50,
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineWidth": 1,
-                "pointShape": "circle",
-                "pointSize": {
-                  "fixed": 5
-                },
-                "pointStrokeWidth": 1,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "show": "points+lines"
-              },
-              "fieldMinMax": true,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node Index (sorted by utilization)"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 0
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "pattern": "(.*):(.*)",
-                          "result": {
-                            "index": 0,
-                            "text": "$1"
-                          }
-                        },
-                        "type": "regex"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "GPU Utilization (%)"
-                },
-                "properties": [
-                  {
-                    "id": "custom.axisSoftMin",
-                    "value": 0
-                  },
-                  {
-                    "id": "custom.axisSoftMax",
-                    "value": 100
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 3290
-          },
-          "id": 54,
-          "interval": "$interval",
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "mapping": "manual",
-            "series": [
-              {
-                "frame": {
-                  "matcher": {
-                    "id": "byIndex",
-                    "options": 0
-                  }
-                },
-                "x": {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "Node Index (sorted by utilization)"
-                  }
-                },
-                "y": {
-                  "matcher": {
-                    "id": "byName",
-                    "options": "GPU Utilization (%)"
-                  }
-                }
-              }
-            ],
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0-76537",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$source"
-              },
-              "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Distribution of Average Utilization per Node",
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": {
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Mean"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Node Index (sorted by utilization)",
-                "mode": "index",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {},
-                "includeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "Field": "Node",
-                  "Mean": "GPU Utilization (%)"
-                }
-              }
-            }
-          ],
-          "type": "xychart"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$source"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "fillOpacity": 80,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineWidth": 1,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "fieldMinMax": true,
-              "mappings": [],
-              "max": 100,
-              "min": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node Index (sorted by utilization)"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "decimals",
-                    "value": 0
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "pattern": "(.*):(.*)",
-                          "result": {
-                            "index": 0,
-                            "text": "$1"
-                          }
-                        },
-                        "type": "regex"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "GPU Utilization (%)"
-                },
-                "properties": []
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 12,
-            "y": 3290
-          },
-          "id": 99,
-          "interval": "$interval",
-          "options": {
-            "barRadius": 0,
-            "barWidth": 0.97,
-            "fullHighlight": false,
-            "groupWidth": 0.7,
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "orientation": "auto",
-            "showValue": "never",
-            "stacking": "none",
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            },
-            "xField": "Node Index (sorted by utilization)",
-            "xTickLabelRotation": 0,
-            "xTickLabelSpacing": 0
-          },
-          "pluginVersion": "11.3.0-76537",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$source"
-              },
-              "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Distribution of Average Utilization per Node",
-          "transformations": [
-            {
-              "id": "reduce",
-              "options": {
-                "reducers": [
-                  "mean"
-                ]
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Mean"
-                  }
-                ]
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Node Index (sorted by utilization)",
-                "mode": "index",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {},
-                "includeByName": {},
-                "indexByName": {},
-                "renameByName": {
-                  "Field": "Node",
-                  "Mean": "GPU Utilization (%)"
-                }
-              }
-            }
-          ],
-          "type": "barchart"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$source"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "fieldMinMax": false,
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Utilization"
-                },
-                "properties": [
-                  {
-                    "id": "unit",
-                    "value": "percent"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Node"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "pattern": "(.*):(.*)",
-                          "result": {
-                            "index": 0,
-                            "text": "$1"
-                          }
-                        },
-                        "type": "regex"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 9,
-            "w": 12,
-            "x": 0,
-            "y": 3299
-          },
-          "id": 100,
-          "interval": "$interval",
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "frameIndex": 0,
-            "showHeader": true,
-            "sortBy": []
-          },
-          "pluginVersion": "11.3.0-76537",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "$source"
-              },
-              "editorMode": "code",
-              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
-              "format": "time_series",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Average Utilization per Node",
-          "transformations": [
-            {
-              "filter": {
-                "id": "byRefId",
-                "options": "A"
-              },
-              "id": "reduce",
-              "options": {
-                "labelsToFields": false,
-                "reducers": [
-                  "mean"
-                ]
-              },
-              "topic": "series"
-            },
-            {
-              "disabled": true,
-              "id": "extractFields",
-              "options": {
-                "keepTime": false,
-                "replace": false,
-                "source": "Field"
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Field": false,
-                  "job": true,
-                  "monitor": true
-                },
-                "includeByName": {},
-                "indexByName": {
-                  "Field": 0,
-                  "Mean": 5,
-                  "card": 2,
-                  "instance": 1,
-                  "job": 3,
-                  "monitor": 4
-                },
-                "renameByName": {
-                  "Field": "Node",
-                  "Mean": "Utilization",
-                  "card": "GPU ID",
-                  "instance": "Node"
-                }
-              }
-            },
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "Utilization"
-                  }
-                ]
-              }
-            }
-          ],
-          "type": "table"
-        }
-      ],
-      "title": "GPU Usage - Distribution -  Nodes",
+      "title": "GPU Usage Distribution - GPUs",
       "type": "row"
     },
     {
@@ -4710,7 +4718,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 35
+            "y": 1636
           },
           "id": 33,
           "interval": "$interval",
@@ -4811,7 +4819,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 83
+            "y": 1668
           },
           "id": 104,
           "interval": "$interval",
@@ -4895,8 +4903,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4912,7 +4919,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 91
+            "y": 1676
           },
           "id": 22,
           "interval": "$interval",
@@ -5012,7 +5019,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 99
+            "y": 1684
           },
           "id": 25,
           "interval": "$interval",
@@ -5112,7 +5119,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 99
+            "y": 1684
           },
           "id": 23,
           "interval": "$interval",
@@ -5228,7 +5235,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 36
+            "y": 1637
           },
           "id": 125,
           "interval": "$interval",
@@ -5353,7 +5360,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 61
+            "y": 1646
           },
           "id": 120,
           "options": {
@@ -5550,7 +5557,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 61
+            "y": 1646
           },
           "id": 121,
           "options": {
@@ -5743,7 +5750,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5759,7 +5767,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3454
+            "y": 2723
           },
           "id": 43,
           "interval": "$interval",
@@ -5771,12 +5779,13 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "maxHeight": 600,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.0-76537",
+          "pluginVersion": "11.5.2",
           "targets": [
             {
               "datasource": {
@@ -5851,7 +5860,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5867,7 +5877,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3454
+            "y": 2723
           },
           "id": 48,
           "interval": "$interval",
@@ -5923,218 +5933,6 @@
         "w": 24,
         "x": 0,
         "y": 38
-      },
-      "id": 84,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 3463
-          },
-          "id": 49,
-          "interval": "$interval",
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0-76537",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg(node_load1 * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
-              "instant": false,
-              "legendFormat": "Average",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "CPU - 1m Load Average - Average",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${source}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 3463
-          },
-          "id": 51,
-          "interval": "$interval",
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": false
-            },
-            "tooltip": {
-              "maxHeight": 600,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.0-76537",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${source}"
-              },
-              "editorMode": "code",
-              "expr": "avg(100 * ((node_memory_MemTotal_bytes  -node_memory_MemFree_bytes) / node_memory_MemTotal_bytes) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
-              "instant": false,
-              "legendFormat": "Average",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Main Memory - Utilization (%) - Average",
-          "type": "timeseries"
-        }
-      ],
-      "title": "CPU Usage - Global",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 39
       },
       "id": 101,
       "panels": [
@@ -6202,7 +6000,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2737
+            "y": 5517
           },
           "id": 40,
           "interval": "$interval",
@@ -6311,7 +6109,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2737
+            "y": 5517
           },
           "id": 42,
           "interval": "$interval",
@@ -6420,7 +6218,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2745
+            "y": 5525
           },
           "id": 105,
           "interval": "$interval",
@@ -6529,7 +6327,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2745
+            "y": 5525
           },
           "id": 106,
           "interval": "$interval",
@@ -6584,7 +6382,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 39
       },
       "id": 41,
       "panels": [
@@ -6636,7 +6434,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6652,7 +6451,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1936
+            "y": 1870
           },
           "id": 102,
           "interval": "$interval",
@@ -6745,7 +6544,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6761,7 +6561,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1936
+            "y": 1870
           },
           "id": 103,
           "interval": "$interval",
@@ -6854,7 +6654,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6870,7 +6671,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2774
+            "y": 1878
           },
           "id": 116,
           "interval": "$interval",
@@ -6963,7 +6764,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6979,7 +6781,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2774
+            "y": 1878
           },
           "id": 117,
           "interval": "$interval",
@@ -7034,7 +6836,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 40
       },
       "id": 83,
       "panels": [
@@ -7102,7 +6904,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4247
+            "y": 7027
           },
           "id": 46,
           "interval": "$interval",
@@ -7210,7 +7012,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 4247
+            "y": 7027
           },
           "id": 45,
           "interval": "$interval",
@@ -7264,7 +7066,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 41
       },
       "id": 57,
       "panels": [
@@ -7371,7 +7173,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 4686
+            "y": 7466
           },
           "id": 56,
           "interval": "$interval",
@@ -7464,7 +7266,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 42
       },
       "id": 111,
       "panels": [
@@ -7595,7 +7397,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2801
+            "y": 5581
           },
           "id": 107,
           "interval": "$interval",
@@ -7790,7 +7592,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2801
+            "y": 5581
           },
           "id": 112,
           "interval": "$interval",
@@ -7949,7 +7751,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2809
+            "y": 5589
           },
           "id": 108,
           "interval": "$interval",
@@ -8177,7 +7979,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2809
+            "y": 5589
           },
           "id": 113,
           "interval": "$interval",
@@ -8332,7 +8134,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2817
+            "y": 5597
           },
           "id": 109,
           "interval": "$interval",
@@ -8560,7 +8362,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2817
+            "y": 5597
           },
           "id": 115,
           "interval": "$interval",
@@ -8716,7 +8518,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2825
+            "y": 5605
           },
           "id": 110,
           "interval": "$interval",
@@ -8940,7 +8742,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2825
+            "y": 5605
           },
           "id": 114,
           "interval": "$interval",
