@@ -48,16 +48,15 @@ class PM_COUNTERS(Collector):
 
         self.__prefix = "omnistat_pmcounter_"
         self.__pm_counter_dir = "/sys/cray/pm_counters"
-        self.__unit_mapping = {"W":"watts","J":"joules"}        
-        self.__skipnames = ["power_cap","startup","freshness","raw_scan_hz","version","generation","_temp"]
+        self.__unit_mapping = {"W": "watts", "J": "joules"}
+        self.__skipnames = ["power_cap", "startup", "freshness", "raw_scan_hz", "version", "generation", "_temp"]
         self.__gpumetrics = ["accel"]
 
         # metric data structure for host oriented metrics
-        self.__pm_files_gpu = []   # entries: (gauge metric, filepath of source data)
+        self.__pm_files_gpu = []  # entries: (gauge metric, filepath of source data)
 
         # metric data structure for gpu oriented
-        self.__pm_files_host = [] # entries: (gauge metric, filepath, gpuindex)
-
+        self.__pm_files_host = []  # entries: (gauge metric, filepath, gpuindex)
 
     def registerMetrics(self):
         """Register metrics of interest"""
@@ -72,7 +71,7 @@ class PM_COUNTERS(Collector):
             else:
                 # check units
                 try:
-                    with open(file,"r") as f:
+                    with open(file, "r") as f:
                         data = f.readline().strip().split()
                         if data[1] in self.__unit_mapping:
                             units = self.__unit_mapping[data[1]]
@@ -82,11 +81,11 @@ class PM_COUNTERS(Collector):
                             continue
                 except:
                     logging.error("Error determining units from contents of %s" % file)
-                    continue                        
+                    continue
 
                 for gpumetric in self.__gpumetrics:
-                    pattern = fr"^({gpumetric})(\d+)_(.*)$"
-                    match = re.match(pattern,file.name)
+                    pattern = rf"^({gpumetric})(\d+)_(.*)$"
+                    match = re.match(pattern, file.name)
                     if match:
                         metric_name = match.group(1) + "_" + match.group(3) + f"_{units}"
                         gpu_id = int(match.group(2))
@@ -96,18 +95,20 @@ class PM_COUNTERS(Collector):
                             description = f"GPU {match.group(3)} ({units_short})"
                             gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card"])
                             definedMetrics[metric_name] = gauge
-                            logging.info("--> [Registered] %s -> %s (gauge)" % (self.__prefix + metric_name,description))
-                            
-                        metric_entry = (gauge,str(file),gpu_id)                            
+                            logging.info(
+                                "--> [Registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description)
+                            )
+
+                        metric_entry = (gauge, str(file), gpu_id)
                         self.__pm_files_gpu.append(metric_entry)
 
                     else:
                         metric_name = file.name
-                        description = f"Node-level {metric_name} ({units_short})"                        
+                        description = f"Node-level {metric_name} ({units_short})"
                         gauge = Gauge(self.__prefix + metric_name, description)
                         metric_entry = (gauge, str(file))
                         self.__pm_files_host.append(metric_entry)
-                        logging.info("--> [registered] %s -> %s (gauge)" % (self.__prefix + metric_name,description))
+                        logging.info("--> [registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description))
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
@@ -117,7 +118,7 @@ class PM_COUNTERS(Collector):
             gaugeMetric = entry[0]
             filePath = entry[1]
             try:
-                with open(filePath,"r") as f:
+                with open(filePath, "r") as f:
                     data = f.readline().strip().split()
                     gaugeMetric.set(float(data[0]))
             except:
@@ -129,12 +130,11 @@ class PM_COUNTERS(Collector):
             filePath = entry[1]
             gpuIndex = entry[2]
             try:
-                with open(filePath,"r") as f:
+                with open(filePath, "r") as f:
                     data = f.readline().strip().split()
                     gaugeMetric.labels(card=gpuIndex).set(data[0])
 
             except:
-                pass            
+                pass
 
         return
-
