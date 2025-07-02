@@ -2023,7 +2023,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 5689
+            "y": 662
           },
           "id": 88,
           "interval": "$interval",
@@ -2133,7 +2133,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 5689
+            "y": 662
           },
           "id": 89,
           "interval": "$interval",
@@ -2267,7 +2267,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2283,7 +2284,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 5716
+            "y": 985
           },
           "id": 91,
           "interval": "$interval",
@@ -2358,7 +2359,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2378,7 +2380,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 3848
+            "y": 663
           },
           "id": 28,
           "interval": "$interval",
@@ -2440,7 +2442,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 3848
+            "y": 663
           },
           "id": 86,
           "interval": "$interval",
@@ -2533,7 +2535,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2553,7 +2556,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 3856
+            "y": 735
           },
           "id": 29,
           "interval": "$interval",
@@ -2615,7 +2618,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 3856
+            "y": 735
           },
           "id": 31,
           "interval": "$interval",
@@ -2740,7 +2743,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2756,7 +2760,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3864
+            "y": 743
           },
           "id": 24,
           "interval": "$interval",
@@ -2830,7 +2834,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 1382
+            "y": 1750
           },
           "id": 27,
           "interval": "$interval",
@@ -2940,7 +2944,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 1382
+            "y": 1750
           },
           "id": 87,
           "interval": "$interval",
@@ -3074,7 +3078,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3090,7 +3095,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1393
+            "y": 1849
           },
           "id": 90,
           "interval": "$interval",
@@ -3261,7 +3266,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1634
+            "y": 1321
           },
           "id": 54,
           "interval": "$interval",
@@ -3467,7 +3472,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1634
+            "y": 1321
           },
           "id": 99,
           "interval": "$interval",
@@ -3632,7 +3637,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1854
+            "y": 1330
           },
           "id": 100,
           "interval": "$interval",
@@ -3918,7 +3923,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 1635
+            "y": 3791
           },
           "id": 52,
           "interval": "$interval",
@@ -4121,7 +4126,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1772
+            "y": 3928
           },
           "id": 97,
           "interval": "$interval",
@@ -4359,7 +4364,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 1772
+            "y": 3928
           },
           "id": 98,
           "interval": "$interval",
@@ -4540,7 +4545,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 1781
+            "y": 3937
           },
           "id": 95,
           "interval": "$interval",
@@ -4651,6 +4656,570 @@
         "x": 0,
         "y": 34
       },
+      "id": 126,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 667
+          },
+          "id": 33,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance, location) (rocm_temperature_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{location}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Temperature (\u00b0C)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "Node: $1 ($2)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 707
+          },
+          "id": 128,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance, location) (rocm_temperature_memory_celsius * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{location}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Memory Temperature (\u00b0C)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "Node: $1 ($2)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "watt"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 715
+          },
+          "id": 129,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_average_socket_power_watts * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Power (W)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "rotmhz"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 723
+          },
+          "id": 130,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_sclk_clock_mhz * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Frequency - Engine Clock (MHz)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "rotmhz"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 723
+          },
+          "id": 131,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_mclk_clock_mhz * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Frequency - Memory Clock (MHz)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU Telemetry - Nodes",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
       "id": 21,
       "panels": [
         {
@@ -4718,9 +5287,9 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1636
+            "y": 668
           },
-          "id": 33,
+          "id": 127,
           "interval": "$interval",
           "options": {
             "legend": {
@@ -4819,7 +5388,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1668
+            "y": 676
           },
           "id": 104,
           "interval": "$interval",
@@ -4903,7 +5472,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4919,7 +5489,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1676
+            "y": 684
           },
           "id": 22,
           "interval": "$interval",
@@ -5003,7 +5573,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5019,7 +5590,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1684
+            "y": 692
           },
           "id": 25,
           "interval": "$interval",
@@ -5103,7 +5674,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5119,7 +5691,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1684
+            "y": 692
           },
           "id": 23,
           "interval": "$interval",
@@ -5165,7 +5737,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 36
       },
       "id": 123,
       "panels": [
@@ -5235,7 +5807,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1637
+            "y": 2168
           },
           "id": 125,
           "interval": "$interval",
@@ -5290,7 +5862,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "id": 122,
       "panels": [
@@ -5360,7 +5932,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1646
+            "y": 1172
           },
           "id": 120,
           "options": {
@@ -5557,7 +6129,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1646
+            "y": 1172
           },
           "id": 121,
           "options": {
@@ -5698,7 +6270,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 38
       },
       "id": 44,
       "panels": [
@@ -5767,7 +6339,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2723
+            "y": 4879
           },
           "id": 43,
           "interval": "$interval",
@@ -5877,7 +6449,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2723
+            "y": 4879
           },
           "id": 48,
           "interval": "$interval",
@@ -5932,7 +6504,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 39
       },
       "id": 101,
       "panels": [
@@ -6000,7 +6572,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5517
+            "y": 7673
           },
           "id": 40,
           "interval": "$interval",
@@ -6109,7 +6681,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5517
+            "y": 7673
           },
           "id": 42,
           "interval": "$interval",
@@ -6218,7 +6790,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5525
+            "y": 7681
           },
           "id": 105,
           "interval": "$interval",
@@ -6327,7 +6899,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5525
+            "y": 7681
           },
           "id": 106,
           "interval": "$interval",
@@ -6382,7 +6954,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 40
       },
       "id": 41,
       "panels": [
@@ -6451,7 +7023,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1870
+            "y": 4026
           },
           "id": 102,
           "interval": "$interval",
@@ -6561,7 +7133,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1870
+            "y": 4026
           },
           "id": 103,
           "interval": "$interval",
@@ -6671,7 +7243,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1878
+            "y": 4034
           },
           "id": 116,
           "interval": "$interval",
@@ -6781,7 +7353,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1878
+            "y": 4034
           },
           "id": 117,
           "interval": "$interval",
@@ -6836,7 +7408,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 41
       },
       "id": 83,
       "panels": [
@@ -6904,7 +7476,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 7027
+            "y": 9183
           },
           "id": 46,
           "interval": "$interval",
@@ -7012,7 +7584,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 7027
+            "y": 9183
           },
           "id": 45,
           "interval": "$interval",
@@ -7066,7 +7638,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 42
       },
       "id": 57,
       "panels": [
@@ -7173,7 +7745,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 7466
+            "y": 9622
           },
           "id": 56,
           "interval": "$interval",
@@ -7266,7 +7838,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 43
       },
       "id": 111,
       "panels": [
@@ -7397,7 +7969,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5581
+            "y": 7737
           },
           "id": 107,
           "interval": "$interval",
@@ -7592,7 +8164,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5581
+            "y": 7737
           },
           "id": 112,
           "interval": "$interval",
@@ -7751,7 +8323,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5589
+            "y": 7745
           },
           "id": 108,
           "interval": "$interval",
@@ -7979,7 +8551,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5589
+            "y": 7745
           },
           "id": 113,
           "interval": "$interval",
@@ -8134,7 +8706,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5597
+            "y": 7753
           },
           "id": 109,
           "interval": "$interval",
@@ -8362,7 +8934,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5597
+            "y": 7753
           },
           "id": 115,
           "interval": "$interval",
@@ -8518,7 +9090,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5605
+            "y": 7761
           },
           "id": 110,
           "interval": "$interval",
@@ -8742,7 +9314,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5605
+            "y": 7761
           },
           "id": 114,
           "interval": "$interval",
