@@ -64,6 +64,10 @@ class PM_COUNTERS(Collector):
         definedMetrics = {}
 
         logging.info("collector_pm_counters: scanning files in %s" % self.__pm_counter_dir)
+        if os.path.isdir(self.__pm_counter_dir) is False:
+            logging.warning("--> PM counter directory %s does not exist" % self.__pm_counter_dir)
+            logging.warning("--> skipping PM counter data collection")
+            return
         for file in Path(self.__pm_counter_dir).iterdir():
             logging.debug("Examining PM counter filename: %s" % file)
             if any(name in str(file) for name in self.__skipnames):
