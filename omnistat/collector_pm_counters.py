@@ -99,7 +99,7 @@ class PM_COUNTERS(Collector):
                             gauge = definedMetrics[metric_name]
                         else:
                             description = f"GPU {match.group(3)} ({units_short})"
-                            gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card","vendor"])
+                            gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card", "vendor"])
                             definedMetrics[metric_name] = gauge
                             logging.info(
                                 "--> [Registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description)
@@ -111,7 +111,7 @@ class PM_COUNTERS(Collector):
                     else:
                         metric_name = file.name
                         description = f"Node-level {metric_name} ({units_short})"
-                        gauge = Gauge(self.__prefix + metric_name, description,labelnames=["vendor"])
+                        gauge = Gauge(self.__prefix + metric_name, description, labelnames=["vendor"])
                         metric_entry = (gauge, str(file))
                         self.__pm_files_host.append(metric_entry)
                         logging.info("--> [registered] %s -> %s (gauge)" % (self.__prefix + metric_name, description))
@@ -138,7 +138,7 @@ class PM_COUNTERS(Collector):
             try:
                 with open(filePath, "r") as f:
                     data = f.readline().strip().split()
-                    gaugeMetric.labels(card=gpuIndex,vendor=self.__vendor).set(data[0])
+                    gaugeMetric.labels(card=gpuIndex, vendor=self.__vendor).set(data[0])
 
             except:
                 pass
