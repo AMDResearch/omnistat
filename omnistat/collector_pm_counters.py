@@ -74,20 +74,22 @@ class PM_COUNTERS(Collector):
                     if match:
                         metric_name = match.group(1) + match.group(3)
                         gpu_id = int(match.group(2))
-                        logging.info("--> Registering GPU-level PM counter metric: %s (card=%i)" % (metric_name, gpu_id))
                         if metric_name in definedMetrics:
                             gauge = definedMetrics[metric_name]
                         else:
                             gauge = Gauge(self.__prefix + metric_name, metric_name, labelnames=["card"])
                             definedMetrics[metric_name] = gauge
+                            logging.info("--> [Registered] %s (gauge)" % (self.__prefix + metric_name))
+                            
                         metric_entry = (gauge,str(file),gpu_id)                            
                         self.__pm_files_gpu.append(metric_entry)
+
                     else:
                         metric_name = file.name
-                        logging.info("--> Registering host-level PM counter metric: %s" % metric_name)
                         gauge = Gauge(self.__prefix + metric_name, metric_name)
                         metric_entry = (gauge, str(file))
                         self.__pm_files_host.append(metric_entry)
+                        logging.info("--> [registered] %s (gauge)" % self.__prefix + metric_name)                        
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
@@ -111,7 +113,6 @@ class PM_COUNTERS(Collector):
             try:
                 with open(filePath,"r") as f:
                     data = f.readline().strip().split()
-                    print(data)
                     gaugeMetric.labels(card=gpuIndex).set(data[0])
 
             except:
