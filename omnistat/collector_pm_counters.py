@@ -24,7 +24,8 @@
 
 """PM counter monitoring
 
-Scans telmetry in /sys/cray/pm_counters for compute node power-related data.
+Scans available telemetry in /sys/cray/pm_counters for compute node
+power-related data.
 """
 
 import json
@@ -47,14 +48,15 @@ class PM_COUNTERS(Collector):
 
         self.__prefix = "omnistat_pmcounter_"
         self.__pm_counter_dir = "/sys/cray/pm_counters"
+        self.__unit_mapping = {"W":"watts","J":"joules"}        
         self.__skipnames = ["power_cap","startup","freshness","raw_scan_hz","version","generation","_temp"]
         self.__gpumetrics = ["accel"]
+
         # metric data structure for host oriented metrics
-        # --> format: (gauge metric, filepath of source data)
-        self.__pm_files_gpu = []
+        self.__pm_files_gpu = []   # entries: (gauge metric, filepath of source data)
+
         # metric data structure for gpu oriented
-        # --> format: (gauge metric, filepath of source data, gpuindex)
-        self.__pm_files_host = []
+        self.__pm_files_host = [] # entries: (gauge metric, filepath, gpuindex)
 
 
     def registerMetrics(self):
@@ -68,28 +70,44 @@ class PM_COUNTERS(Collector):
             if any(name in str(file) for name in self.__skipnames):
                 logging.debug("--> Skipping PM file: %s" % file)
             else:
+                # check units
+                try:
+                    with open(file,"r") as f:
+                        data = f.readline().strip().split()
+                        if data[1] in self.__unit_mapping:
+                            units = self.__unit_mapping[data[1]]
+                            units_short = data[1]
+                        else:
+                            logging.error("Unknown unit specified in file: %s" % file)
+                            continue
+                except:
+                    logging.error("Error determining units from contents of %s" % file)
+                    continue                        
+
                 for gpumetric in self.__gpumetrics:
-                    pattern = fr"^({gpumetric})(\d+)(_.*)$"
+                    pattern = fr"^({gpumetric})(\d+)_(.*)$"
                     match = re.match(pattern,file.name)
                     if match:
-                        metric_name = match.group(1) + match.group(3)
+                        metric_name = match.group(1) + "_" + match.group(3) + f"_{units}"
                         gpu_id = int(match.group(2))
                         if metric_name in definedMetrics:
                             gauge = definedMetrics[metric_name]
                         else:
-                            gauge = Gauge(self.__prefix + metric_name, metric_name, labelnames=["card"])
+                            description = f"GPU {match.group(3)} ({units_short})"
+                            gauge = Gauge(self.__prefix + metric_name, description, labelnames=["card"])
                             definedMetrics[metric_name] = gauge
-                            logging.info("--> [Registered] %s (gauge)" % (self.__prefix + metric_name))
+                            logging.info("--> [Registered] %s -> %s (gauge)" % (self.__prefix + metric_name,description))
                             
                         metric_entry = (gauge,str(file),gpu_id)                            
                         self.__pm_files_gpu.append(metric_entry)
 
                     else:
                         metric_name = file.name
-                        gauge = Gauge(self.__prefix + metric_name, metric_name)
+                        description = f"Node-level {metric_name} ({units_short})"                        
+                        gauge = Gauge(self.__prefix + metric_name, description)
                         metric_entry = (gauge, str(file))
                         self.__pm_files_host.append(metric_entry)
-                        logging.info("--> [registered] %s (gauge)" % self.__prefix + metric_name)                        
+                        logging.info("--> [registered] %s -> %s (gauge)" % (self.__prefix + metric_name,description))
 
     def updateMetrics(self):
         """Update registered metrics of interest"""
