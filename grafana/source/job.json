@@ -2023,7 +2023,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 30
+            "y": 639
           },
           "id": 88,
           "interval": "$interval",
@@ -2133,7 +2133,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 30
+            "y": 639
           },
           "id": 89,
           "interval": "$interval",
@@ -2284,7 +2284,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 933
+            "y": 1542
           },
           "id": 91,
           "interval": "$interval",
@@ -2436,7 +2436,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 941
+            "y": 1550
           },
           "id": 99,
           "interval": "$interval",
@@ -2601,7 +2601,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 941
+            "y": 1550
           },
           "id": 100,
           "interval": "$interval",
@@ -2751,7 +2751,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 31
+            "y": 640
           },
           "id": 28,
           "interval": "$interval",
@@ -2813,7 +2813,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 31
+            "y": 640
           },
           "id": 86,
           "interval": "$interval",
@@ -2927,7 +2927,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 71
+            "y": 680
           },
           "id": 29,
           "interval": "$interval",
@@ -2989,7 +2989,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 71
+            "y": 680
           },
           "id": 31,
           "interval": "$interval",
@@ -3131,7 +3131,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 79
+            "y": 688
           },
           "id": 24,
           "interval": "$interval",
@@ -3205,7 +3205,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 173
+            "y": 782
           },
           "id": 27,
           "interval": "$interval",
@@ -3315,7 +3315,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 173
+            "y": 782
           },
           "id": 87,
           "interval": "$interval",
@@ -3466,7 +3466,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 184
+            "y": 793
           },
           "id": 90,
           "interval": "$interval",
@@ -3634,7 +3634,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 192
+            "y": 801
           },
           "id": 98,
           "interval": "$interval",
@@ -3815,7 +3815,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 192
+            "y": 801
           },
           "id": 95,
           "interval": "$interval",
@@ -4087,7 +4087,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 201
+            "y": 810
           },
           "id": 52,
           "interval": "$interval",
@@ -4241,7 +4241,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2040
+            "y": 2649
           },
           "id": 33,
           "interval": "$interval",
@@ -4351,7 +4351,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2048
+            "y": 2657
           },
           "id": 128,
           "interval": "$interval",
@@ -4460,7 +4460,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2056
+            "y": 2665
           },
           "id": 129,
           "interval": "$interval",
@@ -4569,7 +4569,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2064
+            "y": 2673
           },
           "id": 130,
           "interval": "$interval",
@@ -4678,7 +4678,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2064
+            "y": 2673
           },
           "id": 131,
           "interval": "$interval",
@@ -4802,7 +4802,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 34
+            "y": 643
           },
           "id": 127,
           "interval": "$interval",
@@ -4903,7 +4903,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 651
           },
           "id": 104,
           "interval": "$interval",
@@ -5004,7 +5004,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 50
+            "y": 659
           },
           "id": 22,
           "interval": "$interval",
@@ -5105,7 +5105,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 58
+            "y": 667
           },
           "id": 25,
           "interval": "$interval",
@@ -5206,7 +5206,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 58
+            "y": 667
           },
           "id": 23,
           "interval": "$interval",
@@ -5322,9 +5322,9 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2194
+            "y": 35
           },
-          "id": 125,
+          "id": 134,
           "interval": "$interval",
           "options": {
             "legend": {
@@ -5368,7 +5368,7 @@
           "type": "timeseries"
         }
       ],
-      "title": "GPU Compute Unit Occupancy [all GPUs]",
+      "title": "GPU Occupancy [all GPUs]",
       "type": "row"
     },
     {
@@ -5378,6 +5378,133 @@
         "w": 24,
         "x": 0,
         "y": 35
+      },
+      "id": 133,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "description": "Raw performance counter values.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 36
+          },
+          "id": 125,
+          "interval": "$interval",
+          "maxPerRow": 3,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "repeat": "counters",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "(omnistat_rocprofiler{counter=\"$counters\"} * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Performance Counter $counters",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "GPU: $1/$2"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "GPU Counters [all GPUs]",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
       },
       "id": 122,
       "panels": [
@@ -5447,7 +5574,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2203
+            "y": 61
           },
           "id": 120,
           "options": {
@@ -5644,7 +5771,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2203
+            "y": 61
           },
           "id": 121,
           "options": {
@@ -5785,7 +5912,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 37
       },
       "id": 44,
       "panels": [
@@ -5854,7 +5981,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2212
+            "y": 150
           },
           "id": 43,
           "interval": "$interval",
@@ -5964,7 +6091,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2212
+            "y": 150
           },
           "id": 48,
           "interval": "$interval",
@@ -6019,7 +6146,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 37
+        "y": 38
       },
       "id": 101,
       "panels": [
@@ -6088,7 +6215,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2213
+            "y": 2822
           },
           "id": 40,
           "interval": "$interval",
@@ -6198,7 +6325,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2213
+            "y": 2822
           },
           "id": 42,
           "interval": "$interval",
@@ -6307,7 +6434,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 2221
+            "y": 2830
           },
           "id": 105,
           "interval": "$interval",
@@ -6416,7 +6543,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 2221
+            "y": 2830
           },
           "id": 106,
           "interval": "$interval",
@@ -6471,7 +6598,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 39
       },
       "id": 41,
       "panels": [
@@ -6540,7 +6667,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3361
+            "y": 3970
           },
           "id": 102,
           "interval": "$interval",
@@ -6650,7 +6777,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3361
+            "y": 3970
           },
           "id": 103,
           "interval": "$interval",
@@ -6760,7 +6887,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 3369
+            "y": 3978
           },
           "id": 116,
           "interval": "$interval",
@@ -6870,7 +6997,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 3369
+            "y": 3978
           },
           "id": 117,
           "interval": "$interval",
@@ -6925,7 +7052,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 40
       },
       "id": 83,
       "panels": [
@@ -6993,7 +7120,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 14135
+            "y": 14744
           },
           "id": 46,
           "interval": "$interval",
@@ -7101,7 +7228,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 14135
+            "y": 14744
           },
           "id": 45,
           "interval": "$interval",
@@ -7155,7 +7282,131 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 41
+      },
+      "id": 132,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 90
+          },
+          "id": 135,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "(omnistat_fom * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Figure of Merit",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "Node: $1 ($2)"
+              }
+            }
+          ],
+          "type": "timeseries"
+        }
+      ],
+      "title": "Figure of Merit",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 42
       },
       "id": 57,
       "panels": [
@@ -7262,7 +7513,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 14574
+            "y": 15183
           },
           "id": 56,
           "interval": "$interval",
@@ -7355,7 +7606,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 43
       },
       "id": 111,
       "panels": [
@@ -7486,7 +7737,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 12689
+            "y": 13298
           },
           "id": 107,
           "interval": "$interval",
@@ -7681,7 +7932,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 12689
+            "y": 13298
           },
           "id": 112,
           "interval": "$interval",
@@ -7840,7 +8091,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 12697
+            "y": 13306
           },
           "id": 108,
           "interval": "$interval",
@@ -8068,7 +8319,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 12697
+            "y": 13306
           },
           "id": 113,
           "interval": "$interval",
@@ -8223,7 +8474,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 12705
+            "y": 13314
           },
           "id": 109,
           "interval": "$interval",
@@ -8451,7 +8702,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 12705
+            "y": 13314
           },
           "id": 115,
           "interval": "$interval",
@@ -8607,7 +8858,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 12713
+            "y": 13322
           },
           "id": 110,
           "interval": "$interval",
@@ -8831,7 +9082,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 12713
+            "y": 13322
           },
           "id": 114,
           "interval": "$interval",
@@ -8983,6 +9234,28 @@
         "query": "9100",
         "skipUrlSync": true,
         "type": "constant"
+      },
+      {
+        "allowCustomValue": false,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${source}"
+        },
+        "definition": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Counters",
+        "name": "counters",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 4,
+        "type": "query"
       }
     ]
   },
