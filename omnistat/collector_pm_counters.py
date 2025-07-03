@@ -109,7 +109,7 @@ class PM_COUNTERS(Collector):
                         self.__pm_files_gpu.append(metric_entry)
 
                     else:
-                        metric_name = file.name
+                        metric_name = file.name + f"_{units}"
                         description = f"Node-level {metric_name} ({units_short})"
                         gauge = Gauge(self.__prefix + metric_name, description, labelnames=["vendor"])
                         metric_entry = (gauge, str(file))
