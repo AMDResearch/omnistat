@@ -9771,7 +9771,9 @@
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": [ "$__all" ]
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -9798,7 +9800,9 @@
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": [ "$__all" ]
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
