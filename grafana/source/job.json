@@ -6016,7 +6016,7 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "rate(omnistat_rocprofiler{counter=\"$counters\"} * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})[$interval]",
+              "expr": "rate(omnistat_rocprofiler{counter=\"$counters\"}[$__rate_interval]) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
