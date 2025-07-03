@@ -5927,7 +5927,7 @@
             "type": "prometheus",
             "uid": "${source}"
           },
-          "description": "Raw performance counter values.",
+          "description": "Performance counter rate using based on raw values from each counter without any other transformation.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -5978,7 +5978,8 @@
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "cps"
             },
             "overrides": []
           },
@@ -5990,7 +5991,7 @@
           },
           "id": 125,
           "interval": "$interval",
-          "maxPerRow": 3,
+          "maxPerRow": 2,
           "options": {
             "legend": {
               "calcs": [],
@@ -6015,14 +6016,14 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(omnistat_rocprofiler{counter=\"$counters\"} * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "expr": "rate(omnistat_rocprofiler{counter=\"$counters\"} * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})[$interval]",
               "instant": false,
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "GPU Performance Counter $counters",
+          "title": "GPU Performance Counter $counters (counts/s)",
           "transformations": [
             {
               "id": "renameByRegex",
