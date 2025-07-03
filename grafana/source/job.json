@@ -4214,8 +4214,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4324,8 +4323,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4434,8 +4432,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4544,8 +4541,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4654,8 +4650,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4778,8 +4773,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4879,8 +4873,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4980,8 +4973,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5081,8 +5073,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5182,8 +5173,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5297,8 +5287,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5407,8 +5396,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5517,8 +5505,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5627,8 +5614,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5737,8 +5723,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5986,8 +5971,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -7881,8 +7865,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -7981,8 +7964,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -9787,46 +9769,56 @@
       },
       {
         "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": [ "$__all" ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
-        "definition": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+        "definition": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
         "hide": 2,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Counters",
+        "multi": true,
         "name": "counters",
         "options": [],
         "query": {
-          "qryType": 1,
-          "query": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+          "qryType": 3,
+          "query": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "",
-        "sort": 4,
+        "regex": "/.*counter=\"([^\"]*).*/",
+        "sort": 1,
         "type": "query"
       },
       {
         "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": [ "$__all" ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
-        "definition": "label_values(omnistat_fom{jobid=\"$jobid\"},name)",
+        "definition": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
         "hide": 2,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Figures of merit",
+        "multi": true,
         "name": "figures",
         "options": [],
         "query": {
-          "qryType": 1,
-          "query": "label_values(omnistat_fom{jobid=\"$jobid\"},name)",
+          "qryType": 3,
+          "query": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "",
-        "sort": 4,
+        "regex": "/.*name=\"([^\"]*).*/",
+        "sort": 1,
         "type": "query"
       }
     ]
