@@ -1771,6 +1771,7 @@
         "y": 25
       },
       "id": 118,
+      "interval": "$interval",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
