@@ -1529,6 +1529,7 @@
           "editorMode": "code",
           "expr": "sum(rate(node_network_receive_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))) + sum(rate(node_network_transmit_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Ethernet",
           "range": true,
           "refId": "A"
@@ -1542,6 +1543,7 @@
           "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))) + sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Infiniband",
           "range": true,
           "refId": "B"
@@ -1678,6 +1680,7 @@
           "expr": "sum(rate(node_network_receive_bytes_total[$__rate_interval]) * on (instance) group_left()(label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Rx",
           "range": true,
           "refId": "C"
@@ -1691,6 +1694,7 @@
           "expr": "sum(rate(node_network_transmit_bytes_total[$__rate_interval]) * on (instance) group_left()(label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Tx",
           "range": true,
           "refId": "D"
@@ -1703,6 +1707,7 @@
           "editorMode": "code",
           "expr": "sum(rate(node_infiniband_port_data_received_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "IB Rx",
           "range": true,
           "refId": "A"
@@ -1716,7 +1721,7 @@
           "expr": "sum(rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval]) * on (instance) group_left() (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\")))",
           "hide": false,
           "instant": false,
-          "interval": "",
+          "interval": "$interval",
           "legendFormat": "IB Tx",
           "range": true,
           "refId": "B"
@@ -1793,6 +1798,7 @@
           "editorMode": "code",
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}) + sum(rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Ethernet",
           "range": true,
           "refId": "A"
@@ -1806,6 +1812,7 @@
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}) + sum(rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "High Performance Interconnect",
           "range": true,
           "refId": "B"
@@ -1942,6 +1949,7 @@
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Rx",
           "range": true,
           "refId": "C"
@@ -1955,6 +1963,7 @@
           "expr": "sum(rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Tx",
           "range": true,
           "refId": "D"
@@ -1967,6 +1976,7 @@
           "editorMode": "code",
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Other Rx",
           "range": true,
           "refId": "A"
@@ -1980,7 +1990,7 @@
           "expr": "sum(rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
-          "interval": "",
+          "interval": "$interval",
           "legendFormat": "Other Tx",
           "range": true,
           "refId": "B"
@@ -6018,6 +6028,7 @@
               "editorMode": "code",
               "expr": "rate(omnistat_rocprofiler{counter=\"$counters\"}[$__rate_interval]) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
               "refId": "A"
@@ -6779,6 +6790,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_network_receive_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -6888,6 +6900,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_network_transmit_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -6997,6 +7010,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7106,6 +7120,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7229,6 +7244,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_infiniband_port_data_received_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7338,6 +7354,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_infiniband_port_data_transmitted_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7447,6 +7464,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) rmsjob_info{jobid=\"$jobid\"}",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7556,6 +7574,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) rmsjob_info{jobid=\"$jobid\"}",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7678,6 +7697,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_disk_read_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -7786,6 +7806,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(node_disk_written_bytes_total[$__rate_interval])) * on (instance) (label_replace(rmsjob_info{jobid=\"$jobid\"}, \"instance\", \"$1:$node_exporter_port\", \"instance\", \"(.*):(.*)\"))\r\n",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
