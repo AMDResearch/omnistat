@@ -54,13 +54,18 @@ def download_dashboard(grafana_url, headers, dashboard_uid, dashboard_name, save
         print(f".. Status: {response.status_code}, {response.text}")
         return
 
+    # Set of variables with values that need to be synchronized.
+    #  - interval: track default value
+    #  - counters & figures: multi-value variables that need to be set to "all"
+    keep_variables = {"interval", "counters", "figures"}
+
     data = response.json()
     dashboard_data = data["dashboard"]
     dashboard_data["id"] = None
     dashboard_data["version"] = 1
     if "templating" in dashboard_data and "list" in dashboard_data["templating"]:
         for var in dashboard_data["templating"]["list"]:
-            if "current" in var and "type" in var and var["name"] != "interval":
+            if "current" in var and "type" in var and not var["name"] in keep_variables:
                 del var["current"]
 
     os.makedirs(save_dir, exist_ok=True)
