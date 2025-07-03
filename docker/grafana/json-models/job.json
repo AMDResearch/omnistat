@@ -1094,6 +1094,7 @@
         "y": 25
       },
       "id": 118,
+      "interval": "$interval",
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -1121,6 +1122,7 @@
           "editorMode": "code",
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}) + sum(rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Ethernet",
           "range": true,
           "refId": "A"
@@ -1134,6 +1136,7 @@
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"}) + sum(rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "High Performance Interconnect",
           "range": true,
           "refId": "B"
@@ -1270,6 +1273,7 @@
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Rx",
           "range": true,
           "refId": "C"
@@ -1283,6 +1287,7 @@
           "expr": "sum(rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Eth Tx",
           "range": true,
           "refId": "D"
@@ -1295,6 +1300,7 @@
           "editorMode": "code",
           "expr": "sum(rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "instant": false,
+          "interval": "$interval",
           "legendFormat": "Other Rx",
           "range": true,
           "refId": "A"
@@ -1308,7 +1314,7 @@
           "expr": "sum(rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval]) * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
           "hide": false,
           "instant": false,
-          "interval": "",
+          "interval": "$interval",
           "legendFormat": "Other Tx",
           "range": true,
           "refId": "B"
@@ -3542,8 +3548,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3652,8 +3657,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3762,8 +3766,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3872,8 +3875,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3982,8 +3984,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4106,8 +4107,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4207,8 +4207,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4308,8 +4307,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4409,8 +4407,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4510,8 +4507,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4625,8 +4621,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4735,8 +4730,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4845,8 +4839,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -4955,8 +4948,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5065,8 +5057,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5270,7 +5261,7 @@
             "type": "prometheus",
             "uid": "${source}"
           },
-          "description": "Raw performance counter values.",
+          "description": "Performance counter rate using based on raw values from each counter without any other transformation.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -5314,15 +5305,15 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "cps"
             },
             "overrides": []
           },
@@ -5334,7 +5325,7 @@
           },
           "id": 125,
           "interval": "$interval",
-          "maxPerRow": 3,
+          "maxPerRow": 2,
           "options": {
             "legend": {
               "calcs": [],
@@ -5359,14 +5350,15 @@
                 "uid": "${source}"
               },
               "editorMode": "code",
-              "expr": "(omnistat_rocprofiler{counter=\"$counters\"} * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "expr": "rate(omnistat_rocprofiler{counter=\"$counters\"}[$__rate_interval]) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "{{instance}}, {{card}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "GPU Performance Counter $counters",
+          "title": "GPU Performance Counter $counters (counts/s)",
           "transformations": [
             {
               "id": "renameByRegex",
@@ -5890,6 +5882,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -5999,6 +5992,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class=\"net\"}[$__rate_interval])) * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -6122,6 +6116,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_rx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) rmsjob_info{jobid=\"$jobid\"}",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -6231,6 +6226,7 @@
               "editorMode": "code",
               "expr": "sum by (instance) (rate(omnistat_network_tx_bytes{device_class!=\"net\"}[$__rate_interval])) * on (instance) rmsjob_info{jobid=\"$jobid\"}",
               "instant": false,
+              "interval": "$interval",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -6311,8 +6307,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6411,8 +6406,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -8217,46 +8211,60 @@
       },
       {
         "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
-        "definition": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+        "definition": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
         "hide": 2,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Counters",
+        "multi": true,
         "name": "counters",
         "options": [],
         "query": {
-          "qryType": 1,
-          "query": "label_values(omnistat_rocprofiler{jobid=\"$jobid\"},counter)",
+          "qryType": 3,
+          "query": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "",
-        "sort": 4,
+        "regex": "/.*counter=\"([^\"]*).*/",
+        "sort": 1,
         "type": "query"
       },
       {
         "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${source}"
         },
-        "definition": "label_values(omnistat_fom{jobid=\"$jobid\"},name)",
+        "definition": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
         "hide": 2,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Figures of merit",
+        "multi": true,
         "name": "figures",
         "options": [],
         "query": {
-          "qryType": 1,
-          "query": "label_values(omnistat_fom{jobid=\"$jobid\"},name)",
+          "qryType": 3,
+          "query": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
-        "regex": "",
-        "sort": 4,
+        "regex": "/.*name=\"([^\"]*).*/",
+        "sort": 1,
         "type": "query"
       }
     ]
