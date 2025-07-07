@@ -9814,7 +9814,7 @@
           "query": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*counter=\"([^\"]*).*/",
         "sort": 1,
         "type": "query"
@@ -9843,7 +9843,7 @@
           "query": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*name=\"([^\"]*).*/",
         "sort": 1,
         "type": "query"
