@@ -1764,7 +1764,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 2354
+            "y": 30
           },
           "id": 88,
           "interval": "$interval",
@@ -1874,7 +1874,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 2354
+            "y": 30
           },
           "id": 89,
           "interval": "$interval",
@@ -2008,7 +2008,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2024,7 +2025,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 3257
+            "y": 507
           },
           "id": 91,
           "interval": "$interval",
@@ -2108,7 +2109,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2175,7 +2177,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 3265
+            "y": 515
           },
           "id": 99,
           "interval": "$interval",
@@ -2287,7 +2289,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2339,7 +2342,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 3265
+            "y": 515
           },
           "id": 100,
           "interval": "$interval",
@@ -2468,7 +2471,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2488,7 +2492,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 2355
+            "y": 31
           },
           "id": 28,
           "interval": "$interval",
@@ -2550,7 +2554,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 2355
+            "y": 31
           },
           "id": 86,
           "interval": "$interval",
@@ -2643,7 +2647,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "#EAB839",
@@ -2663,7 +2668,7 @@
             "h": 8,
             "w": 9,
             "x": 0,
-            "y": 2395
+            "y": 417
           },
           "id": 29,
           "interval": "$interval",
@@ -2725,7 +2730,7 @@
             "h": 8,
             "w": 15,
             "x": 9,
-            "y": 2395
+            "y": 417
           },
           "id": 31,
           "interval": "$interval",
@@ -2850,7 +2855,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2866,7 +2872,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2403
+            "y": 425
           },
           "id": 24,
           "interval": "$interval",
@@ -2940,7 +2946,7 @@
             "h": 11,
             "w": 12,
             "x": 0,
-            "y": 2497
+            "y": 32
           },
           "id": 27,
           "interval": "$interval",
@@ -3050,7 +3056,7 @@
             "h": 11,
             "w": 12,
             "x": 12,
-            "y": 2497
+            "y": 32
           },
           "id": 87,
           "interval": "$interval",
@@ -3184,7 +3190,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3200,7 +3207,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 2508
+            "y": 43
           },
           "id": 90,
           "interval": "$interval",
@@ -3284,7 +3291,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3367,7 +3375,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 2516
+            "y": 51
           },
           "id": 98,
           "interval": "$interval",
@@ -3495,7 +3503,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3547,7 +3556,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 2516
+            "y": 51
           },
           "id": 95,
           "interval": "$interval",
@@ -3694,7 +3703,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -3818,7 +3828,7 @@
             "h": 9,
             "w": 24,
             "x": 0,
-            "y": 2525
+            "y": 60
           },
           "id": 52,
           "interval": "$interval",
@@ -3955,7 +3965,118 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 222
+          },
+          "id": 142,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utilization (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(.*):(.*)",
+                "renamePattern": "Node: $1"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3971,7 +4092,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 33
+            "y": 230
           },
           "id": 33,
           "interval": "$interval",
@@ -4064,7 +4185,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4080,7 +4202,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 233
+            "y": 238
           },
           "id": 128,
           "interval": "$interval",
@@ -4173,7 +4295,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4189,7 +4312,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 241
+            "y": 246
           },
           "id": 129,
           "interval": "$interval",
@@ -4282,7 +4405,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4298,7 +4422,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 249
+            "y": 254
           },
           "id": 130,
           "interval": "$interval",
@@ -4391,7 +4515,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4407,7 +4532,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 249
+            "y": 254
           },
           "id": 131,
           "interval": "$interval",
@@ -4514,7 +4639,109 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 436
+          },
+          "id": 143,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "GPU ID {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utilization (%)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4530,7 +4757,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 34
+            "y": 444
           },
           "id": 127,
           "interval": "$interval",
@@ -4614,7 +4841,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4630,7 +4858,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 452
           },
           "id": 104,
           "interval": "$interval",
@@ -4730,7 +4958,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 50
+            "y": 460
           },
           "id": 22,
           "interval": "$interval",
@@ -4830,7 +5058,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 58
+            "y": 468
           },
           "id": 25,
           "interval": "$interval",
@@ -4930,7 +5158,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 58
+            "y": 468
           },
           "id": 23,
           "interval": "$interval",
@@ -5028,7 +5256,118 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 344
+          },
+          "id": 144,
+          "interval": "$interval",
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "maxHeight": 600,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${source}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (instance,card) (rocm_utilization_percentage * on (instance) group_left() rmsjob_info{jobid=\"$jobid\"})",
+              "instant": false,
+              "legendFormat": "{{instance}}, {{card}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "GPU Utilization (%)",
+          "transformations": [
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "([^,:]+)(?:[:].*)?, (.+)",
+                "renamePattern": "GPU: $1/$2"
+              }
+            }
+          ],
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${source}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5044,7 +5383,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 131
+            "y": 352
           },
           "id": 137,
           "interval": "$interval",
@@ -5137,7 +5476,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5153,7 +5493,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 139
+            "y": 360
           },
           "id": 138,
           "interval": "$interval",
@@ -5262,7 +5602,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 147
+            "y": 368
           },
           "id": 139,
           "interval": "$interval",
@@ -5371,7 +5711,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 155
+            "y": 376
           },
           "id": 140,
           "interval": "$interval",
@@ -5480,7 +5820,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 155
+            "y": 376
           },
           "id": 141,
           "interval": "$interval",
@@ -5604,7 +5944,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1718
+            "y": 3428
           },
           "id": 134,
           "interval": "$interval",
@@ -5728,7 +6068,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 957
+            "y": 2667
           },
           "id": 125,
           "interval": "$interval",
@@ -5856,7 +6196,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1678
+            "y": 3388
           },
           "id": 120,
           "options": {
@@ -6052,7 +6392,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1678
+            "y": 3388
           },
           "id": 121,
           "options": {
@@ -6261,7 +6601,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 1865
+            "y": 3575
           },
           "id": 43,
           "interval": "$interval",
@@ -6370,7 +6710,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 1865
+            "y": 3575
           },
           "id": 48,
           "interval": "$interval",
@@ -6493,7 +6833,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 4537
+            "y": 6247
           },
           "id": 40,
           "interval": "$interval",
@@ -6603,7 +6943,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 4537
+            "y": 6247
           },
           "id": 42,
           "interval": "$interval",
@@ -6727,7 +7067,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 5685
+            "y": 7395
           },
           "id": 102,
           "interval": "$interval",
@@ -6837,7 +7177,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 5685
+            "y": 7395
           },
           "id": 103,
           "interval": "$interval",
@@ -6961,7 +7301,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 16459
+            "y": 18169
           },
           "id": 46,
           "interval": "$interval",
@@ -7070,7 +7410,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 16459
+            "y": 18169
           },
           "id": 45,
           "interval": "$interval",
@@ -7194,7 +7534,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 963
+            "y": 2673
           },
           "id": 135,
           "interval": "$interval",
@@ -7358,7 +7698,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 1012
+            "y": 2722
           },
           "id": 56,
           "interval": "$interval",
@@ -7582,7 +7922,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 15013
+            "y": 16723
           },
           "id": 107,
           "interval": "$interval",
@@ -7777,7 +8117,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 15013
+            "y": 16723
           },
           "id": 112,
           "interval": "$interval",
@@ -7936,7 +8276,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 15021
+            "y": 16731
           },
           "id": 108,
           "interval": "$interval",
@@ -8164,7 +8504,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 15021
+            "y": 16731
           },
           "id": 113,
           "interval": "$interval",
@@ -8319,7 +8659,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 15029
+            "y": 16739
           },
           "id": 109,
           "interval": "$interval",
@@ -8547,7 +8887,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 15029
+            "y": 16739
           },
           "id": 115,
           "interval": "$interval",
@@ -8703,7 +9043,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 15037
+            "y": 16747
           },
           "id": 110,
           "interval": "$interval",
@@ -8927,7 +9267,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 15037
+            "y": 16747
           },
           "id": 114,
           "interval": "$interval",
@@ -9084,9 +9424,7 @@
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": [
-            "$__all"
-          ]
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -9104,7 +9442,7 @@
           "query": "query_result(group by (counter) (omnistat_rocprofiler * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*counter=\"([^\"]*).*/",
         "sort": 1,
         "type": "query"
@@ -9113,9 +9451,7 @@
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": [
-            "$__all"
-          ]
+          "value": "$__all"
         },
         "datasource": {
           "type": "prometheus",
@@ -9133,7 +9469,7 @@
           "query": "query_result(group by (name) (omnistat_fom * on (instance) group_left() (rmsjob_info{jobid=\"$jobid\"})))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "/.*name=\"([^\"]*).*/",
         "sort": 1,
         "type": "query"
