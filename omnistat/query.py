@@ -80,7 +80,7 @@ from omnistat import utils
 #     |   5.00 s |         25 s |              1.7 d |              5.2 d |
 #     |  15.00 s |         75 s |              5.2 d |             15.0 d |
 #     ---------------------------------------------------------------------
-#    Note that the maximum job duration is not a hard contraint: 1) the query
+#    Note that the maximum job duration is not a hard constraint: 1) the query
 #    tool can still be used with intervals longer than the sampling interval,
 #    and 2) Victoria Metrics can be tweaked to support longer job durations by
 #    increasing the `-search.maxPointsPerTimeseries` setting, which is 30k by
@@ -374,16 +374,33 @@ class QueryMetrics:
 
         # node-level data: accelerator energy usage
         node_level_accel_energy_total = 0.0
-        for gpu in range(self.numGPUs):
+        vendor_ngpus = 0
+        energy_gpus = []
+
+        for gpu in range(self.num_gpus):
             times_raw, values_raw, hosts = self.query_time_series_data(
                 f'omnistat_vendor_accel_energy_joules{{card="{gpu}"}}'
             )
             if values_raw:
+                vendor_ngpus += 1
                 for i in range(len(values_raw)):
                     accel_energy = values_raw[i][-1] - values_raw[i][0]
                     node_level_accel_energy_total += accel_energy
+                    energy_gpus.append(accel_energy)
                 # convert from J to kwH
                 self.node_level_accel_energy_total_kwh = node_level_accel_energy_total / (1000 * 3600)
+
+        # override smi-based estimates
+        if self.num_gpus == len(energy_gpus):
+            for gpu in range(self.num_gpus):
+                self.energyStats_kwh[gpu] = energy_gpus[gpu] / (1000 * 3600)
+        elif self.num_gpus > len(energy_gpus):
+            # deal with socket/gcd indexing (e.g. MI250)
+            if self.num_gpus % len(energy_gpus) == 0:
+                gpu_index_multiplier = int(self.num_gpus / len(energy_gpus))
+                for i in range(len(energy_gpus)):
+                    index = i * gpu_index_multiplier
+                    self.energyStats_kwh[index] = energy_gpus[i] / (1000 * 3600)
 
         return
 
@@ -542,7 +559,7 @@ class QueryMetrics:
 
         if self.vendorData:
             print("")
-            print("Vendor Energy data:")
+            print("Vendor Energy Data:")
             print("  " + "-" * 65)
             print(
                 "  Approximate Total Memory Energy Consumed = %.2e kWh (%5.2f %%)"
@@ -715,10 +732,12 @@ class QueryMetrics:
         <strong>Omnistat Report Card</strong>: JobID = %s<br/>
         <strong>Start Time</strong>: %s<br/>
         <strong>End Time</strong>: %s<br/>
+        <strong>Duration</strong>: %s secs<br/>
         """ % (
             self.jobID,
-            self.start_time,
+            self.start_time.strftime("%Y-%m-%d %H:%M:%S"),
             self.end_time.strftime("%Y-%m-%d %H:%M:%S"),
+            (self.end_time - self.start_time).seconds,
         )
         Story.append(Paragraph(ptext, styles["Bullet"]))
         Story.append(HRFlowable(width="100%", thickness=2))
@@ -794,8 +813,100 @@ class QueryMetrics:
 
         Story.append(Spacer(1, 0.2 * inch))
 
-        ptext = """Approximate Total GPU Energy Consumed = %.2e kWh""" % (self.gpu_energy_total_kwh)
-        Story.append(Paragraph(ptext, normal))
+        if self.vendorData:
+
+            ptext = """<strong>Vendor Energy Data Totals</strong>"""
+            Story.append(Paragraph(ptext, normal))
+            Story.append(Spacer(1, 0.2 * inch))
+
+            data = []
+            data.append(["Type", "Energy Consumed (kWh)", "% of Total"])
+            data.append(
+                [
+                    "Memory",
+                    "%.2e" % self.node_level_memory_energy_total_kwh,
+                    "%5.2f %%" % (100.0 * self.node_level_memory_energy_total_kwh / self.node_level_energy_total_kwh),
+                ]
+            )
+            data.append(
+                [
+                    "CPU",
+                    "%.2e" % self.node_level_cpu_energy_total_kwh,
+                    "%5.2f %%" % (100.0 * self.node_level_cpu_energy_total_kwh / self.node_level_energy_total_kwh),
+                ]
+            )
+            data.append(
+                [
+                    "Accelerator (GPU)",
+                    "%.2e" % self.node_level_accel_energy_total_kwh,
+                    "%5.2f %%" % (100.0 * self.node_level_accel_energy_total_kwh / self.node_level_energy_total_kwh),
+                ]
+            )
+            data.append(["Total", "%.2e" % self.node_level_energy_total_kwh, "%5.2f %%" % 100])
+
+            twidth = 6.348
+            t = Table(
+                data,
+                rowHeights=[0.21 * inch] * (len(data) - 1) + [0.23 * inch],
+                colWidths=[0.3 * twidth * inch] + [0.5 * twidth * inch] + [0.2 * twidth * inch],
+            )
+            t.hAlign = "LEFT"
+            t.setStyle(
+                TableStyle(
+                    [
+                        ("LINEBELOW", (0, 0), (-1, 0), 1.5, colors.black),
+                        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                        ("LINEBELOW", (0, 3), (-1, 3), 1.5, colors.black),
+                        ("ALIGN", (0, 3), (-1, -1), "CENTER"),
+                    ]
+                )
+            )
+            t.setStyle(TableStyle([("FONTSIZE", (1, 0), (-1, -1), 10)]))
+
+            t.setStyle(
+                TableStyle(
+                    [
+                        ("LINEBEFORE", (1, 0), (1, -1), 1.25, colors.darkgrey),
+                        ("LINEAFTER", (1, 0), (1, -1), 1.25, colors.darkgrey),
+                    ]
+                )
+            )
+
+            for each in range(1, len(data) - 1):
+                bg_color = colors.whitesmoke
+                t.setStyle(TableStyle([("BACKGROUND", (0, each), (-1, each), bg_color)]))
+            t.setStyle(TableStyle([("BACKGROUND", (0, 4), (-1, 4), colors.lightgrey)]))
+
+            Story.append(t)
+            Story.append(Spacer(1, 0.2 * inch))
+
+        ##             Story.append(HRFlowable(width="75%", thickness=1, hAlign="LEFT"))
+        ##             Story.append(Paragraph("<strong>Vendor energy data</strong>:", normal))
+        ##
+        ##             ptext = "Approximate Total Memory Energy Consumed = %.2e kWh (%5.2f %%)"% (
+        ##                     self.node_level_memory_energy_total_kwh,
+        ##                     100.0 * self.node_level_memory_energy_total_kwh / self.node_level_energy_total_kwh,
+        ##                 )
+        ##             Story.append(Paragraph(ptext, normal))
+        ##             ptext = "  Approximate Total CPU    Energy Consumed = %.2e kWh (%5.2f %%)" % (
+        ##                     self.node_level_cpu_energy_total_kwh,
+        ##                     100.0 * self.node_level_cpu_energy_total_kwh / self.node_level_energy_total_kwh,
+        ##                 )
+        ##             Story.append(Paragraph(ptext, normal))
+        ##
+        ##             ptext = "  Approximate Total Accel  Energy Consumed = %.2e kWh (%5.2f %%)" % (
+        ##                     self.node_level_accel_energy_total_kwh,
+        ##                     100.0 * self.node_level_accel_energy_total_kwh / self.node_level_energy_total_kwh,
+        ##                 )
+        ##             Story.append(Paragraph(ptext, normal))
+        ##
+        ##             ptext = "Approximate Total Node Energy Consumed   = %.2e kWh" % self.node_level_energy_total_kwh
+        ##             Story.append(Paragraph(ptext, normal))
+        ##
+        ##             Story.append(HRFlowable(width="75%", thickness=1, hAlign="LEFT"))
+        else:
+            ptext = """Approximate Total GPU Energy Consumed = %.2e kWh""" % (self.gpu_energy_total_kwh)
+            Story.append(Paragraph(ptext, normal))
 
         # --
         # Display time-series plots
