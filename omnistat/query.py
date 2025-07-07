@@ -120,7 +120,6 @@ class QueryMetrics:
         self.timer_start = timeit.default_timer()
 
         self.interval = interval
-
         self.jobID = jobid
         self.jobStep = jobstep
         self.jobstepQuery = 'jobstep=~".*"'
@@ -136,6 +135,7 @@ class QueryMetrics:
         self.prometheus = PrometheusConnect(url=self.config["prometheus_url"])
 
         self.enable_redirect = False
+        self.vendorData = False
         self.output = None
         self.output_file = output_file
 
@@ -339,6 +339,53 @@ class QueryMetrics:
                 minindex = i
         return minindex, sum
 
+    def gather_vendor_data(self):
+        # node-level data: total energy usage
+        times_raw, values_raw, hosts = self.query_time_series_data("omnistat_vendor_energy_joules")
+        if not values_raw:
+            return
+        self.vendorData = True
+
+        node_level_energy_total = 0.0
+        for i in range(len(values_raw)):
+            node_energy = values_raw[i][-1] - values_raw[i][0]            
+            node_level_energy_total += node_energy
+        # convert from J to kwH
+        self.node_level_energy_total_kwh = node_level_energy_total / (1000 * 3600)
+
+        # node-level data: memory energy usage
+        times_raw, values_raw, hosts = self.query_time_series_data("omnistat_vendor_memory_energy_joules")
+        if values_raw:
+            node_level_memory_energy_total = 0.0
+            for i in range(len(values_raw)):
+                memory_energy = values_raw[i][-1] - values_raw[i][0]            
+                node_level_memory_energy_total += memory_energy
+        # convert from J to kwH
+        self.node_level_memory_energy_total_kwh = node_level_memory_energy_total / (1000 * 3600)
+
+        # node-level data: cpu energy usage
+        times_raw, values_raw, hosts = self.query_time_series_data("omnistat_vendor_cpu_energy_joules")
+        node_level_cpu_energy_total = 0.0
+        for i in range(len(values_raw)):
+            cpu_energy = values_raw[i][-1] - values_raw[i][0]            
+            node_level_cpu_energy_total += cpu_energy
+        # convert from J to kwH
+        self.node_level_cpu_energy_total_kwh = node_level_cpu_energy_total / (1000 * 3600)
+
+        # node-level data: accelerator energy usage
+        node_level_accel_energy_total = 0.0        
+        for gpu in range(self.numGPUs):        
+            times_raw, values_raw, hosts = self.query_time_series_data(f'omnistat_vendor_accel_energy_joules{{card="{gpu}"}}')
+            if values_raw:
+                for i in range(len(values_raw)):
+                    accel_energy = values_raw[i][-1] - values_raw[i][0]            
+                    node_level_accel_energy_total += accel_energy
+                # convert from J to kwH
+                self.node_level_accel_energy_total_kwh = node_level_accel_energy_total / (1000 * 3600)
+
+
+        return
+
     def gather_data(self, saveTimeSeries=False):
         self.stats = {}
         self.time_series = {}
@@ -468,13 +515,15 @@ class QueryMetrics:
             if "title_short" in entry:
                 # print("%16s |" % entry['title_short'],end='')
                 print(" %s |" % entry["title_short"].center(16), end="")
+        print(" Energy (kWh) |",end="")
         print("")
         print("    %6s |" % "GPU #", end="")
         for entry in QueryMetrics.METRICS:
             if "title_short" in entry:
                 print(" %8s%8s |" % ("Max".center(6), "Mean".center(6)), end="")
+        print("    Total     |",end="")
         print("")
-        print("    " + "-" * 84)
+        print("    " + "-" * 99)
 
         for card in range(self.num_gpus):
             print("    %6s |" % card, end="")
@@ -486,11 +535,27 @@ class QueryMetrics:
                     "  %6.2f  %6.2f  |" % (self.stats[metric + "_max"][card], self.stats[metric + "_mean"][card]),
                     end="",
                 )
+            # add gpu-energy
+            print( "   %6.2e   |" % np.sum(self.energyStats_kwh[card]),end="")
             print("")
 
-        print("")
-        print("Approximate Total GPU Energy Consumed = %.2f kWh" % self.gpu_energy_total_kwh)
-        print("")
+        if self.vendorData:
+            print("")
+            print("Vendor Energy data:")
+            print("  " + "-" * 65)            
+            print("  Approximate Total Memory Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_memory_energy_total_kwh,
+                                                                                       100.0*self.node_level_memory_energy_total_kwh/self.node_level_energy_total_kwh))
+            print("  Approximate Total CPU    Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_cpu_energy_total_kwh,
+                                                                                       100.0*self.node_level_cpu_energy_total_kwh / self.node_level_energy_total_kwh))
+            print("  Approximate Total Accel  Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_accel_energy_total_kwh,
+                                                                                       100.0*self.node_level_accel_energy_total_kwh / self.node_level_energy_total_kwh))
+            print("  " + "-" * 65)
+            print("  Approximate Total Node Energy Consumed   = %.2e kWh" % self.node_level_energy_total_kwh)
+            print("")
+        else:
+            print("")
+            print("Approximate Total GPU Energy Consumed = %.2e kWh" % self.gpu_energy_total_kwh)
+            print("")
 
         print("--")
         print("Query interval = %.3f secs" % self.interval)
@@ -675,7 +740,7 @@ class QueryMetrics:
                     "%.2f" % self.stats["rocm_temperature_celsius_mean"][gpu],
                     "%.2f" % self.stats["rocm_average_socket_power_watts_max"][gpu],
                     "%.2f" % self.stats["rocm_average_socket_power_watts_mean"][gpu],
-                    "%.2f" % np.sum(self.energyStats_kwh[gpu]),
+                    "%.2e" % np.sum(self.energyStats_kwh[gpu]),
                 ]
             )
 
@@ -713,7 +778,7 @@ class QueryMetrics:
 
         Story.append(Spacer(1, 0.2 * inch))
 
-        ptext = """Approximate Total GPU Energy Consumed = %.2f kWh""" % (self.gpu_energy_total_kwh)
+        ptext = """Approximate Total GPU Energy Consumed = %.2e kWh""" % (self.gpu_energy_total_kwh)
         Story.append(Paragraph(ptext, normal))
 
         # --
@@ -966,6 +1031,7 @@ def main():
     query = QueryMetrics(args.interval, args.job, args.step, args.configfile, args.output)
     query.find_job_info()
     query.gather_data(saveTimeSeries=True)
+    query.gather_vendor_data()
     query.generate_report_card()
 
     if args.pdf:
