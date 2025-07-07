@@ -81,7 +81,7 @@ class RMSJob(Collector):
             # job step query command
             flags = "-s -w " + hostname + " -h --Format=StepID"
             self.__squeue_steps = [command] + flags.split()
-            logging.debug("sqeueue_exec = %s" % self.__squeue_query)
+            logging.debug("squeue_exec = %s" % self.__squeue_query)
         else:
             logging.error("Unsupported slurm job data collection mode")
 
