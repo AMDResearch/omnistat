@@ -90,6 +90,7 @@ parser.add_argument("-l", "--exclude-links", help="Exclude links with this name"
 parser.add_argument("-n", "--replace-name", help="Replace dashboard title and uid", required=False, type=str)
 parser.add_argument("--expand-rows", help="Expand all collapsible rows", action="store_true", default=False)
 parser.add_argument("--default-interval", help="Set the default interval", required=False, type=str)
+parser.add_argument("--show-source", help="Show data source selection", action="store_true", default=False)
 args = parser.parse_args()
 
 # Patterns to include/exclude panels and links.
@@ -179,6 +180,12 @@ if args.default_interval:
                 "text": args.default_interval,
                 "value": args.default_interval,
             }
+
+if args.show_source:
+    for i, var in enumerate(dashboard["templating"]["list"]):
+        if "name" in var and var["name"] == "source":
+            dashboard["templating"]["list"][i]["hide"] = 1
+            break
 
 links = dashboard.get("links", [])
 dashboard["links"] = []
