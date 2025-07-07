@@ -456,8 +456,10 @@ class QueryMetrics:
         print("-" * 70)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
-        print(" --> Start time = %s" % self.start_time)
+        print(" --> Start time = %s" % self.start_time.strftime("%Y-%m-%d %H:%M:%S"))
         print(" --> End   time = %s" % self.end_time.strftime("%Y-%m-%d %H:%M:%S"))
+        print(" --> Duration   = %i secs" % (self.end_time - self.start_time).seconds)
+
         print("")
         print("GPU Statistics:")
         print("")
