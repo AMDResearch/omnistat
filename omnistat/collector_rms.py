@@ -54,8 +54,11 @@ class RMSJob(Collector):
         self.__rmsJobFile = jobDetection["file"]
         self.__rmsJobStepFile = jobDetection["stepfile"]
         self.__rmsJobFileTimeStamp = 0
+        self.__rmsJobStepFileTimeStamp = 0
         self.__rmsAnnotationsFileTimeStamp = 0
+
         self.__resultsCached = {}
+        self.__resultsStepCached = {}
         self.__annotationsCached = {}
 
         # jobMode
@@ -135,8 +138,16 @@ class RMSJob(Collector):
         elif mode == "file-based":
             # preference is given to job step file if it exists
             if os.path.isfile(self.__rmsJobStepFile):
-                with open(self.__rmsJobStepFile, "r") as file:
-                    results = json.load(file)
+                # only read contents if modify timestamp has been updated
+                modTime = os.path.getmtime(self.__rmsJobStepFile)
+                if modTime > self.__rmsJobStepFileTimeStamp:
+                    with open(self.__rmsJobStepFile, "r") as file:
+                        logging.info("[file-based (step)]: reading %s " % self.__rmsJobStepFile)
+                        self.__rmsJobStepFileTimeStamp = modTime
+                        results = json.load(file)
+                    self.__resultsStepCached = results
+                else:
+                    results = self.__resultsStepCached
             elif os.path.isfile(self.__rmsJobFile):
                 # only read contents if modify timestamp has been updated
                 modTime = os.path.getmtime(self.__rmsJobFile)
