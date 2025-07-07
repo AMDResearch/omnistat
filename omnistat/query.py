@@ -348,7 +348,7 @@ class QueryMetrics:
 
         node_level_energy_total = 0.0
         for i in range(len(values_raw)):
-            node_energy = values_raw[i][-1] - values_raw[i][0]            
+            node_energy = values_raw[i][-1] - values_raw[i][0]
             node_level_energy_total += node_energy
         # convert from J to kwH
         self.node_level_energy_total_kwh = node_level_energy_total / (1000 * 3600)
@@ -358,7 +358,7 @@ class QueryMetrics:
         if values_raw:
             node_level_memory_energy_total = 0.0
             for i in range(len(values_raw)):
-                memory_energy = values_raw[i][-1] - values_raw[i][0]            
+                memory_energy = values_raw[i][-1] - values_raw[i][0]
                 node_level_memory_energy_total += memory_energy
         # convert from J to kwH
         self.node_level_memory_energy_total_kwh = node_level_memory_energy_total / (1000 * 3600)
@@ -367,22 +367,23 @@ class QueryMetrics:
         times_raw, values_raw, hosts = self.query_time_series_data("omnistat_vendor_cpu_energy_joules")
         node_level_cpu_energy_total = 0.0
         for i in range(len(values_raw)):
-            cpu_energy = values_raw[i][-1] - values_raw[i][0]            
+            cpu_energy = values_raw[i][-1] - values_raw[i][0]
             node_level_cpu_energy_total += cpu_energy
         # convert from J to kwH
         self.node_level_cpu_energy_total_kwh = node_level_cpu_energy_total / (1000 * 3600)
 
         # node-level data: accelerator energy usage
-        node_level_accel_energy_total = 0.0        
-        for gpu in range(self.numGPUs):        
-            times_raw, values_raw, hosts = self.query_time_series_data(f'omnistat_vendor_accel_energy_joules{{card="{gpu}"}}')
+        node_level_accel_energy_total = 0.0
+        for gpu in range(self.numGPUs):
+            times_raw, values_raw, hosts = self.query_time_series_data(
+                f'omnistat_vendor_accel_energy_joules{{card="{gpu}"}}'
+            )
             if values_raw:
                 for i in range(len(values_raw)):
-                    accel_energy = values_raw[i][-1] - values_raw[i][0]            
+                    accel_energy = values_raw[i][-1] - values_raw[i][0]
                     node_level_accel_energy_total += accel_energy
                 # convert from J to kwH
                 self.node_level_accel_energy_total_kwh = node_level_accel_energy_total / (1000 * 3600)
-
 
         return
 
@@ -515,13 +516,13 @@ class QueryMetrics:
             if "title_short" in entry:
                 # print("%16s |" % entry['title_short'],end='')
                 print(" %s |" % entry["title_short"].center(16), end="")
-        print(" Energy (kWh) |",end="")
+        print(" Energy (kWh) |", end="")
         print("")
         print("    %6s |" % "GPU #", end="")
         for entry in QueryMetrics.METRICS:
             if "title_short" in entry:
                 print(" %8s%8s |" % ("Max".center(6), "Mean".center(6)), end="")
-        print("    Total     |",end="")
+        print("    Total     |", end="")
         print("")
         print("    " + "-" * 99)
 
@@ -536,19 +537,34 @@ class QueryMetrics:
                     end="",
                 )
             # add gpu-energy
-            print( "   %6.2e   |" % np.sum(self.energyStats_kwh[card]),end="")
+            print("   %6.2e   |" % np.sum(self.energyStats_kwh[card]), end="")
             print("")
 
         if self.vendorData:
             print("")
             print("Vendor Energy data:")
-            print("  " + "-" * 65)            
-            print("  Approximate Total Memory Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_memory_energy_total_kwh,
-                                                                                       100.0*self.node_level_memory_energy_total_kwh/self.node_level_energy_total_kwh))
-            print("  Approximate Total CPU    Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_cpu_energy_total_kwh,
-                                                                                       100.0*self.node_level_cpu_energy_total_kwh / self.node_level_energy_total_kwh))
-            print("  Approximate Total Accel  Energy Consumed = %.2e kWh (%5.2f %%)" % (self.node_level_accel_energy_total_kwh,
-                                                                                       100.0*self.node_level_accel_energy_total_kwh / self.node_level_energy_total_kwh))
+            print("  " + "-" * 65)
+            print(
+                "  Approximate Total Memory Energy Consumed = %.2e kWh (%5.2f %%)"
+                % (
+                    self.node_level_memory_energy_total_kwh,
+                    100.0 * self.node_level_memory_energy_total_kwh / self.node_level_energy_total_kwh,
+                )
+            )
+            print(
+                "  Approximate Total CPU    Energy Consumed = %.2e kWh (%5.2f %%)"
+                % (
+                    self.node_level_cpu_energy_total_kwh,
+                    100.0 * self.node_level_cpu_energy_total_kwh / self.node_level_energy_total_kwh,
+                )
+            )
+            print(
+                "  Approximate Total Accel  Energy Consumed = %.2e kWh (%5.2f %%)"
+                % (
+                    self.node_level_accel_energy_total_kwh,
+                    100.0 * self.node_level_accel_energy_total_kwh / self.node_level_energy_total_kwh,
+                )
+            )
             print("  " + "-" * 65)
             print("  Approximate Total Node Energy Consumed   = %.2e kWh" % self.node_level_energy_total_kwh)
             print("")
