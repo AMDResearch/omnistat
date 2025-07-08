@@ -1130,6 +1130,11 @@ class QueryMetrics:
                 ["instance", "card", "counter"],
             ),
             (
+                "fom",
+                ["omnistat_fom"],
+                ["instance", "name"],
+            ),
+            (
                 "vendor",
                 [
                     "omnistat_vendor_energy_joules",
