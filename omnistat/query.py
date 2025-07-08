@@ -1126,6 +1126,21 @@ class QueryMetrics:
                 ["omnistat_rocprofiler"],
                 ["instance", "card", "counter"],
             ),
+            "vendor": (
+                [
+                    "omnistat_vendor_energy_joules",
+                    "omnistat_vendor_memory_energy_joules",
+                    "omnistat_vendor_cpu_energy_joules",
+                    "omnistat_vendor_power_watts",
+                    "omnistat_vendor_memory_power_watts",
+                    "omnistat_vendor_cpu_power_watts",
+                ],
+                ["instance", "vendor"],
+            ),
+            "vendor-gpu": (
+                ["omnistat_vendor_accel_energy_joules", " omnistat_vendor_accel_power_watts"],
+                ["instance", "card", "vendor"],
+            ),
         }
 
         for name, (metrics, labels) in exports.items():
