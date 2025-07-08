@@ -1110,23 +1110,27 @@ class QueryMetrics:
     def export(self, export_path):
         export_prefix = "omnistat-"
 
-        # Map files to be generated for different subsets of metrics. Values
-        # are tuples containing 1) a list of metrics, and 2) a list of labels
-        # to be used for hierarchical indexing.
-        exports = {
-            "rocm": (
+        # List files to be generated for different subsets of metrics. Values
+        # are tuples containing 1) file name, 2) a list of metrics, and 3) a
+        # list of labels to be used for hierarchical indexing.
+        exports = [
+            (
+                "rocm",
                 [x["metric"] for x in QueryMetrics.METRICS],
                 ["instance", "card"],
             ),
-            "network": (
+            (
+                "network",
                 ["omnistat_network_rx_bytes", "omnistat_network_tx_bytes"],
                 ["instance", "device_class", "interface"],
             ),
-            "rocprofiler": (
+            (
+                "rocprofiler",
                 ["omnistat_rocprofiler"],
                 ["instance", "card", "counter"],
             ),
-            "vendor": (
+            (
+                "vendor",
                 [
                     "omnistat_vendor_energy_joules",
                     "omnistat_vendor_memory_energy_joules",
@@ -1137,14 +1141,16 @@ class QueryMetrics:
                 ],
                 ["instance", "vendor"],
             ),
-            "vendor-gpu": (
+            (
+                "vendor",
                 ["omnistat_vendor_accel_energy_joules", " omnistat_vendor_accel_power_watts"],
                 ["instance", "card", "vendor"],
             ),
-        }
+        ]
 
-        for name, (metrics, labels) in exports.items():
-            export_file = f"{export_path}/{export_prefix}{name}.csv"
+        for name, metrics, labels in exports:
+            extension = ".gpu.csv" if "card" in labels else ".csv"
+            export_file = f"{export_path}/{export_prefix}{name}{extension}"
             self.export_metrics(export_file, metrics, labels)
 
 

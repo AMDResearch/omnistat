@@ -260,10 +260,10 @@ The export functionality will generate one or more CSV files, depending on
 which collectors are enabled in the Omnistat configuration, as outlined in the
 following table.
 
-| File                   | Collector               | Description                    |
-| :--------------------- | :---------------------: | :----------------------------- |
-| `omnistat-rocm.csv`    | `rocm_smi` or `amd_smi` | GPU utilization and telemetry. |
-| `omnistat-network.csv` | `network`               | Network bandwidth.             |
+| File                    | Collector               | Description                          |
+| :---------------------- | :---------------------: | :----------------------------------- |
+| `omnistat-rocm.gpu.csv` | `rocm_smi` or `amd_smi` | GPU-level utilization and telemetry. |
+| `omnistat-network.csv`  | `network`               | Network bandwidth.                   |
 
 Exported data can be easily loaded as a data frame using tools like Pandas for
 further processing.
@@ -274,7 +274,7 @@ further processing.
 
    import pandas
 
-   df = pandas.read_csv("omnistat-rocm.csv", header=[0, 1, 2], index_col=0)
+   df = pandas.read_csv("omnistat-rocm.gpu.csv", header=[0, 1, 2], index_col=0)
 
    # Select a single metric
    df["rocm_utilization_percentage"]
@@ -297,7 +297,7 @@ further processing.
    import pandas
    import matplotlib.pyplot as plt
 
-   df = pandas.read_csv("omnistat-rocm.csv", header=[0, 1, 2], index_col=0)
+   df = pandas.read_csv("omnistat-rocm.gpu.csv", header=[0, 1, 2], index_col=0)
    df.index = pandas.to_datetime(df.index)
 
    # Create a new dataframe with node averages
