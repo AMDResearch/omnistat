@@ -74,9 +74,11 @@ class TestQuery:
         table = [line for line in report.splitlines() if re.match(pattern, line)]
         report_values = {}
         for row in table:
-            row = row.strip().split("|")
+            row = row.strip().rstrip("|").split("|")
             gpu_id = int(row[0].strip())
-            values = [v for metric in row[1:] for v in metric.split()]
+            # Exclude first and last element in the table (GPU ID and Energy)
+            # from values to validate.
+            values = [v for metric in row[1:-1] for v in metric.split()]
             report_values[gpu_id] = values
 
         assert len(report_values) == len(gpu_values), "Unexpected number of GPUs in the report"
