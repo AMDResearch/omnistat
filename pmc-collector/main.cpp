@@ -329,11 +329,16 @@ void signal_handler(int signal) {
 
 void print_records(const std::vector<rocprofiler_record_counter_t> &records,
                    const std::shared_ptr<device_collector> &collector) {
+  // Accumulate all records by name to display a single value.
+  std::unordered_map<std::string, double> accumulated_values;
   for (const auto &record : records) {
     if (record.id) {
       auto name = collector->decode_record_name(record);
-      std::cout << name << " " << record.counter_value << "\n";
+      accumulated_values[name] += record.counter_value;
     }
+  }
+  for (const auto &pair : accumulated_values) {
+      std::cout << pair.first << ": " << pair.second << "\n";
   }
 }
 
