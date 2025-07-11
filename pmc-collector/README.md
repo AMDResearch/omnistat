@@ -17,18 +17,19 @@ Press `Ctrl+C` or send `SIGTERM` to stop the process and collect counter
 values. Sample output:
 
 ```
-START:
-- GPU:
+start:
+- gpu:
   - SQ_WAVES: 0
   - GRBM_COUNT: 18323
-- GPU:
+- gpu:
   - SQ_WAVES: 0
   - GRBM_COUNT: 22633
-END:
-- GPU:
+end:
+- gpu:
   - SQ_WAVES: 0
   - GRBM_COUNT: 2.50067e+09
-- GPU:
+- gpu:
   - SQ_WAVES: 0
   - GRBM_COUNT: 2.48401e+09
+valid: 1
 ```

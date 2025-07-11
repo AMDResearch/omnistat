@@ -327,9 +327,9 @@ void signal_handler(int signal) {
   }
 }
 
-void print_records(const std::vector<rocprofiler_record_counter_t> &records,
-                   const std::shared_ptr<device_collector> &collector) {
-  std::cout << "- GPU:\n";
+std::unordered_map<std::string, double>
+process_records(const std::vector<rocprofiler_record_counter_t> &records,
+                const std::shared_ptr<device_collector> &collector) {
   // Accumulate all records by name to display a single value.
   std::unordered_map<std::string, double> accumulated_values;
   for (const auto &record : records) {
@@ -338,8 +338,13 @@ void print_records(const std::vector<rocprofiler_record_counter_t> &records,
       accumulated_values[name] += record.counter_value;
     }
   }
-  for (const auto &pair : accumulated_values) {
-      std::cout << "  - " << pair.first << ": " << pair.second << "\n";
+  return accumulated_values;
+}
+
+void print_values(const std::unordered_map<std::string, double> &values) {
+  std::cout << "- gpu:\n";
+  for (const auto &pair : values) {
+    std::cout << "  - " << pair.first << ": " << pair.second << "\n";
   }
 }
 
@@ -350,26 +355,49 @@ int main(int argc, char **argv) {
   int num_devices = 0;
   auto status = hipGetDeviceCount(&num_devices);
 
-  std::vector<std::string> counters;
+  bool valid = true;
+  const int interval_seconds = 1;
+
+  std::vector<std::string> counters = {"GRBM_COUNT"};
   for (int i = 1; i < argc; ++i) {
     counters.push_back(argv[i]);
   }
 
   std::vector<rocprofiler_record_counter_t> records;
+  std::vector<double> grbm_counts;
 
-  std::cout << "START:\n";
+  std::cout << "start:\n";
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
-    print_records(records, collector);
+    auto values = process_records(records, collector);
+    print_values(values);
+    grbm_counts.push_back(values["GRBM_COUNT"]);
   }
 
   while (!done) {
-    pause();
+    std::this_thread::sleep_for(std::chrono::seconds(interval_seconds));
+    for (int i = 0; i < grbm_counts.size(); i++) {
+      auto collector = collectors[i];
+      collector->sample_counters(counters, records);
+      auto values = process_records(records, collector);
+
+      // Make sure GRBM_COUNT is always increasing. If it's not, there's
+      // likely another profiling process and the numbers are no longer
+      // reliable.
+      auto previous = grbm_counts[i];
+      grbm_counts[i] = values["GRBM_COUNT"];
+      if (grbm_counts[i] < previous) {
+        std::cerr << "Invalid session: " << previous << " " << grbm_counts[i] << "\n";
+        valid = false;
+      }
+    }
   }
 
-  std::cout << "END:\n";
+  std::cout << "end:\n";
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
-    print_records(records, collector);
+    auto values = process_records(records, collector);
+    print_values(values);
   }
+  std::cout << "valid: " << valid << "\n";
 }
