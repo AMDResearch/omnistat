@@ -310,7 +310,7 @@ extern "C" rocprofiler_tool_configure_result_t *rocprofiler_configure(uint32_t v
   info << id->name << " (priority=" << priority << ") is using rocprofiler-sdk v" << major << "."
        << minor << "." << patch << " (" << runtime_version << ")";
 
-  std::cout << info.str() << std::endl;
+  std::cerr << info.str() << std::endl;
 
   std::ostream *output_stream = &std::cout;
   static auto cfg =
@@ -322,13 +322,14 @@ extern "C" rocprofiler_tool_configure_result_t *rocprofiler_configure(uint32_t v
 
 void signal_handler(int signal) {
   if (signal == SIGTERM || signal == SIGINT) {
-    std::cout << "Recieved signal " << signal << "\n";
+    std::cerr << "Terminating collector\n";
     done.store(true);
   }
 }
 
 void print_records(const std::vector<rocprofiler_record_counter_t> &records,
                    const std::shared_ptr<device_collector> &collector) {
+  std::cout << "- GPU:\n";
   // Accumulate all records by name to display a single value.
   std::unordered_map<std::string, double> accumulated_values;
   for (const auto &record : records) {
@@ -338,7 +339,7 @@ void print_records(const std::vector<rocprofiler_record_counter_t> &records,
     }
   }
   for (const auto &pair : accumulated_values) {
-      std::cout << pair.first << ": " << pair.second << "\n";
+      std::cout << "  - " << pair.first << ": " << pair.second << "\n";
   }
 }
 
@@ -356,6 +357,7 @@ int main(int argc, char **argv) {
 
   std::vector<rocprofiler_record_counter_t> records;
 
+  std::cout << "START:\n";
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
     print_records(records, collector);
@@ -365,6 +367,7 @@ int main(int argc, char **argv) {
     pause();
   }
 
+  std::cout << "END:\n";
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
     print_records(records, collector);
