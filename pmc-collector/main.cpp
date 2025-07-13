@@ -397,7 +397,7 @@ int main(int argc, char **argv) {
   std::vector<rocprofiler_record_counter_t> records;
   std::vector<double> grbm_counts;
 
-  std::cout << "start:\n";
+  //std::cout << "start:\n";
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
     auto values = process_records(records, collector);

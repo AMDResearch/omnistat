@@ -34,7 +34,7 @@ E20250713 16:50:07.364906 140495314305152 agent_cache.cpp:139] Creating Profile 
 E20250713 16:50:07.377586 140495314305152 agent_cache.cpp:139] Creating Profile Queue
 E20250713 16:50:07.390222 140495314305152 agent_cache.cpp:139] Creating Profile Queue
 Sampling interval set to 1 second(s).
-start:
+
 ^CTerminating collector
 end:
 - gpu:
