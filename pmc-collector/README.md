@@ -24,7 +24,7 @@ another profiling session is invoked, this demo utility monitors
 `GRBM_COUNT` to flag invalid results caused by the presence of other
 profiling sessions.
 
-Sample output running rocHPL on single node of MI250 is shown below:
+Sample output running rocHPL on single node of MI250 is shown below (the final output of `valid: 1` indicates that no other profiling sessions were detected):
 
 ```
 device-counters (priority=0) is using rocprofiler-sdk v0.6.0 (0.6.0)
