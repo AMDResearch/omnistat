@@ -1,4 +1,8 @@
-# Build
+# Device-mode hardware counter demo
+
+This C++ example is intended to provide a basic example using the rocprof-sdk interface to collect GPU hardware counters at the device level without needing to perform any binary instrumentation or user-environment modifications.
+
+## Build
 
 ```
 mkdir build
@@ -7,22 +11,15 @@ cmake ..
 make
 ```
 
-# Run
+## Run
 
 ```
 ./pmc-collector
 ```
 
-The pmc-collector binary is configured to collect a pre-defined set of hardware
-counters at 1 sec intervals in an infinite loop.  Press `Ctrl+C` or
-send `SIGTERM` to stop the process and collect counter values.
+The pmc-collector binary is configured to collect a pre-defined set of hardware counters at 1 sec intervals in an infinite loop.  Press `Ctrl+C` or send `SIGTERM` to stop the process and collect counter values.
 
-Note that device-mode profiling using rocprof-sdk requires elevated
-credentials or, alternatively, for the sampling binary to have
-`SYS_PERFMON` privileges.  To try and avoid invalid counters when
-another profiling session is invoked, this demo utility monitors
-`GRBM_COUNT` to flag invalid results caused by the presence of other
-profiling sessions.
+Note that device-mode profiling using rocprof-sdk requires elevated credentials or, alternatively, for the sampling binary to have `SYS_PERFMON` privileges.  To try and avoid invalid counters when another profiling session is invoked, this demo utility monitors `GRBM_COUNT` to flag invalid results caused by the presence of other profiling sessions.
 
 Sample output running rocHPL on single node of MI250 is shown below (the final output of `valid: 1` indicates that no other profiling sessions were detected):
 
