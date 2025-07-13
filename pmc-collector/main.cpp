@@ -342,9 +342,16 @@ process_records(const std::vector<rocprofiler_record_counter_t> &records,
 }
 
 void print_values(const std::unordered_map<std::string, double> &values) {
-  std::cout << "- gpu:\n";
+  // sort output by key
+  std::vector<std::string> keys;
   for (const auto &pair : values) {
-    std::cout << "  - " << pair.first << ": " << pair.second << "\n";
+    keys.push_back(pair.first);
+  }
+  std::sort(keys.begin(), keys.end());
+
+  std::cout << "- gpu:\n";
+  for (const auto &key : keys) {
+    std::cout << "  - " << key << ": " << values.at(key) << "\n";
   }
 }
 
@@ -358,7 +365,25 @@ int main(int argc, char **argv) {
   bool valid = true;
   const int interval_seconds = 1;
 
-  std::vector<std::string> counters = {"GRBM_COUNT"};
+  std::vector<std::string> counters = {
+    "GRBM_COUNT",
+    "TCC_EA_RDREQ_sum",
+    "TCC_EA_RDREQ_32B_sum",
+    // note: max of 8 SQ counters simultaneously on MI250
+    "SQ_INSTS_VALU_ADD_F64",
+    "SQ_INSTS_VALU_MUL_F64",
+    "SQ_INSTS_VALU_FMA_F64",
+    "SQ_INSTS_VALU_MFMA_F64",
+    "SQ_INSTS_VALU_ADD_F32",
+    "SQ_INSTS_VALU_MUL_F32",
+    "SQ_INSTS_VALU_FMA_F32",
+    "SQ_INSTS_VALU_MFMA_F32",
+    // "SQ_INSTS_VALU_ADD_F16",
+    // "SQ_INSTS_VALU_MUL_F16",
+    // "SQ_INSTS_VALU_FMA_F16",
+    // "SQ_INSTS_VALU_MFMA_F16",
+    // "SQ_INSTS_VALU_MFMA_BF16"
+  };
   for (int i = 1; i < argc; ++i) {
     counters.push_back(argv[i]);
   }
@@ -381,15 +406,16 @@ int main(int argc, char **argv) {
       collector->sample_counters(counters, records);
       auto values = process_records(records, collector);
 
-      // Make sure GRBM_COUNT is always increasing. If it's not, there's
-      // likely another profiling process and the numbers are no longer
-      // reliable.
+      // Make sure GRBM_COUNT is always increasing. If it's not,
+      // another profiling process (eg. rocprof) was likely invoked during the
+      // interval and the numbers are no longer reliable.
       auto previous = grbm_counts[i];
       grbm_counts[i] = values["GRBM_COUNT"];
       if (grbm_counts[i] < previous) {
         std::cerr << "Invalid session: " << previous << " " << grbm_counts[i] << "\n";
         valid = false;
       }
+//      print_values(values);
     }
   }
 
