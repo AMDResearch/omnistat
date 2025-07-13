@@ -363,7 +363,16 @@ int main(int argc, char **argv) {
   auto status = hipGetDeviceCount(&num_devices);
 
   bool valid = true;
-  const int interval_seconds = 1;
+  // default sampling interval of 1 sec, can be overridden by command line arg
+  int interval_seconds = 1;
+  if (argc > 1) {
+    interval_seconds = std::stoi(argv[1]);
+    if (interval_seconds <= 0) {
+      std::cerr << "Invalid interval: " << argv[1] << ", must be a positive integer.\n";
+      return 1;
+    }
+  }
+  std::cout << "Sampling interval set to " << interval_seconds << " second(s).\n";
 
   std::vector<std::string> counters = {
     "GRBM_COUNT",
@@ -384,9 +393,6 @@ int main(int argc, char **argv) {
     // "SQ_INSTS_VALU_MFMA_F16",
     // "SQ_INSTS_VALU_MFMA_BF16"
   };
-  for (int i = 1; i < argc; ++i) {
-    counters.push_back(argv[i]);
-  }
 
   std::vector<rocprofiler_record_counter_t> records;
   std::vector<double> grbm_counts;
@@ -395,7 +401,7 @@ int main(int argc, char **argv) {
   for (auto collector : collectors) {
     collector->sample_counters(counters, records);
     auto values = process_records(records, collector);
-    print_values(values);
+    //print_values(values);
     grbm_counts.push_back(values["GRBM_COUNT"]);
   }
 
@@ -426,4 +432,10 @@ int main(int argc, char **argv) {
     print_values(values);
   }
   std::cout << "valid: " << valid << "\n";
+
+  if(valid)
+    return 0;
+  else
+    return 1;
+
 }
