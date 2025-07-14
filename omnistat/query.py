@@ -366,6 +366,7 @@ class QueryMetrics:
         # node-level data: cpu energy usage
         times_raw, values_raw, hosts = self.query_time_series_data("omnistat_vendor_cpu_energy_joules")
         node_level_cpu_energy_total = 0.0
+        # sum energy over all nodes assigned to job
         for i in range(len(values_raw)):
             cpu_energy = values_raw[i][-1] - values_raw[i][0]
             node_level_cpu_energy_total += cpu_energy
@@ -383,10 +384,12 @@ class QueryMetrics:
             )
             if values_raw:
                 vendor_ngpus += 1
+                accel_energy = 0
+                # loop over all assigned hosts for current gpu index to accumulate energy
                 for i in range(len(values_raw)):
-                    accel_energy = values_raw[i][-1] - values_raw[i][0]
-                    node_level_accel_energy_total += accel_energy
-                    energy_gpus.append(accel_energy)
+                    accel_energy += values_raw[i][-1] - values_raw[i][0]
+                    node_level_accel_energy_total += values_raw[i][-1] - values_raw[i][0]
+                energy_gpus.append(accel_energy)
                 # convert from J to kwH
                 self.node_level_accel_energy_total_kwh = node_level_accel_energy_total / (1000 * 3600)
 
