@@ -10,6 +10,7 @@ enable_amd_smi = False
 enable_ras_ecc = True
 enable_rms = True
 enable_network = True
+enable_vendor_counters = True
 
 ## Path to local ROCM install to access SMI library
 rocm_path = /opt/rocm-6.2.0
