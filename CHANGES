@@ -1,3 +1,10 @@
+Version 1.6 (15 July 2025)
+
+  * addition of new optional data collector to track CU occupancy (#178)
+  * updated query tool to support shorter job executions and expand CI testing (#186)
+  * dashboard reorganization and enhancements (#189)
+  * addition of new optional data collector to track vendor-provided power/energy counters (#190)
+
 Version 1.5.1 (18 June 2025)
 
   * update RAS block enumerations for newer Python versions (#179, #180)
