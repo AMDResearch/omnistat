@@ -223,7 +223,9 @@ class QueryMetrics:
                 break
 
         if self.marker:
-            results = self.query_range("rmsjob_annotations{$job,$marker}>0", self.start_time, self.end_time, QueryMetrics.SCAN_STEP)
+            results = self.query_range(
+                "rmsjob_annotations{$job,$marker}>0", self.start_time, self.end_time, QueryMetrics.SCAN_STEP
+            )
             if len(results) > 0:
                 self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
                 self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
@@ -249,15 +251,11 @@ class QueryMetrics:
         # Force max lookback for more accurate results
         lookback = self.interval * 2
 
-        results = self.query_range(
-            query, start_window[0], start_window[1], self.interval, lookback
-        )
+        results = self.query_range(query, start_window[0], start_window[1], self.interval, lookback)
         if len(results) > 0:
             self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
 
-        results = self.query_range(
-            query, end_window[0], end_window[1], self.interval, lookback
-        )
+        results = self.query_range(query, end_window[0], end_window[1], self.interval, lookback)
         if len(results) > 0:
             self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
 
@@ -555,9 +553,7 @@ class QueryMetrics:
                 % (self.jobStep, self.num_nodes_step, self.num_nodes_job)
             )
         if self.marker:
-            print(
-                "** Report confined to annotation marker=%s" % (self.marker)
-            )
+            print("** Report confined to annotation marker=%s" % (self.marker))
         print("-" * 70)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
