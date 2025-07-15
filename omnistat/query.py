@@ -646,7 +646,14 @@ class QueryMetrics:
         Result:
             dict: Metric data in response of the submitted query.
         """
-        results = self.query_range(query_template, self.start_time, self.end_time, self.interval, self.interval)
+        # The slowest sample time is used to improve query results in the
+        # presence of unxpectectedly slow samples by adapting the lookback
+        # period. While the expected sample time is in the 10-30ms range, we
+        # tolerate some samples taking up to 10x longer to provide more
+        # consistent results and avoid NaNs.
+        slowest_sample_seconds = 0.3
+        lookback = self.interval + slowest_sample_seconds
+        results = self.query_range(query_template, self.start_time, self.end_time, self.interval, lookback)
         return results
 
     def query_time_series_data(self, metric_name, reducer=None, dataType=float):
