@@ -124,7 +124,7 @@ class TestQuery:
 
         num_gpus = len(gpu_values_list[0])
         for gpu_values in gpu_values_list:
-            assert len(gpu_values) == num_gpus, "All nodes are require the same number of GPUs"
+            assert len(gpu_values) == num_gpus, "All nodes require the same number of GPUs"
 
         # Validate time series values and max/mean values from query tool,
         # which are obtained from PromQL queries.
@@ -262,6 +262,7 @@ class TestQuery:
         step.gather_data(saveTimeSeries=True)
 
         step_duration = float(end - start)
+        step_num_samples = int(end - start)
         step_ratio = step_duration / duration
         nostep_ratio = 1 - step_ratio
 
@@ -275,10 +276,18 @@ class TestQuery:
             expected_job_mean = (step_ratio * step_gpu_value) + (nostep_ratio * nostep_gpu_value)
 
             for metric in GPU_METRIC_NAMES:
-                step_max = step.stats[f"{metric}_max"][gpu_id]
                 step_mean = step.stats[f"{metric}_mean"][gpu_id]
-                assert step_max == step_gpu_value, f"Unexpected step-level max value for {metric} in GPU ID {gpu_id}"
-                assert step_mean == step_gpu_value, f"Unexpected step-level mean value for {metric} in GPU ID {gpu_id}"
+
+                # Approximate expected mean value since one of the samples may not be part of the step.
+                step_mean_err = abs(
+                    (step_gpu_value / (step_num_samples + 1)) - (nostep_gpu_value / (step_num_samples + 1))
+                )
+                assert (
+                    step_mean <= step_gpu_value + step_mean_err
+                ), f"Unexpected step-level mean value for {metric} in GPU ID {gpu_id}"
+                assert (
+                    step_mean >= step_gpu_value - step_mean_err
+                ), f"Unexpected step-level mean value for {metric} in GPU ID {gpu_id}"
 
                 if nostep_ratio > 0.0:
                     job_max = job.stats[f"{metric}_max"][gpu_id]
@@ -286,8 +295,13 @@ class TestQuery:
                         job_max == expected_job_max
                     ), f"Unexpected job-level max value for {metric} in GPU ID {gpu_id}"
 
-                for value in step.time_series[metric][gpu_id]["values"]:
-                    assert value == step_gpu_value, f"Unexpected sample value"
+                # Exclude last element from check. The last element is not
+                # guaranteed to be part of the step because queries need to
+                # tolerate certain variability in sampling times.
+                for value in step.time_series[metric][gpu_id]["values"][:-1]:
+                    assert (
+                        value == step_gpu_value
+                    ), f"Unexpected sample value {step.time_series[metric][gpu_id]['values']}"
 
                 # With 1s intervals, assume index is equivalent to sample
                 # time; won't work for other intervals.
