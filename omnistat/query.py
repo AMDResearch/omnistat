@@ -240,26 +240,35 @@ class QueryMetrics:
         if len(results) > 0:
             self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
 
+    def _coarse_step(self, duration_seconds):
+        # Make sure the default step is not longer than the execution.
+        min_step = min(QueryMetrics.SCAN_STEP, duration_seconds)
+        step = f"{min_step}s"
+
+        # For longer jobs, select a coarser step for more efficient querying
+        # of info data since we don't need accurate timing.
+        duration_minutes = duration_seconds / 60
+        if duration_minutes > 60:
+            step = "1h"
+        elif duration_minutes > 15:
+            step = "15m"
+        elif duration_minutes > 5:
+            step = "5m"
+
+        return step
+
     def _retrieve_info(self):
         """
         Query job info that is expected to remain constant during the
         execution.
         """
-        duration_minutes = (self.end_time - self.start_time).total_seconds() / 60
-        assert duration_minutes > 0
+        duration_seconds = (self.end_time - self.start_time).total_seconds()
+        assert duration_seconds > 0
 
-        # Select a coarser step for more efficient querying of info data since
-        # we don't need accurate timing.
-        coarse_step = "60s"
-        if duration_minutes > 60:
-            coarse_step = "1h"
-        elif duration_minutes > 15:
-            coarse_step = "15m"
-        elif duration_minutes > 5:
-            coarse_step = "5m"
+        step = self._coarse_step(duration_seconds)
 
         # Cull job info with coarse resolution
-        results = self.query_range("rmsjob_info{$job,$step}", self.start_time, self.end_time, coarse_step)
+        results = self.query_range("rmsjob_info{$job,$step}", self.start_time, self.end_time, step)
         assert len(results) > 0
 
         self.num_nodes = int(results[0]["metric"]["nodes"])
@@ -269,7 +278,7 @@ class QueryMetrics:
             "rocm_num_gpus * on (instance) (max by (instance) (rmsjob_info{$job,$step}))",
             self.start_time,
             self.end_time,
-            coarse_step,
+            step,
         )
         assert len(results) > 0
 
@@ -287,12 +296,15 @@ class QueryMetrics:
 
     # Detect hosts associated with this job
     def _retrieve_hosts(self):
+        duration_seconds = (self.end_time - self.start_time).total_seconds()
+        step = self._coarse_step(duration_seconds)
+
         self.hosts = []
         results = self.query_range(
             'rocm_utilization_percentage{card="0"} * on (instance) (max by (instance) (rmsjob_info{$job}))',
             self.start_time,
             self.end_time,
-            QueryMetrics.SCAN_STEP,
+            step,
         )
         self.num_nodes_job = len(results)
 
@@ -301,7 +313,7 @@ class QueryMetrics:
                 'rocm_utilization_percentage{card="0"} * on (instance) (max by (instance) (rmsjob_info{$job,$step}))',
                 self.start_time,
                 self.end_time,
-                QueryMetrics.SCAN_STEP,
+                step,
             )
             for result in results:
                 self.hosts.append(result["metric"]["instance"])
