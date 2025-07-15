@@ -116,16 +116,23 @@ class QueryMetrics:
         {"metric": "rocm_average_socket_power_watts", "title": "GPU Average Power (W)", "title_short": "Power (W)"},
     ]
 
-    def __init__(self, interval, jobid, jobstep=None, configfile=None, output_file=None):
+    def __init__(self, interval, jobid, jobstep=None, marker=None, configfile=None, output_file=None):
         self.timer_start = timeit.default_timer()
 
         self.interval = interval
         self.jobID = jobid
         self.jobStep = jobstep
+        self.marker = marker
+
         self.jobstepQuery = 'jobstep=~".*"'
         if self.jobStep:
             self.jobstepQuery = f'jobstep="{jobstep}"'
         logging.debug("Job step query set to -> %s" % self.jobstepQuery)
+
+        self.markerQuery = 'marker=~".*"'
+        if self.marker:
+            self.markerQuery = f'marker="{marker}"'
+        logging.debug("Annotation marker query set to -> %s" % self.markerQuery)
 
         config = utils.readConfig(utils.findConfigFile(configfile))
         self.config = {}
@@ -169,8 +176,8 @@ class QueryMetrics:
             self.output.close()
 
     def find_job_info(self):
-        self._estimate_range()
-        if not self.start_time:
+        found = self._estimate_range()
+        if not found:
             print("[ERROR]: no monitoring data found for job=%s" % self.jobID)
             sys.exit(1)
 
@@ -215,6 +222,16 @@ class QueryMetrics:
             elif self.end_time and len(results) == 0:
                 break
 
+        if self.marker:
+            results = self.query_range("rmsjob_annotations{$job,$marker}>0", self.start_time, self.end_time, QueryMetrics.SCAN_STEP)
+            if len(results) > 0:
+                self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
+                self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
+            else:
+                return False
+
+        return self.start_time != None
+
     def _refine_range(self):
         """
         Provide more accurate time range for the job by generating two
@@ -225,17 +242,21 @@ class QueryMetrics:
         start_window = (self.start_time - delta, self.start_time + delta)
         end_window = (self.end_time - delta, self.end_time + delta)
 
+        query = "max(rmsjob_info{$job,$step})"
+        if self.marker:
+            query = "rmsjob_annotations{$job,$marker}>0"
+
         # Force max lookback for more accurate results
         lookback = self.interval * 2
 
         results = self.query_range(
-            "max(rmsjob_info{$job,$step})", start_window[0], start_window[1], self.interval, lookback
+            query, start_window[0], start_window[1], self.interval, lookback
         )
         if len(results) > 0:
             self.start_time = datetime.fromtimestamp(results[0]["values"][0][0])
 
         results = self.query_range(
-            "max(rmsjob_info{$job,$step})", end_window[0], end_window[1], self.interval, lookback
+            query, end_window[0], end_window[1], self.interval, lookback
         )
         if len(results) > 0:
             self.end_time = datetime.fromtimestamp(results[0]["values"][-1][0])
@@ -533,6 +554,10 @@ class QueryMetrics:
                 "** Report confined to job step=%s (%i of %i nodes used)"
                 % (self.jobStep, self.num_nodes_step, self.num_nodes_job)
             )
+        if self.marker:
+            print(
+                "** Report confined to annotation marker=%s" % (self.marker)
+            )
         print("-" * 70)
         print("")
         print("Job Overview (Num Nodes = %i, Machine = %s)" % (len(self.hosts), system))
@@ -630,7 +655,7 @@ class QueryMetrics:
         params = {}
         if lookback:
             params = {"max_lookback": lookback}
-        query = template.substitute(job=f'jobid="{self.jobID}"', step=self.jobstepQuery)
+        query = template.substitute(job=f'jobid="{self.jobID}"', step=self.jobstepQuery, marker=self.markerQuery)
         results = self.prometheus.custom_query_range(query, start, end, step=step, params=params)
         return results
 
@@ -1188,6 +1213,7 @@ def main():
     parser.add_argument("-v", "--version", help="print version info and exit", action="store_true")
     parser.add_argument("--job", help="job ID to query", required=True)
     parser.add_argument("--step", help="job step ID to restrict query range")
+    parser.add_argument("--marker", help="annotation marker string to restrict query range")
     parser.add_argument("--interval", help="sampling interval in seconds (default=30)", type=float, default=30)
     parser.add_argument("--configfile", help="Omnistat configuration file")
     parser.add_argument("--output", help="redirect plain text report to existing file")
@@ -1203,7 +1229,7 @@ def main():
         utils.displayVersion(version)
         sys.exit(0)
 
-    query = QueryMetrics(args.interval, args.job, args.step, args.configfile, args.output)
+    query = QueryMetrics(args.interval, args.job, args.step, args.marker, args.configfile, args.output)
     query.find_job_info()
     query.gather_data(saveTimeSeries=True)
     query.gather_vendor_data()
