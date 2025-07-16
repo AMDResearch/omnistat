@@ -205,6 +205,19 @@ other metrics. The following steps outline the general process to visualize user
 [user@login]$ docker compose down
 ```
 
+### Video demonstration
+
+The following video demonstrates how to interactively explore user-mode
+Omnistat traces using the provided Docker environment. The demonstration
+covers downloading and loading traces, and showcases the key features of the
+job dashboard when displaying data from a multi-node job.
+
+<video width="640" controls>
+  <source src="https://github.com/user-attachments/assets/9870d611-a163-459b-9e6c-70aa4b9c7294" type="video/mp4">
+</video>
+<p></p>
+
+
 ### Combining Omnistat databases
 
 To work with multiple Omnistat collections at the same time (e.g to explore telemetry collected from different jobs), these first need to be
