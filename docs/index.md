@@ -11,7 +11,7 @@
    introduction
    installation/index
    grafana
-   ornl
+   sites
    developer/developers
 ```
 
