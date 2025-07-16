@@ -788,6 +788,10 @@ class QueryMetrics:
             ptext = """<strong>Job Step Mode</strong>: Report confined to job step = %s""" % (self.jobStep)
             Story.append(Paragraph(ptext))
             Story.append(HRFlowable(width="100%", thickness=2))
+        if self.marker:
+            ptext = """<strong>Annotation Mode</strong>: Report confined to marker = %s""" % (self.marker)
+            Story.append(Paragraph(ptext))
+            Story.append(HRFlowable(width="100%", thickness=2))
 
         # generate Utilization Table
         Story.append(Spacer(1, 0.2 * inch))
