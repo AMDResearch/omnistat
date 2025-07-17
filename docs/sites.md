@@ -9,16 +9,16 @@
 ## ORNL
 
 This section provides instructions for running user-mode Omnistat on ORNL's
-Frontier supercomputer.
+Frontier supercomputer with pre-installed versions from AMD Research.
 
 **Prerequisites**:
-- User account in Frontier
+- User account on Frontier
 - Familiarity with SLURM job submission
 
 ### Running jobs on Frontier
 
-Omnistat is installed in Frontier so users only need to load the module and run
-the appropriate commands in their SLURM job scripts.
+Omnistat is preinstalled on Frontier so users only need to setup their module environment appropriately and add
+several commands to their SLURM job scripts.
 
 The following video demonstrates a complete Omnistat workflow on Frontier
 using an interactive 2-node job. You'll see how to: load the Omnistat module
@@ -30,14 +30,15 @@ execution, stop data collection, and generate a performance report.
 </video>
 <p></p>
 
-The version of Omnistat installed in Frontier includes a convenience wrapper
+The version of Omnistat installed on Frontier also includes a convenience wrapper
 for teams running their own Python stack who may wish to avoid any pollution
-with the application's Python environment.
+with the application's Python environment. A SLURM job script example highlighting
+use of the wrapper utility before and after executing a GPU application is highlighted below:
 
 ```eval_rst
 .. code-block:: bash
    :caption: Example Frontier SLURM job using wrapper, highlighting changes needed to run Omnistat
-   :emphasize-lines: 9-11,17-20
+   :emphasize-lines: 9-11,17-19
 
    #!/bin/bash
    #SBATCH -A <project_id>
@@ -65,7 +66,7 @@ with the application's Python environment.
 By default, Omnistat databases are stored in Lustre, under the
 `/lustre/orion/$(SLURM_JOB_ACCOUNT)/scratch/$(USER)/omnistat/$(SLURM_JOB_ID)`
 directory. It's possible to override the default path using the
-`OMNISTAT_VICTORIA_DATADIR` environment variable.
+`OMNISTAT_VICTORIA_DATADIR` environment variable as highlighted in the following example.
 
 ```eval_rst
 .. code-block:: bash
