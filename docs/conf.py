@@ -159,10 +159,6 @@ html_theme_options = {
     "titles_only": False,
 }
 
-html_css_files = [
-  'custom.css'
-]
-
 from pygments.styles import get_all_styles
 
 # The name of the Pygments (syntax highlighting) style to use.
@@ -190,6 +186,7 @@ def setup(app):
     app.add_transform(AutoStructify)
     app.add_config_value("docstring_replacements", {}, True)
     app.connect("source-read", replaceString)
+    app.add_css_file("css/custom.css")
 
 
 # function to replace version string througout documentation
