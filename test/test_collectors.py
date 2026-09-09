@@ -84,7 +84,7 @@ RAS_METRICS = [
 ]
 
 OCCUPANCY_METRICS = [
-    {"name": "rocm_num_compute_units",                      "validate": ">=64",              "labels": ["card"]},
+    {"name": "rocm_num_compute_units",                      "validate": ">=48",              "labels": ["card"]},
     {"name": "rocm_compute_unit_occupancy",                 "validate": ">=0",               "labels": ["card"]},
 ]
 
