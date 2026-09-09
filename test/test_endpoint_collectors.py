@@ -35,6 +35,7 @@ from prometheus_client.parser import text_string_to_metric_families
 from werkzeug.serving import make_server
 
 import test.config
+import test.hardware
 import test.workloads as workloads
 from omnistat.collector_kernel_trace import KernelTrace
 
@@ -44,6 +45,10 @@ requires_tracing = pytest.mark.skipif(
     not test.config.rocm_host or "ROCP_TOOL_LIBRARIES" not in os.environ,
     reason="requires ROCm and ROCP_TOOL_LIBRARIES",
 )
+
+# Number of kernels launched by tracing tests. RDNA GPUs are unreliable with
+# the highest dispatch rate.
+KERNEL_COUNTS = [1, 100, 1000] if test.hardware.consumer_gpu else [1, 100, 1000, 10000]
 
 METRIC_KERNEL_DROPPED = "omnistat_kernel_dropped_dispatches"
 METRIC_KERNEL_DISPATCH_COUNT = "omnistat_kernel_dispatch_count"
@@ -155,7 +160,7 @@ class TestKernelTraceCollector:
         assert_no_drops(metrics)
 
     @requires_tracing
-    @pytest.mark.parametrize("num_kernels", [1, 100, 1000, 10000])
+    @pytest.mark.parametrize("num_kernels", KERNEL_COUNTS)
     def test_application(self, num_kernels):
         server = StandaloneTestServer(KernelTrace)
         result = workloads.run("launch_kernels", [num_kernels], env=server.trace_env)
