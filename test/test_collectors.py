@@ -23,7 +23,6 @@
 # -------------------------------------------------------------------------------
 
 import configparser
-import logging
 import multiprocessing
 import operator
 import os
@@ -37,10 +36,10 @@ from flask import Flask
 from prometheus_client.parser import text_string_to_metric_families
 
 import test.config
+import test.hardware
 import test.workloads as workloads
 from omnistat.monitor import Monitor
 from omnistat.node_monitoring import OmnistatServer
-from omnistat.utils import runShellCommand
 
 requires_counters = pytest.mark.skipif(
     not test.config.rocm_host or "ROCP_TOOL_LIBRARIES" not in os.environ,
@@ -124,23 +123,7 @@ NETWORK_METRICS = [
 # fmt: on
 
 
-def get_gpu_type(device=0):
-    """Return GPU market name by running `amd-smi static --asic --gpu <device>`."""
-    cmd = ["amd-smi", "static", "--asic", "--gpu", str(device)]
-    result = runShellCommand(cmd, capture_output=True, text=True, timeout=5)
-    if not result or result.returncode != 0:
-        logging.error(f"Failed to run amd-smi for device {device}")
-        return ""
-    for line in result.stdout.splitlines():
-        if "MARKET_NAME:" in line:
-            parts = line.split("MARKET_NAME:")
-            if len(parts) == 2:
-                return parts[1].strip()
-    logging.warning("MARKET_NAME not found in amd-smi output")
-    return ""
-
-
-gpu_type = get_gpu_type()
+gpu_type = test.hardware.gpu_type
 
 # Filter SMI_METRICS based on hardware allowlist
 SMI_METRICS = [x for x in SMI_METRICS if ("hardware" not in x or any(hw in gpu_type for hw in x["hardware"]))]
