@@ -74,7 +74,6 @@ jobs:
         env:
           ROCP_TOOL_LIBRARIES: ${{ github.workspace }}/build/libomnistat_trace.so
           LD_LIBRARY_PATH: /opt/rocm/lib
-          HSA_TOOLS_ROCPROFILER_V1_TOOLS: 1
         run: |
           export HIP_VISIBLE_DEVICES=0
           source omnistat_venv/bin/activate
