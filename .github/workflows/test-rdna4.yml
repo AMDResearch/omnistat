@@ -11,7 +11,7 @@ on:
 
 jobs:
   gpu-collectors-rdna4:
-    runs-on: [linux-gfx120X-gpu-rocm]
+    runs-on: [linux-gfx120X-gpu-rocm, gfx1201]
     strategy:
       matrix:
         rocm: [7.2.4]
