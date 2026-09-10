@@ -124,22 +124,33 @@ NETWORK_METRICS = [
 
 
 gpu_type = test.hardware.gpu_type
-
-# Filter SMI_METRICS based on hardware allowlist
-SMI_METRICS = [x for x in SMI_METRICS if ("hardware" not in x or any(hw in gpu_type for hw in x["hardware"]))]
-
-# Optional energy accumulator which is not available on all hardware:
-#  - rocm_smi: unsupported on MI3XX, RDNA4
-#  - amd_smi:  unsupported on RDNA4
-energy_supported_rocmsmi = "MI3" not in gpu_type and "Radeon" not in gpu_type
-energy_supported_amdsmi = "Radeon" not in gpu_type
+consumer_gpu = test.hardware.consumer_gpu
 
 # Cache hostname for skip checks
 try:
     full_hostname = socket.getfqdn()
-except:
+except Exception:
     full_hostname = "unknown"
 print(f"test execution hostname: {full_hostname}\n")
+
+
+def supported(metrics):
+    """Filter metrics by GPU model allowlist and hostname skip list."""
+    return [
+        x
+        for x in metrics
+        if ("hardware" not in x or any(hw in gpu_type for hw in x["hardware"]))
+        and ("skip" not in x or not any(pattern in full_hostname for pattern in x["skip"]))
+    ]
+
+
+SMI_METRICS = supported(SMI_METRICS)
+
+# Optional energy accumulator which is not available on all hardware:
+#  - rocm_smi: unsupported on MI3XX, RDNA
+#  - amd_smi:  unsupported on RDNA
+energy_supported_rocmsmi = not consumer_gpu and "MI3" not in gpu_type
+energy_supported_amdsmi = not consumer_gpu
 
 COLLECTOR_CONFIGS = [
     {
@@ -163,31 +174,12 @@ COLLECTOR_CONFIGS = [
     },
     {
         "collectors": ["rocm_smi", "ras_ecc"],
-        # RAS/ECC not supported on consumer GPUs (RDNA4)
-        "metrics": (
-            []
-            if "Radeon" in gpu_type
-            else [
-                x
-                for x in RAS_METRICS
-                if "_deferred_count" not in x["name"]
-                and ("hardware" not in x or any(hw in gpu_type for hw in x["hardware"]))
-                and ("skip" not in x or not any(pattern in full_hostname for pattern in x["skip"]))
-            ]
-        ),
+        # RAS/ECC not supported on consumer GPUs
+        "metrics": ([] if consumer_gpu else supported([x for x in RAS_METRICS if "_deferred_count" not in x["name"]])),
     },
     {
         "collectors": ["amd_smi", "ras_ecc"],
-        "metrics": (
-            []
-            if "Radeon" in gpu_type
-            else [
-                x
-                for x in RAS_METRICS
-                if ("hardware" not in x or any(hw in gpu_type for hw in x["hardware"]))
-                and ("skip" not in x or not any(pattern in full_hostname for pattern in x["skip"]))
-            ]
-        ),
+        "metrics": [] if consumer_gpu else supported(RAS_METRICS),
     },
     {
         "collectors": ["rocm_smi", "cu_occupancy"],
@@ -417,7 +409,7 @@ class TestCollectors:
 
 class TestHardwareCounters:
     @requires_counters
-    @pytest.mark.skipif("Radeon" in gpu_type, reason="hardware counters not supported on RDNA4")
+    @pytest.mark.skipif(consumer_gpu, reason="hardware counters not supported on RDNA")
     def test_counters_with_workload(self):
         config_sections = {
             "omnistat.collectors.rocprofiler": {"profile": "default"},
