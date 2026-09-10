@@ -153,6 +153,7 @@ POWER_CAP_METRIC = {"name": "rocm_power_cap_watts", "validate": ">0", "labels": 
 #  - rocm_smi: unsupported on MI3XX, RDNA
 #  - amd_smi:  unsupported on RDNA
 energy_rocmsmi = [] if consumer_gpu or "MI3" in gpu_type else [ENERGY_METRIC]
+energy_amdsmi = [] if consumer_gpu else [ENERGY_METRIC]
 
 COLLECTOR_CONFIGS = [
     {
@@ -161,7 +162,7 @@ COLLECTOR_CONFIGS = [
     },
     {
         "collectors": ["amd_smi"],
-        "metrics": [] if consumer_gpu else SMI_METRICS + [ENERGY_METRIC],
+        "metrics": SMI_METRICS + energy_amdsmi,
     },
     {
         "collectors": ["rocm_smi", "ras_ecc"],
