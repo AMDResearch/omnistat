@@ -52,13 +52,30 @@ SMI_METRICS = [
     {"name":"rocm_version_info",                            "validate":"==1.0",              "labels":["card","driver_ver","serial","type"]},
     {"name":"rocm_temperature_celsius",                     "validate":">=10",               "labels":["card","location"]},
     {"name":"rocm_temperature_memory_celsius",              "validate":">=10",               "labels":["card","location"]},
-    {"name":"rocm_average_socket_power_watts",              "validate":">=10",               "labels":["card"]},
-    {"name":"rocm_sclk_clock_mhz",                          "validate":">=90" ,              "labels":["card"],         "hardware":["MI2","MI3"]},
-    {"name":"rocm_mclk_clock_mhz",                          "validate":">=90",               "labels":["card"]},
+    {"name":"rocm_average_socket_power_watts",              "validate":">=10",               "labels":["card"],         "hardware":["Instinct"]},
+    {"name":"rocm_average_socket_power_watts",              "validate":">0",                 "labels":["card"],         "hardware":["Radeon"]},
+    {"name":"rocm_sclk_clock_mhz",                          "validate":">=90" ,              "labels":["card"],         "hardware":["Instinct"]},
+    {"name":"rocm_sclk_clock_mhz",                          "validate":">=0",                "labels":["card"],         "hardware":["Radeon"]},
+    {"name":"rocm_mclk_clock_mhz",                          "validate":">=90",               "labels":["card"],         "hardware":["Instinct"]},
+    {"name":"rocm_mclk_clock_mhz",                          "validate":">=0",                "labels":["card"],         "hardware":["Radeon"]},
     {"name":"rocm_vram_total_bytes",                        "validate":">1073741824",        "labels":["card"]},
     {"name":"rocm_vram_used_percentage",                    "validate":">=0",                "labels":["card"]},
     {"name":"rocm_vram_busy_percentage",                    "validate":">=0.0",              "labels":["card"]},
     {"name":"rocm_utilization_percentage",                  "validate":">=0.0",              "labels":["card"]},
+]
+
+# Optional energy accumulator, unsupported on MI3XX and RDNA with rocm_smi.
+ENERGY_ROCMSMI_METRICS = [
+    {"name":"rocm_energy_joules",                           "validate":">10",                "labels":["card"],         "hardware":["MI2"]},
+]
+
+# Optional energy accumulator, unsupported on RDNA with amd_smi.
+ENERGY_AMDSMI_METRICS = [
+    {"name":"rocm_energy_joules",                           "validate":">10",                "labels":["card"],         "hardware":["Instinct"]},
+]
+
+POWER_CAP_METRICS = [
+    {"name":"rocm_power_cap_watts",                         "validate":">0",                 "labels":["card"]},
 ]
 
 RAS_METRICS = [
@@ -74,6 +91,10 @@ RAS_METRICS = [
     {"name": "rocm_ras_mmhub_uncorrectable_count",          "validate": ">=0",               "labels": ["card"]},
     {"name": "rocm_ras_pcie_bif_uncorrectable_count",       "validate": ">=0",               "labels": ["card"],        "hardware":["MI210"]},
     {"name": "rocm_ras_hdp_uncorrectable_count",            "validate": ">=0",               "labels": ["card"],        "hardware":["MI210"]},
+]
+
+# Deferred counts are only reported by amd_smi.
+RAS_DEFERRED_METRICS = [
     {"name": "rocm_ras_umc_deferred_count",                 "validate": ">=0",               "labels": ["card"],        "skip":["borg","frontier","tuolumne"]},
     {"name": "rocm_ras_sdma_deferred_count",                "validate": ">=0",               "labels": ["card"]},
     {"name": "rocm_ras_gfx_deferred_count",                 "validate": ">=0",               "labels": ["card"]},
@@ -144,34 +165,23 @@ def supported(metrics):
     ]
 
 
-SMI_METRICS = supported(SMI_METRICS)
-
-ENERGY_METRIC = {"name": "rocm_energy_joules", "validate": ">10", "labels": ["card"]}
-POWER_CAP_METRIC = {"name": "rocm_power_cap_watts", "validate": ">0", "labels": ["card"]}
-
-# Optional energy accumulator which is not available on all hardware:
-#  - rocm_smi: unsupported on MI3XX, RDNA
-#  - amd_smi:  unsupported on RDNA
-energy_rocmsmi = [] if consumer_gpu or "MI3" in gpu_type else [ENERGY_METRIC]
-energy_amdsmi = [] if consumer_gpu else [ENERGY_METRIC]
-
 COLLECTOR_CONFIGS = [
     {
         "collectors": ["rocm_smi", "power_cap"],
-        "metrics": SMI_METRICS + energy_rocmsmi + [POWER_CAP_METRIC],
+        "metrics": supported(SMI_METRICS + ENERGY_ROCMSMI_METRICS + POWER_CAP_METRICS),
     },
     {
         "collectors": ["amd_smi"],
-        "metrics": SMI_METRICS + energy_amdsmi,
+        "metrics": supported(SMI_METRICS + ENERGY_AMDSMI_METRICS),
     },
     {
         "collectors": ["rocm_smi", "ras_ecc"],
         # RAS/ECC not supported on consumer GPUs
-        "metrics": ([] if consumer_gpu else supported([x for x in RAS_METRICS if "_deferred_count" not in x["name"]])),
+        "metrics": [] if consumer_gpu else supported(RAS_METRICS),
     },
     {
         "collectors": ["amd_smi", "ras_ecc"],
-        "metrics": [] if consumer_gpu else supported(RAS_METRICS),
+        "metrics": [] if consumer_gpu else supported(RAS_METRICS + RAS_DEFERRED_METRICS),
     },
     {
         "collectors": ["rocm_smi", "cu_occupancy"],
