@@ -146,31 +146,22 @@ def supported(metrics):
 
 SMI_METRICS = supported(SMI_METRICS)
 
+ENERGY_METRIC = {"name": "rocm_energy_joules", "validate": ">10", "labels": ["card"]}
+POWER_CAP_METRIC = {"name": "rocm_power_cap_watts", "validate": ">0", "labels": ["card"]}
+
 # Optional energy accumulator which is not available on all hardware:
 #  - rocm_smi: unsupported on MI3XX, RDNA
 #  - amd_smi:  unsupported on RDNA
-energy_supported_rocmsmi = not consumer_gpu and "MI3" not in gpu_type
-energy_supported_amdsmi = not consumer_gpu
+energy_rocmsmi = [] if consumer_gpu or "MI3" in gpu_type else [ENERGY_METRIC]
 
 COLLECTOR_CONFIGS = [
     {
         "collectors": ["rocm_smi", "power_cap"],
-        "metrics": SMI_METRICS
-        + ([{"name": "rocm_energy_joules", "validate": ">10", "labels": ["card"]}] if energy_supported_rocmsmi else [])
-        + [
-            {"name": "rocm_power_cap_watts", "validate": ">0", "labels": ["card"]},
-        ],
+        "metrics": SMI_METRICS + energy_rocmsmi + [POWER_CAP_METRIC],
     },
     {
         "collectors": ["amd_smi"],
-        "metrics": (
-            SMI_METRICS
-            + [
-                {"name": "rocm_energy_joules", "validate": ">10", "labels": ["card"]},
-            ]
-            if energy_supported_amdsmi
-            else []
-        ),
+        "metrics": [] if consumer_gpu else SMI_METRICS + [ENERGY_METRIC],
     },
     {
         "collectors": ["rocm_smi", "ras_ecc"],
