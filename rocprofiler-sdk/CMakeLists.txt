@@ -83,7 +83,7 @@ if (BUILD_KERNEL_TRACE_LIB)
         message(STATUS "std::format not available, using fmt library")
         FetchContent_Declare(
             fmt
-            URL https://github.com/fmtlib/fmt/archive/refs/tags/11.0.2.tar.gz
+            URL https://github.com/fmtlib/fmt/archive/refs/tags/11.1.0.tar.gz
             DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         )
         FetchContent_MakeAvailable(fmt)
